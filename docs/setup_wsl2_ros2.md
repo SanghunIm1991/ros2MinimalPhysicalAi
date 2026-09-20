@@ -72,16 +72,69 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 1. `sudo apt update && sudo apt upgrade` を実行する。
 2. 確認: `lsb_release -a` が24.04を示す。
 3. 作業場所は `~` 配下にする。`pwd` が `/home/<ユーザー名>` 配下であることを確認する。
+4. `pwd` が `/mnt/d/...` になる場合: `wsl` はWindows側の現在のフォルダ（例: `D:\`）をそのまま引き継ぐ仕様のためで、異常ではない。ホームで開始するには、起動時に `wsl --cd ~ -d Ubuntu-24.04` （または `wsl ~ -d Ubuntu-24.04`）と指定する。毎回指定したくない場合は、Windows Terminalの設定でUbuntu-24.04のプロファイルの「開始ディレクトリ」を `\\wsl.localhost\Ubuntu-24.04\home\<ユーザー名>`（旧形式は `\\wsl$\...`）にする（Windows Terminalを使い、かつUbuntu-24.04のプロファイルがある場合のみ。`wsl --import` で作った環境ではプロファイルが自動生成されないことがある）。`~/.bashrc` に `cd ~` を書く方法は、`wsl --cd <パス>` で意図的に別の場所から開始したときも上書きされるため勧めない。
 
 ### 4. ROS2 Jazzy の導入（Ubuntu内・公式手順）
 
-公式の Installation ページ（Jazzy）の、**Ubuntu (deb packages)** の手順に上から従う。大まかな流れは次のとおり（具体的なコマンドは公式ページの記載を正とし、ここには書き写さない）。
+公式の Installation ページ（Jazzy）の、**Ubuntu (deb packages)** の手順に上から従う。
 
-1. ロケール（UTF-8）の設定
-2. 必要なリポジトリ（universe）と、ROS2のaptソースの追加
-3. 開発ツール（`ros-dev-tools`。colconを含む）の導入
-4. `sudo apt update` / `sudo apt upgrade` の後に、ROS2本体の導入。学習用には **Desktop Install**（ros-jazzy-desktop。rqt・turtlesim等を含む）を選ぶ。
-5. 環境の読み込み: `source /opt/ros/jazzy/setup.bash`
+- URL: <https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html>
+- 以下のコマンドは、上記ページ（ソースは `ros2/ros2_documentation` リポジトリの `jazzy` ブランチ）から抜粋し、コメントと注意書きを加えたもの（改変あり）。ROS 2ドキュメントは [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) で公開されている。
+- 取得は要約を経由したため、**逐語の転記ではない**。内容は2026-09-20時点のもので、版により変わりうる。**実行前に公式ページと照合し、食い違いがあれば公式ページを正とする**。
+- ページ上部の Anubis（bot対策）により自動取得ができなかったため、GitHub上のソースから取得した。
+
+1. ロケール（UTF-8）の設定。`locale` で UTF-8 になっていれば不要。
+
+   ```bash
+   sudo apt update && sudo apt install locales
+   sudo locale-gen en_US en_US.UTF-8
+   sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+   export LANG=en_US.UTF-8
+   locale  # 確認
+   ```
+
+2. universeリポジトリと、ROS2のaptソースの追加。
+
+   ```bash
+   sudo apt install software-properties-common
+   sudo add-apt-repository universe
+
+   sudo apt update && sudo apt install curl -y
+   export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F'"' '{print $4}')
+   curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}})_all.deb"
+   ```
+
+   ここで一度止まり、下の注記の確認をしてから、次のコマンドを実行する。
+
+   ```bash
+   dpkg -I /tmp/ros2-apt-source.deb   # 確認用（インストールはしない）
+   sudo dpkg -i /tmp/ros2-apt-source.deb
+   ```
+
+   - この手順は、GitHubから取得した `.deb` を管理者権限でインストールし、以後のaptの取得元にROS2のリポジトリを追加する。取得元は公式（`ros-infrastructure/ros-apt-source`）だが、外部から取得したパッケージを導入する操作なので、URLが上記のとおりであることを確認してから実行する。
+   - `sudo dpkg -i` の前に、`dpkg -I` の出力でパッケージ名・版・依存関係を目視確認する。これは内容の確認であり、改ざんを検知する整合性検証ではない。
+   - `ROS_APT_SOURCE_VERSION` が空になる場合は、GitHub APIの未認証アクセスの回数制限に当たっている可能性がある。`echo "$ROS_APT_SOURCE_VERSION"` で確認し、しばらく待ってからやり直す。
+
+3. 開発ツール（`ros-dev-tools`。colconを含む）の導入。
+
+   ```bash
+   sudo apt update && sudo apt install ros-dev-tools
+   ```
+
+4. ROS2本体の導入。学習用には **Desktop Install**（rqt・turtlesim等を含む）を選ぶ。
+
+   ```bash
+   sudo apt update
+   sudo apt upgrade
+   sudo apt install ros-jazzy-desktop
+   ```
+
+5. 環境の読み込み。
+
+   ```bash
+   source /opt/ros/jazzy/setup.bash
+   ```
+
    - 毎回入力しないよう `~/.bashrc` へ追記する場合は、追記内容を自分で確認したうえで行う。
 
 ### 5. 動作確認（Ubuntu内）
@@ -105,6 +158,7 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 
 - 仮想化が無効だと `wsl --install` が失敗する → 手順1のBIOS設定を確認する
 - `/mnt/c`・`/mnt/d` 配下で作業するとビルドが遅くなる → `~` 配下で作業する
+- `wsl` 起動直後の `pwd` が `/mnt/d` 等になる → Windows側のカレントフォルダを引き継いでいるだけ。`wsl --cd ~ -d Ubuntu-24.04` で起動する（手順3の項目4）
 - インポート後にrootでログインされる → `/etc/wsl.conf` の `[user] default=` が未設定（手順2b-2）
 - ターミナルを開き直すと `ros2` が見つからない → `source /opt/ros/jazzy/setup.bash` が未実行
 
