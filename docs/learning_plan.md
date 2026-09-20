@@ -109,14 +109,14 @@
 
 | フェーズ | 手順書 | 言語 | 状態 |
 |---|---|---|---|
-| 1 | `docs/phase1_cli_turtlesim.md` | 言語非依存 | 作成済み |
-| 2 | `docs/phase2_packages.md` | Python・C++ | 作成済み |
-| 3-1 | `docs/phase3_1_pubsub.md` | Python・C++ | 作成済み（コードはビルド確認済み） |
-| 3-2 | `docs/phase3_2_turtlesim_qos.md` | Python・C++ | 作成済み（同上） |
-| 3-3 | `docs/phase3_3_parameters.md` | Python・C++ | 作成済み（同上） |
-| 3-4 | `docs/phase3_4_services.md` | Python・C++ | 作成済み（同上） |
-| 3-5 | `docs/phase3_5_actions.md` | Python・C++ | 作成済み（同上） |
-| 4 | `docs/phase4_launch.md` | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（launchは`--print`で確認済み） |
+| 1 | `docs/phase1_cli_turtlesim.md` | 言語非依存 | 作成済み（コマンドはClaudeの知識ベース。実行は未確認） |
+| 2 | `docs/phase2_packages.md` | Python・C++ | 作成済み（雛形作成〜ビルドは確認済み。ノード実行は未確認） |
+| 3-1 | `docs/phase3_1_pubsub.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 3-2 | `docs/phase3_2_turtlesim_qos.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 3-3 | `docs/phase3_3_parameters.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 3-4 | `docs/phase3_4_services.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 3-5 | `docs/phase3_5_actions.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 4 | `docs/phase4_launch.md` | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認） |
 | 5〜 | 着手時に作成 | Python中心 | 未作成 |
 
 - フェーズ3は、トピック（3-1・3-2）、パラメータ、サービス、アクションの5冊に分けた。各冊はPython・C++を同じ仕様で並べ、比較しやすくしている（言語別ファイルには分けていない）。
