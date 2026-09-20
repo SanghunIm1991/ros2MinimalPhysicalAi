@@ -4,4 +4,5 @@
 |---|---|---|---|
 | 2026-09-20 | Git環境構築 | ローカル `git init`（main）、`.gitignore`、`.gitattributes`（LF統一）、コミット規約（ClaudeCode/[claude]）、GitHub private リポジトリ作成・初回push の5案を実施してよいか | 全て承認 |
 | 2026-09-20 | Git環境構築 | pushの承認粒度 | 都度確認 |
+| 2026-09-20 | ツール確認 | WSL2が未導入だった（ROS2・colcon・gcc等は全て未導入）。どう進めるか | 直近のゴールを「WSL2で環境を作るところまで」とし、手順書を作成する |
 | 2026-09-20 | Git環境構築 | 公開範囲 | 当面Private。ただしPublic化を前提に、セキュリティと権利の精査が必要（CLAUDE.mdに明記） |
