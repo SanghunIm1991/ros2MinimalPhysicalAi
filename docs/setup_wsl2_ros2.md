@@ -151,13 +151,38 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 WSL内でもClaude Codeを使うための準備。Claude Codeのインストールはユーザー自身が実施する。
 
 1. **作業ディレクトリ**: `mkdir -p ~/work && cd ~/work`。`/mnt/c`・`/mnt/d` 配下は使わない（ビルドが遅くなる）。
-2. **GitHub認証**: WSLのgitはWindows側の設定・認証を引き継がない。`gh auth login`（ブラウザ認証）か、WSL内で新規作成したSSH鍵をGitHubへ登録する。
-   - `gh` はUbuntu 24.04に標準では入っていない場合がある。導入する場合は公式の手順に従う（導入はユーザー自身が行う）。導入しないならSSH鍵を使う。
-   - パスワード・PATをコマンド履歴やファイルに残さない。Windows側の `.ssh`・資格情報は流用しない。
-3. **このプロジェクトのclone**:
+2. **GitHub認証**: このリポジトリは **private** のため、認証していないWSLでは `git clone` が失敗する（`Repository not found` や `Authentication failed` となる）。WSLのgitはWindows側の設定・認証を引き継がないため、WSL内で次のどちらかを設定する。**推奨はA（SSH鍵）**（追加ツールの導入が不要）。
+   - **A. SSH鍵（推奨）**
+     1. WSL内で鍵を新規作成する（**パスフレーズの設定は必須**。この鍵はアカウント配下の全リポジトリにアクセスできるため、パスフレーズなしにしない）:
+        ```bash
+        ssh-keygen -t ed25519 -C "wsl-ubuntu" -f ~/.ssh/id_ed25519
+        ```
+     2. **公開鍵**（`.pub`）だけを表示してコピーする。秘密鍵（拡張子なしのファイル）は絶対に表示・共有しない:
+        ```bash
+        cat ~/.ssh/id_ed25519.pub
+        ```
+     3. ブラウザでGitHubにログインし、Settings → SSH and GPG keys → New SSH key に貼り付けて登録する（Titleは「WSL Ubuntu」等）。
+     4. 接続確認（初回は接続先フィンガープリントの確認が出る。GitHub公式ドキュメントの「GitHub's SSH key fingerprints」に記載のものと一致する場合のみ `yes`。一致しなければ `yes` とせず中断する）:
+        ```bash
+        ssh -T git@github.com
+        ```
+        `Hi <ユーザー名>! You've successfully authenticated...` と出れば成功。
+     5. cloneはSSH形式のURLを使う（手順3のコマンド参照）。
+     - パスフレーズはclone・pushのたびに入力を求められる。学習用途なら毎回入力で問題ない。手間なら `ssh-agent` に鍵を読み込ませてセッション中の入力を省ける（`eval "$(ssh-agent -s)"` → `ssh-add ~/.ssh/id_ed25519`。ssh-agentはシェルを閉じると終了する）。
+     - 鍵の権限範囲について: 対象リポジトリ限定の「Deploy key」という登録方法もあるが、今回は同一アカウントでpushも行う方針のため使わない（アカウント全体に効く鍵として扱う）。
+   - **B. GitHub CLI（`gh`）のブラウザ認証**
+     - `gh` はUbuntu 24.04に標準では入っていない場合がある。導入する場合は公式の手順に従う（導入はユーザー自身が行う）。
+     - `gh auth login` を実行し、GitHub.com → HTTPS → ブラウザ認証を選ぶ。表示されたワンタイムコードをブラウザで入力して承認する。
+     - 完了後は `gh auth status` で確認できる。cloneはHTTPS形式のURLで行う。
+     - **トークンの保管に注意**: WSLにはキーリングがないことが多く、その場合トークンは `~/.config/gh/hosts.yml` に**平文で保存**され得る。既定のスコープも広め。不要になったら `gh auth logout` を実行し、GitHubのSettingsのアプリ/トークン一覧からも失効させる。
+   - **アカウントはこのリポジトリのオーナーと同じものを使う**（Windows側と同一アカウント）。登録前に、ブラウザでログイン中のアカウントがオーナーであることを確認する。別アカウントだと `Repository not found` になる。認証情報（鍵・トークン）自体はWSL専用の別物で、Windows側とは共有されない。同じ認証で `git push` もできる（pushの実行は都度確認、`CLAUDE.md` 参照）。
+   - パスワード・PAT（Personal Access Token）をコマンド履歴やファイルに残さない。Windows側の `.ssh`・資格情報は流用しない。
+   - 鍵を登録するのはこのWSL専用。不要になったらGitHubのSSH keys画面から削除できる。
+3. **このプロジェクトのclone**（A: SSHの場合はSSH形式、B: `gh` の場合はHTTPS形式）:
    ```bash
    cd ~/work
-   git clone https://github.com/<ユーザー名>/ros2MinimalPhysicalAi.git
+   git clone git@github.com:<ユーザー名>/ros2MinimalPhysicalAi.git      # A: SSH
+   # git clone https://github.com/<ユーザー名>/ros2MinimalPhysicalAi.git  # B: gh認証済みの場合
    cd ros2MinimalPhysicalAi
    git config user.name "ClaudeCode"
    git config user.email "noreply@anthropic.com"
@@ -186,7 +211,7 @@ WSL内でもClaude Codeを使うための準備。Claude Codeのインストー�
 - 仮想化が無効だと `wsl --install` が失敗する → 手順1のBIOS設定を確認する
 - `/mnt/c`・`/mnt/d` 配下で作業するとビルドが遅くなる → `~` 配下で作業する
 - `wsl` 起動直後の `pwd` が `/mnt/d` 等になる → Windows側のカレントフォルダを引き継いでいるだけ。`wsl --cd ~ -d Ubuntu-24.04` で起動する（手順3の項目4）
-- private リポジトリの `git clone` が認証エラーになる → WSLのgitはWindows側の認証を引き継がない。手順6-2で認証を設定する
+- private リポジトリの `git clone` が認証エラー（`Repository not found` / `Authentication failed`）になる → WSLのgitはWindows側の認証を引き継がない。手順6-2でSSH鍵または`gh`認証を設定する。`ssh -T git@github.com` で認証状態を切り分けられる
 - `~/.claude` へのcloneが「already exists and is not an empty directory」で失敗する → Claude Codeを先に起動して作られている。中身を確認して退避してからcloneする（手順6-5）
 - インポート後にrootでログインされる → `/etc/wsl.conf` の `[user] default=` が未設定（手順2b-2）
 - ターミナルを開き直すと `ros2` が見つからない → `source /opt/ros/jazzy/setup.bash` が未実行
