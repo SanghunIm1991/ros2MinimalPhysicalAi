@@ -146,7 +146,34 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 
 なお `rqt` や `turtlesim` などGUIアプリの表示（WSLg）は、ステップ1-1で必要になる。本手順の完了条件には含めない。
 
-### 6. Claude Codeによるレビュー（任意）
+### 6. 作業ディレクトリ・プロジェクトのclone・Claude Code環境（Ubuntu内・任意）
+
+WSL内でもClaude Codeを使うための準備。Claude Codeのインストールはユーザー自身が実施する。
+
+1. **作業ディレクトリ**: `mkdir -p ~/work && cd ~/work`。`/mnt/c`・`/mnt/d` 配下は使わない（ビルドが遅くなる）。
+2. **GitHub認証**: WSLのgitはWindows側の設定・認証を引き継がない。`gh auth login`（ブラウザ認証）か、WSL内で新規作成したSSH鍵をGitHubへ登録する。
+   - `gh` はUbuntu 24.04に標準では入っていない場合がある。導入する場合は公式の手順に従う（導入はユーザー自身が行う）。導入しないならSSH鍵を使う。
+   - パスワード・PATをコマンド履歴やファイルに残さない。Windows側の `.ssh`・資格情報は流用しない。
+3. **このプロジェクトのclone**:
+   ```bash
+   cd ~/work
+   git clone https://github.com/<ユーザー名>/ros2MinimalPhysicalAi.git
+   cd ros2MinimalPhysicalAi
+   git config user.name "ClaudeCode"
+   git config user.email "noreply@anthropic.com"
+   ```
+   - author設定はグローバルではなくリポジトリ単位で行う（プロジェクト規約は `CLAUDE.md` 参照）。
+4. **Claude Codeの導入**: Anthropic公式のClaude Codeドキュメントで最新のインストール手順を確認し、その手順で導入する（リンク先は変わりうるため、公式サイトから探す）。出所不明のスクリプトは使わない。
+5. **グローバルルールのclone**: Claude Codeの設定ディレクトリ `~/.claude` はWindows側から引き継がれない。グローバルルール（GitHubのリポジトリ）をここへcloneする。
+   - **Claude Codeを初回起動する前に行う**（起動すると `~/.claude` が作られ、clone先が空でなくなる）。既に存在する場合は、中身を確認してから退避する（例: `mv ~/.claude ~/.claude.bak`）。
+   ```bash
+   git clone <グローバルルールのリポジトリURL> ~/.claude
+   ```
+   - clone後、内容にWindows固有の記述（`settings.json` の `permissions` のパス、PowerShell前提のルール等）が残っていないか確認し、必要ならWSL用に調整する。
+   - 認証情報・ブラウザプロファイル等の機微ファイルが含まれていないことも確認する。あわせて `projects/`（メモリ・セッション履歴）などWindows側の作業履歴が含まれていないかも確認する。
+6. clone したプロジェクトのディレクトリで `claude` を起動する。
+
+### 7. Claude Codeによるレビュー（任意）
 
 実施した内容のレビューを希望する場合は、次を貼り付ける。**認証情報・パスワードが含まれないことを確認してから**貼ること。
 
@@ -159,6 +186,8 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 - 仮想化が無効だと `wsl --install` が失敗する → 手順1のBIOS設定を確認する
 - `/mnt/c`・`/mnt/d` 配下で作業するとビルドが遅くなる → `~` 配下で作業する
 - `wsl` 起動直後の `pwd` が `/mnt/d` 等になる → Windows側のカレントフォルダを引き継いでいるだけ。`wsl --cd ~ -d Ubuntu-24.04` で起動する（手順3の項目4）
+- private リポジトリの `git clone` が認証エラーになる → WSLのgitはWindows側の認証を引き継がない。手順6-2で認証を設定する
+- `~/.claude` へのcloneが「already exists and is not an empty directory」で失敗する → Claude Codeを先に起動して作られている。中身を確認して退避してからcloneする（手順6-5）
 - インポート後にrootでログインされる → `/etc/wsl.conf` の `[user] default=` が未設定（手順2b-2）
 - ターミナルを開き直すと `ros2` が見つからない → `source /opt/ros/jazzy/setup.bash` が未実行
 
