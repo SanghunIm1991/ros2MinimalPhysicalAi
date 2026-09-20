@@ -201,7 +201,7 @@ cd ~/work/ros2MinimalPhysicalAi
 git status --short
 ```
 
-`ws/src/` だけが未追跡として出て、`ws/build`・`ws/install`・`ws/log` は出ないこと。あわせて、Public化前提のため、次を確認する:
+`ws/src/` だけが未追跡として出て、`ws/build`・`ws/install`・`ws/log` は出ないこと（フェーズ3-3〜4の途中では、一時的に `ws/config/` も出る。フェーズ4で移すのでコミットしない）。あわせて、Public化前提のため、次を確認する:
 
 ```bash
 grep -n 'maintainer' ws/src/learn_py/package.xml ws/src/learn_cpp/package.xml

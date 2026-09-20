@@ -47,6 +47,8 @@ sequenceDiagram
     end
 ```
 
+> 注: 上の図は流れの説明用。サンプルコードは簡単のため、コールバック内で状態を書き換えている（同じ要求の別パラメータが後で拒否された場合に、状態が食い違う恐れがある）。Jazzyには、検証後に反映するための `add_post_set_parameters_callback` があるので、発展課題として調べるとよい。
+
 ## 2. 仕様
 
 | 項目 | 内容 |
@@ -316,7 +318,7 @@ ros2 param get /param_talker period          # 0.2のまま
 
 ### 5-4. YAMLファイルで指定する
 
-`ws/config/param_talker.yaml` を作る（`ws/config/` はパッケージではない普通のフォルダ。フェーズ4でlaunchと一緒に整理する）。
+`ws/config/param_talker.yaml` を作る（`ws/config/` はパッケージではない普通のフォルダ。フェーズ4で `learn_bringup/config/` へ移すので、**それまでコミットしない**。`git status` に未追跡として出ても問題ない）。
 
 ```yaml
 param_talker:
@@ -396,3 +398,5 @@ ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talke
 - [YAMLファイルによるROS2のパラメータ設定 #ROS2 - Qiita](https://qiita.com/NeK/items/15bf1e657d8d694592ed)
 
 > 記事は個人による非公式の解説で、版によって異なる場合がある。公式ドキュメントと食い違う場合は公式を優先する。
+
+> 出典: 各サンプルのAPIの使い方は、上記の公式チュートリアルを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。

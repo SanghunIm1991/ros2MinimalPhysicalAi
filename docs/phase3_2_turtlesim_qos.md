@@ -35,8 +35,8 @@ flowchart LR
         A3["Pub: transient_local"] --> B3["Sub: volatile"]
     end
     subgraph NG["つながらない"]
-        A4["Pub: best_effort"] -.x.- B4["Sub: reliable"]
-        A5["Pub: volatile"] -.x.- B5["Sub: transient_local"]
+        A4["Pub: best_effort"] -. 非互換 .- B4["Sub: reliable"]
+        A5["Pub: volatile"] -. 非互換 .- B5["Sub: transient_local"]
     end
 ```
 
@@ -601,3 +601,5 @@ Publisher・SubscriptionそれぞれのQoS（`Reliability`、`Durability`）が�
 - [Using turtlesim, ros2, and rqt — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Introducing-Turtlesim/Introducing-Turtlesim.html)
 
 > 公式ドキュメントと食い違う場合は、公式を優先する。
+
+> 出典: 各サンプルのAPIの使い方は、上記の公式チュートリアルを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。

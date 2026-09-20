@@ -538,3 +538,5 @@ ros2 service call /reset_counter std_srvs/srv/Trigger
 - [ros2/common_interfaces（GitHub）](https://github.com/ros2/common_interfaces)（`std_srvs` の定義）
 
 > 公式ドキュメントと食い違う場合は、公式を優先する。
+
+> 出典: 各サンプルのAPIの使い方は、上記の公式チュートリアルを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。

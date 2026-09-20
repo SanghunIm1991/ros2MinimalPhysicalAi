@@ -67,7 +67,7 @@ ros2 interface show example_interfaces/action/Fibonacci
 
 | ノード | 役割 | アクション名（型） | 動作 |
 |---|---|---|---|
-| `fibonacci_server` | サーバ | `fibonacci`（`example_interfaces/action/Fibonacci`） | ゴール `order`（1以上）を受け、数列 `[0, 1]` から始めて、**1秒ごとに**次の項を足し、その時点の数列をフィードバックとして送る。`order` 回のループを終えたら、結果に完成した数列（`order + 1` 項）を入れて成功で終わる。`order < 1` のゴールは**拒否**する。処理中に中断要求を受けたら、処理を止めて `CANCELED` で終わる |
+| `fibonacci_server` | サーバ | `fibonacci`（`example_interfaces/action/Fibonacci`） | ゴール `order`（1以上）を受け、数列 `[0, 1]` から始めて、**1秒ごとに**次の項を足し、その時点の数列をフィードバックとして送る。`order - 1` 回の加算を終えたら、結果に完成した数列（`order + 1` 項）を入れて成功で終わる。`order < 1` のゴールは**拒否**する。処理中に中断要求を受けたら、処理を止めて `CANCELED` で終わる |
 | `fibonacci_client` | クライアント | `fibonacci` | ROSパラメータ `order`（整数、既定5）でゴールを送り、フィードバックをログに出し、結果を受けて終了する。パラメータ `cancel_after`（実数、秒、既定 `0.0`）が正なら、ゴール受理からその秒数後に中断要求を送る。サーバがいなければ5秒待って諦める |
 
 例: `order = 5` → 結果の数列は `[0, 1, 1, 2, 3, 5]`（6項）。
@@ -568,7 +568,7 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 >
 > 課題4: サーバが動いている間に、クライアントを2つ同時に起動して、2つのゴールが並行して処理されることを確認する（Python版は `ReentrantCallbackGroup` が効いている）。
 >
-> 課題5（発展）: `rqt_graph` でアクションが内部的に「サービス2つ＋トピック2つ」（`_action/send_goal`、`_action/cancel_goal`、`_action/get_result`、`_action/feedback`、`_action/status`）でできていることを、`ros2 topic list -t` / `ros2 service list -t` で見つける。
+> 課題5（発展）: `rqt_graph` でアクションが内部的に「サービス3つ＋トピック2つ」（`_action/send_goal`、`_action/cancel_goal`、`_action/get_result`、`_action/feedback`、`_action/status`）でできていることを、`ros2 topic list -t` / `ros2 service list -t` で見つける。
 
 ## 7. 記録用の表
 
@@ -588,12 +588,13 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 | クライアントが終わらない（Python） | `on_result` で `self.done = True` にしているか。ゴールが拒否された場合も `done` にしているか |
 | C++でビルドエラー（`rclcpp_action` が見つからない） | `package.xml` の `<depend>rclcpp_action</depend>`、`find_package(rclcpp_action REQUIRED)`、`ament_target_dependencies` |
 | C++の `goal_response_callback` の型エラー | Jazzyでは引数が `GoalHandle::SharedPtr`（ゴールが拒否されると空）。古い資料の `std::shared_future` 形式は使わない |
+| Ctrl+Cで終了するとき、C++サーバでエラーや異常終了が出る | 実行処理を別スレッド（`detach`）で動かしているため、処理中のスレッドが残りうる。学習用としては許容する。本格的に作る場合は、スレッドを管理して終了時に待つ |
 | 実行が終わってもプロセスが残る | C++クライアントは `rclcpp::shutdown()` を結果コールバックで呼んでいるか |
 | `ros2 action send_goal` で型が見つからない | 型名の綴り `example_interfaces/action/Fibonacci`（`action` が入る） |
 
 ## 9. 次へ
 
-フェーズ4（`docs/phase4_launch.md`）で、これまでのノードをlaunchファイルで束ねる。フェーズ3の総括（1-7の比較表）は、フェーズ3-1〜3-5の各「記録用の表」を材料に、ユーザーが `docs/` にまとめる（完成後にレビューを依頼できる）。
+フェーズ4（`docs/phase4_launch.md`）で、これまでのノードをlaunchファイルで束ねる。フェーズ3の総括（1-7の比較表）は、フェーズ3-1〜3-5の各「記録用の表」を材料に、ユーザーが `docs/` に「1-7の比較表」としてまとめる（完成後にレビューを依頼できる）。
 
 ## 10. 公式ドキュメント・参考資料
 
@@ -606,3 +607,5 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 - [Intermediate — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Intermediate.html)
 
 > 公式チュートリアルは独自の `.action` 定義（`action_tutorials_interfaces`）を使うが、本手順書は標準の `example_interfaces` を使う。公式ドキュメントと食い違う場合は、公式を優先する。
+
+> 出典: 各サンプルのAPIの使い方は、上記の公式チュートリアルを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。

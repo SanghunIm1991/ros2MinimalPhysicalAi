@@ -325,6 +325,8 @@ ros2 param get /param_talker period      # 引数で上書きした値
 
 > 課題5: `period` を渡さない場合、YAMLの `0.5` になるか、引数の既定 `1.0` になるか確認する（`parameters` の並び順のルールから予想してから試す）。
 >
+> （補足: 引数 `period` に既定値 `1.0` があるため、指定しなくても常に引数側が勝ち、YAMLの `0.5` は使われない。発展: 引数の既定を空にして、未指定ならYAMLの値を使う書き方を調べて試す。）
+>
 > 課題6: `--print` の出力から、YAMLのパスがどこに展開されているか確認する（`install/learn_bringup/share/...`）。
 
 ### 4-5. OSSと自作ノードを一緒に起動する（`turtle.launch.py`）
@@ -477,3 +479,5 @@ source install/setup.bash
 - [Launching nodes — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Launching-Multiple-Nodes/Launching-Multiple-Nodes.html)
 
 > 公式ドキュメントと食い違う場合は、公式を優先する。
+
+> 出典: 各サンプルのAPIの使い方は、上記の公式チュートリアルを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。
