@@ -47,24 +47,25 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 **方法A: エクスポート/インポート（どのWSLバージョンでも使える標準手順）**
 
 1. 手順2の初回起動でユーザー名・パスワードを設定済みであること、およびUbuntu内に手作業で作ったデータ・ファイルがないこと（導入直後の状態）を確認する。データがある場合は、先に必要なものを退避する。
-2. Ubuntu内で、既定ユーザーを固定する。インポート後は既定ユーザーがrootに戻るため、その対策である。まず `cat /etc/wsl.conf` で既存の内容を確認する（通常は存在しない）。既存の設定がある場合は上書きせず、`[user]` の節を追記する。ない場合は `sudo nano /etc/wsl.conf` で次を書き、保存する（`<ユーザー名>` は手順2で作った名前）。
+2. Ubuntu内で、既定ユーザーを固定する。インポート後は既定ユーザーがrootに戻るため、その対策である。まず `cat /etc/wsl.conf` で既存の内容を確認する。Ubuntu 24.04では、systemd関連の設定（`[boot]` 節等）で既に存在することがある。その場合は既存の内容を消さず、`[user]` の節だけを追記する。存在しない場合は新規に作る。編集は `sudo nano /etc/wsl.conf` で行い、次の内容を書いて保存する（`<ユーザー名>` は手順2で作った名前）。
    ```
    [user]
    default=<ユーザー名>
    ```
+   保存後に `cat /etc/wsl.conf` をもう一度実行し、`[user]` 節が入っていること、既存の節が残っていることを確認する。
 3. PowerShellで作業フォルダを作る: `New-Item -ItemType Directory -Force D:\WSL\backup, D:\WSL\Ubuntu-24.04`
 4. Ubuntuを停止: `wsl --shutdown`（他のWSLディストリビューションも含め、WSL全体が停止する。他に稼働中のものがあれば先に保存しておく）
 5. エクスポート: `wsl --export Ubuntu-24.04 D:\WSL\backup\ubuntu-24.04-fresh.tar`
-6. **確認**: `Get-Item D:\WSL\backup\ubuntu-24.04-fresh.tar` でファイルがあり、サイズが数百MB以上であることを確認する（極端に小さい・0の場合はエクスポート失敗。手順5をやり直す）。
+6. **確認**: `Get-Item D:\WSL\backup\ubuntu-24.04-fresh.tar` でファイルがあり、サイズが数百MB以上であることを確認する（極端に小さい・0の場合はエクスポート失敗。2b-5をやり直す）。
 7. C:側を登録解除する。実行前に `wsl -l -v` で、対象が `Ubuntu-24.04` であることを再確認する。確認が取れてから `wsl --unregister Ubuntu-24.04` を実行する（他の名前のディストリビューションを指定しない）。
 8. D:へインポート: `wsl --import Ubuntu-24.04 D:\WSL\Ubuntu-24.04 D:\WSL\backup\ubuntu-24.04-fresh.tar --version 2`
-9. 確認: `wsl -l -v`（Ubuntu-24.04がVERSION 2）、`wsl -d Ubuntu-24.04` で入り、`whoami` が手順2のユーザー名になっていること。rootなら手順2の `/etc/wsl.conf` を確認する。
+9. 確認: `wsl -l -v`（Ubuntu-24.04がVERSION 2）、`wsl -d Ubuntu-24.04` で入り、`whoami` が手順2のユーザー名になっていること。rootなら2b-2の `/etc/wsl.conf` を確認する。なお、インポート後はWindows Terminalのプロファイルやスタートメニューの登録が変わる場合がある。`wsl -d Ubuntu-24.04` で入れれば問題ない。
 10. 仮想ディスクの場所を確認: `Test-Path D:\WSL\Ubuntu-24.04\ext4.vhdx` が `True` であること。
 11. バックアップのtarは、環境が安定して動くことを確認できるまで残す。その後は削除してよい（D:に651GBの空きがあるため急がない）。
 
 **方法B: `wsl --manage --move`（対応バージョンのWSLのみ・任意）**
 
-新しいバージョンのWSLには、登録済みディストリビューションを移動するコマンドがある。`wsl --manage --help` に `--move` が表示される場合に限り、`wsl --manage Ubuntu-24.04 --move D:\WSL\Ubuntu-24.04` で移せる。表示されない場合は方法Aを使う。
+新しいバージョンのWSLには、登録済みディストリビューションを移動するコマンドがある。`wsl --manage --help` に `--move` が表示される場合に限り、`wsl --manage Ubuntu-24.04 --move D:\WSL\Ubuntu-24.04` で移せる。移動先フォルダは、事前に2b-3のコマンドで作っておく。表示されない場合は方法Aを使う。なお2b-2（既定ユーザーの固定）は方法Bでは不要である。
 
 ### 3. Ubuntuの更新（Ubuntu内）
 
