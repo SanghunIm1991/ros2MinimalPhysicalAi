@@ -46,17 +46,17 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 
 **方法A: エクスポート/インポート（どのWSLバージョンでも使える標準手順）**
 
-1. 手順2の初回起動でユーザー名・パスワードを設定済みであることを確認する。
-2. Ubuntu内で、既定ユーザーを固定する。インポート後は既定ユーザーがrootに戻るため、その対策である。`sudo nano /etc/wsl.conf` で次を書き、保存する（`<ユーザー名>` は手順2で作った名前）。
+1. 手順2の初回起動でユーザー名・パスワードを設定済みであること、およびUbuntu内に手作業で作ったデータ・ファイルがないこと（導入直後の状態）を確認する。データがある場合は、先に必要なものを退避する。
+2. Ubuntu内で、既定ユーザーを固定する。インポート後は既定ユーザーがrootに戻るため、その対策である。まず `cat /etc/wsl.conf` で既存の内容を確認する（通常は存在しない）。既存の設定がある場合は上書きせず、`[user]` の節を追記する。ない場合は `sudo nano /etc/wsl.conf` で次を書き、保存する（`<ユーザー名>` は手順2で作った名前）。
    ```
    [user]
    default=<ユーザー名>
    ```
 3. PowerShellで作業フォルダを作る: `New-Item -ItemType Directory -Force D:\WSL\backup, D:\WSL\Ubuntu-24.04`
-4. Ubuntuを停止: `wsl --shutdown`
+4. Ubuntuを停止: `wsl --shutdown`（他のWSLディストリビューションも含め、WSL全体が停止する。他に稼働中のものがあれば先に保存しておく）
 5. エクスポート: `wsl --export Ubuntu-24.04 D:\WSL\backup\ubuntu-24.04-fresh.tar`
-6. **確認**: `Get-Item D:\WSL\backup\ubuntu-24.04-fresh.tar` でファイルがあり、サイズが0でない（数百MB程度）ことを確認する。
-7. C:側を登録解除: `wsl --unregister Ubuntu-24.04`（確認が取れるまで実行しない）
+6. **確認**: `Get-Item D:\WSL\backup\ubuntu-24.04-fresh.tar` でファイルがあり、サイズが数百MB以上であることを確認する（極端に小さい・0の場合はエクスポート失敗。手順5をやり直す）。
+7. C:側を登録解除する。実行前に `wsl -l -v` で、対象が `Ubuntu-24.04` であることを再確認する。確認が取れてから `wsl --unregister Ubuntu-24.04` を実行する（他の名前のディストリビューションを指定しない）。
 8. D:へインポート: `wsl --import Ubuntu-24.04 D:\WSL\Ubuntu-24.04 D:\WSL\backup\ubuntu-24.04-fresh.tar --version 2`
 9. 確認: `wsl -l -v`（Ubuntu-24.04がVERSION 2）、`wsl -d Ubuntu-24.04` で入り、`whoami` が手順2のユーザー名になっていること。rootなら手順2の `/etc/wsl.conf` を確認する。
 10. 仮想ディスクの場所を確認: `Test-Path D:\WSL\Ubuntu-24.04\ext4.vhdx` が `True` であること。
