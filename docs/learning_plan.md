@@ -109,7 +109,7 @@
 
 | フェーズ | 手順書 | 言語 | 状態 |
 |---|---|---|---|
-| 1 | `docs/phase1_cli_turtlesim.md` | 言語非依存 | 作成済み（コマンドはClaudeの知識ベース。実行は未確認） |
+| 1 | `docs/phase1_cli_turtlesim.md` | 言語非依存 | 学習完了（ユーザーが全コマンドの動作を実機で確認済み、2026-09-21） |
 | 2 | `docs/phase2_packages.md` | Python・C++ | 作成済み（雛形作成〜ビルドは確認済み。ノード実行は未確認） |
 | 3-1 | `docs/phase3_1_pubsub.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
 | 3-2 | `docs/phase3_2_turtlesim_qos.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
