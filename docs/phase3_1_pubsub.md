@@ -7,7 +7,7 @@
 - 所要目安: 1〜2コマ
 - 言語: **Python・C++の両方**（Python → C++の順を推奨）
 
-> **進め方**: 学習が目的なので、まず**仕様（2節）だけを見て自分で書いてみる**。詰まったら各節の「サンプルコード」を開いて答え合わせをする。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルド確認済みだが、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
+> **進め方**: 学習が目的なので、まず**仕様（2節）だけを見て自分で書いてみる**。詰まったら、あるいは書き終えたら、各節の「サンプルコードと解説」で答え合わせと読み解きをする（サンプルは隠していない。先に見ると学習効果が下がるので、まず自分で書くことを勧める）。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルド確認済みだが、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
 ## 0. 学習目標と完了条件
 
@@ -18,13 +18,25 @@
 
 ## 1. 全体像
 
+![talkerが/chatterでlistenerへ、sine_pubが/sineでsine_subへ送る](img/phase3_1_topics.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
+
 ```mermaid
 flowchart LR
     T["talker<br/>1秒ごとに送信"] -- "/chatter<br/>std_msgs/String" --> L["listener<br/>受信してログ出力"]
     S["sine_pub<br/>10 Hzで送信"] -- "/sine<br/>std_msgs/Float64" --> SS["sine_sub<br/>受信してログ出力"]
 ```
 
+</details>
+
 コールバックの動き（`spin` の役割）:
+
+![mainがspinを呼ぶと、executorがイベントを待ってコールバックを呼び続け、Ctrl+Cで戻る](img/phase3_1_spin.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 sequenceDiagram
@@ -38,6 +50,8 @@ sequenceDiagram
     end
     Note over M,N: Ctrl+C で spin が戻り、後片付けをして終了
 ```
+
+</details>
 
 ## 2. 仕様（Python版・C++版で同一）
 
@@ -69,8 +83,9 @@ sequenceDiagram
 | 送信 | `publisher.publish(メッセージ)` |
 | 起動と終了 | `rclpy.init()` → `rclpy.spin(node)` → `rclpy.try_shutdown()` |
 
-<details>
-<summary>サンプルコード（答え合わせ用）</summary>
+#### サンプルコードと解説（Python版）
+
+**talker.py**
 
 ファイル: `ws/src/learn_py/learn_py/talker.py`
 
@@ -109,6 +124,25 @@ def main(args=None):
         rclpy.try_shutdown()
 ```
 
+解説（talker.py）:
+
+- **役割と流れ**: 1秒ごとにタイマーが `on_timer` を呼び、`hello 0`, `hello 1`, ... を `chatter` に送る。全体は「ノードを作る → `spin` でコールバックを待ち続ける → Ctrl+Cで後片付けして終わる」の3段構え。この骨組みは Python版の4ファイルすべてで共通なので、ここで覚えておく。
+- **import**: `rclpy` はPythonのROS2クライアントライブラリ、`Node` はノードの基底クラス、`String` は `std_msgs/msg/String`（フィールド `data` を1つ持つだけのメッセージ）。`ExternalShutdownException` は「外部からシャットダウンされた」ときに `spin` が投げる例外で、後述の `except` で握りつぶすために使う。
+- **`__init__` の中身**:
+  - `super().__init__('talker')` でノード名を決める。これを呼ばないと以降の `create_*` が使えない。
+  - `create_publisher(String, 'chatter', 10)` は「型・トピック名・QoSのdepth」の順。`10` は送信側のキュー（バッファ）の深さで、相手の受信が追いつかないときに最大10件まで溜めておく、という意味（詳しくはフェーズ3-2）。
+  - `create_timer(1.0, self.on_timer)` の第1引数は周期で、単位は**秒**（実数）。第2引数は呼んでほしい関数。`self.on_timer` のように**括弧を付けず**関数そのものを渡す（`self.on_timer()` と書くと、その場で実行した結果を渡してしまう）。
+  - `self.pub` / `self.timer` に代入して保持しているのは、後から使うため、また何を持つノードかがコードから読み取れるようにするため（Pythonではノードが内部でも保持するので、保持しなくても動くことが多い）。
+- **`on_timer`**: メッセージ型のインスタンスを作り、`data` に文字列を入れて `publish` する。ログ出力の `get_logger().info(...)` は標準出力ではなくROS2のロギング経由で、時刻やノード名が付く。f文字列は `hello {self.count}` のように値を埋め込む書き方。
+- **`main`**:
+  - `rclpy.init(args=args)` でROS2の通信基盤を初期化する。ノードを作る前に必ず呼ぶ。
+  - `rclpy.spin(node)` は、シャットダウンされるまで戻ってこない。中で「タイマー満了」「メッセージ到着」を待ち、該当するコールバックを呼び出している（1節の図）。`spin` を呼ばないと、コールバックが一度も呼ばれずプログラムが終わる。
+  - `try / except / finally`: Ctrl+Cで `KeyboardInterrupt`（環境によっては `ExternalShutdownException`）が出る。これを受け止めて黙って抜け、`finally` で `destroy_node()` と `rclpy.try_shutdown()` を実行する。`try_shutdown` は「すでにシャットダウン済みなら何もしない」版なので、二重に呼んでもエラーにならない。
+- **つまずきやすい点**: `main` の関数名は `setup.py` の `'talker = learn_py.talker:main'` と一致させる。`create_timer` の周期に整数の `1` を渡しても動くが、ミリ秒と勘違いして `1000` を渡すと約17分周期になる。
+- **観察ポイント**: `ros2 run learn_py talker` で1秒ごとに `publish: hello N` が出て、Nが1ずつ増えること。別ターミナルで `ros2 topic echo /chatter` すると、`data: hello N` が同じ順序で見える。
+
+**listener.py**
+
 ファイル: `ws/src/learn_py/learn_py/listener.py`
 
 <!-- file: ws/src/learn_py/learn_py/listener.py -->
@@ -139,6 +173,16 @@ def main(args=None):
         node.destroy_node()
         rclpy.try_shutdown()
 ```
+
+解説（listener.py）:
+
+- **役割**: `chatter` を購読し、届いたメッセージ1件ごとに `on_message` が呼ばれてログに出す。`main` はtalkerとほぼ同じで、違うのはノードのクラスだけ。
+- **`create_subscription(String, 'chatter', self.on_message, 10)`**: 引数は「型・トピック名・コールバック・QoSのdepth」の順。Publisherと違い、**コールバックを第3引数に渡す**点に注意（Python版では、コールバックの後ろにQoSが来る）。`10` は受信側のキューの深さで、コールバックの処理が遅れて未処理のメッセージが溜まったとき、最大10件まで保持する。
+- **`on_message(self, msg)`**: 引数 `msg` は受信したメッセージ（`String` のインスタンス）で、`msg.data` で中身を取り出す。コールバックは `spin` の中から呼ばれるので、自分で呼び出すコードは書かない。
+- **つまずきやすい点**: トピック名や型が送信側と1文字でも違うと、エラーも出ずに何も受信しない（`ros2 topic list -t` で名前と型を確認する）。また、コールバックの中で長い処理（`time.sleep` など）を書くと、その間は他のコールバックも呼ばれない。
+- **観察ポイント**: talkerより先にlistenerを起動しても構わない。listenerを後から起動した場合、それまでに送られた `hello 0`, ... は受け取れず、起動後に送られたものから表示される（既定のQoSでは過去分は保存されない）。
+
+**sine_pub.py**
 
 ファイル: `ws/src/learn_py/learn_py/sine_pub.py`
 
@@ -178,6 +222,18 @@ def main(args=None):
         rclpy.try_shutdown()
 ```
 
+解説（sine_pub.py）:
+
+- **役割**: 0.1秒（10 Hz）ごとに、現在時刻を使った正弦波の値を `sine` に送る。talkerとの違いは、メッセージ型が `Float64`（フィールドは `data` で実数1つ）であることと、送る値を計算することだけ。
+- **値の計算**: `sin(2π × f × t)` は周波数 `f` [Hz]、時刻 `t` [秒] の正弦波。`freq_hz = 0.5` なので周期は `1 / 0.5 = 2` 秒。周期が `create_timer` の周期（0.1秒）と別物である点を混同しない。前者は波の形、後者は「何秒おきに標本を取って送るか」。2秒周期の波が、0.1秒おき（1周期あたり20点）でサンプリングされる。
+- **時刻の取り方**: `self.get_clock().now()` はノードが使う時計の現在時刻（`Time` 型）で、`.nanoseconds` は整数のナノ秒。`1e-9` を掛けて秒（float）にしている。単位換算（ナノ秒→秒）は間違えやすいので、桁を意識する。
+- **なぜ時計の時刻を使うか**: カウンタを増やして `count * 0.1` としてもよいが、タイマーの呼び出しが遅れても波形が崩れない（値が実時刻に対応する）ため、時刻から計算するほうが素直。ROS2の時計は、シミュレーション時間を使う設定にも切り替えられる（今回は触れない）。
+- **`self.freq_hz` を属性にしている理由**: 課題4（周波数を変える）とフェーズ3-3（パラメータ化）の準備。定数をコードのあちこちに直書きしない。
+- **つまずきやすい点**: `math.sin` は**ラジアン**を取る。度数のつもりで `360` を使うと波形にならない。`2.0 * math.pi * ...` の括弧を落とす計算ミスも多い。
+- **観察ポイント**: `ros2 topic hz /sine` が約10 Hz、`ros2 topic echo /sine` の値が-1〜1の間を約2秒周期で往復すること。
+
+**sine_sub.py**
+
 ファイル: `ws/src/learn_py/learn_py/sine_sub.py`
 
 <!-- file: ws/src/learn_py/learn_py/sine_sub.py -->
@@ -209,7 +265,13 @@ def main(args=None):
         rclpy.try_shutdown()
 ```
 
-</details>
+解説（sine_sub.py）:
+
+- **役割**: `sine` を購読し、値を小数点以下3桁で表示する。構造はlistenerと同じ。
+- **`{msg.data:.3f}`**: f文字列の書式指定で、小数点以下3桁の固定小数点表記にする（`0.588` のように）。ここを外すと `0.5877852522924731` のような長い表示になり、ログが読みにくくなる。C++版の `%.3f` と同じ意味。
+- **観察ポイント**: `sine_pub` と一緒に動かすと、ログの値が0付近から増えて1に近づき、減って-1に近づく、という往復が約2秒周期で見える。10 Hzで流れるので、ログは1秒に10行出る。
+
+Python版の4ファイルに共通する要点は、「ノードクラスの `__init__` で通信の口（Publisher / Subscription / Timer）を作り、コールバックに処理を書き、`main` の `spin` で回す」という形。以降のフェーズでも同じ形を使い回す。
 
 ### 3-2. 実行ファイルとして登録する
 
@@ -273,8 +335,9 @@ Pythonとの違いの見どころ:
 - ポインタ（`SharedPtr`）で持つ。Publisherは `->publish()`。
 - メンバ変数（`pub_`, `timer_`）を保持しないと、コンストラクタを抜けた時点で解放され動かなくなる。
 
-<details>
-<summary>サンプルコード（答え合わせ用）</summary>
+#### サンプルコードと解説（C++版）
+
+**talker.cpp**
 
 ファイル: `ws/src/learn_cpp/src/talker.cpp`
 
@@ -321,6 +384,23 @@ int main(int argc, char ** argv)
 }
 ```
 
+解説（talker.cpp）: Python版のtalkerと同じ動作を、C++の書き方に置き換えたもの。骨組み（ノードを作る → `spin` → 終了）は同じで、以下は言語固有の点。
+
+- **include と `using`**: `rclcpp/rclcpp.hpp` がrclcppの本体、`std_msgs/msg/string.hpp` がメッセージ型のヘッダ（メッセージ名 `String` をスネークケースにしたファイル名）。`using namespace std::chrono_literals;` は `1s`, `100ms` のような時間リテラルを使えるようにする。
+- **クラス定義**: `rclcpp::Node` を継承し、初期化リストで `Node("talker")` を呼んでノード名を決める（Pythonの `super().__init__('talker')` に相当）。
+- **`create_publisher<std_msgs::msg::String>("chatter", 10)`**: 型は `< >` のテンプレート引数、引数は「トピック名・QoS」。数値の `10` はQoSのdepthを簡易指定したもので、Pythonと同じ意味。戻り値は `SharedPtr`（`std::shared_ptr` の別名）なので、`pub_` メンバに保存し、送るときは `pub_->publish(msg)` と矢印で呼ぶ。
+- **`create_wall_timer(1s, [this]() { on_timer(); })`**: `wall` は「壁掛け時計」の意味で、実時間（シミュレーション時間ではない）で数える。周期は `std::chrono` の型で渡す。コールバックには**ラムダ式**を使っている。`[this]` は「このオブジェクト（`this`）をラムダの中で使えるように取り込む」という指定で、これがないと `on_timer()` を呼べない。同じことは `std::bind(&Talker::on_timer, this)` でも書けるが、ラムダのほうが読みやすいので今回はこちらを使う。
+- **`on_timer`**: `count_++` は「今の値を使ってから1増やす」後置インクリメント。`std::to_string` で数値を文字列に変える。ログの `RCLCPP_INFO(get_logger(), "publish: %s", msg.data.c_str())` は `printf` 形式で、`%s` に渡すのは `std::string` ではなく `c_str()` で得るC文字列。`std::string` をそのまま渡すと、コンパイルは通っても実行時に文字化けや異常終了になりうる。
+- **メンバ変数（`pub_`, `timer_`）**: ローカル変数にすると、コンストラクタを抜けた時点で解放されて、タイマーが止まる（Pythonでも `self.` に保持するのは同じ理由）。
+- **`main`**:
+  - `rclcpp::init(argc, argv)` は、Pythonの `rclpy.init` に相当する初期化（ROS引数もここで解釈される）。
+  - `std::make_shared<Talker>()` でノードを `shared_ptr` として作り、`rclcpp::spin` に渡す。`spin` は Ctrl+C までブロックする。ノードのオブジェクトは、`spin` を抜けるまで `shared_ptr` により生存している。
+  - `rclcpp::shutdown()` で後片付け。Python版のような `try/except` は要らない（Ctrl+Cで `spin` が普通に戻る）。
+- **つまずきやすい点**: `int count_ = 0;` のようにメンバを初期化し忘れると、値が不定になる。`private:` の宣言順は初期化順と関係する。`ament_target_dependencies` に `std_msgs` を書き忘れると、include で失敗する（8節）。
+- **観察ポイント**: Python版と出力が同じ形（`publish: hello N`）になること。ビルドに時間がかかるだけで、動きは同じ。
+
+**listener.cpp**
+
 ファイル: `ws/src/learn_cpp/src/listener.cpp`
 
 <!-- file: ws/src/learn_cpp/src/listener.cpp -->
@@ -354,6 +434,17 @@ int main(int argc, char ** argv)
   return 0;
 }
 ```
+
+解説（listener.cpp）:
+
+- **`create_subscription<std_msgs::msg::String>("chatter", 10, コールバック)`**: 引数の順は「トピック名・QoS・コールバック」。Python版（型・トピック名・コールバック・QoS）とは**QoSとコールバックの順序が逆**なので注意。
+- **コールバックのラムダ**: `[this](const std_msgs::msg::String & msg) { ... }`。引数は「メッセージへのconst参照」で、コピーせずに読み取り専用で受け取る。`[this]` は `get_logger()` を呼ぶために必要。ログでは `msg.data.c_str()` を使う（talkerと同じ理由）。
+- **クラスに `on_message` メソッドを作らない書き方**: 短い処理ならラムダにその場で書くと、行き来が減って読みやすい。処理が増えたらメソッドに分けて `[this](const auto & msg) { on_message(msg); }` のように呼ぶ。
+- **`sub_` メンバ**: 保持しないと購読が終わってしまう点はPublisherと同じ。型は `rclcpp::Subscription<...>::SharedPtr`。
+- **つまずきやすい点**: コールバックの引数の型を、メッセージ型と食い違わせるとテンプレートのエラーが長大に出る。最初の `error:` 行を読むと、原因（型の不一致）が書かれている。
+- **観察ポイント**: PythonのtalkerとC++のlistenerを組み合わせても、同じ表示になること（6節）。
+
+**sine_pub.cpp**
 
 ファイル: `ws/src/learn_cpp/src/sine_pub.cpp`
 
@@ -400,6 +491,18 @@ int main(int argc, char ** argv)
 }
 ```
 
+解説（sine_pub.cpp）:
+
+- **役割と計算**: Python版の `sine_pub` と同じ（周期0.1秒で `sin(2π × 0.5 × t)` を送る）。計算式の意味や、波の周期とタイマー周期が別物である点はPython版の解説を参照。
+- **`create_wall_timer(100ms, ...)`**: `100ms` は `chrono_literals` のリテラルで、Pythonの `0.1`（秒）に相当する。単位が型に含まれるので、秒とミリ秒の取り違えが起きにくい。
+- **時刻の取得**: `now()` は `Node` のメソッドで、ノードの時計の現在時刻（`rclcpp::Time`）を返す。`.seconds()` で、秒単位の `double` が直接得られる。Python版の `nanoseconds * 1e-9` の手動換算が不要。
+- **円周率**: `M_PI` は `<cmath>` 由来の定数（環境によっては定義されないことがあるが、Linux/gccでは通常使える）。`std::sin` もラジアンを取る。
+- **`const double t`**: 変更しない値は `const` を付ける習慣にすると、意図しない書き換えをコンパイラが検出してくれる。
+- **つまずきやすい点**: 整数除算（`1 / 2` が0になる）に注意。周波数を `0.5` ではなく `1/2` と書くと0になり、波形が消える。
+- **観察ポイント**: Python版と同じく約10 Hzで、値が-1〜1を約2秒周期で往復すること。
+
+**sine_sub.cpp**
+
 ファイル: `ws/src/learn_cpp/src/sine_sub.cpp`
 
 <!-- file: ws/src/learn_cpp/src/sine_sub.cpp -->
@@ -434,7 +537,14 @@ int main(int argc, char ** argv)
 }
 ```
 
-</details>
+解説（sine_sub.cpp）:
+
+- **役割**: `sine` を購読して値を表示する。構造はC++版のlistenerと同じで、メッセージ型が `Float64` になっただけ。
+- **`%.3f`**: `printf` 形式で小数点以下3桁。`msg.data` は `double` なので、`%f` 系がそのまま使える（`%s` と違って `c_str()` のような変換は要らない）。Python版の `:.3f` と同じ意味。
+- **つまずきやすい点**: `%d`（整数用）に `double` を渡すと、コンパイラが警告を出すか、出力が不正な値になる。書式指定子と引数の型を合わせる。
+- **観察ポイント**: PythonのsineノードとC++のsineノードを混ぜても、値と周期が変わらないこと。
+
+C++版の4ファイルに共通する要点は、「Node継承クラスのコンストラクタで通信の口を作り、`shared_ptr` のメンバに保持し、`main` で `make_shared` してから `spin` に渡す」という形。Python版との対応は、`create_*` の名前と引数、コールバックの渡し方（ラムダ）、`spin` の役割が同じで、言語の違いは主に型の明示・所有権（`shared_ptr`）・書式指定の3点に出る。
 
 ### 4-2. `CMakeLists.txt` に登録する
 

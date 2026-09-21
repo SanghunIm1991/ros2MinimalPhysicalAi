@@ -8,7 +8,7 @@
 - 言語: **Python・C++の両方**
 - 使う標準インターフェース: `example_interfaces/action/Fibonacci`（WSLの `/opt/ros/jazzy/share/example_interfaces/action/Fibonacci.action` で内容を確認済み）
 
-> **進め方**: 今までより長いので、まず**Pythonを完成**させ、動作を理解してからC++に進む。詰まったら「サンプルコード」で答え合わせをする。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
+> **進め方**: 今までより長いので、まず**Pythonを完成**させ、動作を理解してからC++に進む。サンプルコードと解説は隠さずに載せてある。まず仕様（§2）から自分で書き、答え合わせや、コードの読み解きにサンプルと解説を使う。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
 ## 0. 学習目標と完了条件
 
@@ -18,6 +18,11 @@
 4. サービスとアクションの使い分けを説明できる。
 
 ## 1. 全体像
+
+![goal送信、受理、feedbackの繰り返し、resultの流れ。途中でcancelするとCANCELEDになる](img/phase3_5_action_seq.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 sequenceDiagram
@@ -32,7 +37,14 @@ sequenceDiagram
     Note over C,S: 途中でクライアントが cancel を送ると、サーバは処理を止めて CANCELED を返す
 ```
 
+</details>
+
 ゴールの状態遷移:
+
+![アクションのゴールの状態遷移。ACCEPTED→EXECUTINGから、SUCCEEDED・CANCELED・ABORTEDのいずれかで終わる](img/phase3_5_goal_states.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 stateDiagram-v2
@@ -46,6 +58,8 @@ stateDiagram-v2
     CANCELED --> [*]
     ABORTED --> [*]
 ```
+
+</details>
 
 インターフェースを確認する:
 
@@ -113,8 +127,7 @@ find_package(rclcpp_action REQUIRED)
 
 > **重要（中断の仕組み）**: サーバの実行処理が `time.sleep` で待っている間、通常の単一スレッドのexecutorでは、他のコールバック（中断要求の受付）が動けない。そこで、`MultiThreadedExecutor` と `ReentrantCallbackGroup` を使い、実行処理と並行して中断要求を処理できるようにする。C++版では代わりに、実行処理を**別スレッド**で行う。
 
-<details>
-<summary>サンプルコード（答え合わせ用）</summary>
+### サンプルコードと解説（Python）
 
 ファイル: `ws/src/learn_py/learn_py/fibonacci_server.py`
 
@@ -184,6 +197,26 @@ def main(args=None):
         node.destroy_node()
         rclpy.try_shutdown()
 ```
+
+**解説: `fibonacci_server.py`**
+
+役割は「ゴールを受け、1秒ごとに数列を伸ばしながら feedback を返し、最後に result を返す」こと。流れは、(1) ゴールが届くと `on_goal` が受理か拒否かを決める → (2) 受理されたら（ACCEPTED）`execute` が呼ばれて実行に入る（EXECUTING）→ (3) ループの各周回で中断要求を確認し、なければ項を足して feedback を出し、1秒待つ → (4) 終われば `succeed()`（SUCCEEDED）、中断要求があれば `canceled()`（CANCELED）、のどちらかで終わる。§1の状態遷移図のうち、サーバ側が担当するのがこの部分。
+
+- **import とクラス**: `ActionServer`・`GoalResponse`・`CancelResponse` は `rclpy.action` から取る。`ReentrantCallbackGroup` と `MultiThreadedExecutor` は、後述の「中断を受け付ける仕組み」のために使う。
+- **`ActionServer(...)` の引数**: 第1〜3引数は「ノード、アクション型、アクション名」。`execute_callback` は受理されたゴールを実際に処理する関数、`goal_callback` は届いたゴールを受けるか決める関数、`cancel_callback` は中断要求を受けるか決める関数。`goal_callback` と `cancel_callback` は省略もでき、省略した場合の既定は「ゴールは受理、中断要求は**拒否**」（中断を受け付けたいなら `cancel_callback` で受理を返す必要がある。実機での確認は未実施）。本手順書では動作を見るために明示している。
+- **`on_goal`**: 引数はゴールの中身（`goal_request.order`）。`GoalResponse.REJECT` を返すと、クライアントには「拒否された」が届き、`execute` は呼ばれない。仕様の「`order < 1` は拒否」はここで実現している。
+- **`on_cancel`**: 中断要求が来たときに呼ばれ、`CancelResponse.ACCEPT` を返すとゴールが CANCELING に入り、`goal_handle.is_cancel_requested` が `True` になる。`REJECT` を返せば、中断できないゴールとして扱える。
+- **`execute`**: `goal_handle.request` がゴール本体。`Fibonacci.Feedback()` と `Fibonacci.Result()` は、送るメッセージの入れ物を先に作っておいて使い回している。ループ `range(1, order)` は `order - 1` 回まわり、初期の2項と合わせて `order + 1` 項になる（仕様どおり）。`sequence[i] + sequence[i - 1]` が「直前2項の和」。
+- **`publish_feedback`**: 呼んだ瞬間に feedback がクライアントへ飛ぶ。ループの先頭で1回目を出してから `time.sleep(1.0)` するので、最初の feedback はほぼ即座に、以降は約1秒間隔で届く。
+- **`succeed()` と `canceled()`**: どちらも「ゴールの最終状態を宣言する」呼び出しで、**戻り値として結果を返すのとは別**。宣言のあとに `return result` で結果本体をクライアントへ渡す。宣言を忘れると、`execute` が戻ったときに警告が出てゴールは ABORTED 扱いになる（実機での確認は未実施）。`canceled()` は中断要求を受け付けたあと（CANCELING のとき）に呼ぶ、という順序も守る。
+- **なぜ `MultiThreadedExecutor` と `ReentrantCallbackGroup` が要るか**: `execute` は `time.sleep` を含む長い処理で、その間ずっとexecutorのスレッドを占有する。単一スレッドのexecutorだと、その間に届いた中断要求（`on_cancel`）は順番待ちになり、`execute` が終わるまで処理されない。複数スレッドのexecutorに変えたうえで、`ReentrantCallbackGroup`（同じグループのコールバックを同時に動かしてよい）にしておくと、`execute` の実行中に別スレッドで `on_cancel` が動ける。課題3はこの効果を外して確認するもの。同じ理由で、課題4のように2つのゴールを並行処理できるのも、この2つのおかげ。
+- **`main`**: `rclpy.spin(node, executor=executor)` にexecutorを渡すのが要点。`ExternalShutdownException` は外部からシャットダウンされたときの例外で、`Ctrl+C` の `KeyboardInterrupt` と一緒に握りつぶして静かに終わらせている。
+
+つまずきやすい点と観察ポイント:
+
+- 中断要求はループの**先頭でしか**確認していないため、クライアントの cancel から反応までに最大1秒ほど遅れる。ログの `cancel requested`（`on_cancel`）と `goal canceled`（`execute`）の時刻差に注目するとよい。
+- 最後の周回の `sleep` 中に中断要求が届いた場合、ループを抜けたあとに確認がないので、そのまま `succeed()` に進む。学習用のコードでは許容しているが、厳密には `succeed()` の前にも `is_cancel_requested` を確認した方がよい（発展課題）。
+- `feedback.sequence = sequence` は同じリストを指しているだけで、コピーではない。この例では毎回送信のたびにシリアライズされるので問題ないが、別スレッドで書き換えるコードを書く場合は注意する。
 
 ファイル: `ws/src/learn_py/learn_py/fibonacci_client.py`
 
@@ -264,7 +297,26 @@ def main(args=None):
         rclpy.try_shutdown()
 ```
 
-</details>
+**解説: `fibonacci_client.py`**
+
+役割は「ゴールを送り、feedback をログに出し、結果を受けて終わる。設定があれば途中で中断要求も送る」こと。クライアントは、サーバと違って**待ち受ける処理が非同期の連鎖**になる。流れは、`send_goal`（送信）→ `on_goal_response`（受理/拒否の返事）→ `on_feedback`（何度も）→ `on_result`（最終結果）、と、それぞれ前段の Future やコールバックが完了したときに次が動く。
+
+- **`STATUS_NAMES`**: 結果の `response.status` は `GoalStatus` の整数値。そのままだと読みにくいので、名前に直す辞書を用意している。§1の状態遷移図の終端3つ（SUCCEEDED / CANCELED / ABORTED）に対応する。
+- **パラメータ**: `declare_parameter` で `order` と `cancel_after` を宣言し、`--ros-args -p order:=6` のように起動時に渡せるようにしている（3-3の復習）。
+- **`self.done`**: 終了判定用のフラグ。`main` のループがこれを見て抜ける。ゴール拒否・サーバ不在・結果受信、どのケースでも `True` にしないと終わらなくなる（§8参照）。
+- **`send_goal`**: `wait_for_server(timeout_sec=5.0)` はサーバが見つかるまで最大5秒待つ（見つからなければ `False`）。`send_goal_async(goal, feedback_callback=...)` はゴールを送るとすぐ戻り、返ってくる `Future`（後で結果が入る入れ物）を返す。`add_done_callback` で「返事が来たらこの関数を呼ぶ」と登録している。この時点では返事はまだ来ていない。
+- **`on_goal_response`**: `future.result()` が `goal_handle`（ゴールを識別・操作するための取っ手）。`goal_handle.accepted` が `False` なら拒否されたということ。受理なら、`goal_handle.get_result_async()` で「最終結果を取る Future」を得て、これにも完了コールバック（`on_result`）をつなぐ。ここで結果を**待ち始める**が、実際の結果はゴール完了後に届く。
+- **`cancel_after` の扱い**: `create_timer(cancel_after, ...)` は周期タイマなので、コールバック内で `self.cancel_timer.cancel()` を呼んで1回で止めている。中断は `goal_handle.cancel_goal_async()` で要求する（これも Future を返すが、この例では結果を待たない）。中断要求が受け入れられると、サーバが `canceled()` を宣言し、`on_result` に `CANCELED` の結果が届く。
+- **`on_feedback`**: 引数は feedback メッセージそのものでなく、包みの `feedback_msg`。中身は `.feedback` で取り出す。
+- **`on_result`**: `response.status` が最終状態、`response.result` が結果メッセージ。
+- **`main` とスピン**: `send_goal` を呼んだあと、`rclpy.spin_once(node, timeout_sec=0.1)` を `done` になるまで繰り返す。`Future` の完了コールバックやタイマは、**スピンして初めて**動く（スピンしないと何も起きない）。`spin` ではなく `spin_once` のループにしたのは、`done` フラグで自分の好きなタイミングで抜けるため。
+- **サーバ側との違い**: クライアントは単一スレッドでよい。コールバックはどれも一瞬で終わり、待つ処理を持たないから。
+
+観察ポイントとつまずき:
+
+- `-p order:=10 -p cancel_after:=3.0` で、feedback が3〜4回出たあとに `send cancel request` → サーバの `cancel requested` → `result [CANCELED]: [...]` の順に並ぶ（結果の数列は中断時点までのもの）。
+- 中断後も `on_result` は必ず呼ばれる。中断は「結果が来なくなる」ではなく「結果のstatusが CANCELED になる」こと。
+- サーバを起動していないと、5秒待って `not available` のエラーで終わる。先にサーバを起動しているか確認する。
 
 `setup.py` の `entry_points` に2行を足し、再ビルドする。
 
@@ -299,8 +351,7 @@ source install/setup.bash
 
 Pythonとの違いの見どころ: Pythonは `Future` の完了コールバックをつなぐが、C++は送信時にまとめて `options` に3つのコールバックを渡す。
 
-<details>
-<summary>サンプルコード（答え合わせ用）</summary>
+### サンプルコードと解説（C++）
 
 ファイル: `ws/src/learn_cpp/src/fibonacci_server.cpp`
 
@@ -381,6 +432,41 @@ int main(int argc, char ** argv)
   return 0;
 }
 ```
+
+**解説: `fibonacci_server.cpp`**
+
+Python版と同じ仕事をする。対応関係は次のとおり。
+
+| Python版 | C++版 |
+|---|---|
+| `on_goal` | `create_server` の第3引数のラムダ（ゴール処理） |
+| `on_cancel` | 第4引数のラムダ（cancel処理） |
+| `execute`（executorが呼ぶ） | 第5引数のラムダ（accepted処理）が起こす**別スレッド**で `execute` を呼ぶ |
+| `succeed()` / `canceled()` して `return result` | `succeed(result)` / `canceled(result)` に結果を渡す（戻り値はvoid） |
+| `is_cancel_requested` | `is_canceling()` |
+| `time.sleep(1.0)` | `rclcpp::Rate rate(1)` と `rate.sleep()` |
+| `MultiThreadedExecutor` | 不要（実行を別スレッドにするため） |
+
+- **型の別名**: `Fibonacci` はアクション型、`GoalHandle` は `ServerGoalHandle<Fibonacci>`（サーバ側でゴールを操作する取っ手）。`example_interfaces/action/fibonacci.hpp` のように、ヘッダは型名を小文字にしたファイル名になる。
+- **`create_server<Fibonacci>(this, "fibonacci", A, B, C)`**: 第1〜2引数はノードとアクション名。A/B/C は3つのコールバックで、順に「ゴールを受けるか」「中断を受けるか」「受理されたゴールをどう実行するか」。Pythonと違い、C++では**3つとも必須**で、実行処理（C）も自分で起動する。
+- **ゴール処理（A）**: 引数はゴールのUUIDとゴール本体（`goal->order`）。UUIDは使わないので名前を付けずに受けている。返り値の `ACCEPT_AND_EXECUTE` は「受理して、すぐ実行に進む」（`REJECT` は拒否）。実行を後回しにする `ACCEPT_AND_DEFER` という選択肢もあるが、ここでは使わない。
+- **cancel処理（B）**: `CancelResponse::ACCEPT` を返すと、ゴールが CANCELING に移り、`is_canceling()` が真になる。
+- **accepted処理（C）と `std::thread`**: ここが最重要。受理後に呼ばれるこのコールバックは、executorのスレッドで動く。もしここで直接 `execute` を呼ぶと、1秒ごとの待ちを含む処理が終わるまでexecutorが塞がり、中断要求（B）も処理されない。そこで**新しいスレッドを作って `execute` を任せ、すぐ戻る**。`goal_handle` は `shared_ptr` なので、値でキャプチャしておけばスレッドが生きている間は破棄されない。`detach()` はスレッドを切り離して自走させる指定。
+- **`execute`**: ロジックはPython版と同じ。違いを挙げる。
+  - feedback と result は `make_shared` で作る。`auto & sequence = feedback->sequence;` は feedback 内の配列への参照で、`sequence = {0, 1};` で初期化し、`push_back` で伸ばす。`publish_feedback(feedback)` を呼ぶたびに、その時点の内容が送られる。
+  - ループ条件の `rclcpp::ok()` は、`Ctrl+C` などでシャットダウンされたらループを抜けるための保険。
+  - `canceled(result)` / `succeed(result)` は**状態の宣言と結果の受け渡しを1回で**行う。呼んだあとは `return`（cancel側）で関数を終える。
+  - `rate.sleep()` は、前回の `sleep` からの経過を考慮して周期を保つ待ち方。`time.sleep(1.0)` と違い、処理時間が長引いても間隔がずれにくい。
+- **`main`**: 普通の `rclcpp::spin`（単一スレッド）でよい。長い処理は別スレッドにあるので、executorは常に空いていて、中断要求を即座に処理できる。
+- **メンバ `server_`**: サーバを保持する `SharedPtr`。保持しないと、コンストラクタを出た時点で破棄され、サーバが消える。
+
+つまずきやすい点:
+
+- `detach` したスレッドはノードの破棄を待たない。処理中に `Ctrl+C` するとスレッドが残ったまま終了に入り、エラーが出ることがある（§8）。本格的なコードでは、スレッドを保持して終了時に `join` する、または専用のexecutor/コールバックグループで処理する。
+- Python版と同様、中断の確認は周回の先頭のみ。最後の周回中に届いた中断要求は見落とされ、`succeed` に進みうる。
+- ラムダの `[this]` は「ノード自身へのポインタを持ち込む」指定。メンバ関数（`get_logger()` など）をラムダ内で使うために必要。
+
+観察ポイント: Python版サーバと比べて、feedback の間隔や cancel 時の反応（`cancel requested` から `goal canceled` まで）がほぼ同じになることを確認する。同じ結果が出るなら、片方の言語で書いたクライアントからもう片方のサーバを使える（§6の組み合わせ表）。
 
 ファイル: `ws/src/learn_cpp/src/fibonacci_client.cpp`
 
@@ -489,7 +575,33 @@ int main(int argc, char ** argv)
 }
 ```
 
-</details>
+**解説: `fibonacci_client.cpp`**
+
+Python版クライアントと同じ役割。構造の違いは、Pythonが `Future` に完了コールバックを1つずつつなぐのに対し、C++は**送信時に `SendGoalOptions` へ3つのコールバックをまとめて設定**する点。対応は次のとおり。
+
+| Python版 | C++版（`options` のメンバ） |
+|---|---|
+| `future.add_done_callback(self.on_goal_response)` | `goal_response_callback` |
+| `feedback_callback=self.on_feedback` | `feedback_callback` |
+| `get_result_async().add_done_callback(self.on_result)` | `result_callback` |
+| `self.done = True` で `main` のループを抜ける | `rclcpp::shutdown()` で `spin` を終わらせる |
+
+- **`to_text`**: 数列を `[0, 1, 1]` の形の文字列にする補助関数。`RCLCPP_INFO` の書式（`%s`）にはそのまま配列を渡せないため。`.c_str()` で `const char *` に直して渡している。
+- **コンストラクタ**: `declare_parameter<int64_t>("order", 5)` で宣言と同時に値を受け取る（Pythonの `declare_parameter` → `get_parameter` の2手順を1回にした形）。ROSの整数パラメータは64ビットなので `int64_t`。ゴールに入れるときに `int32_t` へ `static_cast` している。
+- **`send_goal`**: `wait_for_action_server(5s)` は、サーバが見つかるまで最大5秒ブロックする（`5s` は `chrono_literals` の書き方）。見つからなければ `shutdown()` して終える。ここはスピン前に呼んでいるので、待っている間は他のコールバックが動かないが、まだ何も登録していないので問題ない。
+- **`goal_response_callback`**: 引数は `GoalHandle::SharedPtr`。**拒否されたときは空（null）** で渡るので、`if (!goal_handle)` で判定する。受理なら `goal_handle_` に保存して、あとの中断で使う。`cancel_after_ > 0.0` ならタイマを作り、そのコールバックで1回だけ `async_cancel_goal(goal_handle_)` を呼ぶ。`create_wall_timer` は周期タイマなので、Python版と同じく `cancel()` で自分を止める。
+- **`feedback_callback`**: 第1引数（ゴールの取っ手）は使わないので名前なしで受け、第2引数の feedback から `sequence` を取る。
+- **`result_callback`**: `WrappedResult` は「最終状態 `code` と結果本体 `result`」のセット。`switch` で `code` を名前にして表示する。最後に `rclcpp::shutdown()` を呼ぶことで、`main` の `spin` が戻り、プロセスが終わる（これを忘れると「終わらない」症状になる。§8）。
+- **`async_send_goal(goal, options)`**: 送信して戻る。返り値の `future` は使っていないが、結果は `options` のコールバックで受けられるので問題ない。
+- **`main`**: `send_goal()` のあとで `rclcpp::spin(node)`。スピンして初めて、返事・feedback・結果・タイマのコールバックが動く。
+
+つまずきやすい点:
+
+- コールバックの引数の型は、ROSのバージョンで変わっている。Jazzyの型は本文の表のとおり。ネット上の古い記事にある `std::shared_future<...>` を受ける形は、そのまま書くとエラーになる（§8）。
+- 各コールバックはラムダで、`[this]` を取り込んでいる。ノードの破棄後に動くと危ないが、この例ではノードが `spin` の間ずっと生きているので問題ない。
+- クライアントも単一スレッドのexecutorでよい。待つ処理（`sleep`）がないため。
+
+観察ポイント: `cancel_after:=3.0` でPython版クライアントと同じログの並びになること（feedback → `send cancel request` → `result [CANCELED]`）を確認する。
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` に名前を足す（これまでの分は残す）。
 

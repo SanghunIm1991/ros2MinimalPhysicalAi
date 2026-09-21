@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 937 548" width="937" height="548" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: ros2 param setで値を変えると、on_set_parametersコールバックが検証して、妥当なら反映・不正なら拒否する">
+<title>図: ros2 param setで値を変えると、on_set_parametersコールバックが検証して、妥当なら反映・不正なら拒否する</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="937" height="548" fill="#ffffff"/>
+<g transform="translate(-11.2,12.0)" fill="#1a1a1a">
+<rect x="50" y="198" width="800" height="284" fill="none" stroke="#777"/>
+<rect x="50" y="198" width="42.0" height="20" fill="#e6e6e6" stroke="#777"/>
+<text x="58" y="213" font-weight="bold">alt</text>
+<text x="100.0" y="213" fill="#333">[妥当（period &gt; 0）]</text>
+<line x1="50" y1="372" x2="850" y2="372" stroke="#777" stroke-dasharray="6 4"/>
+<text x="58" y="387" fill="#333">[不正（period &lt;= 0）]</text>
+<line x1="790" y1="58" x2="790" y2="512" stroke="#aaa" stroke-dasharray="5 4"/>
+<line x1="440" y1="58" x2="440" y2="512" stroke="#aaa" stroke-dasharray="5 4"/>
+<line x1="110" y1="58" x2="110" y2="512" stroke="#aaa" stroke-dasharray="5 4"/>
+<path d="M110.0,120.0 L440.0,120.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M440.0,164.0 L790.0,164.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M790.0,242.0 L440.0,242.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<path d="M440,280 L470,280 L470,298 L441,298" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M440.0,342.0 L110.0,342.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<path d="M790.0,416.0 L440.0,416.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<path d="M440.0,460.0 L110.0,460.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<rect x="35.2" y="12.0" width="149.5" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="110.0" y="35.0" text-anchor="middle">ros2 param set</text>
+<rect x="405.0" y="12.0" width="70.0" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="440.0" y="35.0" text-anchor="middle">ノード</text>
+<rect x="655.9" y="12.0" width="268.2" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="790.0" y="35.0" text-anchor="middle">on_set_parameters コールバック</text>
+<text x="275.0" y="107.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">period を 0.5 に</text>
+<text x="615.0" y="151.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">変更案を渡す</text>
+<text x="615.0" y="229.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">successful=True</text>
+<text x="480.0" y="294.0" text-anchor="start" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">値を反映（タイマーを作り直す）</text>
+<text x="275.0" y="329.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Set parameter successful</text>
+<text x="615.0" y="403.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">successful=False, reason</text>
+<text x="275.0" y="447.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Setting parameter failed: reason</text>
+</g>
+</svg>

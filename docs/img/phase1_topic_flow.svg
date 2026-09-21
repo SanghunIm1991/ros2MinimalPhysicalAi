@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1023 124" width="1023" height="124" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: turtle_teleop_key が /turtle1/cmd_vel で turtlesim_node に指令を送り、/turtle1/pose で状態が返る">
+<title>図: turtle_teleop_key が /turtle1/cmd_vel で turtlesim_node に指令を送り、/turtle1/pose で状態が返る</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="1023" height="124" fill="#ffffff"/>
+<g transform="translate(1.8,-8.0)" fill="#1a1a1a">
+<path d="M197.8,80.0 L445.2,80.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M594.8,80.0 L802.6,80.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="22.2" y="52.0" width="175.6" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="110.0" y="75.0" text-anchor="middle">turtle_teleop_key</text>
+<text x="110.0" y="95.0" text-anchor="middle">(ノード)</text>
+<rect x="445.2" y="52.0" width="149.5" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="520.0" y="75.0" text-anchor="middle">turtlesim_node</text>
+<text x="520.0" y="95.0" text-anchor="middle">(ノード)</text>
+<rect x="802.6" y="62.0" width="194.9" height="36.0" rx="8" fill="#f1f1f1" stroke="#777777" stroke-width="1.5"/>
+<text x="900.0" y="85.0" text-anchor="middle">ros2 topic echo など</text>
+<text x="321.5" y="47.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">トピック /turtle1/cmd_vel</text>
+<text x="321.5" y="67.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">(Twist: 指令)</text>
+<text x="698.7" y="47.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">トピック /turtle1/pose</text>
+<text x="698.7" y="67.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">(Pose: 状態)</text>
+</g>
+</svg>

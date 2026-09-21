@@ -74,6 +74,11 @@ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 
 まず、これから観察する対象を図で押さえる。
 
+![turtle_teleop_key が /turtle1/cmd_vel で turtlesim_node に指令を送り、/turtle1/pose で状態が返る](img/phase1_topic_flow.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
+
 ```mermaid
 flowchart LR
     KEY["turtle_teleop_key<br/>(ノード)"]
@@ -82,7 +87,14 @@ flowchart LR
     TS -- "トピック /turtle1/pose<br/>(Pose: 状態)" --> OBS["ros2 topic echo など"]
 ```
 
+</details>
+
 4つの通信の違い:
+
+![トピック・サービス・パラメータ・アクションの4つの通信方式](img/phase1_four_concepts.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 flowchart LR
@@ -102,6 +114,8 @@ flowchart LR
         S4 -- "result（最終結果）" --> C4
     end
 ```
+
+</details>
 
 > **車両シミュレーションとの対応**（フェーズ5への伏線）: `Twist` は「制御ノード → プラント」の指令、`Pose` は「プラント → 制御ノード」の状態に相当する。turtlesimは、私たちが後で作るプラントノードの見本になる。
 

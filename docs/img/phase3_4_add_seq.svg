@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 751 398" width="751" height="398" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: add_clientが要求を送り、add_serverが足し算して応答を返す">
+<title>図: add_clientが要求を送り、add_serverが足し算して応答を返す</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="751" height="398" fill="#ffffff"/>
+<g transform="translate(-48.6,12.0)" fill="#1a1a1a">
+<line x1="640" y1="58" x2="640" y2="362" stroke="#aaa" stroke-dasharray="5 4"/>
+<line x1="130" y1="58" x2="130" y2="362" stroke="#aaa" stroke-dasharray="5 4"/>
+<path d="M130,114 L160,114 L160,132 L131,132" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M130.0,176.0 L640.0,176.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M640,214 L670,214 L670,232 L641,232" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M640.0,276.0 L130.0,276.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<path d="M130,314 L160,314 L160,332 L131,332" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="72.6" y="12.0" width="114.8" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="130.0" y="35.0" text-anchor="middle">add_client</text>
+<rect x="582.6" y="12.0" width="114.8" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="640.0" y="35.0" text-anchor="middle">add_server</text>
+<text x="170.0" y="128.0" text-anchor="start" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">wait_for_service（サーバが居るか待つ）</text>
+<text x="385.0" y="163.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">要求 Request（a=3, b=4）</text>
+<text x="680.0" y="228.0" text-anchor="start" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">sum = a + b</text>
+<text x="385.0" y="263.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">応答 Response（sum=7）</text>
+<text x="170.0" y="328.0" text-anchor="start" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">結果をログに出して終了</text>
+</g>
+</svg>

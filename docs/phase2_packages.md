@@ -20,6 +20,11 @@
 
 ### 1-1. ワークスペースの構成
 
+![ワークスペースの構成。src/だけが自分で書くもの（Git管理）で、build/・install/・log/は生成物](img/phase2_ws_tree.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
+
 ```mermaid
 flowchart TB
     WS["ws/ （ワークスペース）"]
@@ -31,9 +36,16 @@ flowchart TB
     SRC --> CPP["learn_cpp/ （ament_cmake）"]
 ```
 
+</details>
+
 `build/`・`install/`・`log/` は `.gitignore` に登録済み（リポジトリ直下の `.gitignore`）。`src/` だけがGit管理の対象になる。
 
 ### 1-2. ビルドと実行の流れ
+
+![ソースからビルド、環境変数への登録、ノード起動までの流れ](img/phase2_build_flow.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 flowchart LR
@@ -42,6 +54,8 @@ flowchart LR
     C -- "source install/setup.bash" --> D["環境変数に登録<br/>（AMENT_PREFIX_PATH等）"]
     D -- "ros2 run パッケージ 実行ファイル" --> E["ノードが起動"]
 ```
+
+</details>
 
 `source install/setup.bash` を忘れると、`ros2 run` が「パッケージが見つからない」と言う。ビルドし直した後だけでなく、**新しいターミナルを開くたびに必要**（`~/.bashrc` には `/opt/ros/jazzy` のsourceだけが入っているため）。
 

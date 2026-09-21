@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 765 449" width="765" height="449" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: goal送信、受理、feedbackの繰り返し、resultの流れ。途中でcancelするとCANCELEDになる">
+<title>図: goal送信、受理、feedbackの繰り返し、resultの流れ。途中でcancelするとCANCELEDになる</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="765" height="449" fill="#ffffff"/>
+<g transform="translate(-42.6,12.0)" fill="#1a1a1a">
+<rect x="90" y="198" width="670" height="66" fill="none" stroke="#777"/>
+<rect x="90" y="198" width="50.7" height="20" fill="#e6e6e6" stroke="#777"/>
+<text x="98" y="213" font-weight="bold">loop</text>
+<text x="148.7" y="213" fill="#333">[1秒ごとに]</text>
+<line x1="700" y1="58" x2="700" y2="413.0" stroke="#aaa" stroke-dasharray="5 4"/>
+<line x1="150" y1="58" x2="150" y2="413.0" stroke="#aaa" stroke-dasharray="5 4"/>
+<path d="M150.0,120.0 L700.0,120.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M700.0,164.0 L150.0,164.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<path d="M700.0,242.0 L150.0,242.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<path d="M700.0,308.0 L150.0,308.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<rect x="130.0" y="329.0" width="590.0" height="54" fill="#fff8d6" stroke="#b8a04a"/>
+<text x="425.0" y="351.0" text-anchor="middle">途中でクライアントが cancel を送ると、</text>
+<text x="425.0" y="371.0" text-anchor="middle">サーバは処理を止めて CANCELED を返す</text>
+<rect x="66.6" y="12.0" width="166.9" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="150.0" y="35.0" text-anchor="middle">fibonacci_client</text>
+<rect x="616.6" y="12.0" width="166.9" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="700.0" y="35.0" text-anchor="middle">fibonacci_server</text>
+<text x="425.0" y="107.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">goal（order=5）を送る</text>
+<text x="425.0" y="151.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">受理（accepted）</text>
+<text x="425.0" y="229.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">feedback（途中までの数列）</text>
+<text x="425.0" y="295.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">result（完成した数列）と status=SUCCEEDED</text>
+</g>
+</svg>

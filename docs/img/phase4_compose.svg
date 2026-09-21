@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 934 214" width="934" height="214" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: compose.launch.pyが、GroupActionでnamespaceをdemoにしてpubsub.launch.pyをincludeし、param.launch.pyもincludeする">
+<title>図: compose.launch.pyが、GroupActionでnamespaceをdemoにしてpubsub.launch.pyをincludeし、param.launch.pyもincludeする</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="934" height="214" fill="#ffffff"/>
+<g transform="translate(1.8,2.0)" fill="#1a1a1a">
+<path d="M197.8,110.0 L250.0,110.0 L250.0,50.0 L336.6,50.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M197.8,110.0 L250.0,110.0 L250.0,170.0 L296.5,170.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M503.4,50.0 L652.2,50.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="22.2" y="92.0" width="175.6" height="36.0" rx="8" fill="#fff4dc" stroke="#b07d00" stroke-width="1.5"/>
+<text x="110.0" y="115.0" text-anchor="middle">compose.launch.py</text>
+<rect x="336.6" y="22.0" width="166.9" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="420.0" y="45.0" text-anchor="middle">GroupAction</text>
+<text x="420.0" y="65.0" text-anchor="middle">namespace = demo</text>
+<rect x="652.2" y="32.0" width="255.6" height="36.0" rx="8" fill="#fff4dc" stroke="#b07d00" stroke-width="1.5"/>
+<text x="780.0" y="55.0" text-anchor="middle">pubsub.launch.py（include）</text>
+<rect x="296.5" y="152.0" width="247.0" height="36.0" rx="8" fill="#fff4dc" stroke="#b07d00" stroke-width="1.5"/>
+<text x="420.0" y="175.0" text-anchor="middle">param.launch.py（include）</text>
+</g>
+</svg>

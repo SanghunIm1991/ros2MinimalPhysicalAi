@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1005 136" width="1005" height="136" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: ros2 service callがreset_counterでcounter_nodeを呼び、counter_nodeは/counterを1秒ごとに出す">
+<title>図: ros2 service callがreset_counterでcounter_nodeを呼び、counter_nodeは/counterを1秒ごとに出す</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="1005" height="136" fill="#ffffff"/>
+<g transform="translate(1.8,-8.0)" fill="#1a1a1a">
+<path d="M197.8,68.0 L413.9,68.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M413.9,92.0 L197.8,92.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M546.1,80.0 L820.9,80.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="22.2" y="48.0" width="175.6" height="64.0" rx="8" fill="#f1f1f1" stroke="#777777" stroke-width="1.5"/>
+<text x="110.0" y="75.0" text-anchor="middle">ros2 service call</text>
+<text x="110.0" y="95.0" text-anchor="middle">/reset_counter</text>
+<rect x="413.9" y="48.0" width="132.2" height="64.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="480.0" y="85.0" text-anchor="middle">counter_node</text>
+<rect x="820.9" y="48.0" width="158.2" height="64.0" rx="8" fill="#f1f1f1" stroke="#777777" stroke-width="1.5"/>
+<text x="900.0" y="85.0" text-anchor="middle">ros2 topic echo</text>
+<text x="305.9" y="55.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Trigger要求（中身なし）</text>
+<text x="305.9" y="115.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">success, message</text>
+<text x="683.5" y="47.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">/counter（Int32）</text>
+<text x="683.5" y="67.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">を1秒ごと</text>
+</g>
+</svg>

@@ -7,7 +7,7 @@
 - 所要目安: 1コマ
 - 言語: **Python・C++の両方**
 
-> **進め方**: 仕様を見て自分で書き、詰まったら「サンプルコード」で答え合わせをする。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
+> **進め方**: 仕様を見て自分で書き、詰まったら、あるいは書き終えたら、「サンプルコードと解説」で答え合わせと読み解きをする（サンプルは隠していない。先に見ると学習効果が下がるので、まず自分で書くことを勧める）。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
 ## 0. 学習目標と完了条件
 
@@ -18,6 +18,11 @@
 
 ## 1. 全体像
 
+![パラメータの値は、コードの既定値・起動時の指定・実行中の変更の3経路でノードに入る](img/phase3_3_sources.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
+
 ```mermaid
 flowchart LR
     D["コードの既定値<br/>declare_parameter"] --> N["ノード<br/>param_talker"]
@@ -26,9 +31,16 @@ flowchart LR
     N --> T["トピック /param_chatter"]
 ```
 
+</details>
+
 値が決まる優先順位（後のものが勝つ）: **コードの既定値 < 起動時の指定（`-p` や YAML） < 実行中の `ros2 param set`**。
 
 実行中の変更の流れ:
+
+![ros2 param setで値を変えると、on_set_parametersコールバックが検証して、妥当なら反映・不正なら拒否する](img/phase3_3_validate.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 sequenceDiagram
@@ -46,6 +58,8 @@ sequenceDiagram
         N-->>U: Setting parameter failed: reason
     end
 ```
+
+</details>
 
 > 注: 上の図は流れの説明用。サンプルコードは簡単のため、コールバック内で状態を書き換えている（同じ要求の別パラメータが後で拒否された場合に、状態が食い違う恐れがある）。Jazzyには、検証後に反映するための `add_post_set_parameters_callback` があるので、発展課題として調べるとよい。
 
@@ -73,8 +87,7 @@ sequenceDiagram
 | 変更の検証・反映 | `self.add_on_set_parameters_callback(コールバック)`、戻り値は `rcl_interfaces.msg.SetParametersResult` |
 | タイマーの作り直し | `self.timer.cancel()` してから `self.create_timer(...)` |
 
-<details>
-<summary>サンプルコード（答え合わせ用）</summary>
+#### サンプルコードと解説（Python版）
 
 ファイル: `ws/src/learn_py/learn_py/param_talker.py`
 
@@ -132,7 +145,26 @@ def main(args=None):
         rclpy.try_shutdown()
 ```
 
-</details>
+解説（param_talker.py）:
+
+- **役割と流れ**: フェーズ3-1のtalkerに、2つのパラメータ（`message`、`period`）を足したもの。起動時に値を決め、実行中に `ros2 param set` で変わったら、その都度コールバックが検証して反映する。`main` の部分（`init` → `spin` → 後片付け）は3-1と同じなので省略する。
+- **宣言と取得（`__init__` の前半）**:
+  - `declare_parameter('message', 'hello')` は「この名前のパラメータを持つ」と登録し、既定値を与える。**宣言しないと、`-p` や `ros2 param set` で渡しても受け付けられない**（既定の設定では、未宣言のパラメータは設定できない）。
+  - パラメータの型は、既定値の型で決まる。`'hello'` なら文字列、`1.0` なら実数（double）。これが「`period:=2` はエラー」の原因（`2` は整数として扱われ、型が合わない）。
+  - `get_parameter('message').value` で現在の値を取り出す。宣言の時点で、起動時の指定（`-p` やYAML）があれば、既定値ではなくそちらの値が入っている。この「上書きされた値」を取り出すのが、この2行の目的。
+- **タイマーとコールバックの登録**: 取得した `self.period` を使ってタイマーを作る。最後に `add_on_set_parameters_callback(self.on_params)` で、「パラメータを変更する要求が来たら `on_params` を呼んでほしい」と登録する。登録の順序は、タイマー等を作ってからにしてある（コールバックの中で `self.timer` を使うため）。
+- **`on_timer`**: `self.message` を送るだけ。パラメータを毎回 `get_parameter` で読み直す書き方もあるが、ここでは属性に保存しておき、変更コールバックで更新する方式にしている。
+- **`on_params(self, params)`**:
+  - 引数 `params` は、今回の要求で変更されようとしている `Parameter` のリスト（`p.name`、`p.value` で見る）。複数のパラメータが**1回の要求でまとめて**来ることがあるため、リストを2回ループする。
+  - 1回目のループは**検証だけ**。`period` が0以下なら、`SetParametersResult(successful=False, reason=...)` を返して拒否する。拒否すると値は変わらず、`ros2 param set` 側に `reason` の文字列が表示される。
+  - 2回目のループで**反映**する。`message` は属性を更新するだけ。`period` は、既存のタイマーを `cancel()` してから、新しい周期で `create_timer` し直す（タイマーの周期は、作成後に変更できないため）。
+  - 最後に `successful=True` を返して受け入れる。
+  - なぜ2回に分けるか: 1つのループで検証と反映を同時にやると、「先頭の `message` は反映したが、後ろの `period` が不正で拒否した」という中途半端な状態になり、拒否したのに一部が変わってしまう。
+- **落とし穴**:
+  - コールバックが返す値は必ず `SetParametersResult`。`True` などを返すとエラーになる。
+  - `p.value <= 0.0` の比較は、`period` が実数として宣言されているから成り立つ。整数が渡された場合は、そもそもコールバックより前に型の不一致で失敗する。
+  - 1節の図の注記どおり、このサンプルはコールバックの中で反映している。他のパラメータが後から拒否される場合の食い違いは、この手順書では扱わない（発展課題）。
+- **観察ポイント**: 起動して `ros2 topic echo /param_chatter` を見ながら、`ros2 param set /param_talker period 0.2` で間隔が5倍速くなること、`0.0` で拒否されて間隔が変わらないこと、`message` を変えると次の送信から内容が変わること。
 
 `setup.py` の `entry_points` に1行足し、再ビルドする。
 
@@ -163,8 +195,7 @@ source install/setup.bash
 | ハンドルの保持 | 戻り値の `OnSetParametersCallbackHandle::SharedPtr` を**メンバに保存する**（捨てるとコールバックが無効になる） |
 | 周期が秒（実数）のタイマー | `create_wall_timer(std::chrono::duration<double>(period), ...)` |
 
-<details>
-<summary>サンプルコード（答え合わせ用）</summary>
+#### サンプルコードと解説（C++版）
 
 ファイル: `ws/src/learn_cpp/src/param_talker.cpp`
 
@@ -248,7 +279,19 @@ int main(int argc, char ** argv)
 }
 ```
 
-</details>
+解説（param_talker.cpp）: Python版と同じ動作・同じ流れ。ここでは言語固有の点を中心に書く。
+
+- **宣言と取得を1行で**: `declare_parameter<std::string>("message", "hello")` は、宣言と同時に**現在の値を返す**。起動時に `-p` などで指定があれば、その値が返る。Pythonの「宣言 → `get_parameter().value`」の2手順が、ここでは1行にまとまる。型はテンプレート引数（`<std::string>`, `<double>`）で明示する。`1.0` を既定値にしても、`declare_parameter<double>` のように型を書くので、型の食い違いはコンパイル時に気付きやすい。
+- **コンストラクタの順序**: パラメータの宣言 → Publisher → タイマー → コールバック登録。コールバックの中で `timer_` を使うので、登録は最後にしている。
+- **`start_timer()`**: `std::chrono::duration<double>(period_)` は、「秒単位の実数」を表す時間の型。`create_wall_timer` は `1s` のようなリテラルのほか、この形で実数の秒を渡せる。タイマーの作り直しに使うので、コンストラクタと `on_params` の両方から呼べるよう、メソッドに切り出してある。Pythonの `cancel()` して作り直す書き方との違いは、C++版では `timer_` に新しい `shared_ptr` を代入するだけで、古いタイマーへの参照がなくなって解放され、停止する点（明示的な `cancel` は書いていない）。
+- **`add_on_set_parameters_callback` の戻り値を保持する**: 戻り値の `OnSetParametersCallbackHandle::SharedPtr`（`param_cb_`）を捨てると、コールバックの登録が解除される。メンバ変数に保存しておく必要がある。Pythonでは戻り値を保持しなくても動く。8節の「C++で実行中の変更に反応しない」の原因の典型。
+- **コールバックの引数と戻り値**: 引数は `const std::vector<rclcpp::Parameter> &`（変更しようとしているパラメータのリスト、コピーしない参照渡し）。戻り値は `rcl_interfaces::msg::SetParametersResult`。`successful` と `reason` のフィールドを埋めて返す。Pythonのようにコンストラクタ引数で渡すのではなく、変数を作ってフィールドに代入する。
+- **型ごとの取り出し**: `p.get_name()` で名前、`p.as_double()`、`p.as_string()` で値を取り出す。取り出す型は、宣言した型と一致させる。合わないと例外が飛ぶ。Pythonは `p.value` が型を問わず使える分、C++のほうが型に厳しい。
+- **2回ループにする理由**: Python版と同じ（検証してから反映）。C++でも、検証ループの途中で `return` して拒否している。
+- **メンバの初期化**: `message_` と `period_` は宣言時に初期値を持たず、コンストラクタの先頭で `declare_parameter` の戻り値を代入している。`start_timer()` は `period_` を使うので、代入より前に呼ばないこと。
+- **includeの追加**: `rcl_interfaces/msg/set_parameters_result.hpp` を、`rclcpp` とは別にincludeしている。CMakeの依存に `rcl_interfaces` を書いていないのは、`rclcpp` を通じて使えているため（この構成でビルド確認済み）。依存を明示したい場合は、`package.xml` と `ament_target_dependencies` に足す。
+- **つまずきやすい点**: ラムダで `[this]` を書き忘れると、`on_params` を呼べずビルドが通らない。
+- **観察ポイント**: Python版と同じ実験（5節）を、`ros2 run learn_cpp param_talker` で繰り返し、同じ結果（間隔の変化・拒否のメッセージ）になること。
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` へ `param_talker` を足す（これまでの分は残す）。
 

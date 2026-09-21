@@ -8,7 +8,7 @@
 - 言語: **Python・C++の両方**
 - 使う標準インターフェース: `example_interfaces/srv/AddTwoInts`、`std_srvs/srv/Trigger`
 
-> **進め方**: 仕様を見て自分で書き、詰まったら「サンプルコード」で答え合わせをする。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
+> **進め方**: サンプルコードは隠していない。まず仕様を見て自分で書き、書き終えたら答え合わせと読み解きに「サンプルコードと解説」を使う。詰まったときも、解説を手がかりに該当部分だけ見比べればよい。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
 ## 0. 学習目標と完了条件
 
@@ -18,6 +18,11 @@
 4. トピックとの使い分け（継続的な流れ vs 要求→応答）を、自分の言葉で説明できる。
 
 ## 1. 全体像
+
+![add_clientが要求を送り、add_serverが足し算して応答を返す](img/phase3_4_add_seq.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 sequenceDiagram
@@ -30,7 +35,14 @@ sequenceDiagram
     C->>C: 結果をログに出して終了
 ```
 
+</details>
+
 リセット用サービス（`Trigger`）の使い方:
+
+![ros2 service callがreset_counterでcounter_nodeを呼び、counter_nodeは/counterを1秒ごとに出す](img/phase3_4_reset_flow.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 flowchart LR
@@ -38,6 +50,8 @@ flowchart LR
     N -- "success, message" --> CLI
     N -- "/counter（Int32）を1秒ごと" --> OUT["ros2 topic echo"]
 ```
+
+</details>
 
 インターフェースの定義を確認しておく:
 
@@ -104,8 +118,7 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 
 > **重要**: `spin_until_future_complete` は、**コールバックの中では呼ばない**（自分自身を止めて固まる）。`main` の中で使う。
 
-<details>
-<summary>サンプルコード（答え合わせ用）</summary>
+### サンプルコードと解説（Python版）
 
 ファイル: `ws/src/learn_py/learn_py/add_server.py`
 
@@ -139,6 +152,22 @@ def main(args=None):
         node.destroy_node()
         rclpy.try_shutdown()
 ```
+
+**解説: `add_server.py`**
+
+役割は「`add_two_ints` という名前のサービスを公開し、要求が来るたびに `a + b` を計算して返す」こと。全体の流れは、ノードを作る → サービスを登録する → `spin` で要求を待ち続ける、の3段階。トピックの `listener` とほぼ同じ骨組みで、違いは「受け取ったら結果を返す」点だけである。
+
+| 部分 | 何をしているか |
+|---|---|
+| `super().__init__('add_server')` | ノード名を `add_server` にして親クラスを初期化する。 |
+| `self.create_service(AddTwoInts, 'add_two_ints', self.on_request)` | 引数は「サービス型」「サービス名」「要求が来たとき呼ぶ関数」の3つ。型は `.srv` ファイルに対応し、要求（`a`, `b`）と応答（`sum`）の形を決める。戻り値（`self.srv`）は変数に保持しておく。 |
+| `on_request(self, request, response)` | サービスのコールバック。`request` に相手が送った値が、`response` に「中身が空の応答」が入って渡される。 |
+| `response.sum = request.a + request.b` | 応答の欄を埋める。`AddTwoInts` の `a`, `b`, `sum` は `int64`（`ros2 interface show` で確認できる）。 |
+| `return response` | **Pythonでは応答を戻り値として返す**。`return` を忘れると、サーバ側のコールバックでエラーになり、クライアントは応答を受け取れない（つまずきやすい点）。 |
+
+`main` は、フェーズ3-1のノードと同じ定型である。`rclpy.spin(node)` の中で、要求が来るとコールバックが呼ばれる。`except (KeyboardInterrupt, ExternalShutdownException)` は `Ctrl+C` での終了を静かに扱うため、`finally` は後片付け（ノードの破棄とシャットダウン）のため。
+
+観察ポイント: サーバだけを起動しても何も起きず、ログも出ない（要求が来て初めて動く）。`ros2 service list -t` で `/add_two_ints [example_interfaces/srv/AddTwoInts]` が見えること、`ros2 service call` で呼んだときにサーバ側のログが出ることを確認する。
 
 ファイル: `ws/src/learn_py/learn_py/add_client.py`
 
@@ -180,6 +209,25 @@ def main(args=None):
         node.destroy_node()
         rclpy.try_shutdown()
 ```
+
+**解説: `add_client.py`**
+
+役割は「サーバを見つけ、`a`, `b` を送って1回だけ呼び、答えをログに出して終わる」こと。サーバやパブリッシャと違い、`spin` し続けるノードではなく、**1回の仕事が終わったら `main` を抜けて終了する**形になっている。
+
+- **`__init__`**: パラメータ `a`, `b` を既定値付きで宣言し（フェーズ3-3の復習）、`create_client(AddTwoInts, 'add_two_ints')` でクライアントを作る。クライアントを作っただけでは、まだ通信は始まらない。
+- **`wait_for_service(timeout_sec=5.0)`**: サーバが見つかるまで最大5秒待ち、見つかれば `True`、見つからなければ `False` を返す。これを挟まずにいきなり呼ぶと、サーバ起動前だった場合に要求が届かない。`False` のときはエラーログを出して `return` する。
+- **要求の組み立て**: `AddTwoInts.Request()` で空の要求を作り、`node.get_parameter('a').value` で取り出した値を詰める。`.value` を付け忘れると、`Parameter` オブジェクトそのものを詰めようとして型エラーになる。
+- **`call_async(request)`**: 要求を送って、すぐ `future`（あとで結果が入る箱）を返す。ここでは結果はまだ無い。
+- **`rclpy.spin_until_future_complete(node, future)`**: `future` に結果が入るまでノードを回す（この間に応答を受け取る処理が動く）。これが終わってから `future.result()` で `Response` を取り出す。`result()` が `None` のときは呼び出しが失敗しており、`future.exception()` で原因が見られる。
+
+> なぜ「非同期」か: `call_async` は応答を待たずにすぐ戻るので、「結果をいつ取りに行くか」は自分で決める必要がある。このコードは `main` の中で `spin_until_future_complete` を使って待つ。ノードのコールバックの中から別のサービスを呼びたい場合は、この待ち方は使えない（上の「重要」の注意）ので、futureの完了時に呼ばれるコールバックで結果を受ける、などの別の方法になる（このフェーズでは扱わない）。
+
+落とし穴:
+
+- `wait_for_service` が `False` のとき、このコードは `return` するだけで、終了コードは0のままになる（C++版は `return 1`）。スクリプトから結果を判定したい場合は、ここが差になる。
+- `-p a:=3.0` のように実数を渡すと、宣言した型（整数）と合わず、パラメータの設定でエラーになる。整数で渡す。
+
+動作確認: サーバを起動した状態で `ros2 run learn_py add_client`（既定なら `1 + 2 = 3`）と、`ros2 run learn_py add_client --ros-args -p a:=10 -p b:=20` を実行する。サーバを止めた状態で実行すると、約5秒後にエラーログが出て終わることも確認する。
 
 ファイル: `ws/src/learn_py/learn_py/counter_node.py`
 
@@ -226,7 +274,25 @@ def main(args=None):
         rclpy.try_shutdown()
 ```
 
-</details>
+**解説: `counter_node.py`**
+
+役割は「1秒ごとにカウントを配信しつつ、`reset_counter` サービスで0に戻せる」こと。**1つのノードにトピックの発行（タイマー）とサービスのサーバが同居する**例で、トピックは継続的な流れ、サービスは必要なときの操作、という使い分け（後述の§7）を1本のノードで体感できる。
+
+| 部分 | 何をしているか |
+|---|---|
+| `self.count = 0` | ノードが持つ状態。タイマーのコールバックとサービスのコールバックの**両方が同じ変数を読み書きする**。 |
+| `create_publisher` / `create_timer` | フェーズ3-1と同じ。1秒ごとに `on_timer` が呼ばれる。 |
+| `create_service(Trigger, 'reset_counter', self.on_reset)` | `Trigger` は要求が空で、応答が `success`（真偽）と `message`（文字列）だけの標準サービス型。「引数の要らない合図」を送る用途に向く。 |
+| `on_timer` | 今の `count` を配信してから `+1` する。最初に配信される値は0。 |
+| `on_reset` | `success` を真にし、`message` に**リセット前の値**を入れてから `count` を0に戻す。順序が大事で、先に0にすると「リセット前の値」が取れない。 |
+
+`on_reset` の引数 `request` は、`Trigger` の要求が空なので使っていない。それでも引数としては必要である（省くとコールバックの呼び出しでエラーになる）。
+
+同じ変数を2つのコールバックが触っても安全なのは、`rclpy.spin` の既定の実行方式（シングルスレッド）では、コールバックが**同時には動かず1つずつ順に処理される**ため。複数スレッドの実行方式に変えると、この前提が崩れて排他制御が必要になる（このフェーズでは扱わない）。
+
+観察ポイント: `ros2 topic echo /counter` を見ながら `ros2 service call /reset_counter std_srvs/srv/Trigger` を実行し、値が0に戻ること、応答の `message` に直前の値が入っていることを確認する（§6-2）。
+
+### 登録とビルド
 
 `setup.py` の `entry_points` に3行を足し、再ビルドする。
 
@@ -259,8 +325,7 @@ source install/setup.bash
 
 Pythonとの違いの見どころ: 応答を「返す」のか「書き込む」のか、型名が `Request`/`Response` のネストした型になること。
 
-<details>
-<summary>サンプルコード（答え合わせ用）</summary>
+### サンプルコードと解説（C++版）
 
 ファイル: `ws/src/learn_cpp/src/add_server.cpp`
 
@@ -303,6 +368,18 @@ int main(int argc, char ** argv)
   return 0;
 }
 ```
+
+**解説: `add_server.cpp`**
+
+Python版と同じ「要求を受けて `a + b` を返す」サーバ。差分を中心に読む。
+
+- **`using AddTwoInts = ...`**: 長い型名に別名を付けている。`example_interfaces::srv::AddTwoInts` は `.srv` から自動生成された型で、`Request` と `Response` がその中にネストしている（`AddTwoInts::Request`）。ヘッダ名は `add_two_ints.hpp`（型名をスネークケースにしたもの）で、`CMakeLists.txt` の依存に `example_interfaces` が必要。
+- **`create_service<AddTwoInts>("add_two_ints", ラムダ式)`**: 型はテンプレート引数で、サービス名とコールバックを渡す。戻り値は `rclcpp::Service<AddTwoInts>::SharedPtr` で、**メンバ変数 `service_` に保持する**。保持しないとこの行の終わりで破棄され、サービスが消える。
+- **コールバックの引数**: `(request, response)` の両方が `shared_ptr` で渡されるので、`->` で欄にアクセスする。**応答は戻り値ではなく `response` に書き込む**（Pythonとの最大の違い）。ラムダは `[this]` で自分自身（ノード）を捕まえており、`get_logger()` を呼ぶために必要。
+- **`static_cast<long long>` と `%lld`**: `a`, `b`, `sum` は `int64_t`。`printf` 系の書式指定は環境によって `int64_t` の実体（`long` か `long long`）が違うため、`long long` に揃えて `%lld` で出す、という安全策である。
+- **`main`**: `rclcpp::spin(std::make_shared<AddServer>())` で、ノードの生成と待ち受けを1行で行う。`Ctrl+C` で `spin` から戻り、`shutdown()` で終わる。
+
+観察ポイント: Python版のサーバと**入れ替えても、同じクライアントから同じ結果が返る**こと（サービス名と型が同じなら、実装言語は関係ない）。
 
 ファイル: `ws/src/learn_cpp/src/add_client.cpp`
 
@@ -348,6 +425,20 @@ int main(int argc, char ** argv)
   return 0;
 }
 ```
+
+**解説: `add_client.cpp`**
+
+Python版と同じ流れ（待つ → 要求を作る → 非同期に送る → 結果を待つ）を、`main` の中に順に書いている。クラスを作らず `rclcpp::Node::make_shared("add_client")` でノードを直接作るのが、Python版との構造上の違い。
+
+- **`declare_parameter<int64_t>("a", 1)`**: 型をテンプレート引数で指定して宣言し、宣言時に値を受け取る。Python版の `declare_parameter` + `get_parameter(...).value` の2段階が1行にまとまっている。
+- **`using namespace std::chrono_literals;` と `wait_for_service(5s)`**: `5s` は「5秒」を表すリテラルで、この `using` が無いとコンパイルできない。戻り値が `false` ならエラーログを出し、`rclcpp::shutdown()` して**終了コード1**で終わる（Python版は0のまま）。
+- **`make_shared<AddTwoInts::Request>()`**: 要求は `shared_ptr` で作り、`request->a = a;` のように詰める。
+- **`async_send_request(request)`**: Pythonの `call_async` に相当し、`future`（`shared_future`）を返す。
+- **`spin_until_future_complete(node, future)`**: 戻り値は `FutureReturnCode`。`SUCCESS` のときだけ `future.get()` で応答（`shared_ptr`）を取り出し、`->sum` を読む。それ以外（`TIMEOUT` や `INTERRUPTED`）は失敗として扱う。Pythonの `result() is not None` の判定に当たる。
+
+落とし穴: `future.get()` は、結果が入っていない状態で呼ぶと待たされるか例外になる。**先に戻り値が `SUCCESS` であることを確認してから**呼ぶ、という順序を守る。また、`spin_until_future_complete` を**サービスのコールバックの中で呼ぶ**と固まる（§4の「重要」と同じ理由）。
+
+動作確認: Python版と同様に、`ros2 run learn_cpp add_client` と `--ros-args -p a:=10 -p b:=20` を、サーバありとなしの両方で試す。サーバなしのときは約5秒後にエラーログが出て、`echo $?` で終了コード1が見える。
 
 ファイル: `ws/src/learn_cpp/src/counter_node.cpp`
 
@@ -405,7 +496,20 @@ int main(int argc, char ** argv)
 }
 ```
 
-</details>
+**解説: `counter_node.cpp`**
+
+Python版と同じく、タイマーによる配信と `reset_counter` サービスを1ノードに同居させている。
+
+- **`create_wall_timer(1s, [this]() { on_timer(); })`**: 1秒周期のタイマー。ラムダ経由でメンバ関数を呼んでいる。
+- **`create_service<std_srvs::srv::Trigger>(...)`**: `Trigger` の型もヘッダ（`std_srvs/srv/trigger.hpp`）も `std_srvs` パッケージのもので、`CMakeLists.txt` の依存に `std_srvs` が要る。
+- **コールバックの第1引数（要求）に名前が無い**: `Trigger` の要求は空で使わないため、あえて変数名を書かない。名前を付けて使わないと「未使用引数」の警告が出るので、この書き方が定番である。
+- **`response->message = "counter reset (was " + std::to_string(count_) + ")";`**: 文字列とカウンタを連結して、リセット前の値を入れる。その後で `count_ = 0;`。順序はPython版と同じで、先に0にするとリセット前の値が取れない。ログ出力の `%s` には `c_str()` が要る。
+- **`msg.data = count_++;`**: 「今の値を `data` に入れてから、`count_` を1増やす」（後置インクリメント）。配信される最初の値は0で、Python版の「配信してから加算」と同じ結果になる。
+- **メンバ変数**: `pub_`, `timer_`, `service_` はいずれも保持が必要（消えると機能が止まる）。`count_` は、`spin` の既定ではコールバックが1つずつ順に呼ばれるので、排他制御なしで2つのコールバックから触れる。
+
+観察ポイント: Python版と同じ実験（§6-2）で、値が0に戻ること、`message` にリセット前の値が入ることを確認する。Python版とC++版で結果が同じになるかも見比べる。
+
+### 登録とビルド
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` に名前を足す（これまでの分は残す）。
 

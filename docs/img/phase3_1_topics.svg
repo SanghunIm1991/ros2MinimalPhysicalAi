@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 628 234" width="628" height="234" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: talkerが/chatterでlistenerへ、sine_pubが/sineでsine_subへ送る">
+<title>図: talkerが/chatterでlistenerへ、sine_pubが/sineでsine_subへ送る</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="628" height="234" fill="#ffffff"/>
+<g transform="translate(-25.7,12.0)" fill="#1a1a1a">
+<path d="M170.3,60.0 L490.0,60.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M166.7,170.0 L490.0,170.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="49.7" y="32.0" width="120.7" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="110.0" y="55.0" text-anchor="middle">talker</text>
+<text x="110.0" y="75.0" text-anchor="middle">1秒ごとに送信</text>
+<rect x="490.0" y="32.0" width="140.0" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="560.0" y="55.0" text-anchor="middle">listener</text>
+<text x="560.0" y="75.0" text-anchor="middle">受信してログ出力</text>
+<rect x="53.3" y="142.0" width="113.4" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="110.0" y="165.0" text-anchor="middle">sine_pub</text>
+<text x="110.0" y="185.0" text-anchor="middle">10 Hzで送信</text>
+<rect x="490.0" y="142.0" width="140.0" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="560.0" y="165.0" text-anchor="middle">sine_sub</text>
+<text x="560.0" y="185.0" text-anchor="middle">受信してログ出力</text>
+<text x="330.2" y="27.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">/chatter</text>
+<text x="330.2" y="47.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">std_msgs/String</text>
+<text x="328.4" y="137.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">/sine</text>
+<text x="328.4" y="157.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">std_msgs/Float64</text>
+</g>
+</svg>

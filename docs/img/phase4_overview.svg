@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 608 234" width="608" height="234" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: ros2 launchが、talker（C++版）とlistener（Python版）を同時に起動し、/chatterでつなぐ">
+<title>図: ros2 launchが、talker（C++版）とlistener（Python版）を同時に起動し、/chatterでつなぐ</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="608" height="234" fill="#ffffff"/>
+<g transform="translate(-51.9,2.0)" fill="#1a1a1a">
+<path d="M260.0,78.0 L260.0,125.0 L150.0,125.0 L150.0,172.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M420.0,78.0 L420.0,125.0 L540.0,125.0 L540.0,172.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M224.1,190.0 L444.2,190.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="143.7" y="22.0" width="392.6" height="56.0" rx="8" fill="#fff4dc" stroke="#b07d00" stroke-width="1.5"/>
+<text x="340.0" y="45.0" text-anchor="middle">ros2 launch learn_bringup pubsub.launch.py</text>
+<text x="340.0" y="65.0" text-anchor="middle">talker_lang:=cpp listener_lang:=py</text>
+<rect x="75.9" y="172.0" width="148.1" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="150.0" y="195.0" text-anchor="middle">talker（C++版）</text>
+<rect x="444.2" y="172.0" width="191.5" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="540.0" y="195.0" text-anchor="middle">listener（Python版）</text>
+<text x="334.1" y="177.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">/chatter</text>
+</g>
+</svg>

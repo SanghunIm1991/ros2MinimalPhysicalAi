@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 855 324" width="855" height="324" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: パラメータの値は、コードの既定値・起動時の指定・実行中の変更の3経路でノードに入る">
+<title>図: パラメータの値は、コードの既定値・起動時の指定・実行中の変更の3経路でノードに入る</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
+<rect x="0" y="0" width="855" height="324" fill="#ffffff"/>
+<g transform="translate(-3.9,2.0)" fill="#1a1a1a">
+<path d="M207.8,50.0 L393.9,136.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M212.1,160.0 L393.9,160.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M194.8,270.0 L393.9,184.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M526.1,160.0 L685.2,160.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="32.2" y="22.0" width="175.6" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="120.0" y="45.0" text-anchor="middle">コードの既定値</text>
+<text x="120.0" y="65.0" text-anchor="middle">declare_parameter</text>
+<rect x="27.9" y="132.0" width="184.2" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="120.0" y="155.0" text-anchor="middle">起動時</text>
+<text x="120.0" y="175.0" text-anchor="middle">-p / --params-file</text>
+<rect x="45.2" y="242.0" width="149.5" height="56.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="120.0" y="265.0" text-anchor="middle">実行中</text>
+<text x="120.0" y="285.0" text-anchor="middle">ros2 param set</text>
+<rect x="393.9" y="120.0" width="132.2" height="80.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="460.0" y="155.0" text-anchor="middle">ノード</text>
+<text x="460.0" y="175.0" text-anchor="middle">param_talker</text>
+<rect x="685.2" y="132.0" width="149.5" height="56.0" rx="8" fill="#f1f1f1" stroke="#777777" stroke-width="1.5"/>
+<text x="760.0" y="155.0" text-anchor="middle">トピック</text>
+<text x="760.0" y="175.0" text-anchor="middle">/param_chatter</text>
+</g>
+</svg>

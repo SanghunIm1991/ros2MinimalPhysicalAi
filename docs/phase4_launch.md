@@ -8,7 +8,7 @@
 - 言語: launchファイルはPython・XML・YAMLの3形式を扱う（ノードはPython・C++）
 - OSS: turtlesim（GUIの起動と目視確認はユーザーが行う）
 
-> **進め方**: 仕様を見て自分で書き、詰まったら「サンプル」で答え合わせをする。サンプルはこの手順書の作成時に、`ros2 launch --print`（起動せずに内容を表示する）で読み込めることまで確認済み。ノードを実際に起動した結果は未確認（出力が違えば差分を貼ってほしい）。
+> **進め方**: サンプルは隠していない。まず仕様を見て自分で書き、書き終えたら答え合わせと読み解きに各節の「サンプルと解説」を使う。サンプルはこの手順書の作成時に、`ros2 launch --print`（起動せずに内容を表示する）で読み込めることまで確認済み。ノードを実際に起動した結果は未確認（出力が違えば差分を貼ってほしい）。
 
 ## 0. 学習目標と完了条件
 
@@ -20,6 +20,11 @@
 
 ## 1. 全体像
 
+![ros2 launchが、talker（C++版）とlistener（Python版）を同時に起動し、/chatterでつなぐ](img/phase4_overview.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
+
 ```mermaid
 flowchart TB
     L["ros2 launch learn_bringup pubsub.launch.py<br/>talker_lang:=cpp listener_lang:=py"]
@@ -28,7 +33,14 @@ flowchart TB
     N1 -- "/chatter" --> N2
 ```
 
+</details>
+
 launchパッケージの役割（ノードを作らず、起動の設定だけを持つ）:
+
+![learn_bringupはlaunch/とconfig/だけを持ち、learn_py・learn_cpp・turtlesimのノードを起動し、YAMLでパラメータを渡す](img/phase4_bringup_role.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 flowchart LR
@@ -38,7 +50,14 @@ flowchart LR
     B -- "パラメータを渡す" --> Y["config/param_talker.yaml"]
 ```
 
+</details>
+
 launchファイルの合成（`IncludeLaunchDescription`）:
+
+![compose.launch.pyが、GroupActionでnamespaceをdemoにしてpubsub.launch.pyをincludeし、param.launch.pyもincludeする](img/phase4_compose.svg)
+
+<details>
+<summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 flowchart LR
@@ -46,6 +65,8 @@ flowchart LR
     G --> I["pubsub.launch.py（include）"]
     A --> J["param.launch.py（include）"]
 ```
+
+</details>
 
 ## 2. 仕様
 
@@ -130,8 +151,7 @@ install(DIRECTORY launch config
 | 文字列と置換の連結 | リストで書く: `package=['learn_', LaunchConfiguration('talker_lang')]` |
 | 全体を返す | `generate_launch_description()` が `LaunchDescription([...])` を返す |
 
-<details>
-<summary>サンプル</summary>
+#### サンプルと解説
 
 ファイル: `ws/src/learn_bringup/launch/pubsub.launch.py`
 
@@ -164,7 +184,30 @@ def generate_launch_description():
     ])
 ```
 
-</details>
+**解説: `pubsub.launch.py`**
+
+役割は「`talker` と `listener` の2ノードを、言語（Python版・C++版）を引数で選んで起動する」こと。launchファイルは**ノードを起動する手順書のようなプログラム**で、`ros2 launch` はこのファイルの `generate_launch_description()` を呼び、返ってきた `LaunchDescription`（やることの一覧）を上から順に実行する。
+
+| 部分 | 何をしているか |
+|---|---|
+| `generate_launch_description()` | 関数名は固定。`ros2 launch` がこの名前で探して呼ぶので、綴りを変えると「見つからない」エラーになる。 |
+| `LaunchDescription([...])` | 起動の「アクション」（引数宣言、ノード起動など）をリストで並べたもの。 |
+| `DeclareLaunchArgument('talker_lang', default_value='py', description=...)` | 起動時に `talker_lang:=cpp` の形で渡せる引数を宣言する。`default_value` は未指定のときの値、`description` は `--show-args` で表示される説明。 |
+| `LaunchConfiguration('talker_lang')` | 「引数 `talker_lang` の値」を表す**置換（substitution）**。その場で文字列になるのではなく、**起動の実行時に評価される**予約票のようなもの。 |
+| `Node(package=..., executable=..., name=..., output='screen')` | ROS2ノードを1つ起動する。`package` と `executable` は `ros2 run パッケージ 実行ファイル` の2つの引数に相当し、`name` でノード名を上書きし、`output='screen'` でログを端末に出す。 |
+| `package=['learn_', LaunchConfiguration('talker_lang')]` | 文字列と置換をリストで並べると、**連結されて1つの文字列**になる。`py` なら `learn_py`、`cpp` なら `learn_cpp` になり、**パッケージ名を切り替える**ことで言語を切り替えている。 |
+
+ポイントは、`LaunchConfiguration` が「あとで評価される置換」であること。`generate_launch_description()` が動く時点では、まだ引数の値は確定していない。そのため、この関数の中で `if LaunchConfiguration(...) == 'cpp':` のように**Pythonの `if` では判定できない**（常に「置換オブジェクト」が比較されてしまう）。値で分岐したい場合は、課題3の `OpaqueFunction` を使う。
+
+つまずきやすい点:
+
+- `DeclareLaunchArgument` を書き忘れて `LaunchConfiguration` だけ使うと、「その launch configuration が存在しない」という趣旨のエラーになる。宣言は `LaunchDescription` のリストに入れておく（慣例としてノードより上に書く）。
+- 引数の値は**常に文字列**として扱われる。型が要る場面（数値など）は、後述の `ParameterValue` のように明示する。
+- `package` と `executable` の組み合わせが実在しないと、起動時にエラーになる（例: `talker_lang:=rust` は `learn_rust` が無いエラー、課題2）。
+
+観察ポイント: `--show-args` で2つの引数と説明・既定値が見えること、`--print` で置換が展開された結果（`learn_cpp` など）が見えること、起動後に `ros2 node list` に `/talker` と `/listener` が出ることを確認する。
+
+この後の XML 版・YAML 版は、**同じ内容を別の書き方で表したもの**。Python版との対応を見比べる。
 
 実行前に、引数の一覧と、展開結果を確認する（**ノードは起動しない**）:
 
@@ -193,8 +236,7 @@ ros2 launch learn_bringup pubsub.launch.py talker_lang:=cpp listener_lang:=py
 
 XMLでは、`$(var 引数名)` で引数を参照し、文字列に埋め込める。**リストで連結する必要がない**ぶん、この用途ではPythonより短く書ける。
 
-<details>
-<summary>サンプル</summary>
+#### サンプルと解説
 
 ファイル: `ws/src/learn_bringup/launch/pubsub.launch.xml`
 
@@ -209,12 +251,29 @@ XMLでは、`$(var 引数名)` で引数を参照し、文字列に埋め込め�
 </launch>
 ```
 
-</details>
+**解説: `pubsub.launch.xml`**
+
+Python版の各要素が、XMLのタグにほぼ1対1で対応している。
+
+| Python | XML | 補足 |
+|---|---|---|
+| `DeclareLaunchArgument('x', default_value='py', description=...)` | `<arg name="x" default="py" description="..."/>` | 属性名が `default_value` ではなく `default` になる。 |
+| `Node(package=..., executable=..., name=..., output=...)` | `<node pkg="..." exec="..." name="..." output="..."/>` | `package` は `pkg`、`executable` は `exec` と短くなる。 |
+| `['learn_', LaunchConfiguration('x')]` | `learn_$(var x)` | 文字列の中に `$(var 引数名)` を**そのまま埋め込める**。 |
+
+全体は `<launch>` タグで囲む。Pythonでは「リストで連結」しなければならなかった部分が、XMLでは1つの文字列で書けるため、この用途では短く読みやすい。
+
+つまずきやすい点:
+
+- `$(var 名前)` は、宣言済みの引数（`<arg>`）を参照する書式。古い資料にある `$(arg 名前)` は別の（古い）書き方なので、混ぜない。
+- タグは必ず閉じる（自己終了の `/>` を忘れない）。閉じ忘れは、XMLとして読めないエラーになる。
+- XMLでは、`if` や計算のような複雑な処理は書けない。条件付きの起動は属性（`if=` / `unless=`）で最低限できるが、凝った処理はPython形式に任せる。
+
+観察ポイント: `--print` の出力が、Python版と（ほぼ）同じ内容になること。
 
 ### 4-3. YAML形式（`pubsub.launch.yaml`）
 
-<details>
-<summary>サンプル</summary>
+#### サンプルと解説
 
 ファイル: `ws/src/learn_bringup/launch/pubsub.launch.yaml`
 
@@ -241,7 +300,23 @@ launch:
       output: screen
 ```
 
-</details>
+**解説: `pubsub.launch.yaml`**
+
+同じ内容をYAMLで書いたもの。構造は次のとおり。
+
+- 最上位のキー `launch:` の下に、**リスト（`- ` で始まる行）**でアクションを並べる。
+- リストの各要素は、1つのキー（`arg:` や `node:`）を持ち、その下に属性を**インデントして**書く。属性名はXML形式とほぼ同じ（`pkg`、`exec`、`name`、`output`、引数の `default`）。
+- 引数の埋め込みは、XMLと同じ `$(var 引数名)`。値の中に置ける。
+
+YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序は変わらない。YAMLの利点は、XMLのタグの閉じ忘れが無く、見た目がすっきりすること。反面、**インデントがずれると意味が変わる**（またはエラーになる）ので、スペースの数をそろえる。タブは使えない。
+
+つまずきやすい点:
+
+- `arg:` の直後の属性を、1段深くインデントし忘れると、読み込みに失敗する。
+- コロンや特殊な記号を含む値は、YAMLでは引用符が要る場合がある。この例の `description` は、コロンを含まないのでそのまま書けている。
+- 3形式とも `--print` で展開結果を確認できる。書いたら、まず `--print` で読み込めるか見る。
+
+3形式を書き比べると、Pythonは自由度が高く（分岐・計算・関数化）、XML/YAMLは単純な起動の一覧を短く書ける、という違いが見える（課題4）。
 
 3形式を、それぞれ確認する:
 
@@ -273,8 +348,7 @@ ros2 launch learn_bringup pubsub.launch.yaml talker_lang:=cpp --print
 
 `ParameterValue` を使う理由: 引数はもともと文字列で、そのままだと `1` のような値が整数として渡されて、フェーズ3-3で見た「型の不一致」になり得る。`value_type=float` を指定すれば、実数として渡せる。
 
-<details>
-<summary>サンプル</summary>
+#### サンプルと解説
 
 ファイル: `ws/src/learn_bringup/launch/param.launch.py`
 
@@ -309,7 +383,34 @@ def generate_launch_description():
     ])
 ```
 
-</details>
+**解説: `param.launch.py`**
+
+役割は「`param_talker` を、YAMLファイルのパラメータで起動し、一部だけ引数で上書きする」こと。パラメータの渡し方を、3段（ファイル → 個別の値 → 型の指定）で読む。
+
+| 部分 | 何をしているか |
+|---|---|
+| `FindPackageShare('learn_bringup')` | パッケージのインストール先（`install/learn_bringup/share/learn_bringup`）を実行時に見つける置換。`--symlink-install` の有無やインストール場所に依存しない書き方になる。 |
+| `PathJoinSubstitution([..., 'config', 'param_talker.yaml'])` | 複数の要素を、OSに合ったパス区切りでつないで1つのパスにする。文字列の `+` で連結するより安全。 |
+| `config = ...`（`generate_launch_description` の先頭） | パスをいったん変数に入れておき、後で `parameters` に渡している。これも置換なので、評価は起動時。 |
+| `DeclareLaunchArgument('lang'...)` / `('period'...)` | 言語と送信周期の引数。既定値は文字列 `'1.0'` になっている。 |
+| `parameters=[config, {'period': ...}]` | パラメータの**リスト**。要素にはYAMLファイルのパス、または `{名前: 値}` の辞書を置ける。**前から順に適用され、後ろが勝つ**ので、YAMLで読んだ `period` を、辞書の `period` が上書きする。 |
+| `ParameterValue(LaunchConfiguration('period'), value_type=float)` | 引数（文字列）を、実数として渡すための包み。 |
+
+YAMLパラメータファイルの構造（`config/param_talker.yaml`）は、次の3階層になっている。
+
+1. 最上位: **ノード名**（`param_talker`）。`Node(name='param_talker')` と一致しないと、パラメータが**黙って無視される**。
+2. その下: `ros__parameters:`（アンダースコア2つ。綴りを間違えるとやはり無視される）。
+3. その下: パラメータ名と値（`message`、`period` など）。
+
+`ParameterValue` が要る理由（直前の説明の補足）: launch引数はすべて文字列で、そのまま辞書に入れると、`1` のような値が整数として解釈されうる。フェーズ3-3で見たとおり、ノードは `period` を実数として宣言しているので、整数が来ると型の不一致で起動に失敗する。`value_type=float` を付けると、`1` でも `1.0` として渡される。
+
+つまずきやすい点:
+
+- `Node(name=...)` を変えたのに、YAMLの最上位のノード名を直し忘れる。
+- YAMLを `parameters` の**後ろ**に置くと、引数で渡したはずの値がYAMLに上書きされる。並びの順序に意味がある。
+- 引数に既定値があるので、`period` を指定しなくても引数側（`1.0`）が使われ、YAMLの値（`0.5`）は結果的に使われない（課題5の補足）。
+
+観察ポイント: `ros2 param get` で、`message` はYAMLの値、`period` は引数の値（`period:=0.2` なら0.2）になっていること。`--print` で、YAMLのパスが `install/.../share/...` に展開されていること（課題6）。
 
 ```bash
 ros2 launch learn_bringup param.launch.py
@@ -331,8 +432,7 @@ ros2 param get /param_talker period      # 引数で上書きした値
 
 ### 4-5. OSSと自作ノードを一緒に起動する（`turtle.launch.py`）
 
-<details>
-<summary>サンプル</summary>
+#### サンプルと解説
 
 ファイル: `ws/src/learn_bringup/launch/turtle.launch.py`
 
@@ -363,7 +463,20 @@ def generate_launch_description():
     ])
 ```
 
-</details>
+**解説: `turtle.launch.py`**
+
+役割は「OSS（turtlesim）のノードと、自作の `turtle_circle` を1つのコマンドで一緒に起動する」こと。構造は `pubsub.launch.py` と同じで、違いは次の点。
+
+- **OSSのノードも同じ `Node` で起動できる**。`package='turtlesim'`, `executable='turtlesim_node'` は、`ros2 run turtlesim turtlesim_node` と同じ指定。自作でも他人のパッケージでも、launchの書き方は変わらない。
+- `turtlesim` 側の `package` は固定の文字列で、自作側だけ `['learn_', LaunchConfiguration('lang')]` で切り替えている。切り替えたい部分にだけ置換を使う、という使い分けの例になっている。
+- `name='turtlesim'` は、ノード名を `turtlesim`（既定の `turtlesim` と同じ）に明示している。
+
+つまずきやすい点:
+
+- launchは**リストのノードを、ほぼ同時に起動する**。順番は保証されない。turtlesimのウィンドウが立ち上がる前に、`turtle_circle` が最初の指令を送ると、その指令は届かないことがある。慌てず、少し待って動きが始まるか見る。
+- `turtlesim` が入っていない（`Package 'turtlesim' not found`）場合は、導入がフェーズ3-2で済んでいるか確認する。
+
+観察ポイント: 1つのターミナルの `Ctrl+C` で、2つのノードが**まとめて止まる**こと（個別のターミナルで起動していたときとの差）。`ros2 node list` に `/turtlesim` と `/turtle_circle` が並ぶこと。GUIの起動と目視確認はユーザーが行う。
 
 ```bash
 ros2 launch learn_bringup turtle.launch.py lang:=cpp
@@ -383,8 +496,7 @@ ros2 launch learn_bringup turtle.launch.py lang:=cpp
 
 名前空間 `demo` の下では、ノード名は `/demo/talker`、トピックは `/demo/chatter` になる。
 
-<details>
-<summary>サンプル</summary>
+#### サンプルと解説
 
 ファイル: `ws/src/learn_bringup/launch/compose.launch.py`
 
@@ -414,7 +526,33 @@ def generate_launch_description():
     return LaunchDescription([pubsub, param])
 ```
 
-</details>
+**解説: `compose.launch.py`**
+
+役割は「既存のlaunchファイルを部品として呼び出し、名前空間をまとめて付ける」こと。新しいノードを直接は書かず、`pubsub.launch.py` と `param.launch.py` を**組み合わせる**。
+
+| 部分 | 何をしているか |
+|---|---|
+| `_launch_file(name)` | 「`learn_bringup` の `launch/` 下の、指定したファイル」を指す `PythonLaunchDescriptionSource`（起動元）を作る補助関数。同じ書き方を2回書かないためのまとめで、先頭のアンダースコアは「このファイルの内部用」という慣習。 |
+| `IncludeLaunchDescription(起動元, launch_arguments={...}.items())` | 別のlaunchファイルを、この場所で実行する。`launch_arguments` は、呼び出す側の引数を**まとめて固定する**指定で、辞書の `.items()`（キーと値の組の並び）で渡す。値は文字列。 |
+| `PushRosNamespace('demo')` | 以降のノードに、名前空間 `demo` を付ける。 |
+| `GroupAction([PushRosNamespace('demo'), IncludeLaunchDescription(...)])` | アクションをグループにまとめる。名前空間の指定は**グループの中だけに効く**ので、グループの外の `param` には影響しない。 |
+| `LaunchDescription([pubsub, param])` | 最後に、グループとincludeを並べて返す。 |
+
+実行結果として、`pubsub.launch.py` のノードは `/demo/talker`、`/demo/listener`、トピックは `/demo/chatter` になる。`param.launch.py` は名前空間の外なので、`/param_talker` のまま。`ros2 node list` で、この違いが見える。
+
+補足:
+
+- includeされた側の引数は、`launch_arguments` で渡さなければ、**その既定値**が使われる。`param` の呼び出しは引数を渡していないので、`lang=py`、`period=1.0` になる。`pubsub` は `talker_lang=cpp`、`listener_lang=py` で固定している。
+- 名前空間が効くのは、**相対名**（先頭に `/` が無い名前）のノード名・トピック名。コードの中で `/chatter` のように絶対名で書くと、名前空間を付けても変わらない。`talker` が `chatter` と相対名で書いているので、`/demo/chatter` になる。
+- **remap**（トピック名の付け替え）は、このサンプルには含まない。`Node(remappings=[('chatter', 'renamed_chatter')])` のように「元の名前 → 新しい名前」のペアで指定する。課題7で試す。片方だけに付けると名前が食い違って、つながらなくなる。
+
+つまずきやすい点:
+
+- `launch_arguments` に辞書をそのまま渡す（`.items()` を付けない）と、型のエラーになる。
+- 名前空間を付けたのに、コードが絶対名を使っていて変わらない、という食い違いに注意する。
+- 同じノード名が2つ起動するとログに警告が出る（名前空間を付ける理由の1つ）。
+
+観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、コメントの例（`/demo/talker`、`/demo/listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`Ctrl+C` で全ノードが止まること（課題8）。
 
 ```bash
 ros2 launch learn_bringup compose.launch.py
