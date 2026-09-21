@@ -7,6 +7,7 @@
 - 言語: 本フェーズは言語非依存（Python/C++の区別なし）。
 
 > **この手順書の位置づけと注意**
+> - **実機確認済み（2026-09-21）**: ユーザーが本手順書のコマンドをすべて実行し、動作したことを確認した（学習完了）。出力例は筆者の知識に基づくため、表示が細部で異なる場合は実機を優先する。
 > - コマンドは筆者（Claude）の知識に基づく。公式ページ（docs.ros.org）はボット対策で本文を取得できず、逐語照合はできていない。**出力例と実際の表示が違う場合は、実機の表示を優先し、差分を貼ってほしい**（手順書を修正する）。
 > - 文章・構成は自分の言葉で書いたが、コマンド例の値（`linear.x: 2.0`、`/spawn` の座標、`rotate_absolute` の角度等）は公式チュートリアルの例と同等のものを含む。公式ドキュメントはCC BY 4.0で、出典は末尾に記載する。詳細は末尾の公式ドキュメントを参照。
 
@@ -48,7 +49,52 @@ ros2 pkg executables turtlesim
 
 ### 1-2. GUIが出ることの確認
 
-turtlesimやrqtはWSLg経由でWindows側にウィンドウが出る。GUIの起動と目視確認はユーザーが行う。ウィンドウが出ない場合は、`echo $DISPLAY` が空でないこと、`wsl --update` 済みであることを確認する。
+turtlesimやrqtはWSLg経由でWindows側にウィンドウが出る。GUIの起動と目視確認はユーザーが行う（Claudeは起動しない）。
+
+**手順A: 表示の前提を確認する（WSL側）**
+
+```bash
+echo $DISPLAY          # 例: :0 （空でなければよい）
+echo $WAYLAND_DISPLAY  # 例: wayland-0 （空でもX11経由で表示できることが多い）
+ls /mnt/wslg           # WSLgの領域が見えること
+```
+
+**手順B: turtlesimを起動する（T1）**
+
+```bash
+ros2 run turtlesim turtlesim_node
+```
+
+- 期待: 水色（青系）の背景に亀が1匹いるウィンドウがWindows側に出る。ターミナルには `Starting turtlesim with node name /turtlesim` と `Spawning turtle [turtle1] at x=...` のようなログが出る。
+- 確認後は、T1で `Ctrl+C` で止める（ウィンドウも閉じる）。
+
+**手順C: rqtを起動する（T1）**
+
+```bash
+rqt
+```
+
+- 期待: 空のrqtウィンドウが出る。上部メニュー `Plugins` が開ければよい（ここではプラグインは使わない）。
+- 確認後はウィンドウを閉じるか、`Ctrl+C` で止める。
+
+**手順D: 起動できたものを個別に確認する（任意）**
+
+```bash
+rqt_graph      # ノード・トピックの図を出すウィンドウ（フェーズ1の後半で使う）
+ros2 run rqt_console rqt_console    # ログ表示ウィンドウ（rqt_console単独のコマンドはPATHになく、ros2 run経由で起動する）
+```
+
+**うまくいかない場合の切り分け**
+
+| 症状 | 確認・対処（この順に） |
+|---|---|
+| `echo $DISPLAY` が空 | WSLgが無効。Windows側のPowerShellで `wsl --version` を実行しWSLgの記載を確認し、`wsl --update` を実行 |
+| `wsl --update` 後も出ない | Windows側のPowerShellで `wsl --shutdown` を実行し、WSLを開き直して手順Aからやり直す |
+| Qtの `could not connect to display` 系のエラー | 手順Aの `$DISPLAY` を再確認。別ターミナルで `export DISPLAY=:0` を試す（一時的な確認用） |
+| `Package 'turtlesim' not found` | 1-1の導入が未完了。`ros2 pkg executables turtlesim` で確認 |
+
+- 目的・影響: 上記はすべて読み取りか自分のPC内のプロセス起動で、外部通信・設定変更はない（`wsl --update` はMicrosoftの公式更新でWindows側の変更を伴うため、実行はユーザー自身で判断する）。
+- 出力例・エラー文言は筆者の知識に基づく。実機の表示が違う場合は、実機を優先して差分を貼ってほしい。
 
 ### 1-3. 環境変数（推奨）
 
@@ -210,6 +256,43 @@ ros2 param dump /turtlesim                   # 現在の設定をYAMLで出力
 ```
 
 `param dump` の出力はYAML形式で、フェーズ3（1-3）で「起動時にYAMLでパラメータを与える」際の書式の見本になる。
+
+**`ros2 param dump /turtlesim` の出力例**（`background_r` を150に変えた後の想定）
+
+```yaml
+/turtlesim:
+  ros__parameters:
+    background_b: 255
+    background_g: 86
+    background_r: 150
+    holonomic: false
+    qos_overrides:
+      /parameter_events:
+        publisher:
+          depth: 1000
+          durability: volatile
+          history: keep_last
+          reliability: reliable
+    use_sim_time: false
+```
+
+- 読み方: 先頭の `/turtlesim` が対象ノード名、その下の `ros__parameters:` に「パラメータ名: 値」が並ぶ。ノード名から始まる階層が、フェーズ3で使うパラメータYAMLの書式そのもの。
+- `background_r/g/b`（背景色）は `set` で変えた値が反映される。`use_sim_time` はシミュレーション時刻を使うかどうかの共通パラメータ（ここでは `false`）。
+- `qos_overrides` の項は、そのノードが使うトピックの通信品質（QoS）の設定値。次の補足を参照。
+- 出力例は筆者の知識に基づく。パラメータの種類・順序・値は実機で異なることがある（`holonomic` の有無等）。実機の出力を優先し、差分があれば貼ってほしい。
+
+**補足: QoS（通信品質の設定）を軽く**
+
+QoS（Quality of Service）は、トピック通信の「信頼性」「過去データを覚えておくか」「キューの深さ」などを決める設定で、Publisher/Subscriberごとに持つ。上の `qos_overrides` に出ている項目の意味は次のとおり。
+
+| 項目 | 意味（上の例の値） |
+|---|---|
+| `reliability` | `reliable`＝届くまで再送する。`best_effort`＝再送せず取りこぼしを許容（速さ優先） |
+| `durability` | `volatile`＝過去分は保存しない。`transient_local`＝後から参加した相手にも直近分を渡す |
+| `history` / `depth` | `keep_last` ＋ `depth`＝最新N件だけキューに保持する（例では1000件） |
+
+- Publisher側とSubscriber側のQoSが噛み合わないと、**エラーにならず黙ってつながらない**ことがある。実際の相性の体験はフェーズ3-2（`docs/phase3_2_turtlesim_qos.md`）で行う（キューの深さ `10` の意味はフェーズ3-1でも触れる）。
+- 今の段階では「トピックにはQoSという設定があり、`ros2 topic info /turtle1/cmd_vel -v` でも見られる」と知っておけば十分。
 
 > 課題5: `ros2 param dump /turtlesim > /tmp/turtlesim_params.yaml` で保存し、中身を読む（保存先は `/tmp` 等の作業外でよい。リポジトリには入れない）。
 
