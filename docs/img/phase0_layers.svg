@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 510" width="940" height="510" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: ROS2の通信レイヤー構造。ノード（rclpy/rclcpp）からROSクライアントライブラリ、RMW、DDS実装を経てネットワークに至る。DDS実装は差し替え可能で、中央管理サーバは無い">
+<title>図: ROS2の通信レイヤー構造。ノード（rclpy/rclcpp）からROSクライアントライブラリ、RMW、DDS実装を経てネットワークに至る。DDS実装は差し替え可能で、中央管理サーバは無い</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="940" height="510" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<path d="M380.0,80.0 L380.0,116.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M380.0,180.0 L380.0,216.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M380.0,280.0 L380.0,316.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M380.0,380.0 L380.0,416.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M540.0,248.0 L580.0,248.0" fill="none" stroke="#888888" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<path d="M540.0,448.0 L580.0,448.0" fill="none" stroke="#888888" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<rect x="220.0" y="16.0" width="320.0" height="64.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="380.0" y="40.0" text-anchor="middle">ノード（あなたが書くコード）</text>
+<text x="380.0" y="60.0" text-anchor="middle">rclpy（Python）・rclcpp（C++）</text>
+<rect x="220.0" y="116.0" width="320.0" height="64.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="380.0" y="140.0" text-anchor="middle">ROSクライアントライブラリ（RCL）</text>
+<text x="380.0" y="160.0" text-anchor="middle">publisher/subscription等のAPI</text>
+<rect x="220.0" y="216.0" width="320.0" height="64.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="380.0" y="240.0" text-anchor="middle">RMW（ROS Middleware Interface）</text>
+<text x="380.0" y="260.0" text-anchor="middle">DDS実装を差し替え可能にする抽象層</text>
+<rect x="220.0" y="316.0" width="320.0" height="64.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="380.0" y="340.0" text-anchor="middle">DDS実装（ミドルウェア本体）</text>
+<text x="380.0" y="360.0" text-anchor="middle">例: Fast DDS・Cyclone DDS等</text>
+<rect x="220.0" y="416.0" width="320.0" height="64.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="380.0" y="440.0" text-anchor="middle">ネットワーク</text>
+<text x="380.0" y="460.0" text-anchor="middle">通常UDP・マルチキャストで通信</text>
+<rect x="580.0" y="213.0" width="340.0" height="70.0" rx="8" fill="#fafafa" stroke="#999999" stroke-width="1.3" stroke-dasharray="6 4"/>
+<text x="592.0" y="238.0" fill="#444444">環境変数 RMW_IMPLEMENTATION で</text>
+<text x="592.0" y="258.0" fill="#444444">DDS実装を切り替えられる</text>
+<rect x="580.0" y="413.0" width="340.0" height="70.0" rx="8" fill="#fafafa" stroke="#999999" stroke-width="1.3" stroke-dasharray="6 4"/>
+<text x="592.0" y="438.0" fill="#444444">ROS1のroscoreのような</text>
+<text x="592.0" y="458.0" fill="#444444">中央のサーバは無い（自律的discovery）</text>
+</g>
+</svg>
