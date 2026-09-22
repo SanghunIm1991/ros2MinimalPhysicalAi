@@ -122,6 +122,8 @@ cat learn_cpp/package.xml
 cat learn_cpp/CMakeLists.txt
 ```
 
+> 補足: `--node-name` は生成する実行ファイルの**名前**を指定するだけのオプション（`ros2 pkg create --help` でも `name of the empty executable` としか説明されておらず、選べる「種類」の列挙はない）。ノードの言語・雛形の中身を決めているのは `--build-type` の方（`ament_python` → `rclpy`のPython最小ノード、`ament_cmake`/`cmake` → `rclcpp`のC++最小ノード、`ament_cargo` → Rust）。2-2と2-3で同じ `--node-name hello` を指定しているのは、両方とも「動作確認用の最小ノード」という同じ役割を、`--build-type` 違いのテンプレートで作っているため。
+
 > 課題1: 2つのパッケージの `package.xml` を見比べる。`<buildtool_depend>` の違い（`ament_python` / `ament_cmake`）と、`<export><build_type>` の違いを確認する。
 
 ### 2-4. ビルドする
@@ -132,7 +134,7 @@ colcon build --symlink-install
 ```
 
 - **必ずワークスペースの直下（`ws/`）で実行する**。`src/` の中で実行すると `build/` などが意図しない場所にできる。
-- 初回は数十秒かかる。WSLのメモリ（実測は `setup_wsl2_ros2.md` 参照）が小さいため、並列数を絞りたい場合は `colcon build --symlink-install --parallel-workers 2` とする。
+- 初回のビルド時間は環境による（この手順書の検証環境では約10秒だった）。応答が遅い・止まる場合のみ、メモリ不足を疑って `colcon build --symlink-install --parallel-workers 2` のように並列数を絞る（検証環境ではこの絞り込みは不要だった。WSLのメモリ実測は `setup_wsl2_ros2.md` 参照）。
 - 成功すると `Summary: 2 packages finished` のように表示される。
 - Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい。
 
@@ -158,6 +160,8 @@ Hi from learn_py.
 hello world learn_cpp package
 ```
 
+> 2026-09-22時点でユーザーが実機で確認済み: `learn_py`・`learn_cpp`とも期待どおりの表示だった。
+
 `source` の効果を確認する:
 
 ```bash
@@ -168,6 +172,19 @@ ros2 pkg executables learn_cpp
 ```
 
 > 課題2: 新しいターミナルを開き、`source` しないまま `ros2 run learn_py hello` を試す。エラーになることを確認してから、`source install/setup.bash` をして再実行する。
+
+#### `ros2 pkg` サブコマンドの補足
+
+ここまでで使った4つのサブコマンド（`ros2 pkg <sub> --help` で確認済み、Jazzy時点）の役割とオプション:
+
+| サブコマンド | 役割 | 主なオプション |
+|---|---|---|
+| `create <package_name>` | 新規パッケージの雛形を作る（2-2/2-3で使用） | `--build-type {cmake,ament_cmake,ament_cargo,ament_python}`（言語・ビルド系）、`--node-name`（雛形ノードの実行ファイル名。上記の補足参照）、`--library-name`（雛形ライブラリ名、C++のみ）、`--dependencies`（`package.xml`の`<depend>`）、`--license`、`--maintainer-name`/`--maintainer-email`、`--destination-directory`（作成先ディレクトリ）、`--package-format {2,3}`（`package.xml`のスキーマ版） |
+| `list` | `source`済みの環境から見えているパッケージ名を一覧表示する | オプションなし（`-h`のみ）。今回のように `grep` で絞り込む使い方が一般的 |
+| `prefix <package_name>` | そのパッケージのインストール先prefix（`install/<pkg>` 等）を表示する | `--share`: launchファイルやconfig等の共有リソースが入る `share/<pkg>` を表示する |
+| `executables [package_name]` | そのパッケージが提供する実行ファイル名（`ros2 run` の第2引数に使える名前）を一覧表示する | `package_name`省略で全パッケージ分。`--full-path`: インストール先の絶対パスも表示する |
+
+`list`・`prefix`・`executables`はいずれも読み取り専用（副作用なし）で、`ros2 run` する前の確認・デバッグに使う。
 
 ### 2-6. `install/` の中身を見る
 
