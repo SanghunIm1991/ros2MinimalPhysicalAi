@@ -402,15 +402,17 @@ ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talke
 
 今回の「変更を検証して拒否する」コールバックは、`kp < 0` のような不正なゲインを弾くのに使える。
 
-## 7. 記録用の表
+## 7. Python版とC++版の違いのまとめ
 
 | 観点 | Python | C++ |
 |---|---|---|
-| 宣言〜取得の書き方 | | |
-| コールバックの引数・戻り値の型 | | |
-| ハンドル保持の必要性（C++のみ） | — | |
-| タイマーの作り直し | | |
-| つまずいた点 | | |
+| 宣言〜取得の書き方 | `declare_parameter(名前, 既定値)` で宣言し、別行の `get_parameter(名前).value` で取得（2手順） | `declare_parameter<型>(名前, 既定値)` が宣言と同時に現在値を返す（1行） |
+| コールバックの引数・戻り値の型 | 引数はPythonの `Parameter` のリスト、戻り値は `SetParametersResult`（コンストラクタ引数で組み立てる） | 引数は `const std::vector<rclcpp::Parameter> &`、戻り値は `rcl_interfaces::msg::SetParametersResult`（変数を作ってフィールドに代入） |
+| ハンドル保持の必要性 | 不要（戻り値を保持しなくても動く） | **必須**。`add_on_set_parameters_callback` の戻り値（`OnSetParametersCallbackHandle::SharedPtr`）をメンバに保存しないと、コールバック登録が解除される |
+| タイマーの作り直し | `self.timer.cancel()` してから `create_timer` し直す（明示的にキャンセル） | 新しい `shared_ptr` を `timer_` に代入するだけ（古いタイマーは参照が無くなり自動的に解放・停止） |
+| 値の取り出し方 | `p.value` が型を問わず使える | `p.as_double()`／`p.as_string()` など、宣言した型に合わせて呼び分ける（型が合わないと例外） |
+
+C++で最も見落としやすいのは「コールバックハンドルの保持忘れ」（8節）。Pythonには無い落とし穴で、C++の`add_on_set_parameters_callback`特有の注意点。
 
 ## 8. つまずきやすい点
 

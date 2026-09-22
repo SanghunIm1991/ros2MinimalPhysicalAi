@@ -223,6 +223,12 @@ ros2 run learn_cpp hello    # 新しい文言になる
 - `--packages-select <名前>`: 指定したパッケージだけをビルドする。C++は時間がかかるので、普段はこれを使うと速い。
 - 新しい実行ファイルを追加する場合（`setup.py` の `entry_points` や `CMakeLists.txt` の変更）は、`--symlink-install` でも**再ビルドが必要**。
 
+> 補足: なぜC++の再ビルドにも `--symlink-install` を付けるか
+>
+> C++のコンパイル済み実行ファイルは `src/` に実体が無い（ソースからコンパイルして初めて生成される）ため、`--symlink-install` を付けても「再ビルド不要」にはならない（`install/learn_cpp/lib/learn_cpp/hello` は `src/` ではなく `build/learn_cpp/hello` へのシンボリックリンクになるだけで、`build/` 側の中身はどのみち再コンパイルが要る）。この1コマンド単体では、付けても付けなくても動作は変わらない。
+>
+> それでも付ける理由は、**ワークスペース全体のインストール方式を一貫させるため**。`--packages-select` で対象を絞っている間は他パッケージに影響しないが、`--packages-select` を付け忘れて`colcon build`（対象なし＝ワークスペース全体）を実行すると、既にシンボリックリンク化されていた `learn_py` 側が実体コピーに巻き戻り、「Pythonは編集がビルド無しで反映される」状態が静かに壊れる（実機での検証で確認済み）。毎回同じ形のコマンドを使い回すことで、この事故を防いでいる。なお、C++パッケージでも `package.xml` やCMake生成物（`install/learn_cpp/share/learn_cpp/` 配下の一部）はシンボリックリンクになるため、実行ファイル以外では`--symlink-install`に意味がある。
+
 > 課題4: `--symlink-install` を付けずに `colcon build` して、Pythonのソースを書き換えても反映されないことを確認する。確認後は `rm -rf build install log` で消して、`--symlink-install` 付きでビルドし直す（`ws/` の中だけを消すこと）。
 
 ### 2-8. Git管理の確認
@@ -232,7 +238,10 @@ cd ~/work/ros2MinimalPhysicalAi
 git status --short
 ```
 
-`ws/src/` だけが未追跡として出て、`ws/build`・`ws/install`・`ws/log` は出ないこと（フェーズ3-3〜4の途中では、一時的に `ws/config/` も出る。フェーズ4で移すのでコミットしない）。あわせて、Public化前提のため、次を確認する:
+- **`ws/src` を一度もコミットしていない時点**（本フェーズで初めて実行する場合）: `?? ws/` の1行だけが出る。これは `ws/build`・`ws/install`・`ws/log` が `.gitignore` で除外されているからではなく、gitの既定動作（追跡ファイルが1つも無いディレクトリは中身を展開せず1行にまとめる）による。`ws/src/` だけが個別に出るわけではない。中身を個別に確認したい場合は `git status --short -uall` を使うと、`ws/src/...` 配下のファイルだけが列挙され、`ws/build`・`ws/install`・`ws/log` は（`.gitignore` どおり）出てこないことを確認できる（フェーズ3-3〜4の途中では、一時的に `ws/config/...` も出る。フェーズ4で移すのでコミットしない）。
+- **`ws/src` を一度コミットした後**: 変更が無ければ何も出ない（クリーン）。新しいファイルを `ws/src` 配下に追加した場合は、そのファイルのパス（例: `?? ws/src/learn_py/learn_py/new_node.py`）だけが個別に出る。
+
+あわせて、Public化前提のため、次を確認する:
 
 ```bash
 grep -n 'maintainer' ws/src/learn_py/package.xml ws/src/learn_cpp/package.xml
@@ -241,15 +250,18 @@ grep -n 'maintainer' ws/src/learn_py/setup.py
 
 実メールアドレスが入っていないこと（`noreply@example.com` であること）。コミットするかどうかはClaudeに依頼する（コミットは規約に従いClaudeが行う）。
 
-## 3. 記録用の表（完了条件の確認）
+## 3. Python版とC++版の違いのまとめ
 
-| 観点 | Python（ament_python） | C++（ament_cmake） |
+本フェーズで確認したPython（`ament_python`）とC++（`ament_cmake`）の違いを整理する（1-3節の表・2-6節・2-7節の内容の総括）。
+
+| 観点 | Python（`ament_python`） | C++（`ament_cmake`） |
 |---|---|---|
-| 作成コマンドの差 | | |
-| 実行ファイルの登録場所 | | |
-| `install/` 内の実行ファイルの正体 | | |
-| ソース修正後に必要な操作 | | |
-| つまずいた点 | | |
+| 作成コマンドの差 | `--build-type ament_python` | `--build-type ament_cmake` |
+| 実行ファイルの登録場所 | `setup.py` の `entry_points` の `console_scripts` | `CMakeLists.txt` の `add_executable` と `install(TARGETS ...)` |
+| `install/` 内の実行ファイルの正体 | Pythonスクリプト（ソースを呼び出す短いラッパー） | コンパイル済みELFバイナリ |
+| ソース修正後に必要な操作 | `--symlink-install` なら不要（即反映） | 必須（`g++` での再コンパイルが要る。2-7節） |
+
+コンパイルという工程が挟まる分、C++は「編集→即実行」のPythonに比べて反復（トライ＆エラー）のサイクルが長くなる。一方でコンパイル時に型やシグネチャの誤りを検出できる点はC++の利点（実行時まで気づかないPythonとの違い）。
 
 ## 4. つまずきやすい点
 

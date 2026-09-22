@@ -606,15 +606,18 @@ ros2 service call /reset_counter std_srvs/srv/Trigger
 
 長くかかる処理で、途中経過を知りたい場合は、サービスではなく**アクション**（フェーズ3-5）を使う。
 
-## 8. 記録用の表
+## 8. Python版とC++版の違いのまとめ
 
 | 観点 | Python | C++ |
 |---|---|---|
-| サーバのコールバックの書き方（応答の返し方） | | |
-| クライアントの待ち方 | | |
-| `wait_for_service` の書き方 | | |
-| 型名（`Request`/`Response`）の扱い | | |
-| つまずいた点 | | |
+| サーバのコールバック（応答の返し方） | `(request, response)` を受け取り、`response` を埋めて**`return response`する**（忘れるとエラー） | `(Request::SharedPtr, Response::SharedPtr)` を受け取り、戻り値は無く`response->sum = ...`のように**直接書き込む** |
+| クライアントの構造 | `Node`を継承したクラスを作り、`main`から呼ぶ | クラスを作らず`rclcpp::Node::make_shared("add_client")`で直接ノードを作り、`main`の中に手続き的に書く |
+| `wait_for_service` | `client.wait_for_service(timeout_sec=5.0)` | `client->wait_for_service(5s)`（`std::chrono_literals`の`5s`を使う） |
+| 結果の待ち方 | `rclpy.spin_until_future_complete(node, future)` の後、`future.result()`（`None`なら失敗） | `rclcpp::spin_until_future_complete(node, future)`の戻り値が`SUCCESS`かを判定し、成功なら`future.get()` |
+| 型名（`Request`/`Response`） | `AddTwoInts.Request()` | `AddTwoInts::Request`（`::`でネストした型としてアクセス。`using AddTwoInts = example_interfaces::srv::AddTwoInts;`で別名を付けるのが定石） |
+| サーバ未起動時の終了コード | `return`するだけで終了コードは`0`のまま | `return 1`で明示的に異常終了を示す |
+
+サーバ側の「応答を返す（Python）」と「応答に書き込む（C++）」の違いが最も間違えやすい。C++で`return`を書いてもコンパイルエラーにならない（単に無視される）ため、気づきにくい落とし穴になる。
 
 ## 9. つまずきやすい点
 

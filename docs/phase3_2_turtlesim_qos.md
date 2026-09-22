@@ -662,7 +662,7 @@ ros2 topic info /qos_test -v
 
 Publisher・SubscriptionそれぞれのQoS（`Reliability`、`Durability`）が表示される。**つながらない場合は、この2つを見比べて、どちらが食い違っているかを読み取る**。
 
-> 課題4: 表の①〜⑦をすべて試し、期待と実際の結果を記録表に書く。警告の文言（非互換のポリシー名が出ること）を控える。
+> 課題4: 表の①〜⑦をすべて試し、期待どおりの結果になるか確認する。つながらない組み合わせ（④・⑦）では、受信側のログに非互換のポリシー名を含む警告が出ることを確認する。
 >
 > 課題5: Python版のtalker × C++版のlistener（およびその逆）でも、④と⑦が同じ結果になることを確認する。QoSの扱いが言語に依存しないことを確認する。
 
@@ -675,17 +675,14 @@ Publisher・SubscriptionそれぞれのQoS（`Reliability`、`Durability`）が�
 
 フェーズ5の車両シミュレーションで、速度（センサ相当）と制御指令のトピックにどのQoSを使うか、考える材料になる。
 
-## 7. 記録用の表
+## 7. QoS互換性のまとめ
 
-| 試すこと | 期待 | 実際（言語の組み合わせ） | 警告の文言・気づき |
-|---|---|---|---|
-| ① reliable / reliable | つながる | | |
-| ② reliable / best_effort | つながる | | |
-| ③ best_effort / best_effort | つながる | | |
-| ④ best_effort / reliable | つながらない | | |
-| ⑤ transient_local / transient_local | 過去分も届く | | |
-| ⑥ transient_local / volatile | つながる | | |
-| ⑦ volatile / transient_local | つながらない | | |
+6-2節で確認した組み合わせを、判定ルールとして整理する。
+
+- **reliability**: `best_effort`側のPublisherと`reliable`側のSubscriberの組み合わせ（④）だけがつながらない。Subscriberが要求する品質（`reliable`）を、Publisherが提供できない（`best_effort`）ため。それ以外の3通り（①②③）はつながる。
+- **durability**: `volatile`側のPublisherと`transient_local`側のSubscriber（⑦）だけがつながらない。理由はreliabilityと同じ構造（Subscriberが要求する`transient_local`をPublisherが提供できない）。
+- 共通の考え方: QoSの互換性は「Subscriberが要求する最低品質 ≦ Publisherが提供する品質」で決まる（「要求 vs 提供」モデル）。**Publisher側の設定を緩めるとつながらなくなる**ことがある、と覚えておくと判断しやすい。
+- 6-2節で確認したとおり、この互換性判定はPython版・C++版のどちらの組み合わせでも同じ結果になる（QoSはROS2共通の仕組みで、言語には依存しない）。
 
 ## 8. つまずきやすい点
 

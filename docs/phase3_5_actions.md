@@ -682,15 +682,16 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 >
 > 課題5（発展）: `rqt_graph` でアクションが内部的に「サービス3つ＋トピック2つ」（`_action/send_goal`、`_action/cancel_goal`、`_action/get_result`、`_action/feedback`、`_action/status`）でできていることを、`ros2 topic list -t` / `ros2 service list -t` で見つける。
 
-## 7. 記録用の表
+## 7. Python版とC++版の違いのまとめ
 
 | 観点 | Python | C++ |
 |---|---|---|
-| サーバの構成（コールバックの数と役割） | | |
-| 実行処理の動かし方（executor / スレッド） | | |
-| クライアントの結果の受け方（Future / options） | | |
-| コード行数（サーバ+クライアント） | | |
-| つまずいた点 | | |
+| サーバの構成 | `ActionServer(...)`に`execute_callback`／`goal_callback`／`cancel_callback`の3つを**キーワード引数**で渡す | `create_server<Fibonacci>(...)`に3つの処理を**位置引数のラムダ**として順番に渡す（対応は4節の表） |
+| 実行処理の動かし方 | `MultiThreadedExecutor` + `ReentrantCallbackGroup`で、executorのスレッドを複数化して中断要求と実行処理を並行させる | `cancel_callback`側で`std::thread(...).detach()`し、実行(`execute`)を明示的に別スレッドへ逃がす（学習用の簡易策。終了時にスレッドが残りうる点は8節の注意） |
+| クライアントの結果の受け方 | `send_goal_async` → `Future`に`add_done_callback`で応答（受理/拒否）、`get_result_async()`にも`add_done_callback`で最終結果、という**Futureの連鎖** | `send_goal_options`に`goal_response_callback`／`feedback_callback`／`result_callback`を設定し、`async_send_goal(goal, options)`で送る（対応は6節の表） |
+| コード行数（サーバ＋クライアント） | 136行（63＋73） | 175行（74＋101） |
+
+実行モデルの違い（Pythonは「executorとコールバックグループ」、C++は「明示的なスレッド生成」）が、アクションで初めて表面化するPython/C++の一番大きな差。どちらも「長時間処理の間もサーバが他の要求に応答できるようにする」という同じ目的のための工夫だが、手段が異なる。
 
 ## 8. つまずきやすい点
 
@@ -706,7 +707,7 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 
 ## 9. 次へ
 
-フェーズ4（`docs/phase4_launch.md`）で、これまでのノードをlaunchファイルで束ねる。フェーズ3の総括（1-7の比較表）は、フェーズ3-1〜3-5の各「記録用の表」を材料に、ユーザーが `docs/` に「1-7の比較表」としてまとめる（完成後にレビューを依頼できる）。
+フェーズ4（`docs/phase4_launch.md`）で、これまでのノードをlaunchファイルで束ねる。フェーズ3の総括（1-7の振り返り）は、フェーズ3-1〜3-5・フェーズ2の各「Python版とC++版の違いのまとめ」節（本文に記載済み）を読み返して、コード量・型の扱い・ビルド手順・つまずきの傾向を自分の言葉で整理する形に変える（各手順書に既に答えが書いてあるため、新たに空欄の比較表を埋める作業は不要）。
 
 ## 10. 公式ドキュメント・参考資料
 
