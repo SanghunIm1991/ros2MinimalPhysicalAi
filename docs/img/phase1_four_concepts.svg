@@ -3,21 +3,21 @@
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
 <rect x="0" y="0" width="1006" height="435" fill="#ffffff"/>
 <g transform="translate(22.4,6.0)" fill="#1a1a1a">
-<path d="M153.1,90.0 L272.6,90.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
 <rect x="26.9" y="28.0" width="380.5" height="100.0" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
 <text x="38.9" y="50.0" font-weight="bold" fill="#444">トピック（一方向・継続的）</text>
-<path d="M600.0,78.0 L800.0,78.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M800.0,102.0 L600.0,102.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M153.1,90.0 L272.6,90.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
 <rect x="500.0" y="18.0" width="400.1" height="120.0" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
 <text x="512.0" y="40.0" font-weight="bold" fill="#444">サービス（要求→応答・1回）</text>
-<path d="M218.4,330.0 L315.0,330.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M600.0,78.0 L800.0,78.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M800.0,102.0 L600.0,102.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
 <rect x="1.6" y="268.0" width="403.4" height="100.0" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
 <text x="13.6" y="290.0" font-weight="bold" fill="#444">パラメータ（ノードの設定値）</text>
+<path d="M218.4,330.0 L315.0,330.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="500.0" y="231.0" width="460.1" height="174.0" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
+<text x="512.0" y="253.0" font-weight="bold" fill="#444">アクション（長い処理・途中経過つき）</text>
 <path d="M600.0,296.0 L860.0,296.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
 <path d="M860.0,330.0 L600.0,330.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
 <path d="M860.0,364.0 L600.0,364.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<rect x="500.0" y="231.0" width="460.1" height="174.0" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
-<text x="512.0" y="253.0" font-weight="bold" fill="#444">アクション（長い処理・途中経過つき）</text>
 <rect x="46.9" y="72.0" width="106.1" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
 <text x="100.0" y="95.0" text-anchor="middle">Publisher</text>
 <rect x="272.6" y="72.0" width="114.8" height="36.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
