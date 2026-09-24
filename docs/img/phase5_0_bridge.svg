@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 892 270" width="892" height="270" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: ROS2側のノードとGazeboの車両のあいだを、parameter_bridgeが型を変換して中継する">
+<title>図: ROS2側のノードとGazeboの車両のあいだを、parameter_bridgeが型を変換して中継する</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="892" height="270" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="8" y="8" width="377" height="254" rx="10" fill="#f7faff" stroke="#9bb5d8" stroke-dasharray="6 4"/>
+<rect x="625" y="8" width="259" height="254" rx="10" fill="#f6fbf4" stroke="#9cc49a" stroke-dasharray="6 4"/>
+<path d="M170,97 L405,97" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M405,215 L170,215" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M565,120 L695,120" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M695,200 L565,200" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="20" y="62" width="150" height="70" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="20" y="180" width="150" height="70" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="405" y="62" width="160" height="188" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
+<rect x="695" y="62" width="170" height="188" rx="8" fill="#eaf6e8" stroke="#4a8f45" stroke-width="1.5"/>
+<text x="20" y="32" font-weight="bold">ROS2 の世界（DDS）</text>
+<text x="637" y="32" font-weight="bold">Gazebo の世界（gz-transport）</text>
+<text x="95.0" y="84.0" text-anchor="middle">指令を送る側</text>
+<text x="95.0" y="102.0" text-anchor="middle">ros2 topic pub</text>
+<text x="95.0" y="120.0" text-anchor="middle">gz_drive（5節）</text>
+<text x="95.0" y="202.0" text-anchor="middle">観察する側</text>
+<text x="95.0" y="220.0" text-anchor="middle">ros2 topic echo</text>
+<text x="95.0" y="238.0" text-anchor="middle">gz_drive（5節）</text>
+<text x="485.0" y="134.0" text-anchor="middle">parameter_bridge</text>
+<text x="485.0" y="152.0" text-anchor="middle">（ros_gz_bridge）</text>
+<text x="485.0" y="170.0" text-anchor="middle">型を変換して</text>
+<text x="485.0" y="188.0" text-anchor="middle">中継する</text>
+<text x="780.0" y="143.0" text-anchor="middle">gz sim</text>
+<text x="780.0" y="161.0" text-anchor="middle">vehicle_green</text>
+<text x="780.0" y="179.0" text-anchor="middle">DiffDriveプラグイン</text>
+<text x="287.5" y="73" text-anchor="middle" font-size="12" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">/model/vehicle_green/cmd_vel</text>
+<text x="287.5" y="89" text-anchor="middle" font-size="12" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">geometry_msgs/msg/Twist</text>
+<text x="287.5" y="191" text-anchor="middle" font-size="12" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">/model/vehicle_green/odometry</text>
+<text x="287.5" y="207" text-anchor="middle" font-size="12" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">nav_msgs/msg/Odometry</text>
+<text x="630" y="112" text-anchor="middle" font-size="12" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">gz.msgs.Twist</text>
+<text x="630" y="192" text-anchor="middle" font-size="12" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">gz.msgs.Odometry</text>
+</g>
+</svg>
