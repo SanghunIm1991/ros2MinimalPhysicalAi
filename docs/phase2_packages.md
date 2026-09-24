@@ -235,7 +235,7 @@ colcon build --symlink-install
 ```
 
 - **必ずワークスペースの直下（`ws/`）で実行する**。`src/` の中で実行すると `build/` などが意図しない場所にできる。
-- 初回のビルド時間は環境による（この手順書の検証環境では約10秒だった）。応答が遅い・止まる場合のみ、メモリ不足を疑って `colcon build --symlink-install --parallel-workers 2` のように並列数を絞る（検証環境ではこの絞り込みは不要だった。WSLのメモリ実測は `setup_wsl2_ros2.md` 参照）。
+- 初回のビルド時間は環境による（この手順書の検証環境では約10秒だった）。応答が遅い・止まる場合のみ、メモリ不足を疑って `colcon build --symlink-install --parallel-workers 2` のように並列数を絞る（検証環境ではこの絞り込みは不要だった。WSLのメモリは `setup_wsl2_ros2.md` の1節を参照）。
 - 成功すると `Summary: 2 packages finished` のように表示される。期待する結果の例（秒数は環境によって変わる）:
 
 ```text
@@ -391,6 +391,8 @@ ros2 run learn_cpp hello    # 新しい文言になる
 > 課題4: `--symlink-install` を付けずに `colcon build` して、Pythonのソースを書き換えても反映されないことを確認する。確認後は `rm -rf build install log` で消して、`--symlink-install` 付きでビルドし直す（`ws/` の中だけを消すこと）。
 
 ### 2-8. Git管理の確認
+
+> この節は、`~/work/ros2MinimalPhysicalAi` をGitのリポジトリとして持っている場合（この教材のリポジトリをcloneした場合など）だけ行う。環境構築の6節でフォルダを作っただけの場合は、`git status` が `fatal: not a git repository` と表示されるので、この節は飛ばしてよい。
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi
