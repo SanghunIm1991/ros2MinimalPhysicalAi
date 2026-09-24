@@ -201,13 +201,13 @@ def generate_launch_description():
 | `Node(package=..., executable=..., name=..., output='screen')` | ROS2ノードを1つ起動する。`package` と `executable` は `ros2 run パッケージ 実行ファイル` の2つの引数に相当し、`name` でノード名を上書きし、`output='screen'` でログを端末に出す。 |
 | `package=['learn_', LaunchConfiguration('talker_lang')]` | 文字列と置換をリストで並べると、**連結されて1つの文字列**になる。`py` なら `learn_py`、`cpp` なら `learn_cpp` になり、**パッケージ名を切り替える**ことで言語を切り替えている。 |
 
-ポイントは、`LaunchConfiguration` が「あとで評価される置換」であること。`generate_launch_description()` が動く時点では、まだ引数の値は確定していない。そのため、この関数の中で `if LaunchConfiguration(...) == 'cpp':` のように**Pythonの `if` では判定できない**（常に「置換オブジェクト」が比較されてしまう）。値で分岐したい場合は、課題3の `OpaqueFunction` を使う。
+ポイントは、`LaunchConfiguration` が「あとで評価される置換」であること。`generate_launch_description()` が動く時点では、まだ引数の値は確定していない。そのため、この関数の中で `if LaunchConfiguration(...) == 'cpp':` のように**Pythonの `if` では判定できない**（常に「置換オブジェクト」が比較されてしまう）。値で分岐したい場合は、`OpaqueFunction` を使う（この節（4-1）の末尾の課題3で扱う）。
 
 つまずきやすい点:
 
 - `DeclareLaunchArgument` を書き忘れて `LaunchConfiguration` だけ使うと、「その launch configuration が存在しない」という趣旨のエラーになる。宣言は `LaunchDescription` のリストに入れておく（慣例としてノードより上に書く）。
-- 引数の値は**常に文字列**として扱われる。型が要る場面（数値など）は、後述の `ParameterValue` のように明示する。
-- `package` と `executable` の組み合わせが実在しないと、起動時にエラーになる（例: `talker_lang:=rust` は `learn_rust` が無いエラー、課題2）。
+- 引数の値は**常に文字列**として扱われる。型が要る場面（数値など）は、4-4節の `ParameterValue` のように明示する。
+- `package` と `executable` の組み合わせが実在しないと、起動時にエラーになる（例: `talker_lang:=rust` は `learn_rust` が無いエラー。この節の末尾の課題2で試す）。
 
 観察ポイント: `--show-args` で2つの引数と説明・既定値が見えること、`--print` では置換が**評価される前の形**（`'learn_' + LaunchConfig('talker_lang')`）で見えること、起動後に `ros2 node list` に `/talker` と `/listener` が出ることを確認する。「`LaunchConfiguration` は起動時に評価される予約票」という上の説明を、`--print` の表示で目で確かめられる。
 
@@ -277,7 +277,7 @@ ros2 launch learn_bringup pubsub.launch.py talker_lang:=cpp listener_lang:=py
 [INFO] [talker-1]: process has finished cleanly [pid 12345]
 ```
 
-2つ目のコマンド（`talker_lang:=cpp`）でも、ログの見た目は同じになる。どちらの言語が動いているかは、ログではなく `ros2 node info /talker` などで調べる（課題1）。課題2の `talker_lang:=rust` では、ノードは1つも起動せず、`[ERROR] [launch]: Caught exception in launch (see debug for traceback): ...` に続いて、`learn_rust` というパッケージが見つからないという趣旨のメッセージが出て終わる。
+2つ目のコマンド（`talker_lang:=cpp`）でも、ログの見た目は同じになる。どちらの言語が動いているかは、ログではなく `ros2 node info /talker` などで調べる（この節の末尾の課題1）。同じく課題2の `talker_lang:=rust` では、ノードは1つも起動せず、`[ERROR] [launch]: Caught exception in launch (see debug for traceback): ...` に続いて、`learn_rust` というパッケージが見つからないという趣旨のメッセージが出て終わる。
 
 > 課題1: 4通りの組み合わせをすべて起動し、`ros2 node list` と `ros2 topic info /chatter -v` で、どの言語のノードがつながっているか確認する。
 >
@@ -377,7 +377,7 @@ YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序�
 | 引数の埋め込み | `LaunchConfiguration('引数名')`（Pythonのオブジェクトとして扱う） | `$(var 引数名)` | `$(var 引数名)`（XMLと共通の記法） |
 | 条件分岐・計算 | 可能（`IfCondition`・`PythonExpression`や、素のPythonの関数・分岐がそのまま使える） | 不可（宣言的な起動の一覧のみ） | 不可（同左） |
 
-行数だけならXMLが圧倒的に短いが、これは「talker/listenerを1つずつ書くだけ」という単純な内容だから。4-4・4-6のようにパスの組み立てや条件分岐が絡むと、Python形式でないと書けない処理が増える（課題4）。
+行数だけならXMLが圧倒的に短いが、これは「talker/listenerを1つずつ書くだけ」という単純な内容だから。4-4・4-6のようにパスの組み立てや条件分岐が絡むと、Python形式でないと書けない処理が増える（この節の末尾の課題4で、3形式を実際に動かして確かめる）。
 
 3形式を、それぞれ確認する:
 
@@ -463,9 +463,9 @@ YAMLパラメータファイルの構造（`config/param_talker.yaml`）は、�
 
 - `Node(name=...)` を変えたのに、YAMLの最上位のノード名を直し忘れる。
 - YAMLを `parameters` の**後ろ**に置くと、引数で渡したはずの値がYAMLに上書きされる。並びの順序に意味がある。
-- 引数に既定値があるので、`period` を指定しなくても引数側（`1.0`）が使われ、YAMLの値（`0.5`）は結果的に使われない（課題5の補足）。
+- 引数に既定値があるので、`period` を指定しなくても引数側（`1.0`）が使われ、YAMLの値（`0.5`）は結果的に使われない（この節の末尾の課題5と、その補足）。
 
-観察ポイント: `ros2 param get` で、`message` はYAMLの値、`period` は引数の値（`period:=0.2` なら0.2）になっていること。YAMLが `install/.../share/...` から読まれていること（課題6）。
+観察ポイント: `ros2 param get` で、`message` はYAMLの値、`period` は引数の値（`period:=0.2` なら0.2）になっていること。YAMLが `install/.../share/...` から読まれていること（この節の末尾の課題6）。
 
 ```bash
 ros2 launch learn_bringup param.launch.py
@@ -481,7 +481,7 @@ ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2
 [param_talker-1] [INFO] [1727210100.600000000] [param_talker]: publish: from yaml
 ```
 
-1つ目のコマンド（引数なし）では、周期は引数の既定値1.0秒になる（課題5の補足）。
+1つ目のコマンド（引数なし）では、周期は引数の既定値1.0秒になる（この節の末尾の課題5と、その補足）。
 
 別ターミナルで、実際に値が入っているか確認する:
 
@@ -626,7 +626,7 @@ def generate_launch_description():
 
 - includeされた側の引数は、`launch_arguments` で渡さなければ、**その既定値**が使われる。`param` の呼び出しは引数を渡していないので、`lang=py`、`period=1.0` になる。`pubsub` は `talker_lang=cpp`、`listener_lang=py` で固定している。
 - 名前空間が効くのは、**相対名**（先頭に `/` が無い名前）のノード名・トピック名。コードの中で `/chatter` のように絶対名で書くと、名前空間を付けても変わらない。`talker` が `chatter` と相対名で書いているので、`/demo/chatter` になる。
-- **remap**（トピック名の付け替え）は、このサンプルには含まない。`Node(remappings=[('chatter', 'renamed_chatter')])` のように「元の名前 → 新しい名前」のペアで指定する。課題7で試す。片方だけに付けると名前が食い違って、つながらなくなる。
+- **remap**（トピック名の付け替え）は、このサンプルには含まない。`Node(remappings=[('chatter', 'renamed_chatter')])` のように「元の名前 → 新しい名前」のペアで指定する。この節の末尾の課題7で試す。片方だけに付けると名前が食い違って、つながらなくなる。
 
 つまずきやすい点:
 
@@ -634,7 +634,7 @@ def generate_launch_description():
 - 名前空間を付けたのに、コードが絶対名を使っていて変わらない、という食い違いに注意する。
 - 同じノード名が2つ起動するとログに警告が出る（名前空間を付ける理由の1つ）。
 
-観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、コメントの例（`/demo/talker`、`/demo/listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`Ctrl+C` で全ノードが止まること（課題8）。
+観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、コメントの例（`/demo/talker`、`/demo/listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`Ctrl+C` で全ノードが止まること（この節の末尾の課題8）。
 
 ```bash
 ros2 launch learn_bringup compose.launch.py

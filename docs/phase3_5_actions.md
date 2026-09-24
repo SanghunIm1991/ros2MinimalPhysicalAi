@@ -224,7 +224,7 @@ def main(args=None):
 - **`execute`**: `goal_handle.request` がゴール本体。`Fibonacci.Feedback()` と `Fibonacci.Result()` は、送るメッセージの入れ物を先に作っておいて使い回している。ループ `range(1, order)` は `order - 1` 回まわり、初期の2項と合わせて `order + 1` 項になる（仕様どおり）。`sequence[i] + sequence[i - 1]` が「直前2項の和」。
 - **`publish_feedback`**: 呼んだ瞬間に feedback がクライアントへ飛ぶ。ループの先頭で1回目を出してから `time.sleep(1.0)` するので、最初の feedback はほぼ即座に、以降は約1秒間隔で届く。
 - **`succeed()` と `canceled()`**: どちらも「ゴールの最終状態を宣言する」呼び出しで、**戻り値として結果を返すのとは別**。宣言のあとに `return result` で結果本体をクライアントへ渡す。宣言を忘れると、`execute` が戻ったときに警告が出てゴールは ABORTED 扱いになる（実機での確認は未実施）。`canceled()` は中断要求を受け付けたあと（CANCELING のとき）に呼ぶ、という順序も守る。
-- **なぜ `MultiThreadedExecutor` と `ReentrantCallbackGroup` が要るか**: `execute` は `time.sleep` を含む長い処理で、その間ずっとexecutorのスレッドを占有する。単一スレッドのexecutorだと、その間に届いた中断要求（`on_cancel`）は順番待ちになり、`execute` が終わるまで処理されない。複数スレッドのexecutorに変えたうえで、`ReentrantCallbackGroup`（同じグループのコールバックを同時に動かしてよい）にしておくと、`execute` の実行中に別スレッドで `on_cancel` が動ける。課題3はこの効果を外して確認するもの。同じ理由で、課題4のように2つのゴールを並行処理できるのも、この2つのおかげ。
+- **なぜ `MultiThreadedExecutor` と `ReentrantCallbackGroup` が要るか**: `execute` は `time.sleep` を含む長い処理で、その間ずっとexecutorのスレッドを占有する。単一スレッドのexecutorだと、その間に届いた中断要求（`on_cancel`）は順番待ちになり、`execute` が終わるまで処理されない。複数スレッドのexecutorに変えたうえで、`ReentrantCallbackGroup`（同じグループのコールバックを同時に動かしてよい）にしておくと、`execute` の実行中に別スレッドで `on_cancel` が動ける。6-2節の課題3は、この効果を外して確認するもの。同じ理由で、6-2節の課題4のように2つのゴールを並行処理できるのも、この2つのおかげ。
 - **`main`**: `rclpy.spin(node, executor=executor)` にexecutorを渡すのが要点。`ExternalShutdownException` は外部からシャットダウンされたときの例外で、`Ctrl+C` の `KeyboardInterrupt` と一緒に握りつぶして静かに終わらせている。
 
 つまずきやすい点と観察ポイント:
@@ -767,7 +767,7 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 
 中断要求とサーバのループが同じくらいの時刻（約3秒後）に重なるので、中断前のfeedbackが3回か4回か、結果の数列がどこまで伸びているかは、実行ごとに変わりうる。見るべき点は、結果のstatusが `CANCELED` で、数列が `order:=10` の完成形（11項）より短いこと。
 
-課題1（`order:=0`）では、クライアントは `[ERROR] ... [fibonacci_client]: goal rejected` を出してすぐ終わり、サーバには `[WARN] ... [fibonacci_server]: reject goal: order=0` が出る。拒否されたゴールには、feedbackも結果も届かない。
+この節の末尾の課題1（`order:=0`）では、クライアントは `[ERROR] ... [fibonacci_client]: goal rejected` を出してすぐ終わり、サーバには `[WARN] ... [fibonacci_server]: reject goal: order=0` が出る。拒否されたゴールには、feedbackも結果も届かない。
 
 言語の組み合わせを試す:
 

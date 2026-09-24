@@ -162,7 +162,7 @@ def main(args=None):
 - `super().__init__('turtle_circle')`: 親クラス `Node` を、ノード名 `turtle_circle` で初期化する。これを呼ばないと、以降の `create_*` 系が使えない。
 - `create_publisher(Twist, '/turtle1/cmd_vel', 10)`: 引数は「メッセージ型・トピック名・QoS」。QoSに整数を渡すと「深さ（キューに溜める件数）が10で、他は既定値（reliable・volatile）」の意味になる。先頭の `/` を付けると絶対名になり、名前空間に左右されない。turtlesimの購読トピックは `/turtle1/cmd_vel` なので、綴りが違うと亀は動かず、エラーも出ない。
 - `create_timer(0.1, self.on_timer)`: 0.1秒（=10 Hz）ごとに `on_timer` を呼ぶ。第1引数の単位は**秒**。`self.timer` に保持しているのは、後から止めたり周期を変えたりできるようにするため（Pythonではノードも内部で保持するので、必須ではない）。
-- `on_timer`: `Twist()` は全フィールドが0で作られる。`Twist` は `linear`（並進速度 x, y, z、単位 m/s）と `angular`（回転速度 x, y, z、単位 rad/s）の2つのベクトルを持つ。turtlesimは2次元なので、使うのは `linear.x`（前進）と `angular.z`（旋回）だけ。前進2.0と旋回1.0を同時に出し続けるので、亀は半径 `2.0 / 1.0 = 2.0` の円を描く（課題2の根拠）。
+- `on_timer`: `Twist()` は全フィールドが0で作られる。`Twist` は `linear`（並進速度 x, y, z、単位 m/s）と `angular`（回転速度 x, y, z、単位 rad/s）の2つのベクトルを持つ。turtlesimは2次元なので、使うのは `linear.x`（前進）と `angular.z`（旋回）だけ。前進2.0と旋回1.0を同時に出し続けるので、亀は半径 `2.0 / 1.0 = 2.0` の円を描く（6-1節の課題2で、値を変えて半径が変わることを確かめる）。
 - `main` 内の流れ: `rclpy.init` → ノード生成 → `rclpy.spin`（コールバックを処理し続けて、ここで待つ）→ 終了時に後始末。`Ctrl+C` は `KeyboardInterrupt`、外部からのシャットダウンは `ExternalShutdownException` になるので、どちらも握りつぶして正常終了させる。`finally` の `destroy_node()` と `rclpy.try_shutdown()` は、途中で例外が出ても必ず実行したい後始末。`try_shutdown` は「すでにシャットダウン済みでもエラーにならない」版。
 - `main(args=None)` という形は、`setup.py` の `'turtle_circle = learn_py.turtle_circle:main'` がこの関数を呼ぶため。ファイル末尾に `if __name__ == '__main__':` は不要（`ros2 run` は `entry_points` から生成されたスクリプト経由で `main` を呼ぶ）。
 
@@ -239,10 +239,10 @@ def main(args=None):
 - 起動時に `QoS: reliability=..., durability=...` をログに出しているのは、「今どの設定で動いているか」をターミナルで確認するため。実験で設定を取り違えないための工夫。
 - `on_timer`: `f'msg {self.count}'` で連番の文字列を作り、`publish` してログに出す。ログの `publish:` は「送ろうとした」印であり、受け取り側がいるかどうかは関係なく出る。**つながらない組み合わせでも、talker側は普通にログを出し続ける**（相手が受け取れないだけで、送り手のエラーにはならない）。
 
-観察ポイント:
+観察ポイント（以下の①〜⑦は、6-2節「QoSの相性を確認する」の2つの表で、talkerとlistenerのQoSの組み合わせに振った番号。実験はビルドの後に6-2節でまとめて行うので、ここでは何を見るかだけ押さえておけばよい）:
 
-- ⑤（`transient_local` 同士）は、talkerを先に起動して5秒ほど待ってからlistenerを起動する。listenerが起動した直後に `msg 0` から数件が一気に届けば成功。`depth=10` なので、10件を超えて溜まっても、届くのは直近10件まで。
-- ④・⑦のようにつながらない組み合わせでは、QoSが非互換だという警告がログに出ることが多い（出方はノードや言語で異なりうるので、実験で確認する）。`ros2 topic info /qos_test -v` で、PublisherとSubscriptionのQoSを見比べる。
+- 6-2節の⑤（talker・listenerとも `durability` が `transient_local`）では、talkerを先に起動して5秒ほど待ってからlistenerを起動する。listenerが起動した直後に `msg 0` から数件が一気に届けば成功。`depth=10` なので、10件を超えて溜まっても、届くのは直近10件まで。
+- 6-2節の④（talkerが `best_effort`、listenerが `reliable`）と⑦（talkerが `volatile`、listenerが `transient_local`）のようにつながらない組み合わせでは、QoSが非互換だという警告がログに出ることが多い（出方はノードや言語で異なりうるので、実験で確認する）。`ros2 topic info /qos_test -v` で、PublisherとSubscriptionのQoSを見比べる。
 
 つまずき: ノードのコンストラクタで例外が出ると、`spin` に入る前にプロセスごと落ちる。`ValueError: invalid reliability` は、パラメータの綴りか大文字小文字を疑う。
 
@@ -495,7 +495,7 @@ Python版 `qos_talker.py` と同じ仕様（QoSをパラメータで切り替え
 - `"msg " + std::to_string(count_++)`: `count_++` は現在の値を使ってから1増やす。`"msg "` は `const char *` だが、右辺が `std::string` なので連結できる。`std::to_string` を通さず `"msg " + count_` と書くと、意図しないポインタ演算になる。
 - `count_` の初期化は `int count_ = 0;`。Pythonの `self.count = 0` にあたる。
 
-観察ポイントと落とし穴は Python版と同じ。Python版とC++版でQoSの扱いは変わらないので、課題5で組み合わせて確認する。
+観察ポイントと落とし穴は Python版と同じ。Python版とC++版でQoSの扱いは変わらないので、6-2節の課題5（Python版とC++版を組み合わせ、④・⑦が同じ結果になるか確かめる）で確認する。
 
 ファイル: `ws/src/learn_cpp/src/qos_listener.cpp`
 
@@ -569,7 +569,7 @@ Python版 `qos_listener.py` と同じ Subscriber。`make_qos` とパラメータ
 - `sub_` を `SharedPtr` のメンバとして保持するのは、Publisherと同じ理由（消えると購読が解除される）。
 - `#include <memory>` は `SharedPtr` まわりのために置いてある。
 
-観察ポイント: つながらない組み合わせ（④・⑦）では `received:` が出ず、警告だけが出る。警告の文言（どのQoSポリシーが非互換か）を、課題4の記録表に控える。
+観察ポイント: 6-2節の表でつながらない組み合わせ（④: talkerが `best_effort`・listenerが `reliable`、⑦: talkerが `volatile`・listenerが `transient_local`）では `received:` が出ず、警告だけが出る。警告の末尾には、どのQoSポリシーが非互換かが示される（文言の例は6-2節の「期待する結果」を参照）。
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` へ名前を足す（前節の分は残す）。
 
@@ -775,7 +775,7 @@ QoS profile:
 | 亀が動かない | turtlesimが起動しているか。`ros2 topic info /turtle1/cmd_vel` でSubscriberが1つあるか。トピック名の先頭 `/` |
 | C++でビルドエラー（`geometry_msgs` が見つからない） | `package.xml` の `<depend>`、`CMakeLists.txt` の `find_package(geometry_msgs REQUIRED)` と `ament_target_dependencies` |
 | `ValueError: invalid reliability` | パラメータの綴り。`reliable` か `best_effort`（小文字） |
-| ⑤で過去分が届かない | talkerが `transient_local` か、listener側も `transient_local` か。talkerを先に起動して待ったか |
+| 6-2節の⑤（両方 `transient_local`）で過去分が届かない | talkerが `transient_local` か、listener側も `transient_local` か。talkerを先に起動して待ったか |
 | 非互換の警告が出ない | 警告はノードのログ（ターミナル）に出る。`rqt_console` でも確認できる |
 
 ## 9. 次へ

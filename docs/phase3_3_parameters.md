@@ -362,7 +362,7 @@ ros2 run learn_py param_talker --ros-args -p message:="from cli" -p period:=0.5
 [INFO] [1727180011.500000000] [param_talker]: publish: from cli
 ```
 
-課題1の `-p period:=2` では、ノードは起動直後に異常終了する。Python版の場合は、トレースバック（エラーまでの呼び出しの履歴）の最後に次の行が出る。
+この節（5-2）の末尾にある課題1の `-p period:=2` では、ノードは起動直後に異常終了する。Python版の場合は、トレースバック（エラーまでの呼び出しの履歴）の最後に次の行が出る。
 
 ```text
 rclpy.exceptions.InvalidParameterTypeException: Trying to set parameter 'period' to '2' of type 'INTEGER', expecting type 'DOUBLE'
@@ -420,7 +420,7 @@ Double value is: 0.2
 ```
 
 - `param list` には、自分で宣言した `message`・`period` のほかに、ノードが自動で持つパラメータ（`use_sim_time` など）も並ぶ。
-- `param describe` の `Type: double` は、宣言時の既定値 `1.0` から決まった型。`Constraints:` の下が空なのは、範囲などの制約を付けていないから（課題6で付ける）。
+- `param describe` の `Type: double` は、宣言時の既定値 `1.0` から決まった型。`Constraints:` の下が空なのは、範囲などの制約を付けていないから（5-4節の課題6で、`ParameterDescriptor` を使って範囲を付ける）。
 - `message` を変えると、T1のログが次の送信から `publish: changed` に変わる。`period` を0.2にすると、ログが1秒に5行に増える。
 - `period 0.0` の失敗の後ろに続く `period must be > 0` は、コードの `reason` に書いた文字列そのもの。拒否されたので、値は0.2のまま。
 
