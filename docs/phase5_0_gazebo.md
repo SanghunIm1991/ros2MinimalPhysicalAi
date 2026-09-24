@@ -9,7 +9,7 @@
 
 > **進め方**: 前半（1〜4節）は、Gazeboを導入し、用意されたデモをコマンドだけで動かして仕組みを観察する。後半（5節）で、フェーズ3-1のPublisherを応用した小さなノードを書いて車両を走らせる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルドと `import` まで確認済みで、Gazeboを起動した後の挙動は未確認（出力が違う場合は、実機の表示を優先する）。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。導入の確認（1-3節）とlaunchの引数・展開結果（3-1節）は実機で確かめた表示、Gazeboやノードを起動した後の表示はデモの設定ファイルとROS2の仕様から筆者が想定したもので、実機では時刻・数値の細部が異なる。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。導入の確認（1-3節）とlaunchの引数・展開結果（3-1節）は実機で確かめた表示、ビルドの表示（5-4節）は使い捨ての環境で確かめた表示、Gazeboやノードを起動した後の表示はデモの設定ファイルとROS2の仕様から筆者が想定したもので、実機では時刻・数値の細部が異なる。
 
 ## 0. 学習目標と完了条件
 
@@ -334,8 +334,8 @@ child_frame_id: vehicle_green/chassis
 pose:
   pose:
     position:
-      x: 1.2
-      y: -1.7
+      x: 0.93
+      y: 0.28
       z: 0.0
     orientation:
       x: 0.0
@@ -423,7 +423,38 @@ Subscription count: 1
 
 ### 4-2. QoS: 指令は `reliable` で受ける
 
-`diff_drive.launch.py` は、ブリッジのパラメータで、cmd_velを受けるSubscriberの信頼性（reliability）を `reliable` に指定している（`qos_overrides./model/vehicle_green.subscriber.reliability: reliable`）。フェーズ3-2で扱うQoSの相性の規則では、Subscriberが `reliable` のとき、Publisherが `best_effort` だとつながらない。
+cmd_velを受けるブリッジのSubscriberの信頼性（reliability）は `reliable` である。QoSの相性の規則（フェーズ3-2の7節「QoS互換性のまとめ」）では、Subscriberが `reliable` のとき、Publisherが `best_effort` だとつながらない。
+
+Subscriberの設定は、`-v` を付けた `ros2 topic info` で確かめられる。
+
+```bash
+# T2
+ros2 topic info -v /model/vehicle_green/cmd_vel
+```
+
+**期待する結果**（仕様から想定した表示。抜粋。GIDなどの行は省略）:
+
+```text
+Type: geometry_msgs/msg/Twist
+
+Publisher count: 0
+
+Subscription count: 1
+
+Node name: ros_gz_bridge
+Node namespace: /
+Topic type: geometry_msgs/msg/Twist
+...
+Endpoint type: SUBSCRIPTION
+...
+QoS profile:
+  Reliability: RELIABLE
+  ...
+```
+
+`Endpoint type: SUBSCRIPTION`（受ける側）の `Node name` がブリッジで、その `Reliability` が `RELIABLE` であることを確かめる。
+
+> **launchファイルのQoSの指定について**: `diff_drive.launch.py` には、ブリッジのパラメータとして `qos_overrides./model/vehicle_green.subscriber.reliability: reliable` が書かれている。ただし、このキーのトピック名の部分（`/model/vehicle_green`）は実際のトピック名（`/model/vehicle_green/cmd_vel`）と一致していないので、この指定が効いているかどうかは疑わしい（この手順書の作成時には確かめていない）。いずれにしても、ROS2のSubscriberの既定は `reliable` なので、上の表示で確かめた設定が実際の値である。
 
 `ros2 topic pub` とフェーズ3-1の書き方（`create_publisher(型, トピック名, 10)`）は、どちらも既定で `reliable` なので、この組み合わせではつながる。自分でQoSを `best_effort` にしたノードから送ると車両が動かなくなる、という点だけ覚えておく。
 
@@ -551,7 +582,7 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
-**期待する結果**（ビルド。実機で確かめた形式。秒数は環境によって変わる）:
+**期待する結果**（ビルド。使い捨ての環境で確かめた表示の形式。秒数は環境によって変わる）:
 
 ```text
 Starting >>> learn_py
@@ -562,7 +593,7 @@ Summary: 1 package finished [1.8s]
 
 ### 5-5. 動かす
 
-T1でデモを起動したまま（3-2節）、T2で自作ノードを動かす。3-3節で車両を走らせたままなら、先に停止の指令を送っておく。
+3-3節や課題2で車両を走らせたあとは、車両の向きとオドメトリの値が初期状態からずれている。このままだと、下の期待する結果（`x` が0から増える、まっすぐ前へ進む）にならないので、**先にT1を `Ctrl+C` で止めて、3-2節と同じコマンドで起動し直す**（ワールドが初期状態に戻る）。そのうえで、T2で自作ノードを動かす。
 
 ```bash
 # T2
@@ -592,7 +623,7 @@ ros2 run learn_py gz_drive
 ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 ```
 
-走らせすぎて車両が画面の外へ出たら、T1を `Ctrl+C` で止めて起動し直すと、ワールドが初期状態に戻る。
+走らせすぎて車両が画面の外へ出たときも、同じようにT1を起動し直せば初期状態に戻る。
 
 > 課題4: `linear.x` を0.8にすると、ログの `speed` はいくつで落ち着くか。予想してから確かめる（2節の表の最高速度を参照）。
 
@@ -634,7 +665,7 @@ ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 
 ## 9. 次へ
 
-フェーズ5-1で、1次元の車両の疑似プラントを自作する。フェーズ3-2〜4（Twistとturtlesim、パラメータ、launch）をまだ終えていない場合は、先にそちらを進める（5-1以降では、パラメータとlaunchを使う）。
+フェーズ5-1で、1次元の車両の疑似プラントを自作する。フェーズ3-2（Twistとturtlesim）・3-3（パラメータ）・4（launch）をまだ終えていない場合は、先にそちらを進める（5-1以降では、パラメータとlaunchを使う）。
 
 ## 10. 公式ドキュメント・参考資料
 
