@@ -3,7 +3,7 @@
 `docs/learning_plan.md` フェーズ4（idea_origin.md ステップ1の1-6）に対応する。これまで別々のターミナルで起動していたノードを、1つのlaunchファイルで起動する。**Python版とC++版のノードを引数で切り替える**のが要点。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ3-1〜3-5完了（`learn_py` と `learn_cpp` に各ノードがある）
+- 前提: フェーズ3-1〜3-3完了（`learn_py` と `learn_cpp` に、このフェーズで起動する `talker`・`listener`・`param_talker`・`turtle_circle` がある）。フェーズ3-4・3-5のノードは使わないので、3-5は概要を掴んだだけでも先へ進める
 - 所要目安: 1〜2コマ
 - 言語: launchファイルはPython・XML・YAMLの3形式を扱う（ノードはPython・C++）
 - OSS: turtlesim（GUIの起動と目視確認はユーザーが行う）

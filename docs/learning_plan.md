@@ -47,9 +47,9 @@
 | 1-2 | String talker/listener → Float64+timer → Twistでturtlesim操作 | QoSを変えて「つながる/つながらない」を確認。Pythonのpub × C++のsubの相互接続 |
 | 1-3 | パラメータ化（周期・内容） | `ros2 param set` と起動時YAML |
 | 1-4 | AddTwoInts、Trigger | 同期/非同期呼び出しの違い、C++のfuture扱い |
-| 1-5 | Fibonacci（フィードバック付き） | goal/feedback/resultの流れ、キャンセル |
+| 1-5 | Fibonacci（フィードバック付き） | goal/feedback/resultの流れ、キャンセル。**概要を掴む程度でよい**（フェーズ5では使わないため。実装は任意の発展） |
 
-- 完了条件: 上表を両言語で動かし、各手順書の「Python版とC++版の違いのまとめ」節（コード量・型・ビルド手順・つまずき）の内容を自分の言葉で説明できる。
+- 完了条件: 上表を両言語で動かし（1-5は概要の理解までで可）、各手順書の「Python版とC++版の違いのまとめ」節（コード量・型・ビルド手順・つまずき）の内容を自分の言葉で説明できる。
 
 ### フェーズ4: launchで束ねる（C）— 1〜2コマ
 
