@@ -354,13 +354,13 @@ ros2 run learn_py listener
 
 ```text
 # T1（talker）
-[INFO] [1727160000.123456789] [talker]: publish: hello 0
-[INFO] [1727160001.123401234] [talker]: publish: hello 1
-[INFO] [1727160002.123398765] [talker]: publish: hello 2
+[INFO] [1790232000.123456789] [talker]: publish: hello 0
+[INFO] [1790232001.123401234] [talker]: publish: hello 1
+[INFO] [1790232002.123398765] [talker]: publish: hello 2
 
 # T2（listener）
-[INFO] [1727160001.124012345] [listener]: received: hello 1
-[INFO] [1727160002.123987654] [listener]: received: hello 2
+[INFO] [1790232001.124012345] [listener]: received: hello 1
+[INFO] [1790232002.123987654] [listener]: received: hello 2
 ```
 
 - ログ1行は「重要度（`INFO`）・時刻（1970年からの秒数）・ノード名・本文」の並び。時刻の数字は実行するたびに変わる。
@@ -373,12 +373,12 @@ ros2 run learn_py listener
 
 ```text
 # T2（sine_sub）
-[INFO] [1727160010.100123456] [sine_sub]: sine: 0.588
-[INFO] [1727160010.200134567] [sine_sub]: sine: 0.809
-[INFO] [1727160010.300098765] [sine_sub]: sine: 0.951
-[INFO] [1727160010.400112345] [sine_sub]: sine: 1.000
-[INFO] [1727160010.500087654] [sine_sub]: sine: 0.951
-[INFO] [1727160010.600123456] [sine_sub]: sine: 0.809
+[INFO] [1790232010.100123456] [sine_sub]: sine: 0.588
+[INFO] [1790232010.200134567] [sine_sub]: sine: 0.809
+[INFO] [1790232010.300098765] [sine_sub]: sine: 0.951
+[INFO] [1790232010.400112345] [sine_sub]: sine: 1.000
+[INFO] [1790232010.500087654] [sine_sub]: sine: 0.951
+[INFO] [1790232010.600123456] [sine_sub]: sine: 0.809
 ```
 
 最初の値は起動した時刻で決まるため、上の例とは一致しない。見るべき点は、値が滑らかに増減し、±1を超えないこと。
@@ -679,11 +679,11 @@ ros2 run learn_cpp listener
 
 ```text
 # T1（talker）
-[INFO] [1727160100.223456789] [talker]: publish: hello 0
-[INFO] [1727160101.223401234] [talker]: publish: hello 1
+[INFO] [1790232100.223456789] [talker]: publish: hello 0
+[INFO] [1790232101.223401234] [talker]: publish: hello 1
 
 # T2（listener）
-[INFO] [1727160101.224012345] [listener]: received: hello 1
+[INFO] [1790232101.224012345] [listener]: received: hello 1
 ```
 
 ログの見た目だけでは、PythonのノードかC++のノードかは区別できない。これは、同じトピック名・型なら言語を気にせずつながる（6節）ことの裏返しでもある。`sine_pub` / `sine_sub` も同様に動かすと、3-3と同じ表示になる。

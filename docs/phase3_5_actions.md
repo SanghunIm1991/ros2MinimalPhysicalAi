@@ -755,8 +755,8 @@ Goal finished with status: SUCCEEDED
 T1のサーバ側には次のログが出る（Python版の場合。C++版の最後の行は `goal succeeded` だけで、数列は付かない）。
 
 ```text
-[INFO] [1727200000.100000000] [fibonacci_server]: accept goal: order=5
-[INFO] [1727200004.100000000] [fibonacci_server]: goal succeeded: [0, 1, 1, 2, 3, 5]
+[INFO] [1790272000.100000000] [fibonacci_server]: accept goal: order=5
+[INFO] [1790272004.100000000] [fibonacci_server]: goal succeeded: [0, 1, 1, 2, 3, 5]
 ```
 
 - 配列はYAMLの箇条書き（`- 0` のように1要素1行）で表示される。
@@ -778,13 +778,13 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 期待する結果（`order:=6`、最後まで実行した場合。T2のクライアント）:
 
 ```text
-[INFO] [1727200100.000000000] [fibonacci_client]: goal accepted
-[INFO] [1727200100.010000000] [fibonacci_client]: feedback: [0, 1, 1]
-[INFO] [1727200101.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2]
-[INFO] [1727200102.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3]
-[INFO] [1727200103.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3, 5]
-[INFO] [1727200104.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3, 5, 8]
-[INFO] [1727200105.020000000] [fibonacci_client]: result [SUCCEEDED]: [0, 1, 1, 2, 3, 5, 8]
+[INFO] [1790272100.000000000] [fibonacci_client]: goal accepted
+[INFO] [1790272100.010000000] [fibonacci_client]: feedback: [0, 1, 1]
+[INFO] [1790272101.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2]
+[INFO] [1790272102.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3]
+[INFO] [1790272103.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3, 5]
+[INFO] [1790272104.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3, 5, 8]
+[INFO] [1790272105.020000000] [fibonacci_client]: result [SUCCEEDED]: [0, 1, 1, 2, 3, 5, 8]
 ```
 
 結果を受け取ると、クライアントは自分で終了する（プロンプトに戻る）。サーバは次のゴールを待って動き続ける。

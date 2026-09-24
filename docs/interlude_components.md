@@ -26,9 +26,9 @@
 
 この形は分かりやすく、1つのノードが落ちても他を巻き込まないという長所もある。一方で、ノードの数が数十に増えると、プロセスの数だけメモリを使い、プロセス間の通信のたびにメッセージのコピーが生じる。カメラ画像のような大きなデータを、同じPCの中の複数のノードで順に加工する場面では、この負担が無視できなくなる。
 
-コンポーネントは、この結び付きをほどく仕組みである。ノードのクラスから `main` を取り除いて共有ライブラリ（`.so`）に入れておき、**どのプロセスに、どのノードを、いくつ入れるかは、起動するとき（launchやコマンド）に決める**。同じ `talker` を、あるときは単独のプロセスで、あるときは `listener` と同じプロセス（コンテナ）に入れて動かせる。同じプロセスに入れたノード同士は、DDSを通らずにメモリ上で直接メッセージを受け渡せる（プロセス内通信）。
+コンポーネントは、この結び付きをほどく仕組みである。ノードのクラスから `main` を取り除いて共有ライブラリ（`.so`）に入れておき、**どのプロセスに、どのノードを、いくつ入れるかは、起動するとき（launchやコマンド）に決める**。同じ `talker` を、あるときは単独のプロセスで、あるときは `listener` と同じプロセス（コンテナ）に入れて動かせる。同じプロセスに入れたノード同士は、指定すれば、DDSを通らずにメモリ上で直接メッセージを受け渡せる（プロセス内通信。指定の方法は7-3節で扱う。7-1節のように指定せずに読み込んだ場合は、同じプロセスの中でもDDSを通る）。
 
-![フェーズ3-1ではtalkerとlistenerがそれぞれmain付きの別プロセスで動く。間章では、mainの無いTalker・Listenerを1つのライブラリにまとめ、component_containerという1つのプロセスに読み込み、プロセス内通信でつなぐ](img/interlude_components_layout.svg)
+![フェーズ3-1ではtalkerとlistenerがそれぞれmain付きの別プロセスで動く。間章では、mainの無いTalker・Listenerを1つのライブラリにまとめ、component_containerという1つのプロセスに読み込む。同じプロセス内の通信には、指定すればプロセス内通信を使える](img/interlude_components_layout.svg)
 
 <details>
 <summary>同じ図（mermaid版）</summary>
@@ -43,7 +43,7 @@ flowchart LR
         direction LR
         L["libpubsub_components.so<br/>Talker・Listener（mainなし）"] -. "読み込む" .-> C
         subgraph C["プロセス: component_container（コンテナ）"]
-            T["talker"] -- "/chatter<br/>（プロセス内通信）" --> R["listener"]
+            T["talker"] -- "/chatter<br/>（プロセス内通信を選べる）" --> R["listener"]
         end
     end
 ```
@@ -325,14 +325,14 @@ $ ros2 component unload /ComponentManager 1
 Unloaded component 1 from '/ComponentManager' container node
 
 # T1（コンテナ。Talker を読み込んだところから）
-[INFO] [1727220000.100000000] [ComponentManager]: Load Library: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/install/learn_components/lib/libpubsub_components.so
-[INFO] [1727220000.110000000] [ComponentManager]: Found class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
-[INFO] [1727220000.110000000] [ComponentManager]: Instantiate class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
-[INFO] [1727220001.110000000] [talker]: publish: hello 0
-[INFO] [1727220002.110000000] [talker]: publish: hello 1
+[INFO] [1790292000.100000000] [ComponentManager]: Load Library: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/install/learn_components/lib/libpubsub_components.so
+[INFO] [1790292000.110000000] [ComponentManager]: Found class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
+[INFO] [1790292000.110000000] [ComponentManager]: Instantiate class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
+[INFO] [1790292001.110000000] [talker]: publish: hello 0
+[INFO] [1790292002.110000000] [talker]: publish: hello 1
 （Listener を読み込むと、同じ3行の後に）
-[INFO] [1727220003.110000000] [talker]: publish: hello 2
-[INFO] [1727220003.110500000] [listener]: received: hello 2
+[INFO] [1790292003.110000000] [talker]: publish: hello 2
+[INFO] [1790292003.110500000] [listener]: received: hello 2
 ```
 
 - コンテナは、起動しただけでは何も表示しない。ノード名は既定で `/ComponentManager` になる（`ros2 component list` の1行目）。
@@ -353,11 +353,11 @@ ros2 run learn_components listener_node
 
 ```text
 # T1（talker_node）
-[INFO] [1727220100.100000000] [talker]: publish: hello 0
-[INFO] [1727220101.100000000] [talker]: publish: hello 1
+[INFO] [1790292100.100000000] [talker]: publish: hello 0
+[INFO] [1790292101.100000000] [talker]: publish: hello 1
 
 # T2（listener_node）
-[INFO] [1727220101.101000000] [listener]: received: hello 1
+[INFO] [1790292101.101000000] [listener]: received: hello 1
 ```
 
 `main` を1行も書いていない同じコードが、今度は2つの別々のプロセスとして動いている。7-1と7-2で変わったのは起動の仕方だけで、コードもビルドも同じ。これが「配置を後から決める」ということである。
@@ -450,13 +450,13 @@ ros2 launch learn_bringup components.launch.py
 
 ```text
 [INFO] [component_container-1]: process started with pid [13000]
-[component_container-1] [INFO] [1727220200.100000000] [pubsub_container]: Load Library: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/install/learn_components/lib/libpubsub_components.so
-[component_container-1] [INFO] [1727220200.110000000] [pubsub_container]: Found class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
-[component_container-1] [INFO] [1727220200.110000000] [pubsub_container]: Instantiate class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
+[component_container-1] [INFO] [1790292200.100000000] [pubsub_container]: Load Library: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/install/learn_components/lib/libpubsub_components.so
+[component_container-1] [INFO] [1790292200.110000000] [pubsub_container]: Found class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
+[component_container-1] [INFO] [1790292200.110000000] [pubsub_container]: Instantiate class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [INFO] [launch_ros.actions.load_composable_nodes]: Loaded node '/talker' in container '/pubsub_container'
 （Listener についても同じ4行）
-[component_container-1] [INFO] [1727220201.110000000] [talker]: publish: hello 0
-[component_container-1] [INFO] [1727220201.110100000] [listener]: received: hello 0
+[component_container-1] [INFO] [1790292201.110000000] [talker]: publish: hello 0
+[component_container-1] [INFO] [1790292201.110100000] [listener]: received: hello 0
 ```
 
 - 行頭の `[component_container-1]` が、`talker` の行にも `listener` の行にも付く。フェーズ4の4-1節では `[talker-1]`・`[listener-2]` と別々だった。1つのプロセスの中で2つのノードが動いていることが、ログの印からも分かる。
@@ -487,7 +487,7 @@ ros2 run learn_py listener
 期待する結果: Python版の `listener` も、コンテナの中の `talker` からのメッセージを受け取る。
 
 ```text
-[INFO] [1727220300.110500000] [listener]: received: hello 99
+[INFO] [1790292300.110500000] [listener]: received: hello 99
 ```
 
 コンテナの中の `talker` は、同じプロセスの `listener` にはプロセス内通信で、外のPythonの `listener` にはDDSで、同じメッセージを届けている。受け取る側は、相手がコンポーネントかどうかも、C++かPythonかも気にしない。つながりを決めているのは、**トピック名と型（インターフェース）だけ**である。なお、ノード名 `listener` が2つになるので、`ros2 node list` では重複の警告が出ることがある（フェーズ3-1の6節の課題2と同じ現象）。気になる場合は `ros2 run learn_py listener --ros-args -r __node:=py_listener` のように名前を変える。

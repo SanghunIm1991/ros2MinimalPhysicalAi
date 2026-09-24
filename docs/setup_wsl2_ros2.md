@@ -163,11 +163,11 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 
    ```text
    # ターミナルA（C++のtalker）
-   [INFO] [1727000000.123456789] [talker]: Publishing: 'Hello World: 1'
-   [INFO] [1727000001.123456789] [talker]: Publishing: 'Hello World: 2'
+   [INFO] [1790072000.123456789] [talker]: Publishing: 'Hello World: 1'
+   [INFO] [1790072001.123456789] [talker]: Publishing: 'Hello World: 2'
 
    # ターミナルB（Pythonのlistener）
-   [INFO] [1727000001.124567890] [listener]: I heard: [Hello World: 2]
+   [INFO] [1790072001.124567890] [listener]: I heard: [Hello World: 2]
    ```
 
    Aは1秒ごとに番号を増やしながら送り、Bは同じ番号の文を受け取る。C++で書かれた送信側とPythonで書かれた受信側がつながっており、ROS2の通信が言語をまたいで動くことの最初の確認になる。

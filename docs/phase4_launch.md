@@ -265,10 +265,10 @@ ros2 launch learn_bringup pubsub.launch.py talker_lang:=cpp listener_lang:=py
 [INFO] [launch]: Default logging verbosity is set to INFO
 [INFO] [talker-1]: process started with pid [12345]
 [INFO] [listener-2]: process started with pid [12346]
-[talker-1] [INFO] [1727210001.100000000] [talker]: publish: hello 0
-[listener-2] [INFO] [1727210001.101000000] [listener]: received: hello 0
-[talker-1] [INFO] [1727210002.100000000] [talker]: publish: hello 1
-[listener-2] [INFO] [1727210002.101000000] [listener]: received: hello 1
+[talker-1] [INFO] [1790282001.100000000] [talker]: publish: hello 0
+[listener-2] [INFO] [1790282001.101000000] [listener]: received: hello 0
+[talker-1] [INFO] [1790282002.100000000] [talker]: publish: hello 1
+[listener-2] [INFO] [1790282002.101000000] [listener]: received: hello 1
 ```
 
 `Ctrl+C` を押すと、2つのノードがまとめて終了する。
@@ -482,9 +482,9 @@ ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2   # C++版の pa
 
 ```text
 [INFO] [param_talker-1]: process started with pid [12400]
-[param_talker-1] [INFO] [1727210100.200000000] [param_talker]: publish: from yaml
-[param_talker-1] [INFO] [1727210100.400000000] [param_talker]: publish: from yaml
-[param_talker-1] [INFO] [1727210100.600000000] [param_talker]: publish: from yaml
+[param_talker-1] [INFO] [1790282100.200000000] [param_talker]: publish: from yaml
+[param_talker-1] [INFO] [1790282100.400000000] [param_talker]: publish: from yaml
+[param_talker-1] [INFO] [1790282100.600000000] [param_talker]: publish: from yaml
 ```
 
 1つ目のコマンド（引数なし）では、周期は引数の既定値1.0秒になる（この節の末尾の課題5と、その補足）。
@@ -569,8 +569,8 @@ ros2 launch learn_bringup turtle.launch.py lang:=cpp   # C++版の turtle_circle
 ```text
 [INFO] [turtlesim_node-1]: process started with pid [12500]
 [INFO] [turtle_circle-2]: process started with pid [12501]
-[turtlesim_node-1] [INFO] [1727210200.100000000] [turtlesim]: Starting turtlesim with node name /turtlesim
-[turtlesim_node-1] [INFO] [1727210200.110000000] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+[turtlesim_node-1] [INFO] [1790282200.100000000] [turtlesim]: Starting turtlesim with node name /turtlesim
+[turtlesim_node-1] [INFO] [1790282200.110000000] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
 ```
 
 ### 4-6. launchを合成する・名前空間・remap（`compose.launch.py`）
@@ -655,9 +655,9 @@ ros2 topic list      # /demo/chatter, /param_chatter
 期待する結果: launchのターミナルには、3つのプロセス（`talker`・`listener`・`param_talker`）のログが混ざって出る。ノード名は名前空間付き（`[demo.talker]` のようにドット区切り）で表示される。
 
 ```text
-[talker-1] [INFO] [1727210300.100000000] [demo.talker]: publish: hello 0
-[listener-2] [INFO] [1727210300.101000000] [demo.listener]: received: hello 0
-[param_talker-3] [INFO] [1727210300.100000000] [param_talker]: publish: from yaml
+[talker-1] [INFO] [1790282300.100000000] [demo.talker]: publish: hello 0
+[listener-2] [INFO] [1790282300.101000000] [demo.listener]: received: hello 0
+[param_talker-3] [INFO] [1790282300.100000000] [param_talker]: publish: from yaml
 ```
 
 別のターミナルでの確認（`ros2 topic list` の抜粋）:

@@ -619,16 +619,16 @@ ros2 run learn_py add_client --ros-args -p a:=3 -p b:=4
 
 ```text
 # T1（add_server）
-[INFO] [1727190000.500000000] [add_server]: 3 + 4 = 7
+[INFO] [1790262000.500000000] [add_server]: 3 + 4 = 7
 
 # T2（add_client）
-[INFO] [1727190000.501000000] [add_client]: 3 + 4 = 7
+[INFO] [1790262000.501000000] [add_client]: 3 + 4 = 7
 ```
 
 同じ計算結果が、サーバ側（要求を受けて計算した記録）とクライアント側（応答を受け取った記録）の両方に出る。サーバを起動せずにクライアントだけを動かすと、約5秒待った後に次のエラーを出して終わる（この節の末尾の課題1で試す）。
 
 ```text
-[ERROR] [1727190010.000000000] [add_client]: service add_two_ints is not available
+[ERROR] [1790262010.000000000] [add_client]: service add_two_ints is not available
 ```
 
 CLIからも呼べる:
@@ -695,7 +695,7 @@ response:
 std_srvs.srv.Trigger_Response(success=True, message='counter reset (was 8)')
 
 # T1（counter_node）
-[INFO] [1727190100.300000000] [counter_node]: counter reset (was 8)
+[INFO] [1790262100.300000000] [counter_node]: counter reset (was 8)
 ```
 
 - `counter_node` は配信のたびにはログを出さず、リセットされたときだけ1行出す。

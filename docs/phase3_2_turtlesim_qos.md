@@ -718,14 +718,14 @@ ros2 topic info /qos_test -v
 
 ```text
 # T1（qos_talker）
-[INFO] [1727170000.100000000] [qos_talker]: QoS: reliability=reliable, durability=volatile
-[INFO] [1727170001.101234567] [qos_talker]: publish: msg 0
-[INFO] [1727170002.101198765] [qos_talker]: publish: msg 1
+[INFO] [1790242000.100000000] [qos_talker]: QoS: reliability=reliable, durability=volatile
+[INFO] [1790242001.101234567] [qos_talker]: publish: msg 0
+[INFO] [1790242002.101198765] [qos_talker]: publish: msg 1
 
 # T2（qos_listener）
-[INFO] [1727170000.900000000] [qos_listener]: QoS: reliability=reliable, durability=volatile
-[INFO] [1727170001.101987654] [qos_listener]: received: msg 0
-[INFO] [1727170002.101954321] [qos_listener]: received: msg 1
+[INFO] [1790242000.900000000] [qos_listener]: QoS: reliability=reliable, durability=volatile
+[INFO] [1790242001.101987654] [qos_listener]: received: msg 0
+[INFO] [1790242002.101954321] [qos_listener]: received: msg 1
 ```
 
 起動直後の1行目は、パラメータから読み取ったQoSの設定。ここで意図した組み合わせになっているかを、まず確かめる。
@@ -734,10 +734,10 @@ ros2 topic info /qos_test -v
 
 ```text
 # T2（qos_listener、reliable）
-[WARN] [1727170010.200000000] [qos_listener]: New publisher discovered on topic '/qos_test', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
+[WARN] [1790242010.200000000] [qos_listener]: New publisher discovered on topic '/qos_test', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
 
 # T1（qos_talker、best_effort）
-[WARN] [1727170010.200000000] [qos_talker]: New subscription discovered on topic '/qos_test', requesting incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY
+[WARN] [1790242010.200000000] [qos_talker]: New subscription discovered on topic '/qos_test', requesting incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY
 ```
 
 警告は「相手を見つけたが、QoSが合わないのでメッセージをやり取りしない」という意味で、最後の `Last incompatible policy` が食い違っている項目を示す。⑦では、ここが `DURABILITY` になる。エラーで止まるわけではないので、ログを見落とすと「何も起きない」ように見える。

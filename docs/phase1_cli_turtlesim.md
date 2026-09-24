@@ -79,8 +79,8 @@ ros2 run turtlesim turtlesim_node
 - 期待: 水色（青系）の背景に亀が1匹いるウィンドウがWindows側に出る。ターミナルには次のようなログが出る（時刻の数字は実行ごとに変わる）。亀の初期位置は画面の中央（x, yとも約5.54）で、向き（theta）は0＝右向き。
 
 ```text
-[INFO] [1727000000.123456789] [turtlesim]: Starting turtlesim with node name /turtlesim
-[INFO] [1727000000.134567890] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+[INFO] [1790072000.123456789] [turtlesim]: Starting turtlesim with node name /turtlesim
+[INFO] [1790072000.134567890] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
 ```
 - 確認後は、T1で `Ctrl+C` で止める（ウィンドウも閉じる）。
 
@@ -584,7 +584,7 @@ ros2 run rqt_console rqt_console
 亀を壁にぶつけると、警告ログ（Warn）が出る。rqt_consoleのウィンドウに、次のような内容の行が表示される（T1のturtlesimのターミナルにも同じ文が出る）。
 
 ```text
-[WARN] [1727000100.123456789] [turtlesim]: Oh no! I hit the wall! (Clamping from [x=11.106667, y=5.544445])
+[WARN] [1790072100.123456789] [turtlesim]: Oh no! I hit the wall! (Clamping from [x=11.106667, y=5.544445])
 ```
 
 「壁に当たったので、位置を画面内に押し戻した」という意味。ログレベル（Debug/Info/Warn/Error/Fatal）でのフィルタを試す。

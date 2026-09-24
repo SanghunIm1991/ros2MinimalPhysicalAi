@@ -355,8 +355,8 @@ ros2 topic echo /param_chatter
 
 ```text
 # T1（param_talker）
-[INFO] [1727180000.100000000] [param_talker]: publish: hello
-[INFO] [1727180001.100000000] [param_talker]: publish: hello
+[INFO] [1790252000.100000000] [param_talker]: publish: hello
+[INFO] [1790252001.100000000] [param_talker]: publish: hello
 
 # T2（ros2 topic echo）
 data: hello
@@ -376,9 +376,9 @@ ros2 run learn_py param_talker --ros-args -p message:="from cli" -p period:=0.5
 期待する結果: 0.5秒ごと（1秒に2行）に、指定した文字列が出る。コードは1文字も変えていないのに、振る舞いが変わる点が大事。
 
 ```text
-[INFO] [1727180010.500000000] [param_talker]: publish: from cli
-[INFO] [1727180011.000000000] [param_talker]: publish: from cli
-[INFO] [1727180011.500000000] [param_talker]: publish: from cli
+[INFO] [1790252010.500000000] [param_talker]: publish: from cli
+[INFO] [1790252011.000000000] [param_talker]: publish: from cli
+[INFO] [1790252011.500000000] [param_talker]: publish: from cli
 ```
 
 この節（5-2）の末尾にある課題1の `-p period:=2` では、ノードは起動直後に異常終了する。Python版の場合は、トレースバック（エラーまでの呼び出しの履歴）の最後に次の行が出る。
@@ -471,8 +471,8 @@ ros2 run learn_py param_talker --ros-args --params-file ~/work/ros2MinimalPhysic
 期待する結果: YAMLに書いた値で動く（5-2で `-p` を使ったときと同じ振る舞い）。
 
 ```text
-[INFO] [1727180100.500000000] [param_talker]: publish: from yaml
-[INFO] [1727180101.000000000] [param_talker]: publish: from yaml
+[INFO] [1790252100.500000000] [param_talker]: publish: from yaml
+[INFO] [1790252101.000000000] [param_talker]: publish: from yaml
 ```
 
 YAMLの1行目のノード名を間違えていると、エラーにはならずに既定値（`hello`、1秒ごと）で動く。「何も言われずに反映されない」ので、表示の文字列で確かめる習慣を付けるとよい。
