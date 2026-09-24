@@ -10,7 +10,7 @@
 
 > **このフェーズの位置づけ**: 「QoSという設定があり、合わないと**エラーも出ずに黙ってつながらない**ことがある」と知るのが目的で、概要を掴む程度でよい（フェーズ5では、全ノードが既定のQoSのまま通信する）。2-2節の7通りの組み合わせのうち、①（talker・listenerとも `reliable`。つながる）と④（talkerが `best_effort`、listenerが `reliable`。つながらない）の2つを試せば十分で、残りは任意。C++版（4節）も任意とする。
 >
-> **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。3節冒頭の「主なAPI」表とサンプルコード・解説を読んで理解し、QoSのパラメータを変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
+> **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。3節・4節冒頭の「主なAPI」表（C++版の4節は任意）とサンプルコード・解説を読んで理解し、QoSのパラメータを変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
 
 > **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容や画面の様子とその読み方を載せている。コードとROS2の仕様から筆者が想定したもので、実機では時刻などの細部が異なる。
 
@@ -79,7 +79,7 @@ ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durabilit
 | ① | `reliable` | `reliable` | つながる |
 | ② | `reliable` | `best_effort` | つながる |
 | ③ | `best_effort` | `best_effort` | つながる |
-| ④ | `best_effort` | `reliable` | **つながらない**（受信側に非互換の警告が出る） |
+| ④ | `best_effort` | `reliable` | **つながらない**（送信側・受信側の両方に、非互換の警告が出る） |
 
 **durability の組み合わせ**（reliabilityは両方とも既定の `reliable`）
 
@@ -505,7 +505,7 @@ colcon build --symlink-install --packages-select learn_cpp
 source install/setup.bash
 ```
 
-期待する結果: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。
+期待する結果: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`install(TARGETS ...)` に作っていないノード（3-2aでC++版を作らなかった場合の `turtle_circle` など）の名前が残っていると、`Failed <<< learn_cpp` になり、その上に `install TARGETS given target "turtle_circle" which does not exist` という趣旨のCMakeのエラーが出る（9節）。
 
 ## 5. 実験: QoSの相性を確かめる
 
@@ -653,7 +653,21 @@ ros2 run learn_py qos_listener --ros-args -p durability:=transient_local
 
 フェーズ5の車両シミュレーションで、速度（センサ相当）と制御指令のトピックにどのQoSを使うか、考える材料になる。
 
-## 8. つまずきやすい点
+## 8. Python版とC++版の違いのまとめ
+
+3節・4節のサンプルを比べると、QoSの中身（depth・reliability・durability）と互換性の判定は言語によらず同じで（6節）、違いは組み立て方とパラメータの取り方に集まる。
+
+| 観点 | Python | C++ |
+|---|---|---|
+| QoSの組み立て | `QoSProfile(depth=10, reliability=..., durability=...)` に、列挙型（`ReliabilityPolicy.RELIABLE` など）を引数で渡す | `rclcpp::QoS qos(10);` を作ってから、`qos.reliable()`・`qos.transient_local()` などのメソッドで上書きする（`volatile` は予約語なので `durability_volatile()`） |
+| パラメータの宣言と取得 | `declare_parameter` の後に、`get_parameter(...).get_parameter_value().string_value` で取り出す（2手順） | `declare_parameter<std::string>(...)` が宣言と同時に値を返す（1行） |
+| 想定外の値の扱い | `raise ValueError(...)` | `throw std::invalid_argument(...)` |
+| `create_subscription` の引数の順 | 型・トピック名・**コールバック**・QoS | トピック名・**QoS**・コールバック（型はテンプレート引数） |
+| ログへの文字列の渡し方 | f文字列をそのまま渡す | printf形式。`std::string` は `.c_str()` を付ける |
+
+言語を行き来するときに最も取り違えやすいのは、`create_subscription` のコールバックとQoSの順番（4節の `qos_listener.cpp` の解説）。順番を間違えると、Pythonでは実行時の型エラー、C++ではビルドエラーになる。
+
+## 9. つまずきやすい点
 
 | 症状 | 確認すること |
 |---|---|
@@ -662,11 +676,11 @@ ros2 run learn_py qos_listener --ros-args -p durability:=transient_local
 | 非互換の警告が出ない | 警告はノードのログ（ターミナル）に出る。`rqt_console` でも確認できる |
 | C++版のビルドで `install TARGETS given target "turtle_circle" which does not exist` のようなエラー | `install(TARGETS ...)` に、作っていないノード（フェーズ3-2aでC++版を作らなかった場合の `turtle_circle` など）の名前を書いていないか |
 
-## 9. 次へ
+## 10. 次へ
 
 フェーズ3-3（`docs/phase3_3_parameters.md`）で、パラメータを本格的に扱う。ここで使った `-p` の指定と、YAMLでの指定を学ぶ。
 
-## 10. 公式ドキュメント・参考資料
+## 11. 公式ドキュメント・参考資料
 
 確認状況（2026-09-20）: 下記は `docs/idea_origin.md` に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。
 
@@ -677,4 +691,4 @@ ros2 run learn_py qos_listener --ros-args -p durability:=transient_local
 
 > 公式ドキュメントと食い違う場合は、公式を優先する。
 
-> 出典: 各サンプルのAPIの使い方は、上記の公式チュートリアルを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。
+> 出典: 各サンプルのAPIの使い方は、上記の公式ドキュメントを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。

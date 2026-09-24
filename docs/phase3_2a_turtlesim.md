@@ -10,7 +10,7 @@
 
 > **このフェーズの位置づけ**: フェーズ3-2は、互いに独立した2つのテーマに分けている。この3-2aでは、速度指令 `Twist` を送って相手（turtlesim）を動かす `turtle_circle` を作る。フェーズ5の車両シミュレーションで直接使う内容なので、Python版は必須。もう1つのテーマ（QoSの相性）は `docs/phase3_2b_qos.md`（フェーズ3-2b）で扱う。C++版（5節）は任意とする。
 >
-> **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。3節・4節冒頭の「主なAPI」表とサンプルコード・解説を読んで理解し、送る値を変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
+> **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。4節・5節冒頭の「主なAPI」表（C++版の5節は任意）とサンプルコード・解説を読んで理解し、送る値を変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
 
 > **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容や画面の様子とその読み方を載せている。コードとROS2の仕様から筆者が想定したもので、実機では時刻などの細部が異なる。
 
@@ -70,7 +70,7 @@ flowchart LR
 find_package(geometry_msgs REQUIRED)
 ```
 
-`package.xml` の `<depend>` は「このパッケージは `geometry_msgs` に依存する」という宣言で、`colcon` が依存関係からビルド順を決めたり、`rosdep` が不足を検出したりするために使う。`<depend>` はビルド時・実行時の両方の依存をまとめて宣言する書き方。一方 `CMakeLists.txt` の `find_package` は、C++のビルド時にヘッダやライブラリの場所を探す指示。C++では**両方**必要で、片方だけだとビルドエラーになる（7節）。Pythonは `package.xml` だけでよい。
+`package.xml` の `<depend>` は「このパッケージは `geometry_msgs` に依存する」という宣言で、`colcon` が依存関係からビルド順を決めたり、`rosdep` が不足を検出したりするために使う。`<depend>` はビルド時・実行時の両方の依存をまとめて宣言する書き方。一方 `CMakeLists.txt` の `find_package` は、C++のビルド時にヘッダやライブラリの場所を探す指示。C++では**両方**必要で、片方だけだとビルドエラーになる（8節）。Pythonは `package.xml` だけでよい。
 
 ## 4. Python版（`ws/src/learn_py`）
 
@@ -138,14 +138,14 @@ def main(args=None):
 
 観察ポイント: turtlesimを先に起動しておき、`ros2 topic echo /turtle1/cmd_vel` で `linear.x: 2.0`、`angular.z: 1.0` が流れていることを見る。亀が動かないときは、まずecho側に値が出ているかで「送れていない」のか「届いていない」のかを切り分ける。
 
-`setup.py` の `entry_points` に1行を足し（前節までの行は残す）、再ビルドする。
+`setup.py` の `entry_points` に1行を足し（フェーズ3-1までに足した行は残す）、再ビルドする。
 
 <!-- snippet: py_entry_points_turtle -->
 ```python
             'turtle_circle = learn_py.turtle_circle:main',
 ```
 
-`'実行ファイル名 = パッケージ.モジュール:関数'` の形式で、`ros2 run learn_py turtle_circle` の `turtle_circle` が左辺、呼ばれる関数が右辺の `main`。前節でも触れたとおり、`entry_points` を変えたときは `--symlink-install` でも再ビルドが必要。カンマの付け忘れや、リストの外へ書いてしまうミスに注意する。
+`'実行ファイル名 = パッケージ.モジュール:関数'` の形式で、`ros2 run learn_py turtle_circle` の `turtle_circle` が左辺、呼ばれる関数が右辺の `main`。フェーズ3-1でも触れたとおり、`entry_points` を変えたときは `--symlink-install` でも再ビルドが必要。カンマの付け忘れや、リストの外へ書いてしまうミスに注意する。
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
@@ -231,7 +231,7 @@ Python版と同じ「10 Hzで `linear.x=2.0`、`angular.z=1.0` を送る」Publi
 
 つまずき: `CMakeLists.txt` の `ament_target_dependencies` に `geometry_msgs` を書き忘れると、`geometry_msgs/msg/twist.hpp` が見つからないビルドエラーになる。
 
-`CMakeLists.txt` に追記し、`install(TARGETS ...)` へ `turtle_circle` を足す（前節の分は残す）。
+`CMakeLists.txt` に追記し、`install(TARGETS ...)` へ `turtle_circle` を足す（フェーズ3-1までの分は残す）。
 
 <!-- snippet: cmake_turtle -->
 ```cmake
@@ -258,7 +258,7 @@ colcon build --symlink-install --packages-select learn_cpp
 source install/setup.bash
 ```
 
-期待する結果: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`find_package(geometry_msgs REQUIRED)` を書き忘れていると、ここで `Failed <<< learn_cpp` になり、その上に `geometry_msgs` が見つからないという趣旨のCMakeのエラーが出る（7節）。
+期待する結果: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`find_package(geometry_msgs REQUIRED)` を書き忘れていると、ここで `Failed <<< learn_cpp` になり、その上に `geometry_msgs` が見つからないという趣旨のCMakeのエラーが出る（8節）。
 
 ## 6. 実験: Twistでturtlesimを動かす
 
@@ -285,18 +285,31 @@ ros2 run learn_cpp turtle_circle
 >
 > 課題3（発展）: `/turtle1/pose`（`turtlesim/msg/Pose`）を購読するノードを作り、位置をログに出す。`turtlesim` への依存を `package.xml` に足す必要がある。
 
-## 7. つまずきやすい点
+## 7. Python版とC++版の違いのまとめ
+
+4節・5節のサンプルを比べると、ノードの形（Publisherとタイマーを作り、タイマーで送る）はフェーズ3-1の `talker` と同じで、違いは**別パッケージのメッセージ型を使うための手続き**に集まる。
+
+| 観点 | Python | C++ |
+|---|---|---|
+| 型の取り込み | `from geometry_msgs.msg import Twist` | `#include "geometry_msgs/msg/twist.hpp"`（ファイル名は小文字・スネークケース）、型は `geometry_msgs::msg::Twist` |
+| 依存の宣言 | `package.xml` の `<depend>` だけ | `package.xml` の `<depend>` に加え、`CMakeLists.txt` の `find_package` と、ターゲットごとの `ament_target_dependencies` |
+| 周期の書き方 | `0.1`（単位は秒。数値だけなので取り違えに注意） | `100ms`（単位が型に入る） |
+| 実行ファイルの登録 | `setup.py` の `entry_points` に1行 | `add_executable` と `install(TARGETS ...)` の2か所 |
+
+C++では、依存を書く場所が3つ（`<depend>`・`find_package`・`ament_target_dependencies`）に分かれていて、どれか1つを忘れるとビルドが通らない（8節）。Pythonは `<depend>` を書き忘れても、この環境では動いてしまうことが多い（システムに `geometry_msgs` が入っているため）。依存の宣言としては必要なので、動いても書いておく。
+
+## 8. つまずきやすい点
 
 | 症状 | 確認すること |
 |---|---|
 | 亀が動かない | turtlesimが起動しているか。`ros2 topic info /turtle1/cmd_vel` でSubscriberが1つあるか。トピック名の先頭 `/` |
 | C++でビルドエラー（`geometry_msgs` が見つからない） | `package.xml` の `<depend>`、`CMakeLists.txt` の `find_package(geometry_msgs REQUIRED)` と `ament_target_dependencies` |
 
-## 8. 次へ
+## 9. 次へ
 
 フェーズ3-2b（`docs/phase3_2b_qos.md`）で、QoSの相性を体験する。3-2aとは独立したテーマで、ここで作った `turtle_circle` は使わない。
 
-## 9. 公式ドキュメント・参考資料
+## 10. 公式ドキュメント・参考資料
 
 確認状況（2026-09-20）: 下記は `docs/idea_origin.md` に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。
 
