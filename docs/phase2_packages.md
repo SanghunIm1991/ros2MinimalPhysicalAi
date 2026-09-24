@@ -7,7 +7,7 @@
 - 言語: **Python（`ament_python`）とC++（`ament_cmake`）の両方**
 - 前提: フェーズ1（`docs/phase1_cli_turtlesim.md`）で `ros2 run <パッケージ> <実行ファイル>` の書式に触れていること
 
-> **この手順書の位置づけ**: コマンドはROS2 Jazzyの実機の雛形（`ros2 pkg create` のテンプレート）を読んで確認しているが、公式チュートリアルの本文とは照合できていない（docs.ros.orgがボット対策で取得不可）。出力が違えば実機を優先し、差分を貼ってほしい。文章・構成は自分の言葉で書いた。公式ドキュメント（CC BY 4.0）の出典は末尾に記載する。
+> **この手順書の位置づけ**: コマンドはROS2 Jazzyの実機の雛形（`ros2 pkg create` のテンプレート）を読んで確認しているが、公式チュートリアルの本文とは照合できていない（docs.ros.orgがボット対策で取得不可）。出力が違う場合は、実機の表示を優先する。文章・構成は自分の言葉で書いた。公式ドキュメント（CC BY 4.0）の出典は末尾に記載する。
 
 > **実行環境が無くても読めるように**: コマンドの直後に「期待する結果」として、表示される内容の例とその読み方を載せている。`ros2 pkg create` から `colcon build`、`install/` の中身までは、手順書の作成時に使い捨ての環境で実行して確かめた表示を元にしている（日時・秒数・パスは環境によって変わる）。
 
@@ -272,7 +272,7 @@ Hi from learn_py.
 hello world learn_cpp package
 ```
 
-> 2026-09-22時点でユーザーが実機で確認済み: `learn_py`・`learn_cpp`とも期待どおりの表示だった。
+> 2026-09-22時点で実機で確認済み: `learn_py`・`learn_cpp`とも期待どおりの表示だった。
 
 `source` の効果を確認する:
 
@@ -409,7 +409,7 @@ grep -n 'maintainer' ws/src/learn_py/package.xml ws/src/learn_cpp/package.xml
 grep -n 'maintainer' ws/src/learn_py/setup.py
 ```
 
-実メールアドレスが入っていないこと（`noreply@example.com` であること）。コミットするかどうかはClaudeに依頼する（コミットは規約に従いClaudeが行う）。
+実メールアドレスが入っていないこと（`noreply@example.com` であること）。確認できたら、自分のリポジトリの規約に従ってコミットする（`ws/src` だけをコミットし、`ws/build`・`ws/install`・`ws/log` は含めない）。
 
 ## 3. Python版とC++版の違いのまとめ
 
@@ -429,7 +429,7 @@ grep -n 'maintainer' ws/src/learn_py/setup.py
 | 症状 | 確認すること |
 |---|---|
 | `Package 'learn_py' not found` | `source install/setup.bash` をしたか。別ターミナルで `ws/` の `install` を読んだか |
-| `colcon: command not found` | `sudo apt install python3-colcon-common-extensions`（導入はユーザーが行う）。`colcon --help` で確認 |
+| `colcon: command not found` | `sudo apt install python3-colcon-common-extensions` で導入する。`colcon --help` で確認 |
 | ビルド中に応答が遅い・止まる | メモリ不足の可能性。`--parallel-workers 1` か `2` に絞る |
 | `No executable found`（`ros2 run`） | `entry_points` / `install(TARGETS ...)` の記述、ビルド後の `source` |
 | Pythonの修正が反映されない | `--symlink-install` を付けてビルドしたか。実行ファイルを**追加**した場合は再ビルドが必要 |

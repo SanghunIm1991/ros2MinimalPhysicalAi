@@ -312,6 +312,10 @@ pwd
 - （7節を行う場合）非公開のリポジトリの `git clone` が認証エラー（`Repository not found` / `Authentication failed`）になる → WSLのgitはWindows側の認証を引き継がない。7節の1番目の手順で、SSH鍵または `gh` の認証を設定する。`ssh -T git@github.com` で認証の状態を切り分けられる
 - （7節を行う場合）`~/.claude` へのcloneが「already exists and is not an empty directory」で失敗する → Claude Codeを先に起動して作られている。中身を確認して退避してからcloneする（7節の4番目の手順）
 
+## 次へ
+
+フェーズ1（`docs/phase1_cli_turtlesim.md`）へ進む。フェーズ1の1-2節で、この手順書では確かめなかったGUIの表示（WSLg）を確認し、turtlesimを動かしながら `ros2` コマンドでROS2の通信を観察する。ROS2の全体像を先に知りたい場合は、コマンドを使わない読み物のフェーズ0（`docs/phase0_overview.md`）を先に読んでもよい。
+
 ## 公式ドキュメント
 
 - [ROS 2 Documentation: Jazzy — Installation](https://docs.ros.org/en/jazzy/Installation.html)（公式・英語）
