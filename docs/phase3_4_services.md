@@ -149,17 +149,22 @@ from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
 
+# add_two_ints サービスのサーバ。要求の a と b を足して返すノード。
 class AddServer(Node):
+    # サービスを作り、要求が来たら on_request を呼ぶよう登録する。
     def __init__(self):
         super().__init__('add_server')
         self.srv = self.create_service(AddTwoInts, 'add_two_ints', self.on_request)
 
+    # 要求1件ごとに呼ばれる。response.sum に答えを書き、response を返す。
     def on_request(self, request, response):
         response.sum = request.a + request.b
         self.get_logger().info(f'{request.a} + {request.b} = {response.sum}')
         return response
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = AddServer()
@@ -197,7 +202,9 @@ from example_interfaces.srv import AddTwoInts
 from rclpy.node import Node
 
 
+# add_two_ints サービスのクライアント。パラメータ a, b を持つノード。
 class AddClient(Node):
+    # パラメータ a, b を宣言し、クライアントを作る（まだ呼ばない）。
     def __init__(self):
         super().__init__('add_client')
         self.declare_parameter('a', 1)
@@ -205,6 +212,8 @@ class AddClient(Node):
         self.cli = self.create_client(AddTwoInts, 'add_two_ints')
 
 
+# エントリポイント。サーバを最大5秒待ち、a + b を1回だけ呼んで
+# 結果をログに出したら終わる（spin し続けない）。
 def main(args=None):
     rclpy.init(args=args)
     node = AddClient()
@@ -259,7 +268,9 @@ from std_msgs.msg import Int32
 from std_srvs.srv import Trigger
 
 
+# 1秒ごとにカウントを counter へ送り、reset_counter サービスで0に戻せるノード。
 class CounterNode(Node):
+    # カウント・Publisher・タイマー・サービスを用意する。
     def __init__(self):
         super().__init__('counter_node')
         self.count = 0
@@ -267,12 +278,14 @@ class CounterNode(Node):
         self.timer = self.create_timer(1.0, self.on_timer)
         self.srv = self.create_service(Trigger, 'reset_counter', self.on_reset)
 
+    # 今のカウントを送ってから1増やす。
     def on_timer(self):
         msg = Int32()
         msg.data = self.count
         self.pub.publish(msg)
         self.count += 1
 
+    # reset_counter が呼ばれたとき、リセット前の値を応答に入れてから0に戻す。
     def on_reset(self, request, response):
         response.success = True
         response.message = f'counter reset (was {self.count})'
@@ -281,6 +294,8 @@ class CounterNode(Node):
         return response
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = CounterNode()
@@ -357,9 +372,11 @@ Pythonとの違いの見どころ: 応答を「返す」のか「書き込む」
 
 using AddTwoInts = example_interfaces::srv::AddTwoInts;
 
+// add_two_ints サービスのサーバ。要求の a と b を足して返すノード（add_server.py と同じ仕様）。
 class AddServer : public rclcpp::Node
 {
 public:
+  // コンストラクタ: サービスを作る。要求が来たときの処理はラムダで直接書く。
   AddServer() : Node("add_server")
   {
     service_ = create_service<AddTwoInts>(
@@ -379,6 +396,7 @@ private:
   rclcpp::Service<AddTwoInts>::SharedPtr service_;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -414,6 +432,8 @@ Python版と同じ「要求を受けて `a + b` を返す」サーバ。差分�
 using namespace std::chrono_literals;
 using AddTwoInts = example_interfaces::srv::AddTwoInts;
 
+// エントリポイント。ノードとクライアントをこの中で作り、サーバを最大5秒待って
+// a + b を1回だけ呼び、結果をログに出したら終わる（クラスは作らない）。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -473,9 +493,11 @@ Python版と同じ流れ（待つ → 要求を作る → 非同期に送る →
 
 using namespace std::chrono_literals;
 
+// 1秒ごとにカウントを counter へ送り、reset_counter サービスで0に戻せるノード（counter_node.py と同じ仕様）。
 class CounterNode : public rclcpp::Node
 {
 public:
+  // コンストラクタ: Publisher・タイマー・サービスを作る。リセットの処理はラムダで直接書く。
   CounterNode() : Node("counter_node")
   {
     pub_ = create_publisher<std_msgs::msg::Int32>("counter", 10);
@@ -493,6 +515,7 @@ public:
   }
 
 private:
+  // 今のカウントを送ってから1増やす。
   void on_timer()
   {
     std_msgs::msg::Int32 msg;
@@ -506,6 +529,7 @@ private:
   int count_ = 0;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);

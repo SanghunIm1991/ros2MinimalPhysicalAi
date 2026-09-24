@@ -158,7 +158,10 @@ from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from rclpy.node import Node
 
 
+# fibonacci アクションのサーバ。1秒に1項ずつ数列を伸ばして途中経過を送り、
+# 最後に完成した数列を返す。中断要求にも応じる。
 class FibonacciServer(Node):
+    # アクションサーバを作り、3つのコールバック（受理判断・中断判断・実行）を登録する。
     def __init__(self):
         super().__init__('fibonacci_server')
         self.server = ActionServer(
@@ -168,6 +171,7 @@ class FibonacciServer(Node):
             cancel_callback=self.on_cancel,
             callback_group=ReentrantCallbackGroup())
 
+    # ゴールが届いたときに呼ばれ、受理するか拒否するかを決める（order < 1 は拒否）。
     def on_goal(self, goal_request):
         if goal_request.order < 1:
             self.get_logger().warn(f'reject goal: order={goal_request.order}')
@@ -175,10 +179,13 @@ class FibonacciServer(Node):
         self.get_logger().info(f'accept goal: order={goal_request.order}')
         return GoalResponse.ACCEPT
 
+    # 中断要求が届いたときに呼ばれ、受け入れるかを決める（常に受け入れる）。
     def on_cancel(self, goal_handle):
         self.get_logger().info('cancel requested')
         return CancelResponse.ACCEPT
 
+    # 受理したゴールの実行本体。feedback を送りながら数列を伸ばし、
+    # 成功なら succeed()、中断されたら canceled() を宣言して結果を返す。
     def execute(self, goal_handle):
         order = goal_handle.request.order
         sequence = [0, 1]
@@ -200,6 +207,8 @@ class FibonacciServer(Node):
         return result
 
 
+# エントリポイント。複数スレッドの executor で spin し、
+# 実行中（execute）でも中断要求を受け付けられるようにする。
 def main(args=None):
     rclpy.init(args=args)
     node = FibonacciServer()
@@ -250,7 +259,10 @@ STATUS_NAMES = {
 }
 
 
+# fibonacci アクションのクライアント。ゴールを送り、途中経過と結果をログに出す。
+# パラメータ cancel_after が正なら、その秒数後に中断を要求する。
 class FibonacciClient(Node):
+    # パラメータを宣言し、アクションクライアントと状態（取っ手・タイマー・終了フラグ）を用意する。
     def __init__(self):
         super().__init__('fibonacci_client')
         self.declare_parameter('order', 5)
@@ -260,6 +272,7 @@ class FibonacciClient(Node):
         self.cancel_timer = None
         self.done = False
 
+    # サーバを待ってゴールを送る。返事（受理/拒否）は on_goal_response で受ける。
     def send_goal(self):
         if not self.client.wait_for_server(timeout_sec=5.0):
             self.get_logger().error('action server fibonacci is not available')
@@ -270,6 +283,8 @@ class FibonacciClient(Node):
         future = self.client.send_goal_async(goal, feedback_callback=self.on_feedback)
         future.add_done_callback(self.on_goal_response)
 
+    # ゴールの受理/拒否が届いたときに呼ばれる。受理なら結果を待ち始め、
+    # 必要なら中断用のタイマーを仕掛ける。
     def on_goal_response(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
@@ -283,14 +298,17 @@ class FibonacciClient(Node):
         if cancel_after > 0.0:
             self.cancel_timer = self.create_timer(cancel_after, self.on_cancel_timer)
 
+    # cancel_after 秒後に1回だけ呼ばれ、中断を要求する。
     def on_cancel_timer(self):
         self.cancel_timer.cancel()
         self.get_logger().info('send cancel request')
         self.goal_handle.cancel_goal_async()
 
+    # 途中経過（feedback）が届くたびに呼ばれ、ログに出す。
     def on_feedback(self, feedback_msg):
         self.get_logger().info(f'feedback: {list(feedback_msg.feedback.sequence)}')
 
+    # 最終結果が届いたときに呼ばれ、状態と数列をログに出して終了フラグを立てる。
     def on_result(self, future):
         response = future.result()
         name = STATUS_NAMES.get(response.status, str(response.status))
@@ -298,6 +316,7 @@ class FibonacciClient(Node):
         self.done = True
 
 
+# エントリポイント。ゴールを送り、結果が届く（done になる）まで spin_once で回す。
 def main(args=None):
     rclpy.init(args=args)
     node = FibonacciClient()
@@ -382,9 +401,12 @@ Pythonとの違いの見どころ: Pythonは `Future` の完了コールバッ�
 using Fibonacci = example_interfaces::action::Fibonacci;
 using GoalHandle = rclcpp_action::ServerGoalHandle<Fibonacci>;
 
+// fibonacci アクションのサーバ（fibonacci_server.py と同じ仕様）。
+// 実行処理は別スレッドで動かし、その間も中断要求を受け付ける。
 class FibonacciServer : public rclcpp::Node
 {
 public:
+  // コンストラクタ: アクションサーバを作り、受理判断・中断判断・受理後の処理の3つをラムダで渡す。
   FibonacciServer() : Node("fibonacci_server")
   {
     server_ = rclcpp_action::create_server<Fibonacci>(
@@ -408,6 +430,8 @@ public:
   }
 
 private:
+  // 受理したゴールの実行本体（別スレッドで動く）。feedback を送りながら数列を伸ばし、
+  // 成功なら succeed()、中断されたら canceled() で結果を返す。
   void execute(const std::shared_ptr<GoalHandle> goal_handle)
   {
     const auto goal = goal_handle->get_goal();
@@ -439,6 +463,7 @@ private:
   rclcpp_action::Server<Fibonacci>::SharedPtr server_;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -502,6 +527,7 @@ using namespace std::chrono_literals;
 using Fibonacci = example_interfaces::action::Fibonacci;
 using GoalHandle = rclcpp_action::ClientGoalHandle<Fibonacci>;
 
+// 数列を "[0, 1, 1]" の形の文字列にする（ログ表示用）。
 static std::string to_text(const std::vector<int32_t> & values)
 {
   std::ostringstream out;
@@ -513,9 +539,12 @@ static std::string to_text(const std::vector<int32_t> & values)
   return out.str();
 }
 
+// fibonacci アクションのクライアント（fibonacci_client.py と同じ仕様）。
+// 結果を受け取ったら rclcpp::shutdown() で spin を抜けて終わる。
 class FibonacciClient : public rclcpp::Node
 {
 public:
+  // コンストラクタ: パラメータ order・cancel_after を読み、アクションクライアントを作る。
   FibonacciClient() : Node("fibonacci_client")
   {
     order_ = declare_parameter<int64_t>("order", 5);
@@ -523,6 +552,8 @@ public:
     client_ = rclcpp_action::create_client<Fibonacci>(this, "fibonacci");
   }
 
+  // サーバを待ってゴールを送る。受理/拒否・途中経過・結果の各コールバックは
+  // options にラムダで設定する。
   void send_goal()
   {
     if (!client_->wait_for_action_server(5s)) {
@@ -579,6 +610,7 @@ private:
   rclcpp::TimerBase::SharedPtr cancel_timer_;
 };
 
+// エントリポイント。ノードを作ってゴールを送り、結果のコールバックで shutdown されるまで spin する。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -795,7 +827,7 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 | サーバの構成 | `ActionServer(...)`に`execute_callback`／`goal_callback`／`cancel_callback`の3つを**キーワード引数**で渡す | `create_server<Fibonacci>(...)`に3つの処理を**位置引数のラムダ**として順番に渡す（対応は4節の表） |
 | 実行処理の動かし方 | `MultiThreadedExecutor` + `ReentrantCallbackGroup`で、executorのスレッドを複数化して中断要求と実行処理を並行させる | `cancel_callback`側で`std::thread(...).detach()`し、実行(`execute`)を明示的に別スレッドへ逃がす（学習用の簡易策。終了時にスレッドが残りうる点は8節の注意） |
 | クライアントの結果の受け方 | `send_goal_async` → `Future`に`add_done_callback`で応答（受理/拒否）、`get_result_async()`にも`add_done_callback`で最終結果、という**Futureの連鎖** | `send_goal_options`に`goal_response_callback`／`feedback_callback`／`result_callback`を設定し、`async_send_goal(goal, options)`で送る（対応は6節の表） |
-| コード行数（サーバ＋クライアント） | 136行（63＋73） | 175行（74＋101） |
+| コード行数（サーバ＋クライアント。概要のコメント行を除く） | 136行（63＋73） | 175行（74＋101） |
 
 実行モデルの違い（Pythonは「executorとコールバックグループ」、C++は「明示的なスレッド生成」）が、アクションで初めて表面化するPython/C++の一番大きな差。どちらも「長時間処理の間もサーバが他の要求に応答できるようにする」という同じ目的のための工夫だが、手段が異なる。
 

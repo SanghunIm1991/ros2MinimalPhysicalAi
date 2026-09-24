@@ -102,7 +102,10 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 
+# パラメータ message の文字列を、パラメータ period 秒ごとに param_chatter へ送るノード。
+# 実行中のパラメータ変更を検証して反映する。
 class ParamTalker(Node):
+    # パラメータを宣言して初期値を読み、Publisher・タイマー・変更時のコールバックを用意する。
     def __init__(self):
         super().__init__('param_talker')
         self.declare_parameter('message', 'hello')
@@ -114,12 +117,15 @@ class ParamTalker(Node):
         self.timer = self.create_timer(self.period, self.on_timer)
         self.add_on_set_parameters_callback(self.on_params)
 
+    # 今の message を1回送ってログに出す。
     def on_timer(self):
         msg = String()
         msg.data = self.message
         self.pub.publish(msg)
         self.get_logger().info(f'publish: {msg.data}')
 
+    # ros2 param set などでパラメータが変わるときに呼ばれる。
+    # period <= 0 なら拒否し、妥当なら値を反映する（period はタイマーを作り直す）。
     def on_params(self, params):
         # まず全体を検証し、問題なければ反映する
         for p in params:
@@ -135,6 +141,8 @@ class ParamTalker(Node):
         return SetParametersResult(successful=True)
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = ParamTalker()
@@ -212,9 +220,12 @@ source install/setup.bash
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+// パラメータ message の文字列を、パラメータ period 秒ごとに param_chatter へ送るノード。
+// 実行中のパラメータ変更を検証して反映する（param_talker.py と同じ仕様）。
 class ParamTalker : public rclcpp::Node
 {
 public:
+  // コンストラクタ: パラメータを宣言して初期値を読み、Publisher・タイマー・変更時のコールバックを用意する。
   ParamTalker() : Node("param_talker")
   {
     message_ = declare_parameter<std::string>("message", "hello");
@@ -227,12 +238,14 @@ public:
   }
 
 private:
+  // 今の period_ でタイマーを作る（作り直しにも使う）。
   void start_timer()
   {
     timer_ = create_wall_timer(
       std::chrono::duration<double>(period_), [this]() { on_timer(); });
   }
 
+  // 今の message_ を1回送ってログに出す。
   void on_timer()
   {
     std_msgs::msg::String msg;
@@ -241,6 +254,7 @@ private:
     RCLCPP_INFO(get_logger(), "publish: %s", msg.data.c_str());
   }
 
+  // パラメータが変わるときに呼ばれる。period <= 0 なら拒否し、妥当なら反映する。
   rcl_interfaces::msg::SetParametersResult on_params(
     const std::vector<rclcpp::Parameter> & params)
   {
@@ -272,6 +286,7 @@ private:
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_cb_;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);

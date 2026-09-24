@@ -129,12 +129,15 @@ from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
 
+# 一定の速度指令（Twist）を 10 Hz で送り続け、turtlesim の亀に円を描かせるノード。
 class TurtleCircle(Node):
+    # /turtle1/cmd_vel への Publisher と 0.1秒周期のタイマーを作る。
     def __init__(self):
         super().__init__('turtle_circle')
         self.pub = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
         self.timer = self.create_timer(0.1, self.on_timer)
 
+    # 前進 2.0・旋回 1.0 の速度指令を1回送る。
     def on_timer(self):
         msg = Twist()
         msg.linear.x = 2.0
@@ -142,6 +145,8 @@ class TurtleCircle(Node):
         self.pub.publish(msg)
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = TurtleCircle()
@@ -179,6 +184,8 @@ from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import String
 
 
+# パラメータの文字列（reliability / durability）から QoSProfile を組み立てる。
+# 想定外の値なら ValueError で止める。
 def make_qos(reliability, durability):
     if reliability not in ('reliable', 'best_effort'):
         raise ValueError(f'invalid reliability: {reliability}')
@@ -193,7 +200,9 @@ def make_qos(reliability, durability):
     )
 
 
+# パラメータで決めた QoS で、1秒ごとに "msg N" を qos_test へ送るノード。
 class QosTalker(Node):
+    # パラメータを宣言・取得し、その QoS で Publisher を作る。
     def __init__(self):
         super().__init__('qos_talker')
         self.declare_parameter('reliability', 'reliable')
@@ -205,6 +214,7 @@ class QosTalker(Node):
         self.count = 0
         self.timer = self.create_timer(1.0, self.on_timer)
 
+    # 1通送ってログに出す（相手とつながっていなくてもログは出る）。
     def on_timer(self):
         msg = String()
         msg.data = f'msg {self.count}'
@@ -213,6 +223,8 @@ class QosTalker(Node):
         self.count += 1
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = QosTalker()
@@ -257,6 +269,7 @@ from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import String
 
 
+# パラメータの文字列から QoSProfile を組み立てる（qos_talker.py と同じ関数）。
 def make_qos(reliability, durability):
     if reliability not in ('reliable', 'best_effort'):
         raise ValueError(f'invalid reliability: {reliability}')
@@ -271,7 +284,9 @@ def make_qos(reliability, durability):
     )
 
 
+# パラメータで決めた QoS で qos_test を購読し、届いた文字列をログに出すノード。
 class QosListener(Node):
+    # パラメータを宣言・取得し、その QoS で購読を作る。
     def __init__(self):
         super().__init__('qos_listener')
         self.declare_parameter('reliability', 'reliable')
@@ -282,10 +297,13 @@ class QosListener(Node):
         self.sub = self.create_subscription(
             String, 'qos_test', self.on_message, make_qos(reliability, durability))
 
+    # メッセージが1件届くたびに呼ばれ、ログに出す。
     def on_message(self, msg):
         self.get_logger().info(f'received: {msg.data}')
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = QosListener()
@@ -354,9 +372,11 @@ source install/setup.bash
 
 using namespace std::chrono_literals;
 
+// 一定の速度指令（Twist）を 10 Hz で送り、turtlesim の亀に円を描かせるノード。
 class TurtleCircle : public rclcpp::Node
 {
 public:
+  // コンストラクタ: /turtle1/cmd_vel への Publisher と 100ms 周期のタイマーを作る。
   TurtleCircle() : Node("turtle_circle")
   {
     pub_ = create_publisher<geometry_msgs::msg::Twist>("/turtle1/cmd_vel", 10);
@@ -364,6 +384,7 @@ public:
   }
 
 private:
+  // 前進 2.0・旋回 1.0 の速度指令を1回送る。
   void on_timer()
   {
     geometry_msgs::msg::Twist msg;
@@ -376,6 +397,7 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -414,6 +436,7 @@ Python版と同じ「10 Hzで `linear.x=2.0`、`angular.z=1.0` を送る」Publi
 
 using namespace std::chrono_literals;
 
+// パラメータの文字列から QoS を組み立てる。想定外の値なら例外を投げて止める。
 static rclcpp::QoS make_qos(const std::string & reliability, const std::string & durability)
 {
   if (reliability != "reliable" && reliability != "best_effort") {
@@ -436,9 +459,11 @@ static rclcpp::QoS make_qos(const std::string & reliability, const std::string &
   return qos;
 }
 
+// パラメータで決めた QoS で、1秒ごとに "msg N" を qos_test へ送るノード。
 class QosTalker : public rclcpp::Node
 {
 public:
+  // コンストラクタ: パラメータを宣言・取得し、その QoS で Publisher とタイマーを作る。
   QosTalker() : Node("qos_talker")
   {
     const auto reliability = declare_parameter<std::string>("reliability", "reliable");
@@ -451,6 +476,7 @@ public:
   }
 
 private:
+  // 1通送ってログに出す（相手とつながっていなくてもログは出る）。
   void on_timer()
   {
     std_msgs::msg::String msg;
@@ -464,6 +490,7 @@ private:
   int count_ = 0;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -508,6 +535,7 @@ Python版 `qos_talker.py` と同じ仕様（QoSをパラメータで切り替え
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+// パラメータの文字列から QoS を組み立てる（qos_talker.cpp と同じ関数）。
 static rclcpp::QoS make_qos(const std::string & reliability, const std::string & durability)
 {
   if (reliability != "reliable" && reliability != "best_effort") {
@@ -530,9 +558,11 @@ static rclcpp::QoS make_qos(const std::string & reliability, const std::string &
   return qos;
 }
 
+// パラメータで決めた QoS で qos_test を購読し、届いた文字列をログに出すノード。
 class QosListener : public rclcpp::Node
 {
 public:
+  // コンストラクタ: パラメータを宣言・取得し、その QoS で購読を作る。
   QosListener() : Node("qos_listener")
   {
     const auto reliability = declare_parameter<std::string>("reliability", "reliable");
@@ -551,6 +581,7 @@ private:
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);

@@ -167,6 +167,8 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
+# ros2 launch が呼ぶ関数。talker と listener を、引数で選んだ言語（py/cpp）の
+# パッケージから起動する内容を返す。
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -295,6 +297,7 @@ XMLでは、`$(var 引数名)` で引数を参照し、文字列に埋め込め�
 
 <!-- file: ws/src/learn_bringup/launch/pubsub.launch.xml -->
 ```xml
+<!-- talker と listener を、引数で選んだ言語（py/cpp）のパッケージから起動する（pubsub.launch.py と同じ内容） -->
 <launch>
   <arg name="talker_lang" default="py" description="talkerの言語（py または cpp）"/>
   <arg name="listener_lang" default="py" description="listenerの言語（py または cpp）"/>
@@ -332,6 +335,7 @@ Python版の各要素が、XMLのタグにほぼ1対1で対応している。
 
 <!-- file: ws/src/learn_bringup/launch/pubsub.launch.yaml -->
 ```yaml
+# talker と listener を、引数で選んだ言語（py/cpp）のパッケージから起動する（pubsub.launch.py と同じ内容）
 launch:
   - arg:
       name: talker_lang
@@ -373,7 +377,7 @@ YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序�
 
 | 観点 | Python | XML | YAML |
 |---|---|---|---|
-| 行数（`pubsub.launch.*`） | 25行 | 7行 | 19行 |
+| 行数（`pubsub.launch.*`。概要のコメント行を除く） | 25行 | 7行 | 19行 |
 | 引数の埋め込み | `LaunchConfiguration('引数名')`（Pythonのオブジェクトとして扱う） | `$(var 引数名)` | `$(var 引数名)`（XMLと共通の記法） |
 | 条件分岐・計算 | 可能（`IfCondition`・`PythonExpression`や、素のPythonの関数・分岐がそのまま使える） | 不可（宣言的な起動の一覧のみ） | 不可（同左） |
 
@@ -417,6 +421,8 @@ from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 
 
+# param_talker を、config/param_talker.yaml のパラメータで起動し、
+# period だけ引数の値で上書きする。
 def generate_launch_description():
     config = PathJoinSubstitution(
         [FindPackageShare('learn_bringup'), 'config', 'param_talker.yaml'])
@@ -517,6 +523,7 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
+# turtlesim_node（OSS）と、引数で選んだ言語の turtle_circle を一緒に起動する。
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -592,11 +599,14 @@ from launch_ros.actions import PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
 
 
+# learn_bringup の launch/ にある name のファイルを、include できる形で返す補助関数。
 def _launch_file(name):
     return PythonLaunchDescriptionSource(
         PathJoinSubstitution([FindPackageShare('learn_bringup'), 'launch', name]))
 
 
+# pubsub.launch.py（talker は C++、listener は Python）を名前空間 demo の下で、
+# param.launch.py はそのまま include する。
 def generate_launch_description():
     pubsub = GroupAction([
         PushRosNamespace('demo'),

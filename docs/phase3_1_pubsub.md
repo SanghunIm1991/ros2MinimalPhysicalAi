@@ -99,13 +99,16 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 
+# 1秒ごとに "hello N" を chatter トピックへ送るノード。
 class Talker(Node):
+    # Publisher とタイマーを作る。
     def __init__(self):
         super().__init__('talker')
         self.pub = self.create_publisher(String, 'chatter', 10)
         self.count = 0
         self.timer = self.create_timer(1.0, self.on_timer)
 
+    # タイマーから1秒ごとに呼ばれ、1通送ってログに出す。
     def on_timer(self):
         msg = String()
         msg.data = f'hello {self.count}'
@@ -114,6 +117,8 @@ class Talker(Node):
         self.count += 1
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = Talker()
@@ -155,15 +160,20 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 
+# chatter トピックを購読し、届いた文字列をログに出すノード。
 class Listener(Node):
+    # 購読（Subscription）を作り、届いたら on_message を呼ぶよう登録する。
     def __init__(self):
         super().__init__('listener')
         self.sub = self.create_subscription(String, 'chatter', self.on_message, 10)
 
+    # メッセージが1件届くたびに spin から呼ばれる。
     def on_message(self, msg):
         self.get_logger().info(f'received: {msg.data}')
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = Listener()
@@ -198,13 +208,16 @@ from rclpy.node import Node
 from std_msgs.msg import Float64
 
 
+# 正弦波（周波数 freq_hz）の値を 10 Hz で sine トピックへ送るノード。
 class SinePub(Node):
+    # Publisher・周波数・0.1秒周期のタイマーを用意する。
     def __init__(self):
         super().__init__('sine_pub')
         self.pub = self.create_publisher(Float64, 'sine', 10)
         self.freq_hz = 0.5
         self.timer = self.create_timer(0.1, self.on_timer)
 
+    # 現在時刻から正弦波の値を計算して送る（ログは出さない）。
     def on_timer(self):
         t = self.get_clock().now().nanoseconds * 1e-9
         msg = Float64()
@@ -212,6 +225,8 @@ class SinePub(Node):
         self.pub.publish(msg)
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = SinePub()
@@ -246,15 +261,20 @@ from rclpy.node import Node
 from std_msgs.msg import Float64
 
 
+# sine トピックを購読し、値を小数点以下3桁でログに出すノード。
 class SineSub(Node):
+    # 購読を作り、届いたら on_message を呼ぶよう登録する。
     def __init__(self):
         super().__init__('sine_sub')
         self.sub = self.create_subscription(Float64, 'sine', self.on_message, 10)
 
+    # 値が1件届くたびに呼ばれ、ログに出す。
     def on_message(self, msg):
         self.get_logger().info(f'sine: {msg.data:.3f}')
 
 
+# エントリポイント（setup.py の entry_points から呼ばれる）。
+# ノードを作って spin で回し、Ctrl+C で後片付けして終わる。
 def main(args=None):
     rclpy.init(args=args)
     node = SineSub()
@@ -404,9 +424,11 @@ Pythonとの違いの見どころ:
 
 using namespace std::chrono_literals;
 
+// 1秒ごとに "hello N" を chatter トピックへ送るノード（talker.py と同じ仕様）。
 class Talker : public rclcpp::Node
 {
 public:
+  // コンストラクタ: Publisher とタイマーを作る。
   Talker() : Node("talker")
   {
     pub_ = create_publisher<std_msgs::msg::String>("chatter", 10);
@@ -414,6 +436,7 @@ public:
   }
 
 private:
+  // タイマーから1秒ごとに呼ばれ、1通送ってログに出す。
   void on_timer()
   {
     std_msgs::msg::String msg;
@@ -427,6 +450,7 @@ private:
   int count_ = 0;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -462,9 +486,11 @@ int main(int argc, char ** argv)
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+// chatter トピックを購読し、届いた文字列をログに出すノード（listener.py と同じ仕様）。
 class Listener : public rclcpp::Node
 {
 public:
+  // コンストラクタ: 購読を作る。届いたときの処理はラムダで直接書く。
   Listener() : Node("listener")
   {
     sub_ = create_subscription<std_msgs::msg::String>(
@@ -478,6 +504,7 @@ private:
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -511,9 +538,11 @@ int main(int argc, char ** argv)
 
 using namespace std::chrono_literals;
 
+// 正弦波の値を 10 Hz で sine トピックへ送るノード（sine_pub.py と同じ仕様）。
 class SinePub : public rclcpp::Node
 {
 public:
+  // コンストラクタ: Publisher と 100ms 周期のタイマーを作る。
   SinePub() : Node("sine_pub")
   {
     pub_ = create_publisher<std_msgs::msg::Float64>("sine", 10);
@@ -521,6 +550,7 @@ public:
   }
 
 private:
+  // 現在時刻から正弦波の値を計算して送る（ログは出さない）。
   void on_timer()
   {
     const double t = now().seconds();
@@ -534,6 +564,7 @@ private:
   double freq_hz_ = 0.5;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -564,9 +595,11 @@ int main(int argc, char ** argv)
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float64.hpp"
 
+// sine トピックを購読し、値を小数点以下3桁でログに出すノード（sine_sub.py と同じ仕様）。
 class SineSub : public rclcpp::Node
 {
 public:
+  // コンストラクタ: 購読を作る。届いたときの処理はラムダで直接書く。
   SineSub() : Node("sine_sub")
   {
     sub_ = create_subscription<std_msgs::msg::Float64>(
@@ -580,6 +613,7 @@ private:
   rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr sub_;
 };
 
+// エントリポイント。ノードを作って spin で回し、Ctrl+C で spin を抜けて終わる。
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
@@ -751,7 +785,7 @@ average rate: 10.000
 
 | 観点 | Python | C++ |
 |---|---|---|
-| コード行数（`talker`） | 32行 | 39行（include・波括弧の分だけやや長い） |
+| コード行数（`talker`。概要のコメント行を除く） | 31行 | 39行（include・波括弧の分だけやや長い） |
 | Publisherの作成 | `create_publisher(String, 'chatter', 10)`（型・トピック名・QoSの順、通常の関数引数） | `create_publisher<std_msgs::msg::String>("chatter", 10)`（型はテンプレート引数`< >`、戻り値は`SharedPtr`） |
 | コールバックの渡し方 | メソッドをそのまま渡す（`self.on_timer`、括弧を付けない） | ラムダ式 `[this]() { on_timer(); }`（`[this]`が無いとメンバ関数を呼べない） |
 | 購読コールバックの引数順 | 型・トピック名・**コールバック**・QoS | トピック名・QoS・**コールバック**（Pythonと順序が逆） |
