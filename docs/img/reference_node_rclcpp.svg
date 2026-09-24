@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1110 760" width="1110" height="760" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="12" role="img" aria-label="図: C++版（rclcpp）のNodeクラスと周辺のクラス。自作ノードがrclcpp::Nodeを継承し、Nodeはenable_shared_from_thisも継承する。Nodeは機能ごとの11個の部品（node_interfaces）を保持して処理を任せる。Publisher・Subscription・WallTimer・Service・Clientは作ってSharedPtrで呼び出し側に返し、CallbackGroupはそれらを弱い参照で覚える。ExecutorはNodeを登録してコールバックを呼ぶ">
+<title>図: C++版（rclcpp）のNodeクラスと周辺のクラス。自作ノードがrclcpp::Nodeを継承し、Nodeはenable_shared_from_thisも継承する。Nodeは機能ごとの11個の部品（node_interfaces）を保持して処理を任せる。Publisher・Subscription・WallTimer・Service・Clientは作ってSharedPtrで呼び出し側に返し、CallbackGroupはそれらを弱い参照で覚える。ExecutorはNodeを登録してコールバックを呼ぶ</title>
+<defs><marker id="tri" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto"><path d="M1,1 L11,6 L1,11 z" fill="#ffffff" stroke="#333333" stroke-width="1.2"/></marker><marker id="dia" viewBox="0 0 14 10" refX="1" refY="5" markerWidth="14" markerHeight="10" orient="auto-start-reverse"><path d="M1,5 L7,1 L13,5 L7,9 z" fill="#333333"/></marker><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="1110" height="760" fill="#ffffff"/>
+<path d="M495,88 L495,150" fill="none" stroke="#333333" stroke-width="1.4" marker-end="url(#tri)"/>
+<path d="M740,150 L740,100 L870,100 L870,70" fill="none" stroke="#333333" stroke-width="1.4" marker-end="url(#tri)"/>
+<path d="M760,260 L850,260" fill="none" stroke="#333333" stroke-width="1.4" marker-start="url(#dia)" marker-end="url(#arr)"/>
+<path d="M220,195 L300,195" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M300,300 L220,300" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M220,390 L300,390" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M120,480 L120,432" fill="none" stroke="#333333" stroke-width="1.4" marker-end="url(#tri)"/>
+<path d="M530,444 L530,489" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4"/>
+<path d="M370,489 L995,489" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4"/>
+<path d="M370.0,489 L370.0,534" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M520.0,489 L520.0,534" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M670.0,489 L670.0,534" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M820.0,489 L820.0,534" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M995.0,489 L995.0,534" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M220,671.0 L370,671.0 L370,588" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<path d="M20,740 L70,740" fill="none" stroke="#333333" stroke-width="1.4" marker-end="url(#tri)"/>
+<path d="M300,740 L350,740" fill="none" stroke="#333333" stroke-width="1.4" marker-start="url(#dia)" marker-end="url(#arr)"/>
+<path d="M580,740 L630,740" fill="none" stroke="#333333" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+<rect x="330" y="16" width="330" height="72" rx="4" fill="#fff4dc" stroke="#b07d00" stroke-width="1.5"/>
+<text x="495.0" y="36" text-anchor="middle" font-weight="bold" font-size="13">自作ノード（Talker・Listener など）</text>
+<line x1="330" y1="43" x2="660" y2="43" stroke="#b07d00" stroke-width="1"/>
+<text x="338" y="59" font-size="12">+ Talker() / Talker(NodeOptions)（間章）</text>
+<text x="338" y="77" font-size="12">- pub_ / timer_ / sub_: SharedPtr</text>
+<rect x="720" y="16" width="300" height="54" rx="4" fill="#f3f3f3" stroke="#777777" stroke-width="1.5"/>
+<text x="870.0" y="36" text-anchor="middle" font-weight="bold" font-size="13">std::enable_shared_from_this&lt;Node&gt;</text>
+<line x1="720" y1="43" x2="1020" y2="43" stroke="#777777" stroke-width="1"/>
+<text x="728" y="59" font-size="12">自分を指す SharedPtr を作れる</text>
+<rect x="300" y="150" width="460" height="294" rx="4" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="530.0" y="170" text-anchor="middle" font-weight="bold" font-size="13">rclcpp::Node</text>
+<line x1="300" y1="177" x2="760" y2="177" stroke="#3b6fb6" stroke-width="1"/>
+<text x="308" y="193" font-size="12">- node_base_ / node_topics_ / node_timers_ など</text>
+<text x="308" y="211" font-size="12">   11個: node_interfaces::〜Interface::SharedPtr</text>
+<text x="308" y="229" font-size="12">- node_options_: NodeOptions</text>
+<line x1="300" y1="237" x2="760" y2="237" stroke="#3b6fb6" stroke-width="1"/>
+<text x="308" y="253" font-size="12">+ Node(名前, NodeOptions)</text>
+<text x="308" y="271" font-size="12">+ create_publisher&lt;型&gt;(名前, qos)</text>
+<text x="308" y="289" font-size="12">+ create_subscription&lt;型&gt;(名前, qos, コールバック)</text>
+<text x="308" y="307" font-size="12">+ create_wall_timer(周期, コールバック)</text>
+<text x="308" y="325" font-size="12">+ create_service&lt;型&gt;(名前, コールバック)</text>
+<text x="308" y="343" font-size="12">+ create_client&lt;型&gt;(名前)</text>
+<text x="308" y="361" font-size="12">+ declare_parameter&lt;型&gt;(名前, 既定値)</text>
+<text x="308" y="379" font-size="12">+ get_parameter(名前)</text>
+<text x="308" y="397" font-size="12">+ add_on_set_parameters_callback(コールバック)</text>
+<text x="308" y="415" font-size="12">+ get_logger() / get_clock() / now()</text>
+<text x="308" y="433" font-size="12">+ get_node_base_interface() など（部品を返す）</text>
+<rect x="850" y="150" width="240" height="234" rx="4" fill="#eef7ee" stroke="#4a8a4a" stroke-width="1.5"/>
+<text x="970.0" y="170" text-anchor="middle" font-weight="bold" font-size="13">node_interfaces（部品）</text>
+<line x1="850" y1="177" x2="1090" y2="177" stroke="#4a8a4a" stroke-width="1"/>
+<text x="858" y="193" font-size="12">NodeBaseInterface</text>
+<text x="858" y="211" font-size="12">NodeTopicsInterface</text>
+<text x="858" y="229" font-size="12">NodeTimersInterface</text>
+<text x="858" y="247" font-size="12">NodeServicesInterface</text>
+<text x="858" y="265" font-size="12">NodeParametersInterface</text>
+<text x="858" y="283" font-size="12">NodeClockInterface</text>
+<text x="858" y="301" font-size="12">NodeLoggingInterface</text>
+<text x="858" y="319" font-size="12">NodeGraphInterface</text>
+<text x="858" y="337" font-size="12">NodeTimeSourceInterface</text>
+<text x="858" y="355" font-size="12">NodeWaitablesInterface</text>
+<text x="858" y="373" font-size="12">NodeTypeDescriptionsInterface</text>
+<rect x="20" y="160" width="200" height="72" rx="4" fill="#f3f3f3" stroke="#777777" stroke-width="1.5"/>
+<text x="120.0" y="180" text-anchor="middle" font-weight="bold" font-size="13">NodeOptions</text>
+<line x1="20" y1="187" x2="220" y2="187" stroke="#777777" stroke-width="1"/>
+<text x="28" y="203" font-size="12">remap・パラメータ・</text>
+<text x="28" y="221" font-size="12">プロセス内通信などの設定</text>
+<rect x="20" y="270" width="200" height="54" rx="4" fill="#f3f3f3" stroke="#777777" stroke-width="1.5"/>
+<text x="120.0" y="290" text-anchor="middle" font-weight="bold" font-size="13">Context</text>
+<line x1="20" y1="297" x2="220" y2="297" stroke="#777777" stroke-width="1"/>
+<text x="28" y="313" font-size="12">rclcpp::init() で作られる</text>
+<rect x="20" y="360" width="200" height="72" rx="4" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="120.0" y="380" text-anchor="middle" font-weight="bold" font-size="13">Executor</text>
+<line x1="20" y1="387" x2="220" y2="387" stroke="#3b6fb6" stroke-width="1"/>
+<text x="28" y="403" font-size="12">+ add_node(ノードの部品)</text>
+<text x="28" y="421" font-size="12">+ spin() / spin_once()</text>
+<rect x="20" y="480" width="200" height="54" rx="4" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="120.0" y="500" text-anchor="middle" font-weight="bold" font-size="13">SingleThreadedExecutor</text>
+<line x1="20" y1="507" x2="220" y2="507" stroke="#3b6fb6" stroke-width="1"/>
+<text x="28" y="523" font-size="12">MultiThreadedExecutor</text>
+<rect x="300" y="534" width="140" height="54" rx="4" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="370.0" y="554" text-anchor="middle" font-weight="bold" font-size="13">Subscription&lt;型&gt;</text>
+<line x1="300" y1="561" x2="440" y2="561" stroke="#3b6fb6" stroke-width="1"/>
+<text x="308" y="577" font-size="12">（コールバック）</text>
+<rect x="450" y="534" width="140" height="54" rx="4" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="520.0" y="554" text-anchor="middle" font-weight="bold" font-size="13">WallTimer</text>
+<line x1="450" y1="561" x2="590" y2="561" stroke="#3b6fb6" stroke-width="1"/>
+<text x="458" y="577" font-size="12">（コールバック）</text>
+<rect x="600" y="534" width="140" height="54" rx="4" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="670.0" y="554" text-anchor="middle" font-weight="bold" font-size="13">Service&lt;型&gt;</text>
+<line x1="600" y1="561" x2="740" y2="561" stroke="#3b6fb6" stroke-width="1"/>
+<text x="608" y="577" font-size="12">（コールバック）</text>
+<rect x="750" y="534" width="140" height="54" rx="4" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="820.0" y="554" text-anchor="middle" font-weight="bold" font-size="13">Client&lt;型&gt;</text>
+<line x1="750" y1="561" x2="890" y2="561" stroke="#3b6fb6" stroke-width="1"/>
+<text x="758" y="577" font-size="12">（コールバック）</text>
+<rect x="900" y="534" width="190" height="54" rx="4" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="995.0" y="554" text-anchor="middle" font-weight="bold" font-size="13">Publisher&lt;型&gt;</text>
+<line x1="900" y1="561" x2="1090" y2="561" stroke="#3b6fb6" stroke-width="1"/>
+<text x="908" y="577" font-size="12">+ publish(msg)</text>
+<rect x="20" y="644" width="200" height="54" rx="4" fill="#f3f3f3" stroke="#777777" stroke-width="1.5"/>
+<text x="120.0" y="664" text-anchor="middle" font-weight="bold" font-size="13">CallbackGroup</text>
+<line x1="20" y1="671" x2="220" y2="671" stroke="#777777" stroke-width="1"/>
+<text x="28" y="687" font-size="12">WeakPtr のリストで覚える</text>
+<text x="805" y="252" text-anchor="middle" font-size="11" fill="#444444">11個を保持</text>
+<text x="805" y="282" text-anchor="middle" font-size="11" fill="#444444">処理を任せる</text>
+<text x="260" y="188" text-anchor="middle" font-size="11" fill="#444444">渡す</text>
+<text x="260" y="293" text-anchor="middle" font-size="11" fill="#444444">所属</text>
+<text x="260" y="383" text-anchor="middle" font-size="11" fill="#444444">登録</text>
+<text x="260" y="409" text-anchor="middle" font-size="11" fill="#444444">して回す</text>
+<text x="540" y="474" text-anchor="start" font-size="11" fill="#444444">作って SharedPtr で返す（持ち続けるのは呼び出し側）</text>
+<text x="380" y="663.0" text-anchor="start" font-size="11" fill="#444444">弱い参照（WeakPtr）で覚える（Subscription・Timer・Service・Client）</text>
+<text x="78" y="744" text-anchor="start" font-size="11" fill="#444444">継承（矢印の先が親クラス）</text>
+<text x="358" y="744" text-anchor="start" font-size="11" fill="#444444">保持（ひし形の側が持ち主）</text>
+<text x="638" y="744" text-anchor="start" font-size="11" fill="#444444">使う・登録する・作って返す</text>
+</svg>

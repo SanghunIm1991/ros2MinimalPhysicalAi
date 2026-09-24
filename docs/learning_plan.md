@@ -132,6 +132,7 @@
 | 3-5 | `docs/phase3_5_actions.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
 | 4 | `docs/phase4_launch.md` | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認） |
 | 間章 | `docs/interlude_components.md` | C++のみ（launchはPython） | 作成済み（ビルド・`ros2 component types`・launchの`--print`確認済み。ノード実行は未確認） |
+| 参考資料 | `docs/reference_node_class.md` | Python・C++（読み物） | 作成済み（2026-09-24。`Node` クラスの構造をクラス図（`docs/img/reference_node_rclpy.svg`・`reference_node_rclcpp.svg`）で解析。ローカルのソースで確認。図の見た目は画像にして確認していない） |
 | 5〜 | 着手時に作成 | Python中心 | 未作成 |
 
 - フェーズ3は、トピック（3-1・3-2）、パラメータ、サービス、アクションの5冊に分けた。各冊はPython・C++を同じ仕様で並べ、比較しやすくしている（言語別ファイルには分けていない）。
