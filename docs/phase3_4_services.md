@@ -567,7 +567,7 @@ Python版と同じく、タイマーによる配信と `reset_counter` サービ
 
 ### 登録とビルド
 
-`CMakeLists.txt` に追記し、`install(TARGETS ...)` に名前を足す（これまでの分は残す）。
+`CMakeLists.txt` に追記し、`install(TARGETS ...)` に名前を足す（これまでの分は残す。前のフェーズでC++版を作らなかったノードの名前は書かない。書くと、存在しないターゲットとしてビルドがエラーになる）。
 
 <!-- snippet: cmake_service -->
 ```cmake

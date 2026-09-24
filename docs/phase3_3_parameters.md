@@ -3,7 +3,7 @@
 `docs/learning_plan.md` フェーズ3（idea_origin.md ステップ1の1-3）に対応する。ノードの設定値を、コードに埋め込まず外から与える方法を学ぶ（Python版は必須、C++版は任意）。フェーズ5のPI制御ノードで、ゲイン（Kp・Ki）を外から調整する土台になる。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ3-1、3-2完了
+- 前提: フェーズ3-1、3-2a、3-2b完了
 - 所要目安: 1コマ
 - 言語: **Python**（C++版は任意）
 
@@ -314,7 +314,7 @@ int main(int argc, char ** argv)
 - **つまずきやすい点**: ラムダで `[this]` を書き忘れると、`on_params` を呼べずビルドが通らない。
 - **観察ポイント**: Python版と同じ実験（5節）を、`ros2 run learn_cpp param_talker` で繰り返し、同じ結果（間隔の変化・拒否のメッセージ）になること。
 
-`CMakeLists.txt` に追記し、`install(TARGETS ...)` へ `param_talker` を足す（これまでの分は残す）。
+`CMakeLists.txt` に追記し、`install(TARGETS ...)` へ `param_talker` を足す（これまでの分は残す。前のフェーズでC++版を作らなかったノードの名前は書かない。書くと、存在しないターゲットとしてビルドがエラーになる）。
 
 <!-- snippet: cmake_param -->
 ```cmake

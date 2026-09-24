@@ -495,7 +495,7 @@ QoS（Quality of Service）は、トピック通信の「信頼性」「過去�
 | `durability` | `volatile`＝過去分は保存しない。`transient_local`＝後から参加した相手にも直近分を渡す |
 | `history` / `depth` | `keep_last` ＋ `depth`＝最新N件だけキューに保持する（例では1000件） |
 
-- Publisher側とSubscriber側のQoSが噛み合わないと、**エラーにならず黙ってつながらない**ことがある。実際の相性の体験はフェーズ3-2（`docs/phase3_2_turtlesim_qos.md`）で行う（キューの深さ `10` の意味はフェーズ3-1でも触れる）。
+- Publisher側とSubscriber側のQoSが噛み合わないと、**エラーにならず黙ってつながらない**ことがある。実際の相性の体験はフェーズ3-2b（`docs/phase3_2b_qos.md`）で行う（キューの深さ `10` の意味はフェーズ3-1でも触れる）。
 - 今の段階では「トピックにはQoSという設定があり、`ros2 topic info /turtle1/cmd_vel -v` でも見られる」と知っておけば十分。
 
 > 課題5: `ros2 param dump /turtlesim > /tmp/turtlesim_params.yaml` で保存し、中身を読む（保存先は `/tmp` 等の作業外でよい。リポジトリには入れない）。

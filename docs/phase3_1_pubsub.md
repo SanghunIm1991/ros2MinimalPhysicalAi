@@ -64,7 +64,7 @@ sequenceDiagram
 | `sine_pub` | Publisher | `sine`（`std_msgs/msg/Float64`） | 10 Hz（0.1秒周期）で、時刻 t に対して `sin(2π × 0.5 × t)` の値を送る（周期2秒の正弦波） |
 | `sine_sub` | Subscriber | `sine`（`std_msgs/msg/Float64`） | 受信した値をログに出す |
 
-- キューの深さ（QoSの `depth`）は10とする（QoSはフェーズ3-2で扱う）。
+- キューの深さ（QoSの `depth`）は10とする（QoSはフェーズ3-2bで扱う）。
 - 実行ファイル名は上表のノード名と同じにする（`ros2 run learn_py talker` のように起動できる）。
 
 ## 3. Python版（`ws/src/learn_py`）
@@ -137,7 +137,7 @@ def main(args=None):
 - **import**: `rclpy` はPythonのROS2クライアントライブラリ、`Node` はノードの基底クラス、`String` は `std_msgs/msg/String`（フィールド `data` を1つ持つだけのメッセージ）。`ExternalShutdownException` は「外部からシャットダウンされた」ときに `spin` が投げる例外で、後述の `except` で握りつぶすために使う。
 - **`__init__` の中身**:
   - `super().__init__('talker')` でノード名を決める。これを呼ばないと以降の `create_*` が使えない。
-  - `create_publisher(String, 'chatter', 10)` は「型・トピック名・QoSのdepth」の順。`10` は送信側のキュー（バッファ）の深さで、相手の受信が追いつかないときに最大10件まで溜めておく、という意味（詳しくはフェーズ3-2）。
+  - `create_publisher(String, 'chatter', 10)` は「型・トピック名・QoSのdepth」の順。`10` は送信側のキュー（バッファ）の深さで、相手の受信が追いつかないときに最大10件まで溜めておく、という意味（詳しくはフェーズ3-2b）。
   - `create_timer(1.0, self.on_timer)` の第1引数は周期で、単位は**秒**（実数）。第2引数は呼んでほしい関数。`self.on_timer` のように**括弧を付けず**関数そのものを渡す（`self.on_timer()` と書くと、その場で実行した結果を渡してしまう）。
   - `self.pub` / `self.timer` に代入して保持しているのは、後から使うため、また何を持つノードかがコードから読み取れるようにするため（Pythonではノードが内部でも保持するので、保持しなくても動く。詳しくは4-1節の末尾の「補足: スマートポインタ」を参照）。
 - **`on_timer`**: メッセージ型のインスタンスを作り、`data` に文字列を入れて `publish` する。ログ出力の `get_logger().info(...)` は標準出力ではなくROS2のロギング経由で、時刻やノード名が付く。f文字列は `hello {self.count}` のように値を埋め込む書き方。
@@ -836,7 +836,7 @@ C++の方が記述量・手数は増えるが、コールバック配線の間�
 
 ## 9. 次へ
 
-フェーズ3-2（`docs/phase3_2_turtlesim_qos.md`）で、Twistでturtlesimを動かし、QoSの相性を体験する。
+フェーズ3-2a（`docs/phase3_2a_turtlesim.md`）で、Twistでturtlesimを動かす。続くフェーズ3-2b（`docs/phase3_2b_qos.md`）では、QoSの相性を体験する（3-2aとは独立したテーマ）。
 
 ## 10. 公式ドキュメント・参考資料
 

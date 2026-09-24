@@ -423,7 +423,7 @@ Subscription count: 1
 
 ### 4-2. QoS: 指令は `reliable` で受ける
 
-cmd_velを受けるブリッジのSubscriberの信頼性（reliability）は `reliable` である。QoSの相性の規則（フェーズ3-2の7節「QoS互換性のまとめ」）では、Subscriberが `reliable` のとき、Publisherが `best_effort` だとつながらない。
+cmd_velを受けるブリッジのSubscriberの信頼性（reliability）は `reliable` である。QoSの相性の規則（フェーズ3-2bの6節「QoS互換性のまとめ」）では、Subscriberが `reliable` のとき、Publisherが `best_effort` だとつながらない。
 
 Subscriberの設定は、`-v` を付けた `ros2 topic info` で確かめられる。
 
@@ -484,7 +484,7 @@ QoS profile:
 
 ### 5-2. 依存の追加
 
-`Twist` は `geometry_msgs`、`Odometry` は `nav_msgs` パッケージの型なので、`ws/src/learn_py/package.xml` の `<depend>` の並びに2行足す（フェーズ3-2で `geometry_msgs` をすでに足している場合は、`nav_msgs` の1行だけでよい）。
+`Twist` は `geometry_msgs`、`Odometry` は `nav_msgs` パッケージの型なので、`ws/src/learn_py/package.xml` の `<depend>` の並びに2行足す（フェーズ3-2aで `geometry_msgs` をすでに足している場合は、`nav_msgs` の1行だけでよい）。
 
 <!-- snippet: py_package_xml_gz -->
 ```xml
@@ -574,7 +574,7 @@ def main(args=None):
     },
 ```
 
-フェーズ3-2以降の行（`turtle_circle` など）がある場合も、それらは残して `gz_drive` の行を足す。
+フェーズ3-2a以降の行（`turtle_circle` など）がある場合も、それらは残して `gz_drive` の行を足す。
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
@@ -665,7 +665,7 @@ ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 
 ## 9. 次へ
 
-フェーズ5-1で、1次元の車両の疑似プラントを自作する。フェーズ3-2（Twistとturtlesim）・3-3（パラメータ）・4（launch）をまだ終えていない場合は、先にそちらを進める（5-1以降では、パラメータとlaunchを使う）。
+フェーズ5-1で、1次元の車両の疑似プラントを自作する。フェーズ3-2a（Twistとturtlesim）・3-3（パラメータ）・4（launch）をまだ終えていない場合は、先にそちらを進める（5-1以降では、パラメータとlaunchを使う）。
 
 ## 10. 公式ドキュメント・参考資料
 

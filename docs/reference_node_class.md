@@ -102,7 +102,7 @@ classDiagram
 |---|---|---|
 | 通信の口を作る | `create_publisher`・`create_subscription`・`create_timer`・`create_service`・`create_client`・`create_rate`・`create_guard_condition` | 最初の5つ（3-1〜3-4） |
 | 通信の口を壊す | `destroy_publisher`・`destroy_subscription`・`destroy_timer` など、`destroy_node` | `destroy_node`（全フェーズの `main` の `finally`） |
-| パラメータ | `declare_parameter(s)`・`get_parameter(s)`・`set_parameters`・`has_parameter`・`describe_parameter`・`add_on_set_parameters_callback`・`add_pre_set_parameters_callback`・`add_post_set_parameters_callback` など | `declare_parameter`・`get_parameter`・`add_on_set_parameters_callback`（3-2・3-3） |
+| パラメータ | `declare_parameter(s)`・`get_parameter(s)`・`set_parameters`・`has_parameter`・`describe_parameter`・`add_on_set_parameters_callback`・`add_pre_set_parameters_callback`・`add_post_set_parameters_callback` など | `declare_parameter`・`get_parameter`・`add_on_set_parameters_callback`（3-2b・3-3） |
 | ノードの情報・道具 | `get_name`・`get_namespace`・`get_logger`・`get_clock`・`get_fully_qualified_name` | `get_logger`（3-1〜）、`get_clock`（3-1の `sine_pub`） |
 | グラフ（ネットワーク全体）の問い合わせ | `get_node_names`・`get_topic_names_and_types`・`count_publishers`・`count_subscribers`・`wait_for_node` など | 使っていない（`ros2 node list` や `ros2 topic list` のCLIが、同じ情報を別の経路で調べている） |
 | 実行の仕組みとの接続 | `executor`（プロパティ）・`add_waitable`・`default_callback_group` | 間接的に使った（`rclpy.spin(node)` の中で、executorがノードを登録する。アクションは `add_waitable` を使う） |
@@ -243,11 +243,11 @@ C++版の `create_*` は、作ったものを `SharedPtr`（参照の数を数�
 | 使ったもの | Python | C++ | 手順書 |
 |---|---|---|---|
 | `Node` の継承 | `class Talker(Node)` | `class Talker : public rclcpp::Node` | 3-1〜 |
-| Publisher・Subscription | `create_publisher`・`create_subscription` | 同じ名前（テンプレート） | 3-1・3-2 |
+| Publisher・Subscription | `create_publisher`・`create_subscription` | 同じ名前（テンプレート） | 3-1・3-2a・3-2b |
 | タイマー | `create_timer` | `create_wall_timer` | 3-1〜 |
 | 時計 | `get_clock().now()` | `now()` | 3-1（`sine_pub`） |
 | ログ | `get_logger().info(...)` | `RCLCPP_INFO(get_logger(), ...)` | 3-1〜 |
-| パラメータ | `declare_parameter`・`get_parameter` | `declare_parameter<型>` | 3-2・3-3 |
+| パラメータ | `declare_parameter`・`get_parameter` | `declare_parameter<型>` | 3-2b・3-3 |
 | パラメータ変更の検証 | `add_on_set_parameters_callback` | 同じ名前（戻り値を保持） | 3-3 |
 | サービス | `create_service`・`create_client` | 同じ名前（テンプレート） | 3-4 |
 | アクション | `ActionServer(self, ...)`・`ActionClient(self, ...)` | `rclcpp_action::create_server(this, ...)` など | 3-5 |
