@@ -290,7 +290,17 @@ Python版の4ファイルに共通する要点は、「ノードクラスの `__
     },
 ```
 
-`package.xml` には、`ros2 pkg create` 時に `--dependencies rclpy std_msgs` を指定していれば、依存はすでに入っている（`<depend>rclpy</depend>` と `<depend>std_msgs</depend>`）。
+- **最後の行の末尾のコンマ**（`'sine_sub = learn_py.sine_sub:main',`）は誤りではない。Pythonのリスト・辞書では最後の要素の後ろにもコンマを置いてよく（トレーリングコンマ。`[a, b,]` と `[a, b]` は同じ意味）、`ros2 pkg create` の雛形もこの書き方をしている。付けておくと、次に行を足すときに前の行へコンマを足し忘れる事故が起きず、差分も1行で済む。
+- **インデントはスペースで揃える**。かっこの内側なのでタブが混ざっても動作はするが、`colcon test` で走るスタイルチェック（flake8）で警告になる。
+
+`package.xml` には、`ros2 pkg create` 時に `--dependencies rclpy std_msgs` を指定していれば、依存はすでに入っている（`<depend>rclpy</depend>` と `<depend>std_msgs</depend>`）。`cat ws/src/learn_py/package.xml` で `<test_depend>` の行しか見えない場合は、`--dependencies` の指定が抜けていた。その場合は `<license>` の行の後ろに次の2行を手で足し、再ビルドする。
+
+```xml
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+```
+
+この2行が無くても、この環境ではノードは動く（`rclpy` も `std_msgs` も `/opt/ros/jazzy` に入っていて、そこから `import` できるため）。ただし、`rosdep` による依存の自動導入や、別の環境でのビルドでは依存が漏れるため、宣言しておくのが正しい形である。
 
 ### 3-3. ビルドして動かす
 
@@ -644,6 +654,7 @@ C++の方が記述量・手数は増えるが、コールバック配線の間�
 |---|---|
 | `ros2 run` で `No executable found` | `setup.py` の `entry_points` / `CMakeLists.txt` の `install(TARGETS ...)` を足したか。再ビルド後に `source` したか |
 | C++で `fatal error: std_msgs/msg/string.hpp: No such file` | `find_package(std_msgs REQUIRED)` と `ament_target_dependencies` があるか（雛形の `--dependencies` を指定しなかった場合は手で足す） |
+| Pythonの `package.xml` に `<test_depend>` しか無い | `ros2 pkg create` で `--dependencies` を指定し忘れている。3-2のとおり `<depend>rclpy</depend>` と `<depend>std_msgs</depend>` を手で足す（無くてもこの環境では動くが、依存の宣言として必要） |
 | listenerに何も出ない | トピック名（`chatter`）と型の綴り。`ros2 topic list -t` で確認 |
 | 起動後すぐ終了する | `spin` を呼んでいるか |
 | Ctrl+CでPythonが例外を吐く | `try/finally` と `rclpy.try_shutdown()` の記述を確認 |

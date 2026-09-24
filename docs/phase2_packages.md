@@ -121,6 +121,8 @@ cat learn_py/package.xml
 cat learn_py/setup.py
 ```
 
+`package.xml` に `<depend>rclpy</depend>` と `<depend>std_msgs</depend>` の2行があれば、`--dependencies` が効いている。`<test_depend>` の行しか無い場合は指定が抜けているので、この2行を `<license>` の行の後ろに手で足す（フェーズ3-1の3-2でも触れる）。
+
 ### 2-3. C++パッケージを作る
 
 ```bash
