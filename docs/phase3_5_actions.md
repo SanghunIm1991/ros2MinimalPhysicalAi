@@ -10,6 +10,8 @@
 
 > **進め方**: 今までより長いので、まず**Pythonを完成**させ、動作を理解してからC++に進む。仕様（§2）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でアクション関連のAPI（サーバ・クライアントの作成、goal_handleのプロパティ・メソッド）を把握し、サンプルコードと解説を読んで理解する。読んで分かったら、フィボナッチ数列の代わりに別の計算にする、フィードバックの頻度を変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。コードとROS2の仕様から筆者が想定したもので、実機では時刻やIDなどの細部が異なる。
+
 ## 0. 学習目標と完了条件
 
 1. アクションサーバ・クライアントを、Python・C++の両方で書ける。
@@ -67,7 +69,20 @@ stateDiagram-v2
 ros2 interface show example_interfaces/action/Fibonacci
 ```
 
-`---` で3つに分かれる: 上から**ゴール**（`order`）、**結果**（`sequence`）、**フィードバック**（`sequence`）。
+期待する結果:
+
+```text
+# Goal
+int32 order
+---
+# Result
+int32[] sequence
+---
+# Feedback
+int32[] sequence
+```
+
+`---` で3つに分かれる: 上から**ゴール**（`order`）、**結果**（`sequence`）、**フィードバック**（`sequence`）。`int32[]` は「整数の配列（長さ自由）」の意味。
 
 サービスとの違い:
 
@@ -650,6 +665,62 @@ ros2 action info /fibonacci
 ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 5}" --feedback
 ```
 
+期待する結果（抜粋。`Goal accepted with ID:` の後ろのIDは毎回変わる）:
+
+```text
+$ ros2 action list -t
+/fibonacci [example_interfaces/action/Fibonacci]
+
+$ ros2 action info /fibonacci
+Action: /fibonacci
+Action clients: 0
+Action servers: 1
+    /fibonacci_server
+
+$ ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 5}" --feedback
+Waiting for an action server to become available...
+Sending goal:
+     order: 5
+
+Goal accepted with ID: 9f1c2a...
+
+Feedback:
+    sequence:
+- 0
+- 1
+- 1
+
+Feedback:
+    sequence:
+- 0
+- 1
+- 1
+- 2
+
+（中略: あと2回、1項ずつ増えたFeedbackが1秒おきに出る）
+
+Result:
+    sequence:
+- 0
+- 1
+- 1
+- 2
+- 3
+- 5
+
+Goal finished with status: SUCCEEDED
+```
+
+T1のサーバ側には次のログが出る（Python版の場合。C++版の最後の行は `goal succeeded` だけで、数列は付かない）。
+
+```text
+[INFO] [1727200000.100000000] [fibonacci_server]: accept goal: order=5
+[INFO] [1727200004.100000000] [fibonacci_server]: goal succeeded: [0, 1, 1, 2, 3, 5]
+```
+
+- 配列はYAMLの箇条書き（`- 0` のように1要素1行）で表示される。
+- `order: 5` ではfeedbackが4回（3項から6項まで）届き、約4秒で結果になる。結果は2節の例どおり6項。
+
 フィードバックが1秒ごとに流れ、最後に結果が出る。**処理の途中で `Ctrl+C`** を押すと、中断要求が送られる（サーバ側のログに `cancel requested`）。
 
 ### 6-2. 自作クライアントから使う
@@ -662,6 +733,41 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=6
 # 中断も試す（3秒後に中断要求）
 ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 ```
+
+期待する結果（`order:=6`、最後まで実行した場合。T2のクライアント）:
+
+```text
+[INFO] [1727200100.000000000] [fibonacci_client]: goal accepted
+[INFO] [1727200100.010000000] [fibonacci_client]: feedback: [0, 1, 1]
+[INFO] [1727200101.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2]
+[INFO] [1727200102.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3]
+[INFO] [1727200103.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3, 5]
+[INFO] [1727200104.010000000] [fibonacci_client]: feedback: [0, 1, 1, 2, 3, 5, 8]
+[INFO] [1727200105.020000000] [fibonacci_client]: result [SUCCEEDED]: [0, 1, 1, 2, 3, 5, 8]
+```
+
+結果を受け取ると、クライアントは自分で終了する（プロンプトに戻る）。サーバは次のゴールを待って動き続ける。
+
+期待する結果（`order:=10 -p cancel_after:=3.0`、中断した場合）:
+
+```text
+# T2（fibonacci_client）
+[INFO] [...] [fibonacci_client]: goal accepted
+[INFO] [...] [fibonacci_client]: feedback: [0, 1, 1]
+[INFO] [...] [fibonacci_client]: feedback: [0, 1, 1, 2]
+[INFO] [...] [fibonacci_client]: feedback: [0, 1, 1, 2, 3]
+[INFO] [...] [fibonacci_client]: send cancel request
+[INFO] [...] [fibonacci_client]: result [CANCELED]: [0, 1, 1, 2, 3]
+
+# T1（fibonacci_server）
+[INFO] [...] [fibonacci_server]: accept goal: order=10
+[INFO] [...] [fibonacci_server]: cancel requested
+[INFO] [...] [fibonacci_server]: goal canceled
+```
+
+中断要求とサーバのループが同じくらいの時刻（約3秒後）に重なるので、中断前のfeedbackが3回か4回か、結果の数列がどこまで伸びているかは、実行ごとに変わりうる。見るべき点は、結果のstatusが `CANCELED` で、数列が `order:=10` の完成形（11項）より短いこと。
+
+課題1（`order:=0`）では、クライアントは `[ERROR] ... [fibonacci_client]: goal rejected` を出してすぐ終わり、サーバには `[WARN] ... [fibonacci_server]: reject goal: order=0` が出る。拒否されたゴールには、feedbackも結果も届かない。
 
 言語の組み合わせを試す:
 

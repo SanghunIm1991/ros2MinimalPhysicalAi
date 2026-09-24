@@ -10,6 +10,8 @@
 
 > **進め方**: 仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でサービス関連のAPI（サーバ・クライアントの作成、非同期呼び出し）を把握し、サンプルコードと解説を読んで理解する。読んで分かったら、フィールドや計算内容を変える、待ち時間を変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。コードとROS2の仕様から筆者が想定したもので、実機では時刻などの細部が異なる。
+
 ## 0. 学習目標と完了条件
 
 1. サービスのサーバ（`create_service`）とクライアント（`create_client`）を、Python・C++の両方で書ける。
@@ -60,7 +62,22 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 ros2 interface show std_srvs/srv/Trigger
 ```
 
-`---` の上が要求（Request）、下が応答（Response）。
+期待する結果:
+
+```text
+$ ros2 interface show example_interfaces/srv/AddTwoInts
+int64 a
+int64 b
+---
+int64 sum
+
+$ ros2 interface show std_srvs/srv/Trigger
+---
+bool success   # indicate successful run of triggered service
+string message # informational, e.g. for error messages
+```
+
+`---` の上が要求（Request）、下が応答（Response）。`Trigger` は `---` の上に何も無い、つまり要求が空の型である。
 
 ## 2. 仕様
 
@@ -101,6 +118,8 @@ find_package(std_srvs REQUIRED)
 ```bash
 ros2 interface show example_interfaces/srv/AddTwoInts
 ```
+
+期待する結果: 1節と同じく `int64 a` から始まる定義が表示されれば、導入済み。導入されていない場合は `Unknown package 'example_interfaces'` のようなエラーになる。
 
 ## 4. Python版（`ws/src/learn_py`）
 
@@ -227,7 +246,7 @@ def main(args=None):
 - `wait_for_service` が `False` のとき、このコードは `return` するだけで、終了コードは0のままになる（C++版は `return 1`）。スクリプトから結果を判定したい場合は、ここが差になる。
 - `-p a:=3.0` のように実数を渡すと、宣言した型（整数）と合わず、パラメータの設定でエラーになる。整数で渡す。
 
-動作確認: サーバを起動した状態で `ros2 run learn_py add_client`（既定なら `1 + 2 = 3`）と、`ros2 run learn_py add_client --ros-args -p a:=10 -p b:=20` を実行する。サーバを止めた状態で実行すると、約5秒後にエラーログが出て終わることも確認する。
+動作確認: サーバを起動した状態で `ros2 run learn_py add_client`（既定なら `1 + 2 = 3`）と、`ros2 run learn_py add_client --ros-args -p a:=10 -p b:=20` を実行する。サーバを止めた状態で実行すると、約5秒後にエラーログが出て終わることも確認する（表示は6-1の「期待する結果」を参照）。
 
 ファイル: `ws/src/learn_py/learn_py/counter_node.py`
 
@@ -557,11 +576,39 @@ ros2 run learn_py add_server
 ros2 run learn_py add_client --ros-args -p a:=3 -p b:=4
 ```
 
+期待する結果: T2のクライアントは1行出して、すぐに終了する（プロンプトに戻る）。T1のサーバは、呼ばれるたびに1行ずつログを出し、動き続ける。
+
+```text
+# T1（add_server）
+[INFO] [1727190000.500000000] [add_server]: 3 + 4 = 7
+
+# T2（add_client）
+[INFO] [1727190000.501000000] [add_client]: 3 + 4 = 7
+```
+
+同じ計算結果が、サーバ側（要求を受けて計算した記録）とクライアント側（応答を受け取った記録）の両方に出る。サーバを起動せずにクライアントだけを動かすと、約5秒待った後に次のエラーを出して終わる（課題1）。
+
+```text
+[ERROR] [1727190010.000000000] [add_client]: service add_two_ints is not available
+```
+
 CLIからも呼べる:
 
 ```bash
 ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 10, b: 20}"
 ```
+
+期待する結果:
+
+```text
+waiting for service to become available...
+requester: making request: example_interfaces.srv.AddTwoInts_Request(a=10, b=20)
+
+response:
+example_interfaces.srv.AddTwoInts_Response(sum=30)
+```
+
+T1のサーバには `10 + 20 = 30` のログが出る。サーバから見ると、自作のクライアントからの要求もCLIからの要求も区別が無い。4つの言語の組み合わせ（下の表）でも、表示は同じになる。
 
 言語の組み合わせを試す:
 
@@ -588,6 +635,32 @@ ros2 topic echo /counter
 # T3
 ros2 service call /reset_counter std_srvs/srv/Trigger
 ```
+
+期待する結果（T2で数字が7まで進んだところでT3を実行した例）:
+
+```text
+# T2（ros2 topic echo /counter）
+data: 6
+---
+data: 7
+---
+data: 0
+---
+data: 1
+---
+
+# T3（ros2 service call）
+requester: making request: std_srvs.srv.Trigger_Request()
+
+response:
+std_srvs.srv.Trigger_Response(success=True, message='counter reset (was 8)')
+
+# T1（counter_node）
+[INFO] [1727190100.300000000] [counter_node]: counter reset (was 8)
+```
+
+- `counter_node` は配信のたびにはログを出さず、リセットされたときだけ1行出す。
+- 応答の `was 8` が、最後に見えた `7` より1大きいのは、`on_timer` が「配信してから `+1`」する作りのため。`count` には「次に配信する予定の値」が入っている。どちらの値を返すのが仕様として自然か、考えてみるとよい。
 
 `echo` の値が0に戻り、サービスの応答に `success=True` と `message`（リセット前の値）が入っていることを確認する。C++版でも同様に確認する。
 
