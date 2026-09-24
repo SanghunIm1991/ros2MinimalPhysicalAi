@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 350" width="900" height="350" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: フェーズ3-1ではtalkerとlistenerがそれぞれmain付きの別プロセスで動く。間章では、mainの無いTalker・Listenerを1つのライブラリにまとめ、component_containerという1つのプロセスに読み込み、プロセス内通信でつなぐ">
+<title>図: フェーズ3-1ではtalkerとlistenerがそれぞれmain付きの別プロセスで動く。間章では、mainの無いTalker・Listenerを1つのライブラリにまとめ、component_containerという1つのプロセスに読み込み、プロセス内通信でつなぐ</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="900" height="350" fill="#ffffff"/>
+<rect x="10" y="10" width="880" height="120" rx="10" fill="#fafafa" stroke="#9e9e9e" stroke-width="1.2" stroke-dasharray="6,4"/>
+<text x="24" y="32" font-weight="bold">フェーズ3-1: ノードごとに別の実行ファイル・別のプロセス</text>
+<rect x="10" y="145" width="880" height="195" rx="10" fill="#fafafa" stroke="#9e9e9e" stroke-width="1.2" stroke-dasharray="6,4"/>
+<text x="24" y="167" font-weight="bold">間章: コンポーネントを1つのコンテナ（プロセス）に読み込む</text>
+<rect x="330" y="185" width="545" height="140" rx="10" fill="#eef7ee" stroke="#4a8a4a" stroke-width="1.5"/>
+<text x="602" y="207" text-anchor="middle">プロセス: component_container（コンテナ）</text>
+<path d="M260,78 L556,78" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="408" y="70" text-anchor="middle">/chatter</text>
+<path d="M270,255 L326,255" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#a)"/>
+<text x="298" y="245" text-anchor="middle" font-size="12">読み込む</text>
+<path d="M520,265 L686,265" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="603" y="252" text-anchor="middle" font-size="12">/chatter</text>
+<text x="603" y="290" text-anchor="middle" font-size="12">（プロセス内通信）</text>
+<rect x="40" y="50" width="220" height="56" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="150.0" y="73.0" text-anchor="middle">プロセス1</text>
+<text x="150.0" y="93.0" text-anchor="middle">talker（main付き）</text>
+<rect x="560" y="50" width="220" height="56" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="670.0" y="73.0" text-anchor="middle">プロセス2</text>
+<text x="670.0" y="93.0" text-anchor="middle">listener（main付き）</text>
+<rect x="30" y="220" width="240" height="70" rx="8" fill="#fff4dc" stroke="#b07d00" stroke-width="1.5"/>
+<text x="150.0" y="250.0" text-anchor="middle">libpubsub_components.so</text>
+<text x="150.0" y="270.0" text-anchor="middle">Talker・Listener（mainなし）</text>
+<rect x="360" y="240" width="160" height="50" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="440.0" y="270.0" text-anchor="middle">talker</text>
+<rect x="690" y="240" width="160" height="50" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="770.0" y="270.0" text-anchor="middle">listener</text>
+</svg>
