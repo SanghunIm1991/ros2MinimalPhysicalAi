@@ -22,7 +22,7 @@
 
 各フェーズの完了条件を満たしてから次へ進む。所要は目安（1コマ＝1〜2時間の学習セッション）。
 
-### 環境構築（ステップ0）— 半日
+### 環境構築（ステップ0）— 2時間程度
 
 - 内容: WSL2・Ubuntu 24.04・ROS2 Jazzyの導入（`docs/setup_wsl2_ros2.md`）。別ドライブへの移動（2b節）と、GitHubの認証・Claude Codeの環境（7節）は任意。
 - 完了条件: `ros2 run demo_nodes_cpp talker` と `ros2 run demo_nodes_py listener` の間でメッセージが届く。フェーズ0（読み物）とは、どちらを先にしてもよい。
