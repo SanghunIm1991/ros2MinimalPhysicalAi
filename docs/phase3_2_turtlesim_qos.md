@@ -5,19 +5,27 @@
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（turtlesimはフェーズ1で導入済み）
 - 前提: フェーズ3-1完了（`talker` 等が動く）
 - 所要目安: 1コマ
-- 言語: **Python・C++の両方**
+- 言語: **Python**（C++版は任意）
 - OSS: turtlesim（GUIの起動と目視確認はユーザーが行う）
 
+> **このフェーズの位置づけ**: フェーズ5の車両シミュレーションで直接使うのは、前半の `turtle_circle`（速度指令 `Twist` を送って相手を動かす）である。後半のQoSの実験は、「QoSという設定があり、合わないと**エラーも出ずに黙ってつながらない**ことがある」と知るのが目的で、概要を掴む程度でよい（フェーズ5では、全ノードが既定のQoSのまま通信する）。6-2節の7通りの組み合わせのうち、①（つながる）と④（つながらない）の2つを試せば十分で、残りは任意。C++版（5節）も任意とする。
+>
 > **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。3節・4節冒頭の「主なAPI」表とサンプルコード・解説を読んで理解し、QoSのパラメータや送る値を変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
 > **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容や画面の様子とその読み方を載せている。コードとROS2の仕様から筆者が想定したもので、実機では時刻などの細部が異なる。
 
 ## 0. 学習目標と完了条件
 
-1. `geometry_msgs/msg/Twist` をpublishして、turtlesimを自作ノードから動かせる（フェーズ1で `ros2 topic pub` でやったことをコードで行う）。
-2. 新しい依存パッケージ（`geometry_msgs`）を、`package.xml` と `CMakeLists.txt`（C++）に足す手順を理解する。
-3. QoS（reliability / durability）の設定で、**つながる組み合わせとつながらない組み合わせ**を実際に確認する。
-4. `ros2 topic info -v` でQoSを読み取れる。
+必須:
+
+1. `geometry_msgs/msg/Twist` をpublishして、turtlesimを自作ノードから動かせる（フェーズ1で `ros2 topic pub` でやったことをコードで行う。Python版）。
+2. 新しい依存パッケージ（`geometry_msgs`）を `package.xml` に足す手順を理解する。
+3. QoSが合わないと、エラーにならずに黙ってつながらないことがある、と説明できる（6-2節の①と④を試す）。
+
+任意（発展。余力があれば）:
+
+4. 6-2節の7通りの組み合わせをすべて試し、`ros2 topic info -v` でQoSを読み取れる。
+5. C++版を書き、`CMakeLists.txt` にも依存を足す手順を理解する。
 
 ## 1. 全体像
 
@@ -92,7 +100,7 @@ ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durabilit
 <depend>geometry_msgs</depend>
 ```
 
-**C++（`ws/src/learn_cpp/package.xml`）**: 同じく足す。加えて `CMakeLists.txt` に `find_package(geometry_msgs REQUIRED)` を、既存の `find_package(std_msgs REQUIRED)` の隣へ足す（後のCMake追記で `ament_target_dependencies` にも書く）。
+**C++（`ws/src/learn_cpp/package.xml`）**（C++版を作る場合のみ）: 同じく足す。加えて `CMakeLists.txt` に `find_package(geometry_msgs REQUIRED)` を、既存の `find_package(std_msgs REQUIRED)` の隣へ足す（後のCMake追記で `ament_target_dependencies` にも書く）。
 
 ```xml
 <depend>geometry_msgs</depend>
@@ -347,6 +355,8 @@ source install/setup.bash
 期待する結果: フェーズ3-1と同じく、`Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功。`ros2 pkg executables learn_py` を実行すると、今回足した `learn_py qos_listener`・`learn_py qos_talker`・`learn_py turtle_circle` の3行が、既存の実行ファイルと一緒に並ぶ。
 
 ## 5. C++版（`ws/src/learn_cpp`）
+
+> **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、節末の「Python版とC++版の違いのまとめ」を読めば概要が掴める。C++版を作らない場合は、C++向けの依存の追加（`package.xml` と `CMakeLists.txt`）も不要。
 
 `ws/src/learn_cpp/src/` に `turtle_circle.cpp`, `qos_talker.cpp`, `qos_listener.cpp` を作る。
 
@@ -648,7 +658,7 @@ source install/setup.bash
 ```bash
 # T1
 ros2 run turtlesim turtlesim_node
-# T2（Python版かC++版のどちらか）
+# T2（Python版。C++版を作った場合は、下の行でもよい）
 ros2 run learn_py turtle_circle
 ros2 run learn_cpp turtle_circle
 ```
@@ -660,7 +670,7 @@ ros2 run learn_cpp turtle_circle
 - T2を `Ctrl+C` で止めると、指令が途切れて約1秒後に亀が止まる。
 - Python版とC++版で、亀の動きに違いは無い。
 
-> 課題1: Python版とC++版の `turtle_circle` を、それぞれ動かして亀の動きが同じになることを確認する。
+> 課題1（C++版を作った場合）: Python版とC++版の `turtle_circle` を、それぞれ動かして亀の動きが同じになることを確認する。
 >
 > 課題2: 円の半径は `linear.x / angular.z` になる。値を変えて（例: `linear.x = 1.0`）、半径が変わることを確認する。
 >
@@ -668,7 +678,7 @@ ros2 run learn_cpp turtle_circle
 
 ### 6-2. QoSの相性を確認する
 
-以下、`ros2 run learn_py qos_talker` / `qos_listener`（C++版でも同様）で、パラメータを変えて起動する。表の各行を試す。
+以下、`ros2 run learn_py qos_talker` / `qos_listener`（C++版でも同様）で、パラメータを変えて起動する。概要を掴むだけなら、①（つながる）と④（つながらない）の2つを試せば十分（0節の完了条件）。残りの行は任意。
 
 **reliability の組み合わせ**
 
@@ -777,9 +787,9 @@ QoS profile:
 
 `Publisher count` と `Subscription count` はどちらも1で、ROS2から見ると「両方いる」。それでもつながらない理由は、`Reliability` の行の食い違い（Publisherが `BEST_EFFORT`、Subscriptionが `RELIABLE`）にある。**つながらない場合は、この2つを見比べて、どちらが食い違っているかを読み取る**。
 
-> 課題4: 表の①〜⑦をすべて試し、期待どおりの結果になるか確認する。つながらない組み合わせ（④・⑦）では、受信側のログに非互換のポリシー名を含む警告が出ることを確認する。
+> 課題4（任意）: 表の①〜⑦をすべて試し、期待どおりの結果になるか確認する。つながらない組み合わせ（④・⑦）では、受信側のログに非互換のポリシー名を含む警告が出ることを確認する。
 >
-> 課題5: Python版のtalker × C++版のlistener（およびその逆）でも、④と⑦が同じ結果になることを確認する。QoSの扱いが言語に依存しないことを確認する。
+> 課題5（C++版を作った場合）: Python版のtalker × C++版のlistener（およびその逆）でも、④と⑦が同じ結果になることを確認する。QoSの扱いが言語に依存しないことを確認する。
 
 ### 6-3. 実務への手がかり
 

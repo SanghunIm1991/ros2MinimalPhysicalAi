@@ -3,7 +3,7 @@
 `docs/learning_plan.md` フェーズ4（idea_origin.md ステップ1の1-6）に対応する。これまで別々のターミナルで起動していたノードを、1つのlaunchファイルで起動する。**Python版とC++版のノードを引数で切り替える**のが要点。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ3-1〜3-3完了（`learn_py` と `learn_cpp` に、このフェーズで起動する `talker`・`listener`・`param_talker`・`turtle_circle` がある）。フェーズ3-4・3-5のノードは使わないので、3-5は概要を掴んだだけでも先へ進める
+- 前提: フェーズ3-1〜3-3完了（`learn_py` と `learn_cpp` に、このフェーズで起動する `talker`・`listener`・`param_talker`・`turtle_circle` がある）。フェーズ3-4・3-5のノードは使わないので、3-4・3-5は概要を掴んだだけでも先へ進める。C++版の `param_talker`・`turtle_circle`（フェーズ3-2・3-3で任意）が無い場合は、`lang:=cpp` の代わりに `lang:=py` で起動する。`learn_cpp` の `talker`・`listener`（フェーズ3-1）は、言語の切り替え（4-1節）で使うので必要
 - 所要目安: 1〜2コマ
 - 言語: launchファイルはPython・XML・YAMLの3形式を扱う（ノードはPython・C++）
 - OSS: turtlesim（GUIの起動と目視確認はユーザーが行う）
@@ -475,7 +475,7 @@ YAMLパラメータファイルの構造（`config/param_talker.yaml`）は、�
 
 ```bash
 ros2 launch learn_bringup param.launch.py
-ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2
+ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2   # C++版の param_talker を作った場合。作っていなければ lang:=py
 ```
 
 期待する結果（2つ目のコマンドの例。launch自体の行は4-1と同じなので省く）: YAMLの `message`（`from yaml`）が、引数で上書きした周期0.2秒（1秒に5行）で送られる。
@@ -559,7 +559,7 @@ def generate_launch_description():
 観察ポイント: 1つのターミナルの `Ctrl+C` で、2つのノードが**まとめて止まる**こと（個別のターミナルで起動していたときとの差）。`ros2 node list` に `/turtlesim` と `/turtle_circle` が並ぶこと。GUIの起動と目視確認はユーザーが行う。
 
 ```bash
-ros2 launch learn_bringup turtle.launch.py lang:=cpp
+ros2 launch learn_bringup turtle.launch.py lang:=cpp   # C++版の turtle_circle を作った場合。作っていなければ lang:=py
 ```
 
 （GUIの起動と目視確認はユーザーが行う。）

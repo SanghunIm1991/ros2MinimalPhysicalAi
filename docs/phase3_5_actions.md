@@ -810,7 +810,7 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 
 この節の末尾の課題1（`order:=0`）では、クライアントは `[ERROR] ... [fibonacci_client]: goal rejected` を出してすぐ終わり、サーバには `[WARN] ... [fibonacci_server]: reject goal: order=0` が出る。拒否されたゴールには、feedbackも結果も届かない。
 
-言語の組み合わせを試す:
+言語の組み合わせを試す（C++版を作った場合。任意）:
 
 | 組み合わせ | T1 | T2 |
 |---|---|---|

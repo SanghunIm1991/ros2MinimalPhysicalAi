@@ -5,19 +5,30 @@
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ3-1〜3-3完了
 - 所要目安: 1コマ
-- 言語: **Python・C++の両方**
+- 言語: **Python**（C++版は任意）
 - 使う標準インターフェース: `example_interfaces/srv/AddTwoInts`、`std_srvs/srv/Trigger`
 
-> **進め方**: 仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でサービス関連のAPI（サーバ・クライアントの作成、非同期呼び出し）を把握し、サンプルコードと解説を読んで理解する。読んで分かったら、フィールドや計算内容を変える、待ち時間を変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
+> **このフェーズの位置づけ（概要を掴む程度でよい）**: サービスは、フェーズ5の車両シミュレーションでは使わない（ノード同士はトピックでつなぎ、ゲインはパラメータで変える）。ここでは「サービスは1回の要求に1回の応答を返す通信で、トピックとはこう使い分ける」という概念と、CLIからサービスを呼ぶ方法を掴めば十分である。なお、フェーズ3-3の `ros2 param set` も、裏ではノードが自動で持つパラメータ用のサービスを呼んでいる。
+>
+> 必須の範囲は、Python版の `add_server` を書いて、`ros2 service call` で呼ぶところまで（4節の `add_server.py` → 6-1節の「CLIからも呼べる」）。クライアントの非同期呼び出し（`add_client`）、`counter_node`（Trigger）、C++版（5節）は任意の発展とする。作らないノードがある場合は、`setup.py` の `entry_points` にもその行を書かない。
+>
+> **進め方**（サンプルまで書いて動かす場合）: 仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でサービス関連のAPI（サーバ・クライアントの作成、非同期呼び出し）を把握し、サンプルコードと解説を読んで理解する。読んで分かったら、フィールドや計算内容を変える、待ち時間を変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
 > **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。コードとROS2の仕様から筆者が想定したもので、実機では時刻などの細部が異なる。
 
 ## 0. 学習目標と完了条件
 
-1. サービスのサーバ（`create_service`）とクライアント（`create_client`）を、Python・C++の両方で書ける。
-2. 標準の `.srv` 定義（要求と応答の項目）を `ros2 interface show` で読める。
-3. クライアントの**非同期呼び出し**（`call_async` / `async_send_request`）と、結果の待ち方を説明できる。
-4. トピックとの使い分け（継続的な流れ vs 要求→応答）を、自分の言葉で説明できる。
+必須（概要を掴む）:
+
+1. 標準の `.srv` 定義（要求と応答の項目）を `ros2 interface show` で読める。
+2. サービスのサーバ（`create_service`）をPythonで書き、`ros2 service call` で呼べる。
+3. トピックとの使い分け（継続的な流れ vs 要求→応答）を、自分の言葉で説明できる。
+
+任意（発展。余力があれば）:
+
+4. クライアント（`create_client`）の**非同期呼び出し**（`call_async` / `async_send_request`）と、結果の待ち方を説明できる。
+5. 1つのノードにトピックとサービスを同居させる（`counter_node`）。
+6. C++版を書く。
 
 ## 1. 全体像
 
@@ -98,14 +109,14 @@ string message # informational, e.g. for error messages
 
 ## 3. 準備: 依存の追加
 
-両パッケージの `package.xml` に、次の2行を足す。
+`package.xml` に、次の2行を足す（C++版を作る場合は `learn_cpp` 側にも。必須の範囲だけなら `learn_py` 側の `example_interfaces` だけでよい）。
 
 ```xml
 <depend>example_interfaces</depend>
 <depend>std_srvs</depend>
 ```
 
-C++（`ws/src/learn_cpp/CMakeLists.txt`）には、`find_package` も足す（既存の `find_package(...)` の並びへ）。
+C++版を作る場合は、`ws/src/learn_cpp/CMakeLists.txt` に `find_package` も足す（既存の `find_package(...)` の並びへ）。
 
 <!-- snippet: cmake_find_services -->
 ```cmake
@@ -344,6 +355,8 @@ source install/setup.bash
 ```
 
 ## 5. C++版（`ws/src/learn_cpp`）
+
+> **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、節末の「Python版とC++版の違いのまとめ」を読めば概要が掴める。C++版を作らない場合は、C++向けの依存の追加（`package.xml` と `CMakeLists.txt`）も不要。
 
 `ws/src/learn_cpp/src/` に `add_server.cpp`, `add_client.cpp`, `counter_node.cpp` を作る。
 
@@ -593,10 +606,12 @@ source install/setup.bash
 
 ### 6-1. AddTwoInts
 
+必須の範囲だけを進めている場合は、T1でサーバを起動したら、T2のクライアントの代わりに、この後の「CLIからも呼べる」の `ros2 service call` を使う。
+
 ```bash
 # T1
 ros2 run learn_py add_server
-# T2
+# T2（add_client を作った場合）
 ros2 run learn_py add_client --ros-args -p a:=3 -p b:=4
 ```
 
@@ -634,7 +649,7 @@ example_interfaces.srv.AddTwoInts_Response(sum=30)
 
 T1のサーバには `10 + 20 = 30` のログが出る。サーバから見ると、自作のクライアントからの要求もCLIからの要求も区別が無い。4つの言語の組み合わせ（下の表）でも、表示は同じになる。
 
-言語の組み合わせを試す:
+言語の組み合わせを試す（`add_client` とC++版を作った場合。任意）:
 
 | 組み合わせ | T1 | T2 |
 |---|---|---|
@@ -643,13 +658,13 @@ T1のサーバには `10 + 20 = 30` のログが出る。サーバから見る�
 | C++ × Python | `ros2 run learn_cpp add_server` | `ros2 run learn_py add_client ...` |
 | C++ × C++ | `ros2 run learn_cpp add_server` | `ros2 run learn_cpp add_client ...` |
 
-> 課題1: サーバを**起動しない**でクライアントを起動し、5秒待って諦めるメッセージが出ることを確認する。
+> 課題1（`add_client` を作った場合）: サーバを**起動しない**でクライアントを起動し、5秒待って諦めるメッセージが出ることを確認する。
 >
-> 課題2: クライアントを先に起動し、5秒以内にサーバを起動して、呼び出しが成功することを確認する（`wait_for_service` の効果）。
+> 課題2（`add_client` を作った場合）: クライアントを先に起動し、5秒以内にサーバを起動して、呼び出しが成功することを確認する（`wait_for_service` の効果）。
 >
 > 課題3: `ros2 service list -t`、`ros2 service type /add_two_ints`、`ros2 node info /add_server` で、サービスがどう見えるか確認する。
 
-### 6-2. Trigger（カウンタのリセット）
+### 6-2. Trigger（カウンタのリセット）（任意）
 
 ```bash
 # T1
@@ -686,7 +701,7 @@ std_srvs.srv.Trigger_Response(success=True, message='counter reset (was 8)')
 - `counter_node` は配信のたびにはログを出さず、リセットされたときだけ1行出す。
 - 応答の `was 8` が、最後に見えた `7` より1大きいのは、`on_timer` が「配信してから `+1`」する作りのため。`count` には「次に配信する予定の値」が入っている。どちらの値を返すのが仕様として自然か、考えてみるとよい。
 
-`echo` の値が0に戻り、サービスの応答に `success=True` と `message`（リセット前の値）が入っていることを確認する。C++版でも同様に確認する。
+`echo` の値が0に戻り、サービスの応答に `success=True` と `message`（リセット前の値）が入っていることを確認する。C++版を作った場合は、C++版でも同様に確認する。
 
 > 課題4: サーバ（`add_server`）の中で `time.sleep(3)`（C++は `std::this_thread::sleep_for`）を入れて、クライアントの呼び出しが3秒ブロックされることを確認する。その間、サーバの他のコールバック（タイマー等）はどうなるか考える（現状は1スレッドの `spin` なので止まる）。
 >
