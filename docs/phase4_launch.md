@@ -10,6 +10,8 @@
 
 > **進め方**: 2節の仕様は「何を作るか」の定義で、launchのAPIの使い方までは書いていない。まず各節冒頭の「主なAPI」表でそのファイルに必要なAPIを把握し、続くサンプルと解説を読んで、1行ずつ何をしているか理解する。読んで分かったら、引数の既定値や起動するノードを変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時に、`ros2 launch --print`（起動せずに内容を表示する）で読み込めることまで確認済み。ノードを実際に起動した結果は未確認（出力が違えば差分を貼ってほしい）。
 
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。`--show-args` と `--print` の表示は手順書の作成時に使い捨ての環境で実行して確かめたもの、ノードを起動した後の表示はコードとROS2の仕様から筆者が想定したもので、実機では時刻・プロセス番号（pid）などの細部が異なる。
+
 ## 0. 学習目標と完了条件
 
 1. launchパッケージ（`learn_bringup`）を作り、launchファイルをインストールして `ros2 launch` で起動できる。
@@ -101,6 +103,8 @@ ros2 pkg create --build-type ament_cmake \
   learn_bringup
 mkdir -p learn_bringup/launch learn_bringup/config
 ```
+
+期待する結果: `ros2 pkg create` の表示は、フェーズ2の2-3（C++パッケージ）と同じ形。`--node-name` と `--dependencies` を付けていないので、`src/` は作られず、`dependencies: []` と表示される。`mkdir` は成功しても何も表示しない。`ls learn_bringup` を実行すると、`CMakeLists.txt  LICENSE  config  include  launch  package.xml  src` のように並ぶ（`include/` と `src/` は雛形が作る空のフォルダで、このパッケージでは使わない）。
 
 フェーズ3-3で `ws/config/` に作ったパラメータYAMLを、このパッケージへ移す。
 
@@ -205,7 +209,7 @@ def generate_launch_description():
 - 引数の値は**常に文字列**として扱われる。型が要る場面（数値など）は、後述の `ParameterValue` のように明示する。
 - `package` と `executable` の組み合わせが実在しないと、起動時にエラーになる（例: `talker_lang:=rust` は `learn_rust` が無いエラー、課題2）。
 
-観察ポイント: `--show-args` で2つの引数と説明・既定値が見えること、`--print` で置換が展開された結果（`learn_cpp` など）が見えること、起動後に `ros2 node list` に `/talker` と `/listener` が出ることを確認する。
+観察ポイント: `--show-args` で2つの引数と説明・既定値が見えること、`--print` では置換が**評価される前の形**（`'learn_' + LaunchConfig('talker_lang')`）で見えること、起動後に `ros2 node list` に `/talker` と `/listener` が出ることを確認する。「`LaunchConfiguration` は起動時に評価される予約票」という上の説明を、`--print` の表示で目で確かめられる。
 
 この後の XML 版・YAML 版は、**同じ内容を別の書き方で表したもの**。Python版との対応を見比べる。
 
@@ -219,12 +223,61 @@ ros2 launch learn_bringup pubsub.launch.py --show-args
 ros2 launch learn_bringup pubsub.launch.py --print
 ```
 
+期待する結果（`0x...` のアドレスは毎回変わる）:
+
+```text
+$ ros2 launch learn_bringup pubsub.launch.py --show-args
+Arguments (pass arguments as '<name>:=<value>'):
+
+    'talker_lang':
+        talkerの言語（py または cpp）
+        (default: 'py')
+
+    'listener_lang':
+        listenerの言語（py または cpp）
+        (default: 'py')
+
+$ ros2 launch learn_bringup pubsub.launch.py --print
+<launch.launch_description.LaunchDescription object at 0x77051428a240>
+├── Action('<launch.actions.declare_launch_argument.DeclareLaunchArgument object at 0x770514f8e090>')
+├── Action('<launch.actions.declare_launch_argument.DeclareLaunchArgument object at 0x770514f8ffb0>')
+├── ExecuteProcess(cmd=[ExecInPkg(pkg='learn_' + LaunchConfig('talker_lang'), exec='talker'), '--ros-args', '-r', LocalVar('node name')], cwd=None, env=None, shell=False)
+└── ExecuteProcess(cmd=[ExecInPkg(pkg='learn_' + LaunchConfig('listener_lang'), exec='listener'), '--ros-args', '-r', LocalVar('node name')], cwd=None, env=None, shell=False)
+```
+
+- `--show-args` は、`DeclareLaunchArgument` に書いた名前・説明・既定値をそのまま並べる。
+- `--print` は、`LaunchDescription` の中身を木の形で表示する。`DeclareLaunchArgument` が2つと、ノードの起動（`ExecuteProcess`）が2つ、コードに書いた順に並ぶ。
+- パッケージ名は `'learn_' + LaunchConfig('talker_lang')` という**式のまま**で、`learn_py` には置き換わっていない。`talker_lang:=cpp` を付けて `--print` しても表示は同じ。置換の評価は実際の起動時に行われるため、`--print` で分かるのは「ファイルが読み込めて、構造が正しいか」まで。
+
 起動する:
 
 ```bash
 ros2 launch learn_bringup pubsub.launch.py
 ros2 launch learn_bringup pubsub.launch.py talker_lang:=cpp listener_lang:=py
 ```
+
+期待する結果（1つ目のコマンドの例）: 2つのノードのログが、1つのターミナルに混ざって出る。各行の先頭の `[talker-1]` などは、launchが付ける「どのプロセスの出力か」の印（`-1` は起動した順の番号）。
+
+```text
+[INFO] [launch]: All log files can be found below /home/<ユーザー名>/.ros/log/2026-09-24-12-00-00-123456-<ホスト名>-12340
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [talker-1]: process started with pid [12345]
+[INFO] [listener-2]: process started with pid [12346]
+[talker-1] [INFO] [1727210001.100000000] [talker]: publish: hello 0
+[listener-2] [INFO] [1727210001.101000000] [listener]: received: hello 0
+[talker-1] [INFO] [1727210002.100000000] [talker]: publish: hello 1
+[listener-2] [INFO] [1727210002.101000000] [listener]: received: hello 1
+```
+
+`Ctrl+C` を押すと、2つのノードがまとめて終了する。
+
+```text
+^C[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [listener-2]: process has finished cleanly [pid 12346]
+[INFO] [talker-1]: process has finished cleanly [pid 12345]
+```
+
+2つ目のコマンド（`talker_lang:=cpp`）でも、ログの見た目は同じになる。どちらの言語が動いているかは、ログではなく `ros2 node info /talker` などで調べる（課題1）。課題2の `talker_lang:=rust` では、ノードは1つも起動せず、`[ERROR] [launch]: Caught exception in launch (see debug for traceback): ...` に続いて、`learn_rust` というパッケージが見つからないという趣旨のメッセージが出て終わる。
 
 > 課題1: 4通りの組み合わせをすべて起動し、`ros2 node list` と `ros2 topic info /chatter -v` で、どの言語のノードがつながっているか確認する。
 >
@@ -269,7 +322,7 @@ Python版の各要素が、XMLのタグにほぼ1対1で対応している。
 - タグは必ず閉じる（自己終了の `/>` を忘れない）。閉じ忘れは、XMLとして読めないエラーになる。
 - XMLでは、`if` や計算のような複雑な処理は書けない。条件付きの起動は属性（`if=` / `unless=`）で最低限できるが、凝った処理はPython形式に任せる。
 
-観察ポイント: `--print` の出力が、Python版と（ほぼ）同じ内容になること。
+観察ポイント: `--print` の出力が、Python版と同じ内容になること（手順書の作成時に確認した範囲では、`0x...` のアドレス以外は1文字も違わなかった）。書き方が違っても、読み込まれた後は同じ `LaunchDescription` になる。
 
 ### 4-3. YAML形式（`pubsub.launch.yaml`）
 
@@ -314,7 +367,7 @@ YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序�
 
 - `arg:` の直後の属性を、1段深くインデントし忘れると、読み込みに失敗する。
 - コロンや特殊な記号を含む値は、YAMLでは引用符が要る場合がある。この例の `description` は、コロンを含まないのでそのまま書けている。
-- 3形式とも `--print` で展開結果を確認できる。書いたら、まず `--print` で読み込めるか見る。
+- 3形式とも `--print` で、読み込めるか（書式の誤りが無いか）と、読み込まれた構造を確認できる。書いたら、まず `--print` で読み込めるか見る。置換（`$(var ...)` など）の値は、`--print` では評価されない。
 
 3形式を書き比べると、Pythonは自由度が高く（分岐・計算・関数化）、XML/YAMLは単純な起動の一覧を短く書ける、という違いが見える。
 
@@ -332,6 +385,8 @@ YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序�
 ros2 launch learn_bringup pubsub.launch.xml talker_lang:=cpp --print
 ros2 launch learn_bringup pubsub.launch.yaml talker_lang:=cpp --print
 ```
+
+期待する結果: どちらも、4-1の `pubsub.launch.py --print` と同じ木（`DeclareLaunchArgument` 2つ、`ExecuteProcess` 2つ）が表示される。`talker_lang:=cpp` を付けていても、パッケージ名は `'learn_' + LaunchConfig('talker_lang')` のまま。XMLやYAMLの書式を間違えている場合は、木の代わりに読み込みのエラーが出る。
 
 > 課題4: 3形式（Python/XML/YAML）で同じ`pubsub.launch.*`を実際に動かし、上の表の内容（行数・引数の埋め込み・分岐可否）を自分の目で確かめる。目安: 複雑な条件・計算が要る場合はPython、単純な起動の一覧はXML/YAMLが読みやすい。
 
@@ -410,12 +465,23 @@ YAMLパラメータファイルの構造（`config/param_talker.yaml`）は、�
 - YAMLを `parameters` の**後ろ**に置くと、引数で渡したはずの値がYAMLに上書きされる。並びの順序に意味がある。
 - 引数に既定値があるので、`period` を指定しなくても引数側（`1.0`）が使われ、YAMLの値（`0.5`）は結果的に使われない（課題5の補足）。
 
-観察ポイント: `ros2 param get` で、`message` はYAMLの値、`period` は引数の値（`period:=0.2` なら0.2）になっていること。`--print` で、YAMLのパスが `install/.../share/...` に展開されていること（課題6）。
+観察ポイント: `ros2 param get` で、`message` はYAMLの値、`period` は引数の値（`period:=0.2` なら0.2）になっていること。YAMLが `install/.../share/...` から読まれていること（課題6）。
 
 ```bash
 ros2 launch learn_bringup param.launch.py
 ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2
 ```
+
+期待する結果（2つ目のコマンドの例。launch自体の行は4-1と同じなので省く）: YAMLの `message`（`from yaml`）が、引数で上書きした周期0.2秒（1秒に5行）で送られる。
+
+```text
+[INFO] [param_talker-1]: process started with pid [12400]
+[param_talker-1] [INFO] [1727210100.200000000] [param_talker]: publish: from yaml
+[param_talker-1] [INFO] [1727210100.400000000] [param_talker]: publish: from yaml
+[param_talker-1] [INFO] [1727210100.600000000] [param_talker]: publish: from yaml
+```
+
+1つ目のコマンド（引数なし）では、周期は引数の既定値1.0秒になる（課題5の補足）。
 
 別ターミナルで、実際に値が入っているか確認する:
 
@@ -424,11 +490,18 @@ ros2 param get /param_talker message     # YAMLの値
 ros2 param get /param_talker period      # 引数で上書きした値
 ```
 
+期待する結果（`period:=0.2` で起動した場合）:
+
+```text
+String value is: from yaml
+Double value is: 0.2
+```
+
 > 課題5: `period` を渡さない場合、YAMLの `0.5` になるか、引数の既定 `1.0` になるか確認する（`parameters` の並び順のルールから予想してから試す）。
 >
 > （補足: 引数 `period` に既定値 `1.0` があるため、指定しなくても常に引数側が勝ち、YAMLの `0.5` は使われない。発展: 引数の既定を空にして、未指定ならYAMLの値を使う書き方を調べて試す。）
 >
-> 課題6: `--print` の出力から、YAMLのパスがどこに展開されているか確認する（`install/learn_bringup/share/...`）。
+> 課題6: `FindPackageShare('learn_bringup')` がどこを指すかを、`ros2 pkg prefix --share learn_bringup` で確認する（`.../ws/install/learn_bringup/share/learn_bringup` と表示される）。その下の `config/` に `param_talker.yaml` があることを `ls` で確かめ、`PathJoinSubstitution` が組み立てるパスと一致することを確認する。`--print` では、パラメータのパスは表示されない（置換は起動時に評価されるため）。
 
 ### 4-5. OSSと自作ノードを一緒に起動する（`turtle.launch.py`）
 
@@ -483,6 +556,15 @@ ros2 launch learn_bringup turtle.launch.py lang:=cpp
 ```
 
 （GUIの起動と目視確認はユーザーが行う。）
+
+期待する結果: turtlesimのウィンドウが開き、少し待つと亀が円を描き始める（フェーズ3-2の6-1と同じ動き）。ターミナルには2つのプロセスの起動が出る。`turtle_circle` はログを出さないので、以降はturtlesim側のログだけが出る。
+
+```text
+[INFO] [turtlesim_node-1]: process started with pid [12500]
+[INFO] [turtle_circle-2]: process started with pid [12501]
+[turtlesim_node-1] [INFO] [1727210200.100000000] [turtlesim]: Starting turtlesim with node name /turtlesim
+[turtlesim_node-1] [INFO] [1727210200.110000000] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+```
 
 ### 4-6. launchを合成する・名前空間・remap（`compose.launch.py`）
 
@@ -560,6 +642,31 @@ ros2 node list       # /demo/talker, /demo/listener, /param_talker
 ros2 topic list      # /demo/chatter, /param_chatter
 ```
 
+期待する結果: launchのターミナルには、3つのプロセス（`talker`・`listener`・`param_talker`）のログが混ざって出る。ノード名は名前空間付き（`[demo.talker]` のようにドット区切り）で表示される。
+
+```text
+[talker-1] [INFO] [1727210300.100000000] [demo.talker]: publish: hello 0
+[listener-2] [INFO] [1727210300.101000000] [demo.listener]: received: hello 0
+[param_talker-3] [INFO] [1727210300.100000000] [param_talker]: publish: from yaml
+```
+
+別のターミナルでの確認（`ros2 topic list` の抜粋）:
+
+```text
+$ ros2 node list
+/demo/listener
+/demo/talker
+/param_talker
+
+$ ros2 topic list
+/demo/chatter
+/param_chatter
+/parameter_events
+/rosout
+```
+
+`demo` の下に入るのは、`GroupAction` の中でincludeした `pubsub.launch.py` の2ノードとそのトピックだけで、`param.launch.py` の側は名前空間なしのまま。`/parameter_events` と `/rosout` は、どのノードも共有する全体のトピックなので、名前空間が付かない。
+
 > 課題7: `pubsub.launch.py` の `Node` に `remappings=[('chatter', 'renamed')]` を足して、トピック名が変わることと、talkerとlistenerの**両方に同じremapを付けないとつながらない**ことを確認する。確認後は元に戻す。
 >
 > 課題8: launchを `Ctrl+C` で止めたとき、起動した全ノードが終了することを確認する（ログに各ノードの終了が出る）。
@@ -596,7 +703,7 @@ source install/setup.bash
 | ビルドで `ament_cmake_symlink_install_directory() can't find '.../config'` | `ws/src/learn_bringup/config/` が無い（または空でGit上に存在しない）。手順3-1のとおり `config/` を作り、`param_talker.yaml` を入れる |
 | `ros2 launch` でパラメータが効かない | YAMLの1行目のノード名と、`Node(name=...)` が一致しているか。`ros__parameters` の綴り |
 | 型の不一致（`period`） | `ParameterValue(..., value_type=float)` を使っているか。YAMLの `period: 1` のような整数になっていないか |
-| ノードが起動しない・すぐ終了する | `output='screen'` にして、エラーログを見る。`ros2 launch ... --print` で展開結果を確認 |
+| ノードが起動しない・すぐ終了する | `output='screen'` にして、エラーログを見る。`ros2 launch ... --print` でファイルが読み込めるか、`--show-args` で引数の名前と既定値を確認（置換の値は `--print` では評価されない） |
 | XML/YAMLで引数が展開されない | `$(var 引数名)` の書式（`$(arg ...)` は古い書き方）。引数を `<arg>` / `arg:` で宣言しているか |
 
 ## 8. 次へ
