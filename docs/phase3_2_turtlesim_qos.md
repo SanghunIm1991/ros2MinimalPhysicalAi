@@ -10,6 +10,8 @@
 
 > **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。3節・4節冒頭の「主なAPI」表とサンプルコード・解説を読んで理解し、QoSのパラメータや送る値を変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容や画面の様子とその読み方を載せている。コードとROS2の仕様から筆者が想定したもので、実機では時刻などの細部が異なる。
+
 ## 0. 学習目標と完了条件
 
 1. `geometry_msgs/msg/Twist` をpublishして、turtlesimを自作ノードから動かせる（フェーズ1で `ros2 topic pub` でやったことをコードで行う）。
@@ -324,6 +326,8 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
+期待する結果: フェーズ3-1と同じく、`Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功。`ros2 pkg executables learn_py` を実行すると、今回足した `learn_py qos_listener`・`learn_py qos_talker`・`learn_py turtle_circle` の3行が、既存の実行ファイルと一緒に並ぶ。
+
 ## 5. C++版（`ws/src/learn_cpp`）
 
 `ws/src/learn_cpp/src/` に `turtle_circle.cpp`, `qos_talker.cpp`, `qos_listener.cpp` を作る。
@@ -602,6 +606,8 @@ colcon build --symlink-install --packages-select learn_cpp
 source install/setup.bash
 ```
 
+期待する結果: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`find_package(geometry_msgs REQUIRED)` を書き忘れていると、ここで `Failed <<< learn_cpp` になり、その上に `geometry_msgs` が見つからないという趣旨のCMakeのエラーが出る（8節）。
+
 ## 6. 実験
 
 ### 6-1. Twistでturtlesimを動かす
@@ -615,6 +621,13 @@ ros2 run turtlesim turtlesim_node
 ros2 run learn_py turtle_circle
 ros2 run learn_cpp turtle_circle
 ```
+
+期待する結果:
+
+- `turtle_circle` はログを出さないので、T2には何も表示されない。変化はturtlesimのウィンドウに現れる。
+- 亀は画面の中央から右向きに動き出し、左回り（反時計回り）に円を描き続ける。半径は `linear.x / angular.z = 2.0 / 1.0 = 2`（画面の一辺は約11）で、1周にかかる時間は `2π / angular.z` ≒ 6.3秒。通った跡に白い円が残る。
+- T2を `Ctrl+C` で止めると、指令が途切れて約1秒後に亀が止まる。
+- Python版とC++版で、亀の動きに違いは無い。
 
 > 課題1: Python版とC++版の `turtle_circle` を、それぞれ動かして亀の動きが同じになることを確認する。
 >
@@ -660,7 +673,78 @@ ros2 run learn_py qos_listener --ros-args -p reliability:=reliable
 ros2 topic info /qos_test -v
 ```
 
-Publisher・SubscriptionそれぞれのQoS（`Reliability`、`Durability`）が表示される。**つながらない場合は、この2つを見比べて、どちらが食い違っているかを読み取る**。
+期待する結果: 通常の組み合わせ（①）で、talkerとlistenerの両方を起動している場合の例（抜粋）。
+
+```text
+# T1（qos_talker）
+[INFO] [1727170000.100000000] [qos_talker]: QoS: reliability=reliable, durability=volatile
+[INFO] [1727170001.101234567] [qos_talker]: publish: msg 0
+[INFO] [1727170002.101198765] [qos_talker]: publish: msg 1
+
+# T2（qos_listener）
+[INFO] [1727170000.900000000] [qos_listener]: QoS: reliability=reliable, durability=volatile
+[INFO] [1727170001.101987654] [qos_listener]: received: msg 0
+[INFO] [1727170002.101954321] [qos_listener]: received: msg 1
+```
+
+起動直後の1行目は、パラメータから読み取ったQoSの設定。ここで意図した組み合わせになっているかを、まず確かめる。
+
+つながらない組み合わせ（④）では、talkerは `publish: msg N` を出し続けるが、listenerには `received:` が1行も出ない。その代わり、両方のターミナルに警告が出る（Python版の場合。C++版では末尾の方針名が `RELIABILITY_QOS_POLICY` になる）。
+
+```text
+# T2（qos_listener、reliable）
+[WARN] [1727170010.200000000] [qos_listener]: New publisher discovered on topic '/qos_test', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
+
+# T1（qos_talker、best_effort）
+[WARN] [1727170010.200000000] [qos_talker]: New subscription discovered on topic '/qos_test', requesting incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY
+```
+
+警告は「相手を見つけたが、QoSが合わないのでメッセージをやり取りしない」という意味で、最後の `Last incompatible policy` が食い違っている項目を示す。⑦では、ここが `DURABILITY` になる。エラーで止まるわけではないので、ログを見落とすと「何も起きない」ように見える。
+
+⑤（`transient_local` どうし）では、talkerを先に起動して5秒待ってからlistenerを起動すると、listenerの起動直後に過去の分がまとめて届く。
+
+```text
+# T2（qos_listener、⑤）
+[INFO] [...] [qos_listener]: QoS: reliability=reliable, durability=transient_local
+[INFO] [...] [qos_listener]: received: msg 0
+[INFO] [...] [qos_listener]: received: msg 1
+[INFO] [...] [qos_listener]: received: msg 2
+[INFO] [...] [qos_listener]: received: msg 3
+[INFO] [...] [qos_listener]: received: msg 4
+[INFO] [...] [qos_listener]: received: msg 5     ← ここからは1秒ごと
+```
+
+最初の数行は、時刻がほぼ同じ（一気に届いた）になる。talkerを10秒以上待ってから起動した場合は、深さ10を超えた古い分は捨てられているので、直近10件だけが届く。⑥（listenerが `volatile`）では、同じ手順でも過去分は届かず、起動後に送られた番号から始まる。
+
+Publisher・SubscriptionそれぞれのQoS（`Reliability`、`Durability`）が表示される。④の場合の `ros2 topic info /qos_test -v` の例（抜粋）:
+
+```text
+Type: std_msgs/msg/String
+
+Publisher count: 1
+
+Node name: qos_talker
+...
+Endpoint type: PUBLISHER
+QoS profile:
+  Reliability: BEST_EFFORT
+  History (Depth): KEEP_LAST (10)
+  Durability: VOLATILE
+  ...
+
+Subscription count: 1
+
+Node name: qos_listener
+...
+Endpoint type: SUBSCRIPTION
+QoS profile:
+  Reliability: RELIABLE
+  History (Depth): KEEP_LAST (10)
+  Durability: VOLATILE
+  ...
+```
+
+`Publisher count` と `Subscription count` はどちらも1で、ROS2から見ると「両方いる」。それでもつながらない理由は、`Reliability` の行の食い違い（Publisherが `BEST_EFFORT`、Subscriptionが `RELIABLE`）にある。**つながらない場合は、この2つを見比べて、どちらが食い違っているかを読み取る**。
 
 > 課題4: 表の①〜⑦をすべて試し、期待どおりの結果になるか確認する。つながらない組み合わせ（④・⑦）では、受信側のログに非互換のポリシー名を含む警告が出ることを確認する。
 >

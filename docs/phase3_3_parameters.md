@@ -9,6 +9,8 @@
 
 > **進め方**: 仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でパラメータ関連のAPIを把握し、サンプルコードと解説を読んで理解する。読んで分かったら、既定値や型を変える、パラメータを増やすなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。コードとROS2の仕様（エラー文言はローカルのrclpy・rclcppのソース）から筆者が想定したもので、実機では時刻などの細部が異なる。
+
 ## 0. 学習目標と完了条件
 
 1. `declare_parameter` でパラメータを宣言し、値を取得できる（Python・C++）。
@@ -330,13 +332,44 @@ ros2 run learn_py param_talker
 ros2 topic echo /param_chatter
 ```
 
-C++版（`ros2 run learn_cpp param_talker`）でも同様に確認する。
+期待する結果: 既定値（`message` は `hello`、`period` は `1.0` 秒）どおり、1秒ごとに `hello` が送られる。
+
+```text
+# T1（param_talker）
+[INFO] [1727180000.100000000] [param_talker]: publish: hello
+[INFO] [1727180001.100000000] [param_talker]: publish: hello
+
+# T2（ros2 topic echo）
+data: hello
+---
+data: hello
+---
+```
+
+C++版（`ros2 run learn_cpp param_talker`）でも同様に確認する。表示は同じになる。
 
 ### 5-2. 起動時に指定する（`-p`）
 
 ```bash
 ros2 run learn_py param_talker --ros-args -p message:="from cli" -p period:=0.5
 ```
+
+期待する結果: 0.5秒ごと（1秒に2行）に、指定した文字列が出る。コードは1文字も変えていないのに、振る舞いが変わる点が大事。
+
+```text
+[INFO] [1727180010.500000000] [param_talker]: publish: from cli
+[INFO] [1727180011.000000000] [param_talker]: publish: from cli
+[INFO] [1727180011.500000000] [param_talker]: publish: from cli
+```
+
+課題1の `-p period:=2` では、ノードは起動直後に異常終了する。Python版の場合は、トレースバック（エラーまでの呼び出しの履歴）の最後に次の行が出る。
+
+```text
+rclpy.exceptions.InvalidParameterTypeException: Trying to set parameter 'period' to '2' of type 'INTEGER', expecting type 'DOUBLE'
+[ros2run]: Process exited with failure 1
+```
+
+「`period` に整数（`INTEGER`）の `2` が渡されたが、実数（`DOUBLE`）が期待されている」という意味。C++版では、`parameter 'period' has invalid type: Wrong parameter type, parameter {period} is of type {double}, setting it to {integer} is not allowed.` のような文になる。
 
 > 課題1: `-p period:=2` （小数点なし）で起動するとエラーになることを確認する。`1` は整数、`1.0` は実数として区別される（宣言時の既定値 `1.0` が実数のため、整数を渡すと型が合わない）。エラーの文言を控える。
 
@@ -352,8 +385,47 @@ ros2 param set /param_talker period 0.0      # 拒否される（reasonが表示
 ros2 param get /param_talker period          # 0.2のまま
 ```
 
+期待する結果（T1で `param_talker` を既定値で動かし、別ターミナルで上から順に実行した場合）:
+
+```text
+$ ros2 param list /param_talker
+  message
+  period
+  qos_overrides./parameter_events.publisher.depth
+  qos_overrides./parameter_events.publisher.durability
+  qos_overrides./parameter_events.publisher.history
+  qos_overrides./parameter_events.publisher.reliability
+  start_type_description_service
+  use_sim_time
+
+$ ros2 param describe /param_talker period
+Parameter name: period
+  Type: double
+  Constraints:
+
+$ ros2 param get /param_talker message
+String value is: hello
+
+$ ros2 param set /param_talker message "changed"
+Set parameter successful
+
+$ ros2 param set /param_talker period 0.2
+Set parameter successful
+
+$ ros2 param set /param_talker period 0.0
+Setting parameter failed: period must be > 0
+
+$ ros2 param get /param_talker period
+Double value is: 0.2
+```
+
+- `param list` には、自分で宣言した `message`・`period` のほかに、ノードが自動で持つパラメータ（`use_sim_time` など）も並ぶ。
+- `param describe` の `Type: double` は、宣言時の既定値 `1.0` から決まった型。`Constraints:` の下が空なのは、範囲などの制約を付けていないから（課題6で付ける）。
+- `message` を変えると、T1のログが次の送信から `publish: changed` に変わる。`period` を0.2にすると、ログが1秒に5行に増える。
+- `period 0.0` の失敗の後ろに続く `period must be > 0` は、コードの `reason` に書いた文字列そのもの。拒否されたので、値は0.2のまま。
+
 - `period` を変えると、`ros2 topic echo` の間隔が変わる。
-- `ros2 param set /param_talker period 2` （整数）も型の不一致で失敗する。`2.0` と書く。
+- `ros2 param set /param_talker period 2` （整数）も型の不一致で失敗する。`2.0` と書く。Python版のノードでは `Setting parameter failed: Wrong parameter type, expected 'Type.DOUBLE' got 'Type.INTEGER'` と表示される（起動時の `-p` と違って、ノードは終了せず動き続ける）。
 
 > 課題2: `period` を `0.0` に設定して拒否されることと、その後も動作が変わらないことを確認する。
 >
@@ -377,12 +449,46 @@ param_talker:
 ros2 run learn_py param_talker --ros-args --params-file ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
 ```
 
+期待する結果: YAMLに書いた値で動く（5-2で `-p` を使ったときと同じ振る舞い）。
+
+```text
+[INFO] [1727180100.500000000] [param_talker]: publish: from yaml
+[INFO] [1727180101.000000000] [param_talker]: publish: from yaml
+```
+
+YAMLの1行目のノード名を間違えていると、エラーにはならずに既定値（`hello`、1秒ごと）で動く。「何も言われずに反映されない」ので、表示の文字列で確かめる習慣を付けるとよい。
+
 実行中の設定をYAMLで書き出す・読み込む:
 
 ```bash
 ros2 param dump /param_talker
 ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
 ```
+
+期待する結果（`ros2 param set` で `message` を `changed`、`period` を `0.2` にした後の例）:
+
+```text
+$ ros2 param dump /param_talker
+/param_talker:
+  ros__parameters:
+    message: changed
+    period: 0.2
+    qos_overrides:
+      /parameter_events:
+        publisher:
+          depth: 1000
+          durability: volatile
+          history: keep_last
+          reliability: reliable
+    start_type_description_service: true
+    use_sim_time: false
+
+$ ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
+Set parameter message successful
+Set parameter period successful
+```
+
+`dump` の出力は、5-4の冒頭で書いたYAMLと同じ書式（ノード名 → `ros__parameters` → 値）になっている。そのままファイルに保存すれば、今の設定を次回の起動に使える。`load` の後は、T1のログが `publish: from yaml` に、間隔が0.5秒に戻る。
 
 > 課題4: YAMLの `period: 0.5` を `period: 1` にして起動するとどうなるか確認する。
 >
