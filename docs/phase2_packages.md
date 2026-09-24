@@ -2,7 +2,7 @@
 
 `docs/learning_plan.md` フェーズ2（idea_origin.md ステップ1の1-0）に対応する。`ament_python` と `ament_cmake` の空パッケージを1つずつ作り、ビルドと実行の流れの違いを確認する。
 
-- 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（`colcon`、`gcc`、`cmake` は導入済み）
+- 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（`colcon`、`gcc`/`g++`、`cmake` は、環境構築の `ros-dev-tools` の導入で入っている。1-3節の補足を参照）
 - 所要目安: 1コマ
 - 言語: **Python（`ament_python`）とC++（`ament_cmake`）の両方**
 - 前提: フェーズ1（`docs/phase1_cli_turtlesim.md`）で `ros2 run <パッケージ> <実行ファイル>` の書式に触れていること
@@ -71,6 +71,35 @@ flowchart LR
 | 実行ファイルの登録 | `setup.py` の `entry_points` の `console_scripts` | `CMakeLists.txt` の `add_executable` と `install(TARGETS ...)` |
 | コンパイル | なし（ソースをそのまま配置） | あり（`g++` 経由で機械語にする） |
 | 修正後の再ビルド | `--symlink-install` なら**不要** | **必須** |
+
+#### 補足: C++のコンパイラはどこから来て、いつ使われるか
+
+C++のコンパイラを自分で入れた覚えが無くても、`colcon build` でC++のパッケージがビルドできるのは、環境構築（`docs/setup_wsl2_ros2.md` の手順4の3番目）で入れた `ros-dev-tools` が、依存としてコンパイラ一式を連れてきているからである。依存は次のようにたどれる（`apt-cache depends <パッケージ名>` で1段ずつ確認できる）。
+
+```text
+ros-dev-tools
+└── ros-build-essential
+    ├── build-essential   … Ubuntu標準の「C/C++の開発に最低限必要なもの」一式
+    │   ├── gcc           … Cのコンパイラ
+    │   ├── g++           … C++のコンパイラ（GNU Compiler Collection）
+    │   ├── make          … ビルド手順の実行役
+    │   └── libc6-dev     … 標準Cライブラリのヘッダ等
+    └── cmake             … ビルド設定（CMakeLists.txt）を解釈する道具
+```
+
+Ubuntu 24.04では、`g++` の実体は `g++-13`（GCC 13系）になる。`g++ --version` を実行すると `g++ (Ubuntu 13.3.0-...) 13.3.0` のように表示される（末尾の細かな版数は更新によって変わる）。
+
+`colcon build` の中では、コンパイラは次の順に呼び出される。
+
+1. `colcon` が、パッケージの種類（`ament_cmake`）を見て `cmake` を呼ぶ。
+2. `cmake` が `CMakeLists.txt` を読み、ビルド手順（Makefile）を `build/learn_cpp/` の中に作る。このとき、使うコンパイラとして `/usr/bin/c++` を選ぶ。`/usr/bin/c++` は「システムの既定のC++コンパイラ」を指す別名で、Ubuntuの標準では `g++` につながっている。
+3. `make` がMakefileに従って `g++` を呼び、`.cpp` を実行ファイルにする。
+
+どのコンパイラが選ばれたかは、一度ビルドした後に `grep CMAKE_CXX_COMPILER: build/learn_cpp/CMakeCache.txt` で確かめられる（`CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++` と表示される）。
+
+コンパイラを使うのは**ビルドのときだけ**で、`ros2 run` や `ros2 launch` でノードを動かすときには使わない。実行されるのは、ビルドででき上がった実行ファイル（2-6節の `ELF ... executable`）である。Pythonのパッケージは、そもそもコンパイルをしないので、コンパイラとは関わらない。
+
+この学習ではコンパイラを意識して選ぶ場面は無く、既定の `g++` のままでよい。別のコンパイラ（例: Clang）に切り替える方法もあるが、扱わない。
 
 ### 1-4. 用語の整理: 実行ファイル・ノード・launchファイル
 

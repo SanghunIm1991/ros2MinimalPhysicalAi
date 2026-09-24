@@ -131,6 +131,8 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
    sudo apt update && sudo apt install ros-dev-tools
    ```
 
+   - `ros-dev-tools` は、`colcon` のほかに、C++のコンパイラ（`g++`）・`make`・`cmake` も依存として一緒に入れる（`ros-build-essential` → `build-essential` 経由）。C++のコンパイラを別途入れる必要はない。詳細は `docs/phase2_packages.md` の1-3節の補足を参照。
+
 4. ROS2本体の導入。学習用には **Desktop Install**（rqt・turtlesim等を含む）を選ぶ。
 
    ```bash
