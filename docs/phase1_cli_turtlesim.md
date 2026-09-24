@@ -9,6 +9,7 @@
 > **この手順書の位置づけと注意**
 > - **実機確認済み（2026-09-21）**: ユーザーが本手順書のコマンドをすべて実行し、動作したことを確認した（学習完了）。出力例は筆者の知識に基づくため、表示が細部で異なる場合は実機を優先する。
 > - コマンドは筆者（Claude）の知識に基づく。公式ページ（docs.ros.org）はボット対策で本文を取得できず、逐語照合はできていない。**出力例と実際の表示が違う場合は、実機の表示を優先し、差分を貼ってほしい**（手順書を修正する）。
+> - **実行環境が無くても読めるように**: コマンドの直後に「期待する結果」として、表示される内容の例とその読み方を載せている。時刻・数値の細部は実行するたびに変わる。
 > - 文章・構成は自分の言葉で書いたが、コマンド例の値（`linear.x: 2.0`、`/spawn` の座標、`rotate_absolute` の角度等）は公式チュートリアルの例と同等のものを含む。公式ドキュメントはCC BY 4.0で、出典は末尾に記載する。詳細は末尾の公式ドキュメントを参照。
 
 ## 0. 学習目標と完了条件
@@ -59,13 +60,28 @@ echo $WAYLAND_DISPLAY  # 例: wayland-0 （空でもX11経由で表示できる�
 ls /mnt/wslg           # WSLgの領域が見えること
 ```
 
+期待する結果の例（WSLgが有効な場合）:
+
+```text
+:0
+wayland-0
+PulseServer  PulseAudioRDPSink  runtime-dir  stderr.log  versions.txt  weston.log  wlog.log
+```
+
+`ls /mnt/wslg` の中身は版によって多少異なる。ディレクトリが存在して何かが並べばよい。
+
 **手順B: turtlesimを起動する（T1）**
 
 ```bash
 ros2 run turtlesim turtlesim_node
 ```
 
-- 期待: 水色（青系）の背景に亀が1匹いるウィンドウがWindows側に出る。ターミナルには `Starting turtlesim with node name /turtlesim` と `Spawning turtle [turtle1] at x=...` のようなログが出る。
+- 期待: 水色（青系）の背景に亀が1匹いるウィンドウがWindows側に出る。ターミナルには次のようなログが出る（時刻の数字は実行ごとに変わる）。亀の初期位置は画面の中央（x, yとも約5.54）で、向き（theta）は0＝右向き。
+
+```text
+[INFO] [1727000000.123456789] [turtlesim]: Starting turtlesim with node name /turtlesim
+[INFO] [1727000000.134567890] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+```
 - 確認後は、T1で `Ctrl+C` で止める（ウィンドウも閉じる）。
 
 **手順C: rqtを起動する（T1）**
@@ -182,7 +198,7 @@ flowchart LR
 ros2 run turtlesim turtlesim_node
 ```
 
-青い背景に亀のウィンドウが出る。書式は `ros2 run <パッケージ名> <実行ファイル名>`。
+青い背景に亀のウィンドウが出る（ターミナルのログは1-2の手順Bと同じ）。書式は `ros2 run <パッケージ名> <実行ファイル名>`。
 
 ### 3-2. キーボードで動かす（T2）
 
@@ -190,7 +206,17 @@ ros2 run turtlesim turtlesim_node
 ros2 run turtlesim turtle_teleop_key
 ```
 
-このターミナルを選択した状態で矢印キーを押すと、亀が動く。動いたら、**その裏で何がやり取りされているか**が次の観察の対象になる。
+起動するとT2に操作方法の案内が出る。
+
+```text
+Reading from keyboard
+---------------------------
+Use arrow keys to move the turtle.
+Use G|B|V|C|D|E|R|T keys to rotate to absolute orientations. 'F' to cancel a rotation.
+'Q' to quit.
+```
+
+このターミナルを選択した状態で矢印キーを押すと、亀が動く（↑で前進、↓で後退、←→でその場で旋回）。亀が通った跡には白い線が残る。動いたら、**その裏で何がやり取りされているか**が次の観察の対象になる。
 
 ### 3-3. ノードを調べる（T3）
 
@@ -202,7 +228,37 @@ ros2 node list
 ros2 node info /turtlesim
 ```
 
-`node info` の出力には、そのノードが購読（Subscribers）・配信（Publishers）・提供（Service Servers）・アクション（Action Servers）するものが並ぶ。
+`node info` の出力には、そのノードが購読（Subscribers）・配信（Publishers）・提供（Service Servers）・アクション（Action Servers）するものが並ぶ。期待する結果（抜粋。`/turtlesim/describe_parameters` などパラメータ用のサービスが6つほど続くが、省略した）:
+
+```text
+/turtlesim
+  Subscribers:
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+    /turtle1/cmd_vel: geometry_msgs/msg/Twist
+  Publishers:
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+    /rosout: rcl_interfaces/msg/Log
+    /turtle1/color_sensor: turtlesim/msg/Color
+    /turtle1/pose: turtlesim/msg/Pose
+  Service Servers:
+    /clear: std_srvs/srv/Empty
+    /kill: turtlesim/srv/Kill
+    /reset: std_srvs/srv/Empty
+    /spawn: turtlesim/srv/Spawn
+    /turtle1/set_pen: turtlesim/srv/SetPen
+    /turtle1/teleport_absolute: turtlesim/srv/TeleportAbsolute
+    /turtle1/teleport_relative: turtlesim/srv/TeleportRelative
+    /turtlesim/describe_parameters: rcl_interfaces/srv/DescribeParameters
+    ...
+  Service Clients:
+
+  Action Servers:
+    /turtle1/rotate_absolute: turtlesim/action/RotateAbsolute
+  Action Clients:
+
+```
+
+「トピック名: 型」の形で並ぶ。`/turtle1/...` の名前が付いたものは亀1匹ごとに用意され、`/clear` や `/spawn` のように亀の名前が付かないものはシミュレータ全体に1つだけある。
 
 > 課題1: `/turtlesim` のSubscribersに `/turtle1/cmd_vel` が、Publishersに `/turtle1/pose` があることを確認する。
 
@@ -214,6 +270,15 @@ ros2 run turtlesim turtlesim_node --ros-args --remap __node:=my_turtle
 ros2 node list
 ```
 
+期待する結果: ノード一覧の `/turtlesim` が `/my_turtle` に置き換わる。起動ログも `Starting turtlesim with node name /my_turtle` になる。動作（亀のウィンドウ）は何も変わらない。
+
+```text
+/my_turtle
+/teleop_turtle
+```
+
+試し終わったら、T1を `Ctrl+C` で止め、元の名前（`ros2 run turtlesim turtlesim_node`）で起動し直してから次へ進む（以降のコマンドは `/turtlesim` の名前を前提にしている）。
+
 ### 3-4. トピック（一方向・継続的）
 
 ```bash
@@ -223,6 +288,52 @@ ros2 interface show geometry_msgs/msg/Twist
 ros2 topic echo /turtle1/pose      # 亀の状態を流し見る（Ctrl+Cで停止）
 ros2 topic hz /turtle1/pose        # 配信周期を測る
 ```
+
+期待する結果（1コマンドずつ。`echo` と `hz` は `Ctrl+C` で止めるまで表示が続く）:
+
+```text
+$ ros2 topic list -t
+/parameter_events [rcl_interfaces/msg/ParameterEvent]
+/rosout [rcl_interfaces/msg/Log]
+/turtle1/cmd_vel [geometry_msgs/msg/Twist]
+/turtle1/color_sensor [turtlesim/msg/Color]
+/turtle1/pose [turtlesim/msg/Pose]
+
+$ ros2 topic info /turtle1/cmd_vel
+Type: geometry_msgs/msg/Twist
+Publisher count: 1
+Subscription count: 1
+
+$ ros2 interface show geometry_msgs/msg/Twist
+# This expresses velocity in free space broken into its linear and angular parts.
+
+Vector3  linear
+	float64 x
+	float64 y
+	float64 z
+Vector3  angular
+	float64 x
+	float64 y
+	float64 z
+
+$ ros2 topic echo /turtle1/pose
+x: 5.544444561004639
+y: 5.544444561004639
+theta: 0.0
+linear_velocity: 0.0
+angular_velocity: 0.0
+---
+x: 5.544444561004639
+...
+
+$ ros2 topic hz /turtle1/pose
+average rate: 62.502
+	min: 0.015s max: 0.017s std dev: 0.00041s window: 64
+```
+
+- `topic info` の `Publisher count: 1` はteleop（`/teleop_turtle`）、`Subscription count: 1` はturtlesim。teleopを止めると `Publisher count: 0` になる。
+- `topic echo` は、亀が止まっていても同じ値を流し続ける（状態を定期的に配信しているため）。矢印キーで亀を動かすと、x・y・thetaの値が変わる。
+- `topic hz` は約62 Hz（turtlesimの内部の更新周期、約16ミリ秒ごと）になる。
 
 `Twist` は `linear`（x, y, z）と `angular`（x, y, z）を持つ。亀（2D）では `linear.x`（前進速度）と `angular.z`（旋回速度）だけが意味を持つ。
 
@@ -235,6 +346,16 @@ ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0
 # 1 Hzで送り続ける（円を描く。Ctrl+Cで停止）
 ros2 topic pub -r 1 /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0}, angular: {z: 1.8}}"
 ```
+
+期待する結果: どちらのコマンドも、送った内容をターミナルに表示する。
+
+```text
+publisher: beginning loop
+publishing #1: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0), angular=geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))
+```
+
+- `--once` では、亀は弧を描いて少し進み、約1秒で止まる（turtlesimは、指令が1秒届かないと止まる作り）。コマンドは1回送ると終了する。
+- `-r 1` では `publishing #2`, `#3`, ... と1秒ごとに表示が増え、亀は円を描き続ける。指令が1秒おきに届くので、止まる前に次の指令が来て動き続ける。
 
 > 課題2: `--once` と `-r 1` で亀の動き方がどう違うか観察する。`ros2 topic echo /turtle1/pose` を並行して実行し、位置（x, y）と角度（theta）が変化する様子を確認する。
 >
@@ -251,6 +372,51 @@ ros2 service call /clear std_srvs/srv/Empty                                 # �
 ros2 service call /spawn turtlesim/srv/Spawn "{x: 2.0, y: 2.0, theta: 0.2, name: ''}"   # 亀を追加
 ```
 
+期待する結果（抜粋）:
+
+```text
+$ ros2 service list -t
+/clear [std_srvs/srv/Empty]
+/kill [turtlesim/srv/Kill]
+/reset [std_srvs/srv/Empty]
+/spawn [turtlesim/srv/Spawn]
+/teleop_turtle/describe_parameters [rcl_interfaces/srv/DescribeParameters]
+...
+/turtle1/set_pen [turtlesim/srv/SetPen]
+/turtle1/teleport_absolute [turtlesim/srv/TeleportAbsolute]
+/turtle1/teleport_relative [turtlesim/srv/TeleportRelative]
+/turtlesim/describe_parameters [rcl_interfaces/srv/DescribeParameters]
+...
+
+$ ros2 service type /clear
+std_srvs/srv/Empty
+
+$ ros2 interface show turtlesim/srv/Spawn
+float32 x
+float32 y
+float32 theta
+string name # Optional.  A unique name will be created and returned if this is empty
+---
+string name
+
+$ ros2 service call /clear std_srvs/srv/Empty
+requester: making request: std_srvs.srv.Empty_Request()
+
+response:
+std_srvs.srv.Empty_Response()
+
+$ ros2 service call /spawn turtlesim/srv/Spawn "{x: 2.0, y: 2.0, theta: 0.2, name: ''}"
+requester: making request: turtlesim.srv.Spawn_Request(x=2.0, y=2.0, theta=0.2, name='')
+
+response:
+turtlesim.srv.Spawn_Response(name='turtle2')
+```
+
+- `service list` には、ノードごとに自動で作られるパラメータ用のサービス（`describe_parameters` など）が多数並ぶ。自分で使うのは上の `/clear` や `/spawn` など。
+- `interface show` の `---` より上が要求（Request）、下が応答（Response）。サービスの型は、この2つの組である。
+- `/clear` を呼ぶと、画面上の軌跡（白い線）が消える。応答は空（`Empty_Response()`）で、「終わった」ことだけが返る。
+- `/spawn` を呼ぶと、画面の左下寄り（x=2, y=2）に2匹目の亀が現れ、応答として付けられた名前 `turtle2` が返る（`name` を空にしたので自動で付いた）。
+
 `/spawn` の後で `ros2 topic list` を実行すると、2匹目の亀（`/turtle2/...`）用のトピックが増える。ノード名や名前空間で対象が区別されることを確認する。
 
 > 課題4: `/spawn` で2匹目を出し、`ros2 topic pub` で `/turtle2/cmd_vel` に指令を送って2匹目だけを動かす。
@@ -263,6 +429,35 @@ ros2 param get /turtlesim background_r
 ros2 param set /turtlesim background_r 150   # 背景色が変わる
 ros2 param dump /turtlesim                   # 現在の設定をYAMLで出力
 ```
+
+期待する結果（`dump` は次の見出しを参照）:
+
+```text
+$ ros2 param list
+/teleop_turtle:
+  qos_overrides./parameter_events.publisher.depth
+  ...
+  scale_angular
+  scale_linear
+  use_sim_time
+/turtlesim:
+  background_b
+  background_g
+  background_r
+  holonomic
+  qos_overrides./parameter_events.publisher.depth
+  ...
+  use_sim_time
+
+$ ros2 param get /turtlesim background_r
+Integer value is: 69
+
+$ ros2 param set /turtlesim background_r 150
+Set parameter successful
+```
+
+- `param list` は、動いているノードごとにパラメータ名を並べる。
+- 背景色の初期値はR=69, G=86, B=255（青）。`background_r` を150に上げると、背景が紫がかった色に変わる。
 
 `param dump` の出力はYAML形式で、フェーズ3（1-3）で「起動時にYAMLでパラメータを与える」際の書式の見本になる。
 
@@ -315,6 +510,55 @@ ros2 interface show turtlesim/action/RotateAbsolute
 ros2 action send_goal /turtle1/rotate_absolute turtlesim/action/RotateAbsolute "{theta: 1.57}" --feedback
 ```
 
+期待する結果（抜粋。`send_goal` のfeedbackは実際にはもっと多くの行が流れる）:
+
+```text
+$ ros2 action list -t
+/turtle1/rotate_absolute [turtlesim/action/RotateAbsolute]
+
+$ ros2 action info /turtle1/rotate_absolute
+Action: /turtle1/rotate_absolute
+Action clients: 1
+    /teleop_turtle
+Action servers: 1
+    /turtlesim
+
+$ ros2 interface show turtlesim/action/RotateAbsolute
+# The desired heading in radians
+float32 theta
+---
+# The angular displacement in radians to the starting position
+float32 delta
+---
+# The remaining rotation in radians
+float32 remaining
+
+$ ros2 action send_goal /turtle1/rotate_absolute turtlesim/action/RotateAbsolute "{theta: 1.57}" --feedback
+Waiting for an action server to become available...
+Sending goal:
+     theta: 1.57
+
+Goal accepted with ID: 2b0c5d...
+
+Feedback:
+    remaining: 1.5520000457763672
+
+Feedback:
+    remaining: 1.5360000133514404
+
+...
+
+Result:
+    delta: -1.5520000457763672
+
+Goal finished with status: SUCCEEDED
+```
+
+- アクションの型は `---` で3つに区切られ、上からゴール（目標）・結果・フィードバック（途中経過）。
+- 亀は、その場で左に回って上向き（1.57ラジアン＝約90度）になる。`remaining`（残りの回転角）が0に向かって減り、最後に `Result` と `SUCCEEDED` が出る。
+- teleopもアクションのクライアントになっている（`action info` の `/teleop_turtle`）。teleopのG・Bなどのキーは、このアクションを使って向きを変えている。
+- 数値（`remaining`・`delta`）は、亀が最初どちらを向いていたかで変わる。
+
 `--feedback` を付けると、回転の途中経過（残り角度）が流れ、最後に結果が返る。サービスとの違い（途中経過があり、実行中に中断できる）を体感する。
 
 > 課題6: 回転中に `Ctrl+C` を押してみる（ゴールがキャンセルされる）。次に、もう一度 `theta` を変えて実行し、feedbackの値が減っていく様子を観察する。
@@ -327,7 +571,7 @@ T1・T2でturtlesimとteleopが動いたまま、rqtを起動する（ウィン�
 rqt_graph
 ```
 
-`/teleop_turtle` → `/turtle1/cmd_vel` → `/turtlesim` の図が出る。ノードを追加（`/spawn`）した後は、左上の更新ボタンで反映する。
+`/teleop_turtle` → `/turtle1/cmd_vel` → `/turtlesim` の図が出る（楕円がノード、矢印に添えられた名前がトピック。表示のフィルタによっては、トピックが四角で描かれる）。ノードを追加（`/spawn`）した後は、左上の更新ボタンで反映する。
 
 > 課題7: 2節の図と実際の `rqt_graph` を見比べる。表示のフィルタ（Nodes only / Nodes/Topics (all)）を切り替え、隠れていたトピック（`/rosout` 等）を確認する。
 
@@ -337,7 +581,13 @@ rqt_graph
 ros2 run rqt_console rqt_console
 ```
 
-亀を壁にぶつけると、警告ログ（Warn）が出る。ログレベル（Debug/Info/Warn/Error/Fatal）でのフィルタを試す。
+亀を壁にぶつけると、警告ログ（Warn）が出る。rqt_consoleのウィンドウに、次のような内容の行が表示される（T1のturtlesimのターミナルにも同じ文が出る）。
+
+```text
+[WARN] [1727000100.123456789] [turtlesim]: Oh no! I hit the wall! (Clamping from [x=11.106667, y=5.544445])
+```
+
+「壁に当たったので、位置を画面内に押し戻した」という意味。ログレベル（Debug/Info/Warn/Error/Fatal）でのフィルタを試す。
 
 ### 3-9. 片付け
 

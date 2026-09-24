@@ -9,6 +9,8 @@
 
 > **進め方**: 2節の仕様は「何を作るか」の定義で、`rclpy`/`rclcpp` のAPIの使い方までは書いていない（この時点ではAPIを知らないので、仕様だけを見て同等のコードを書くのは無理があって当然。それでよい）。まず3節・4節冒頭の「主なAPI」表でこのファイルに必要なAPIを把握し、続くサンプルコードと解説を読んで、1行ずつ何をしているか理解する。読んで分かったら、変数名やログの文言を変える・送る値や周期を変える・フィールドを増やすなど、実際に手を動かして改造してみると定着する（各節末の課題も参照）。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルド確認済みだが、ノードの実行結果は未確認（出力が違えば差分を貼ってほしい）。
 
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。これはコードとROS2の仕様から筆者が想定したもので、実機では時刻・秒数・細かな行が異なる。
+
 ## 0. 学習目標と完了条件
 
 1. Publisher（`create_publisher`）とSubscriber（`create_subscription`）の基本形を、Python・C++の両方で書ける。
@@ -310,6 +312,15 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
+期待する結果（ビルド）: 次のように `Finished` と `Summary` の行が出れば成功。秒数は環境によって変わる。`Failed` や `Aborted` が出たら、その上に出ているエラー文を読む。
+
+```text
+Starting >>> learn_py
+Finished <<< learn_py [1.5s]
+
+Summary: 1 package finished [1.8s]
+```
+
 ターミナルを2つ使う。
 
 ```bash
@@ -319,7 +330,38 @@ ros2 run learn_py talker
 ros2 run learn_py listener
 ```
 
+期待する結果: T1には1秒ごとに1行ずつ送信のログが出て、T2には同じ文字列を受信したログが出る。Ctrl+Cで止めるまで続く。
+
+```text
+# T1（talker）
+[INFO] [1727160000.123456789] [talker]: publish: hello 0
+[INFO] [1727160001.123401234] [talker]: publish: hello 1
+[INFO] [1727160002.123398765] [talker]: publish: hello 2
+
+# T2（listener）
+[INFO] [1727160001.124012345] [listener]: received: hello 1
+[INFO] [1727160002.123987654] [listener]: received: hello 2
+```
+
+- ログ1行は「重要度（`INFO`）・時刻（1970年からの秒数）・ノード名・本文」の並び。時刻の数字は実行するたびに変わる。
+- 番号は0から1ずつ増える。listenerを後から起動した場合は、起動前に送られた分（上の例では `hello 0`）は表示されず、途中の番号から始まる（3-1節のlistenerの解説を参照）。
+- Ctrl+Cで止めると、プロンプトに戻る。止めたときに例外のトレースバック（`Traceback ...`）が出なければ、`try/except/finally` が効いている。
+
 `sine_pub` / `sine_sub` も同様に動かす。
+
+期待する結果: `sine_pub` はログを出さないので、T1には何も表示されない（動いていないわけではない）。`sine_sub` 側には1秒に10行、小数点以下3桁の値が出る。値は0.1秒ごとに少しずつ変わり、約2秒で-1〜1を1往復する。
+
+```text
+# T2（sine_sub）
+[INFO] [1727160010.100123456] [sine_sub]: sine: 0.588
+[INFO] [1727160010.200134567] [sine_sub]: sine: 0.809
+[INFO] [1727160010.300098765] [sine_sub]: sine: 0.951
+[INFO] [1727160010.400112345] [sine_sub]: sine: 1.000
+[INFO] [1727160010.500087654] [sine_sub]: sine: 0.951
+[INFO] [1727160010.600123456] [sine_sub]: sine: 0.809
+```
+
+最初の値は起動した時刻で決まるため、上の例とは一致しない。見るべき点は、値が滑らかに増減し、±1を超えないこと。
 
 ## 4. C++版（`ws/src/learn_cpp`）
 
@@ -599,6 +641,19 @@ ros2 run learn_cpp talker
 ros2 run learn_cpp listener
 ```
 
+期待する結果: ビルドの表示は3-3と同じ形（`Finished <<< learn_cpp` と `Summary: 1 package finished`）。Pythonより時間がかかり、コンパイルの進行中は `[Processing: learn_cpp]` のような表示が出ることがある。実行時のログはPython版と同じ形式で、本文も同じ文言にしてある。
+
+```text
+# T1（talker）
+[INFO] [1727160100.223456789] [talker]: publish: hello 0
+[INFO] [1727160101.223401234] [talker]: publish: hello 1
+
+# T2（listener）
+[INFO] [1727160101.224012345] [listener]: received: hello 1
+```
+
+ログの見た目だけでは、PythonのノードかC++のノードかは区別できない。これは、同じトピック名・型なら言語を気にせずつながる（6節）ことの裏返しでもある。`sine_pub` / `sine_sub` も同様に動かすと、3-3と同じ表示になる。
+
 > C++のビルドは時間がかかる。エラーが出たら**最初の `error:` の行**から読む（後続のエラーは連鎖であることが多い）。
 
 ## 5. 観察する
@@ -614,6 +669,61 @@ ros2 topic hz /sine              # 約10 Hzになること
 rqt_graph                        # GUI（ユーザーが起動して確認）
 ```
 
+期待する結果: `talker`・`listener`・`sine_pub`・`sine_sub` の4つを動かしている場合の例（抜粋）。
+
+```text
+$ ros2 node list
+/listener
+/sine_pub
+/sine_sub
+/talker
+
+$ ros2 topic list -t
+/chatter [std_msgs/msg/String]
+/parameter_events [rcl_interfaces/msg/ParameterEvent]
+/rosout [rcl_interfaces/msg/Log]
+/sine [std_msgs/msg/Float64]
+
+$ ros2 topic info /chatter -v
+Type: std_msgs/msg/String
+
+Publisher count: 1
+
+Node name: talker
+Node namespace: /
+Topic type: std_msgs/msg/String
+Endpoint type: PUBLISHER
+QoS profile:
+  Reliability: RELIABLE
+  History (Depth): KEEP_LAST (10)
+  Durability: VOLATILE
+  ...
+
+Subscription count: 1
+
+Node name: listener
+...
+Endpoint type: SUBSCRIPTION
+...
+
+$ ros2 topic echo /sine
+data: 0.5877852522924731
+---
+data: 0.8090169943749475
+---
+
+$ ros2 topic hz /sine
+average rate: 10.000
+	min: 0.100s max: 0.100s std dev: 0.00012s window: 11
+```
+
+- `ros2 node list` はノード名を `/` 付きで、アルファベット順に並べる。起動していないノードは出てこない。
+- `ros2 topic list -t` には、自分で作っていない `/parameter_events` と `/rosout` も出る。どちらもノードが自動で作るトピックで、`/rosout` はログの集約先。
+- `ros2 topic info -v` の `History (Depth): KEEP_LAST (10)` の `10` は、コードで渡したdepthの値。`GID` や `Topic type hash` など、上の抜粋より多くの行が出る。
+- `ros2 topic echo` はメッセージを `---` で区切って表示する。`sine_sub` のログと違って書式を指定していないため、桁の多い表示になる。
+- `ros2 topic hz` は数秒ごとに集計を出し直す。`average rate` が10前後なら仕様どおり。
+- `rqt_graph` では、ノードが楕円、トピックが矢印（または四角）で描かれ、`/talker → /chatter → /listener` と `/sine_pub → /sine → /sine_sub` の2本の流れが見える。
+
 ## 6. 言語をまたいだ接続
 
 トピック名と型が同じなら、言語は関係なくつながる。次の組み合わせをすべて試す。
@@ -624,6 +734,8 @@ rqt_graph                        # GUI（ユーザーが起動して確認）
 | Python → C++ | `ros2 run learn_py talker` | `ros2 run learn_cpp listener` |
 | C++ → Python | `ros2 run learn_cpp talker` | `ros2 run learn_py listener` |
 | C++ → C++ | `ros2 run learn_cpp talker` | `ros2 run learn_cpp listener` |
+
+期待する結果: 4つの組み合わせすべてで、3-3と同じ表示（T1に `publish: hello N`、T2に `received: hello N`）になる。組み合わせによってログの見た目が変わることはない。どれか1つでもT2に何も出ない場合は、その組み合わせで使っているパッケージのビルドと `source` を確認する。
 
 > 課題1: `ros2 topic info /chatter -v` で、PublisherとSubscriberのノード名・型・QoSを確認する。言語が違っても、表示が同じ形式になることを確認する。
 >

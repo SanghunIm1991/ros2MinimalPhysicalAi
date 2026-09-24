@@ -70,7 +70,17 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 ### 3. Ubuntuの更新（Ubuntu内）
 
 1. `sudo apt update && sudo apt upgrade` を実行する。
-2. 確認: `lsb_release -a` が24.04を示す。
+2. 確認: `lsb_release -a` が24.04を示す。期待する結果の例:
+
+   ```text
+   No LSB modules are available.
+   Distributor ID: Ubuntu
+   Description:    Ubuntu 24.04.1 LTS
+   Release:        24.04
+   Codename:       noble
+   ```
+
+   `Release` が `24.04`、`Codename` が `noble` であればよい（`Description` の末尾の小さな版数は更新によって変わる）。
 3. 作業場所は `~` 配下にする。`pwd` が `/home/<ユーザー名>` 配下であることを確認する。
 4. `pwd` が `/mnt/d/...` になる場合: `wsl` はWindows側の現在のフォルダ（例: `D:\`）をそのまま引き継ぐ仕様のためで、異常ではない。ホームで開始するには、起動時に `wsl --cd ~ -d Ubuntu-24.04` （または `wsl ~ -d Ubuntu-24.04`）と指定する。毎回指定したくない場合は、Windows Terminalの設定でUbuntu-24.04のプロファイルの「開始ディレクトリ」を `\\wsl.localhost\Ubuntu-24.04\home\<ユーザー名>`（旧形式は `\\wsl$\...`）にする（Windows Terminalを使い、かつUbuntu-24.04のプロファイルがある場合のみ。`wsl --import` で作った環境ではプロファイルが自動生成されないことがある）。`~/.bashrc` に `cd ~` を書く方法は、`wsl --cd <パス>` で意図的に別の場所から開始したときも上書きされるため勧めない。
 
@@ -147,7 +157,18 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptバイナリ）を構築し、ROS2が�
 1. `printenv ROS_DISTRO` が `jazzy` を返す。
 2. ターミナルA: `ros2 run demo_nodes_cpp talker`
 3. ターミナルB: `ros2 run demo_nodes_py listener`
-4. Bにメッセージが表示されることを確認し、A・Bとも Ctrl+C で終了する。
+4. Bにメッセージが表示されることを確認し、A・Bとも Ctrl+C で終了する。期待する結果の例（時刻の数字は実行ごとに変わる）:
+
+   ```text
+   # ターミナルA（C++のtalker）
+   [INFO] [1727000000.123456789] [talker]: Publishing: 'Hello World: 1'
+   [INFO] [1727000001.123456789] [talker]: Publishing: 'Hello World: 2'
+
+   # ターミナルB（Pythonのlistener）
+   [INFO] [1727000001.124567890] [listener]: I heard: [Hello World: 2]
+   ```
+
+   Aは1秒ごとに番号を増やしながら送り、Bは同じ番号の文を受け取る。C++で書かれた送信側とPythonで書かれた受信側がつながっており、ROS2の通信が言語をまたいで動くことの最初の確認になる。
 
 なお `rqt` や `turtlesim` などGUIアプリの表示（WSLg）は、ステップ1-1で必要になる。本手順の完了条件には含めない。
 

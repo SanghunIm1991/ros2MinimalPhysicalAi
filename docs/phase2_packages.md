@@ -9,6 +9,8 @@
 
 > **この手順書の位置づけ**: コマンドはROS2 Jazzyの実機の雛形（`ros2 pkg create` のテンプレート）を読んで確認しているが、公式チュートリアルの本文とは照合できていない（docs.ros.orgがボット対策で取得不可）。出力が違えば実機を優先し、差分を貼ってほしい。文章・構成は自分の言葉で書いた。公式ドキュメント（CC BY 4.0）の出典は末尾に記載する。
 
+> **実行環境が無くても読めるように**: コマンドの直後に「期待する結果」として、表示される内容の例とその読み方を載せている。`ros2 pkg create` から `colcon build`、`install/` の中身までは、手順書の作成時に使い捨ての環境で実行して確かめた表示を元にしている（日時・秒数・パスは環境によって変わる）。
+
 ## 0. 学習目標と完了条件
 
 1. ワークスペース（`ws/`）を作り、`ament_python` と `ament_cmake` のパッケージを1つずつ作れる。
@@ -96,7 +98,7 @@ mkdir -p ws/src
 cd ws/src
 ```
 
-`ws/src` に置いたものがパッケージとして扱われる。
+`ws/src` に置いたものがパッケージとして扱われる。これらのコマンドは成功すると何も表示しない（プロンプトが戻るだけ）。`pwd` を実行すると `.../ros2MinimalPhysicalAi/ws/src` と表示される。
 
 ### 2-2. Pythonパッケージを作る
 
@@ -109,6 +111,28 @@ ros2 pkg create --build-type ament_python \
   learn_py
 ```
 
+期待する結果（抜粋）: 設定内容の確認に続いて、作ったファイルが1行ずつ表示される。
+
+```text
+going to create a new package
+package name: learn_py
+destination directory: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/src
+package format: 3
+version: 0.0.0
+description: TODO: Package description
+maintainer: ['learner <noreply@example.com>']
+licenses: ['Apache-2.0']
+build type: ament_python
+dependencies: ['rclpy', 'std_msgs']
+node_name: hello
+creating folder ./learn_py
+creating ./learn_py/package.xml
+...
+creating ./learn_py/learn_py/hello.py
+```
+
+`maintainer` の行がダミーの値になっていること、`dependencies` の行に `rclpy` と `std_msgs` が入っていることを、ここで確認できる。
+
 - `--dependencies`: `package.xml` に `<depend>` として書かれる（後の手順で `std_msgs` を使うため今のうちに入れる）。
 - `--node-name hello`: 動作確認用の最小ノード `hello` の雛形が作られる。
 - **メンテナ名・メールは必ず明示する**。省略すると、コマンドがGitの設定などから自動で補う場合があり、実メールアドレスがファイルに入る恐れがある。本リポジトリはPublic化を前提にしているため、`learner` / `noreply@example.com` のようなダミーを使う。
@@ -120,6 +144,25 @@ find learn_py -type f | sort
 cat learn_py/package.xml
 cat learn_py/setup.py
 ```
+
+期待する結果（`find` の分）:
+
+```text
+learn_py/LICENSE
+learn_py/learn_py/__init__.py
+learn_py/learn_py/hello.py
+learn_py/package.xml
+learn_py/resource/learn_py
+learn_py/setup.cfg
+learn_py/setup.py
+learn_py/test/test_copyright.py
+learn_py/test/test_flake8.py
+learn_py/test/test_pep257.py
+```
+
+- `learn_py/learn_py/` のように同じ名前が2段重なるのは、外側がパッケージのフォルダ、内側がPythonのモジュール（`import learn_py` で読み込まれる側）だから。ノードのコードは内側に置く。
+- `hello.py` の中身は、`print('Hi from learn_py.')` を実行するだけの `main` 関数。
+- `test/` の3ファイルは、著作権表示・コードの書式・docstringの書式を検査する雛形のテスト。
 
 `package.xml` に `<depend>rclpy</depend>` と `<depend>std_msgs</depend>` の2行があれば、`--dependencies` が効いている。`<test_depend>` の行しか無い場合は指定が抜けているので、この2行を `<license>` の行の後ろに手で足す（フェーズ3-1の3-2でも触れる）。
 
@@ -138,6 +181,19 @@ cat learn_cpp/package.xml
 cat learn_cpp/CMakeLists.txt
 ```
 
+期待する結果（`find` の分）: C++版はファイルが4つだけで、Python版より少ない。
+
+```text
+learn_cpp/CMakeLists.txt
+learn_cpp/LICENSE
+learn_cpp/package.xml
+learn_cpp/src/hello.cpp
+```
+
+- `src/hello.cpp` の中身は、`printf("hello world learn_cpp package\n");` を実行するだけの `main` 関数（ROS2の機能はまだ使っていない）。
+- `package.xml` には `<buildtool_depend>ament_cmake</buildtool_depend>` と、`<depend>rclcpp</depend>`・`<depend>std_msgs</depend>` が入る。
+- `CMakeLists.txt` には、`find_package(rclcpp REQUIRED)` などの依存の読み込みと、`add_executable(hello src/hello.cpp)`・`install(TARGETS hello ...)` という実行ファイルの登録が入る。
+
 > 補足: `--node-name` は生成する実行ファイルの**名前**を指定するだけのオプション（`ros2 pkg create --help` でも `name of the empty executable` としか説明されておらず、選べる「種類」の列挙はない）。ノードの言語・雛形の中身を決めているのは `--build-type` の方（`ament_python` → `rclpy`のPython最小ノード、`ament_cmake`/`cmake` → `rclcpp`のC++最小ノード、`ament_cargo` → Rust）。2-2と2-3で同じ `--node-name hello` を指定しているのは、両方とも「動作確認用の最小ノード」という同じ役割を、`--build-type` 違いのテンプレートで作っているため。
 
 > 課題1: 2つのパッケージの `package.xml` を見比べる。`<buildtool_depend>` の違い（`ament_python` / `ament_cmake`）と、`<export><build_type>` の違いを確認する。
@@ -151,7 +207,18 @@ colcon build --symlink-install
 
 - **必ずワークスペースの直下（`ws/`）で実行する**。`src/` の中で実行すると `build/` などが意図しない場所にできる。
 - 初回のビルド時間は環境による（この手順書の検証環境では約10秒だった）。応答が遅い・止まる場合のみ、メモリ不足を疑って `colcon build --symlink-install --parallel-workers 2` のように並列数を絞る（検証環境ではこの絞り込みは不要だった。WSLのメモリ実測は `setup_wsl2_ros2.md` 参照）。
-- 成功すると `Summary: 2 packages finished` のように表示される。
+- 成功すると `Summary: 2 packages finished` のように表示される。期待する結果の例（秒数は環境によって変わる）:
+
+```text
+Starting >>> learn_cpp
+Starting >>> learn_py
+Finished <<< learn_py [6.36s]
+Finished <<< learn_cpp [10.6s]
+
+Summary: 2 packages finished [11.1s]
+```
+
+  2つのパッケージは並行してビルドされるので、`Starting` が2行続けて出る。先に終わった方から `Finished` が出る（C++はコンパイルがある分、遅れて終わることが多い）。
 - Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい。
 
 確認:
@@ -187,7 +254,26 @@ ros2 pkg executables learn_py
 ros2 pkg executables learn_cpp
 ```
 
-> 課題2: 新しいターミナルを開き、`source` しないまま `ros2 run learn_py hello` を試す。エラーになることを確認してから、`source install/setup.bash` をして再実行する。
+期待する結果:
+
+```text
+$ ros2 pkg list | grep learn
+learn_cpp
+learn_py
+
+$ ros2 pkg prefix learn_py
+/home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/install/learn_py
+
+$ ros2 pkg executables learn_py
+learn_py hello
+
+$ ros2 pkg executables learn_cpp
+learn_cpp hello
+```
+
+`ros2 pkg executables` は「パッケージ名 実行ファイル名」の組で並べる。これがそのまま `ros2 run` の2つの引数になる。`source` をしていないターミナルでは、`ros2 pkg list | grep learn` は何も表示しない（ROS2本体のパッケージしか見えない）。
+
+> 課題2: 新しいターミナルを開き、`source` しないまま `ros2 run learn_py hello` を試す。`Package 'learn_py' not found` というエラーになることを確認してから、`source install/setup.bash` をして再実行する。
 
 #### `ros2 pkg` サブコマンドの補足
 
@@ -210,13 +296,33 @@ ros2 pkg executables learn_cpp
 ls -l install/learn_py/lib/learn_py/
 ls -l install/learn_cpp/lib/learn_cpp/
 cat install/learn_py/lib/learn_py/hello | head -20
-file install/learn_cpp/lib/learn_cpp/hello
+file -L install/learn_cpp/lib/learn_cpp/hello
 ```
 
-- Python版の `hello` は、Pythonの `main` を呼び出すだけの**短いスクリプト**（`setup.py` の `entry_points` から生成される）。
-- C++版の `hello` は**コンパイル済みのバイナリ**（`file` コマンドが `ELF ... executable` と表示する）。
+期待する結果（抜粋。日時・サイズ・パスの途中は環境によって変わる）:
 
-> 課題3: `--symlink-install` を付けた場合、`install/learn_py/lib/python3.12/site-packages/learn_py` がシンボリックリンクになっていることを `ls -l` で確認する。
+```text
+$ ls -l install/learn_py/lib/learn_py/
+-rwxr-xr-x 1 <ユーザー名> <ユーザー名> 936 Sep 24 11:41 hello
+
+$ ls -l install/learn_cpp/lib/learn_cpp/
+lrwxrwxrwx 1 <ユーザー名> <ユーザー名> 60 Sep 24 11:41 hello -> /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/build/learn_cpp/hello
+
+$ cat install/learn_py/lib/learn_py/hello | head -20
+#!/usr/bin/python3
+# EASY-INSTALL-ENTRY-SCRIPT: 'learn-py','console_scripts','hello'
+import re
+import sys
+...
+
+$ file -L install/learn_cpp/lib/learn_cpp/hello
+install/learn_cpp/lib/learn_cpp/hello: ELF 64-bit LSB pie executable, x86-64, ...
+```
+
+- Python版の `hello` は、Pythonの `main` を呼び出すだけの**短いスクリプト**（`setup.py` の `entry_points` から生成される）。1行目の `#!/usr/bin/python3` は「このファイルをPythonで実行する」という指定。
+- C++版の `hello` は**コンパイル済みのバイナリ**。`--symlink-install` を付けているので、`install/` にあるのは `build/learn_cpp/hello` へのシンボリックリンク（`ls -l` の行頭が `l`、末尾に `-> リンク先` が付く）になる。`file` にリンクの先を調べさせる `-L` を付けると、実体が `ELF ... executable`（Linuxの実行形式）だと分かる。`-L` を付けないと `symbolic link to ...` とだけ表示される。
+
+> 課題3: `--symlink-install` を付けた場合に、Pythonのソースがどうつながっているかを `ls -l build/learn_py/` で確認する。`learn_py -> .../ws/src/learn_py/learn_py` というシンボリックリンクがあり、`build/` 側から `src/` のコードを直接指していることが分かる。`install/learn_py/lib/python3.12/site-packages/` には `learn-py.egg-link` という小さなファイルがあり、中身（`cat` で読める）は `build/learn_py` の場所を示している。つまり「`install/` → `build/` → `src/`」とたどって、編集中のソースがそのまま使われる。
 
 ### 2-7. 修正の反映を体験する（`--symlink-install` の効果）
 
@@ -227,6 +333,12 @@ file install/learn_cpp/lib/learn_cpp/hello
 ros2 run learn_py hello     # 文言が変わっている
 ```
 
+期待する結果: 例えば `print('Hi from learn_py.')` を `print('Hello, edited!')` に書き換えた場合、ビルドをしていなくても次のように表示される。
+
+```text
+Hello, edited!
+```
+
 **C++（再ビルド必須）**: `learn_cpp/src/hello.cpp` の文言を書き換え、ビルドせずに実行する。
 
 ```bash
@@ -235,6 +347,8 @@ cd ~/work/ros2MinimalPhysicalAi/ws
 colcon build --symlink-install --packages-select learn_cpp
 ros2 run learn_cpp hello    # 新しい文言になる
 ```
+
+期待する結果: 1回目の `ros2 run` では、書き換える前の `hello world learn_cpp package` がそのまま出る（ソースを書き換えても、実行されるのはコンパイル済みの古いバイナリのため）。`colcon build` の後の2回目で、書き換えた文言に変わる。ビルドの表示は `Starting >>> learn_cpp`・`Finished <<< learn_cpp`・`Summary: 1 package finished` の3つになる。
 
 - `--packages-select <名前>`: 指定したパッケージだけをビルドする。C++は時間がかかるので、普段はこれを使うと速い。
 - 新しい実行ファイルを追加する場合（`setup.py` の `entry_points` や `CMakeLists.txt` の変更）は、`--symlink-install` でも**再ビルドが必要**。
