@@ -141,6 +141,7 @@
 | 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認） |
 | 間章 | [`docs/interlude_components.md`](interlude_components.md) | C++のみ（launchはPython） | 作成済み（ビルド・`ros2 component types`・launchの`--print`確認済み。ノード実行は未確認） |
 | 参考資料 | [`docs/reference_node_class.md`](reference_node_class.md) | Python・C++（読み物） | 作成済み（2026-09-24。`Node` クラスの構造をクラス図（`docs/img/reference_node_rclpy.svg`・`reference_node_rclcpp.svg`）で解析。ローカルのソースで確認。図の見た目は画像にして確認していない） |
+| 置き方 | [`docs/howto_place_code.md`](howto_place_code.md) | 言語非依存（読み物） | 作成済み（2026-09-25。サンプルコードを `touch`＋`nano`、またはVS Codeで練習環境に置く方法。`touch`・`ls`・`head` の表示は使い捨ての環境で確認、`nano` とVS Codeの画面は仕様から想定） |
 | Tips集 | [`docs/tips.md`](tips.md) | 言語非依存（読み物） | 作成済み（2026-09-25。シミュレーション時刻・`CMakeLists.txt` の読み方・`SetuptoolsDeprecationWarning` の3項目。雛形と警告は使い捨ての環境で確認、`use_sim_time` の挙動はローカルのソースで確認。ノードの起動は未確認）。分量の少ない補足を随時追加する |
 | 5-0 | [`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md) | 言語非依存＋自作ノードはPython | 作成済み（2026-09-24。導入の確認はユーザーの実機の表示、launchは`--show-args`・`--print`、サンプルはビルド・import確認済み。Gazeboとノードを起動した挙動は未確認。図（`docs/img/phase5_0_bridge.svg`）の見た目は未確認） |
 | 5-1〜 | 着手時に作成 | Python中心 | 未作成 |

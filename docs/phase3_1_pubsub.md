@@ -89,6 +89,8 @@ sequenceDiagram
 
 **talker.py**
 
+> サンプルコードをファイルに置く方法（`touch` と `nano` で貼り付ける、VS Codeで貼り付ける）は、[`docs/howto_place_code.md`](howto_place_code.md) にまとめている。
+
 ファイル: `ws/src/learn_py/learn_py/talker.py`
 
 <!-- file: ws/src/learn_py/learn_py/talker.py -->
