@@ -35,6 +35,7 @@ turtlesimとrqtはROS2の公式aptパッケージ。環境構築の手順書の�
 
 ```bash
 sudo apt update
+
 sudo apt install -y ros-jazzy-turtlesim ros-jazzy-rqt ros-jazzy-rqt-graph ros-jazzy-rqt-console
 ```
 
@@ -61,7 +62,9 @@ turtlesimやrqtはWSLg経由でWindows側にウィンドウが出る。
 
 ```bash
 echo $DISPLAY          # 空でなければよい
+
 echo $WAYLAND_DISPLAY  # 空でもX11経由で表示できることが多い
+
 ls /mnt/wslg           # WSLgの領域が見えること
 ```
 
@@ -106,6 +109,7 @@ rqt
 
 ```bash
 rqt_graph      # ノード・トピックの図を出すウィンドウ（フェーズ1の後半で使う）
+
 ros2 run rqt_console rqt_console    # ログ表示ウィンドウ（rqt_console単独のコマンドはPATHになく、ros2 run経由で起動する）
 ```
 
@@ -135,6 +139,7 @@ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 
 ```bash
 source /opt/ros/jazzy/setup.bash                  # セットアップ手順（ステップ0）で追加。ROS2本体の読み込み（常時必要、削除しない）
+
 export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST    # 本節（フェーズ1）で追加。通信範囲を自分のPC内に限定（常時必要、削除しない）
 ```
 
@@ -231,6 +236,7 @@ Use G|B|V|C|D|E|R|T keys to rotate to absolute orientations. 'F' to cancel a rot
 
 ```bash
 ros2 node list
+
 ros2 node info /turtlesim
 ```
 
@@ -279,6 +285,7 @@ $ ros2 node info /turtlesim
 
 ```bash
 ros2 run turtlesim turtlesim_node --ros-args --remap __node:=my_turtle
+
 # 別ターミナルで
 ros2 node list
 ```
@@ -296,9 +303,13 @@ ros2 node list
 
 ```bash
 ros2 topic list -t                 # -t で型も表示
+
 ros2 topic info /turtle1/cmd_vel   # 型、Publisher数、Subscription数
+
 ros2 interface show geometry_msgs/msg/Twist
+
 ros2 topic echo /turtle1/pose      # 亀の状態を流し見る（Ctrl+Cで停止）
+
 ros2 topic hz /turtle1/pose        # 配信周期を測る
 ```
 
@@ -378,10 +389,13 @@ publishing #1: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y
 
 ```bash
 ros2 service list -t
+
 ros2 service type /clear
+
 ros2 interface show turtlesim/srv/Spawn
 
 ros2 service call /clear std_srvs/srv/Empty                                 # 軌跡を消す
+
 ros2 service call /spawn turtlesim/srv/Spawn "{x: 2.0, y: 2.0, theta: 0.2, name: ''}"   # 亀を追加
 ```
 
@@ -438,8 +452,11 @@ turtlesim.srv.Spawn_Response(name='turtle2')
 
 ```bash
 ros2 param list
+
 ros2 param get /turtlesim background_r
+
 ros2 param set /turtlesim background_r 150   # 背景色が変わる
+
 ros2 param dump /turtlesim                   # 現在の設定をYAMLで出力
 ```
 
@@ -518,7 +535,9 @@ QoS（Quality of Service）は、トピック通信の「信頼性」「過去�
 
 ```bash
 ros2 action list -t
+
 ros2 action info /turtle1/rotate_absolute
+
 ros2 interface show turtlesim/action/RotateAbsolute
 
 ros2 action send_goal /turtle1/rotate_absolute turtlesim/action/RotateAbsolute "{theta: 1.57}" --feedback

@@ -203,7 +203,9 @@ def main(args=None):
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_py
+
 source install/setup.bash
 ```
 
@@ -352,7 +354,9 @@ install(TARGETS
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_cpp
+
 source install/setup.bash
 ```
 
@@ -363,6 +367,7 @@ source install/setup.bash
 ```bash
 # T1
 ros2 run learn_py param_talker
+
 # T2
 ros2 topic echo /param_chatter
 ```
@@ -412,11 +417,17 @@ rclpy.exceptions.InvalidParameterTypeException: Trying to set parameter 'period'
 
 ```bash
 ros2 param list /param_talker
+
 ros2 param describe /param_talker period
+
 ros2 param get /param_talker message
+
 ros2 param set /param_talker message "changed"
+
 ros2 param set /param_talker period 0.2
+
 ros2 param set /param_talker period 0.0      # 拒否される（reasonが表示される）
+
 ros2 param get /param_talker period          # 0.2のまま
 ```
 
@@ -497,6 +508,7 @@ YAMLの1行目のノード名を間違えていると、エラーにはならず
 
 ```bash
 ros2 param dump /param_talker
+
 ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
 ```
 

@@ -70,6 +70,7 @@ flowchart LR
 
 ```bash
 ros2 interface show example_interfaces/srv/AddTwoInts
+
 ros2 interface show std_srvs/srv/Trigger
 ```
 
@@ -350,7 +351,9 @@ def main(args=None):
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_py
+
 source install/setup.bash
 ```
 
@@ -598,7 +601,9 @@ install(TARGETS
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_cpp
+
 source install/setup.bash
 ```
 
@@ -611,6 +616,7 @@ source install/setup.bash
 ```bash
 # T1
 ros2 run learn_py add_server
+
 # T2（add_client を作った場合）
 ros2 run learn_py add_client --ros-args -p a:=3 -p b:=4
 ```
@@ -669,8 +675,10 @@ T1のサーバには `10 + 20 = 30` のログが出る。サーバから見る�
 ```bash
 # T1
 ros2 run learn_py counter_node
+
 # T2
 ros2 topic echo /counter
+
 # T3
 ros2 service call /reset_counter std_srvs/srv/Trigger
 ```

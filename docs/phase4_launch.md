@@ -97,10 +97,12 @@ flowchart LR
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws/src
+
 ros2 pkg create --build-type ament_cmake \
   --license Apache-2.0 \
   --maintainer-name learner --maintainer-email noreply@example.com \
   learn_bringup
+
 mkdir -p learn_bringup/launch learn_bringup/config
 ```
 
@@ -219,9 +221,13 @@ def generate_launch_description():
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_bringup
+
 source install/setup.bash
+
 ros2 launch learn_bringup pubsub.launch.py --show-args
+
 ros2 launch learn_bringup pubsub.launch.py --print
 ```
 
@@ -255,6 +261,7 @@ $ ros2 launch learn_bringup pubsub.launch.py --print
 
 ```bash
 ros2 launch learn_bringup pubsub.launch.py
+
 ros2 launch learn_bringup pubsub.launch.py talker_lang:=cpp listener_lang:=py
 ```
 
@@ -387,6 +394,7 @@ YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序�
 
 ```bash
 ros2 launch learn_bringup pubsub.launch.xml talker_lang:=cpp --print
+
 ros2 launch learn_bringup pubsub.launch.yaml talker_lang:=cpp --print
 ```
 
@@ -475,6 +483,7 @@ YAMLパラメータファイルの構造（`config/param_talker.yaml`）は、�
 
 ```bash
 ros2 launch learn_bringup param.launch.py
+
 ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2   # C++版の param_talker を作った場合。作っていなければ lang:=py
 ```
 
@@ -493,6 +502,7 @@ ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2   # C++版の pa
 
 ```bash
 ros2 param get /param_talker message     # YAMLの値
+
 ros2 param get /param_talker period      # 引数で上書きした値
 ```
 
@@ -649,8 +659,10 @@ def generate_launch_description():
 ```bash
 # T1
 ros2 launch learn_bringup compose.launch.py
+
 # T2（launchを動かしたまま、別のターミナルで）
 ros2 node list
+
 ros2 topic list
 ```
 
@@ -691,7 +703,9 @@ launchファイルを**追加した**ときは再ビルドが必要:
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_bringup
+
 source install/setup.bash
 ```
 

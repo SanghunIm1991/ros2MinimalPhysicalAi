@@ -299,7 +299,9 @@ def main(args=None):
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_py
+
 source install/setup.bash
 ```
 
@@ -538,7 +540,9 @@ install(TARGETS
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_cpp
+
 source install/setup.bash
 ```
 
@@ -555,6 +559,7 @@ source install/setup.bash
 ```bash
 # T1
 ros2 run learn_py qos_talker
+
 # T2
 ros2 run learn_py qos_listener
 ```
@@ -580,6 +585,7 @@ ros2 run learn_py qos_listener
 ```bash
 # T1
 ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort
+
 # T2
 ros2 run learn_py qos_listener --ros-args -p reliability:=reliable
 ```
@@ -641,6 +647,7 @@ QoS profile:
 ```bash
 # T1（先に起動し、5秒ほど待つ）
 ros2 run learn_py qos_talker --ros-args -p durability:=transient_local
+
 # T2
 ros2 run learn_py qos_listener --ros-args -p durability:=transient_local
 ```

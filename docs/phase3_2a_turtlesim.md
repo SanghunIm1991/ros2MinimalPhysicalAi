@@ -149,7 +149,9 @@ def main(args=None):
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_py
+
 source install/setup.bash
 ```
 
@@ -254,7 +256,9 @@ install(TARGETS
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_cpp
+
 source install/setup.bash
 ```
 
@@ -267,8 +271,10 @@ source install/setup.bash
 ```bash
 # T1
 ros2 run turtlesim turtlesim_node
+
 # T2（Python版。C++版を作った場合は、下の行でもよい）
 ros2 run learn_py turtle_circle
+
 ros2 run learn_cpp turtle_circle
 ```
 

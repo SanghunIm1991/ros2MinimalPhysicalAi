@@ -39,6 +39,7 @@ Gazeboには、旧来の「Gazebo Classic」と、その後継の新しい「Gaz
 
 ```bash
 sudo apt update
+
 sudo apt install ros-jazzy-ros-gz ros-jazzy-ros-gz-sim-demos
 ```
 
@@ -64,6 +65,7 @@ Do you want to continue? [Y/n]
 
 ```bash
 ros2 pkg list | grep ros_gz
+
 gz sim --version
 ```
 
@@ -377,6 +379,7 @@ twist:
 ```bash
 # T2
 ros2 topic hz /model/vehicle_green/odometry
+
 # Ctrl+Cで止めてから
 ros2 topic hz /model/vehicle_blue/odometry
 ```
@@ -411,6 +414,7 @@ average rate: 1.000
 ```bash
 # T2
 ros2 node list
+
 ros2 topic info /model/vehicle_green/cmd_vel
 ```
 
@@ -584,7 +588,9 @@ def main(args=None):
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_py
+
 source install/setup.bash
 ```
 
@@ -604,7 +610,9 @@ Summary: 1 package finished [1.8s]
 ```bash
 # T2
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 source install/setup.bash
+
 ros2 run learn_py gz_drive
 ```
 

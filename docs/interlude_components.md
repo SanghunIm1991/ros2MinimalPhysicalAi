@@ -66,6 +66,7 @@ flowchart LR
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws/src
+
 ros2 pkg create --build-type ament_cmake \
   --dependencies rclcpp rclcpp_components std_msgs \
   --license Apache-2.0 \
@@ -253,9 +254,13 @@ install(TARGETS pubsub_components
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_components
+
 source install/setup.bash
+
 ros2 component types
+
 ros2 pkg executables learn_components
 ```
 
@@ -297,9 +302,13 @@ ros2 run rclcpp_components component_container
 
 # T2: コンテナへ読み込む・一覧を見る・取り外す
 ros2 component list
+
 ros2 component load /ComponentManager learn_components learn_components::Talker
+
 ros2 component load /ComponentManager learn_components learn_components::Listener
+
 ros2 component list
+
 ros2 component unload /ComponentManager 1
 ```
 
@@ -345,6 +354,7 @@ Unloaded component 1 from '/ComponentManager' container node
 ```bash
 # T1
 ros2 run learn_components talker_node
+
 # T2
 ros2 run learn_components listener_node
 ```
@@ -431,9 +441,13 @@ launchファイルを**追加した**ので、`learn_bringup` を再ビルドし
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_bringup
+
 source install/setup.bash
+
 ros2 launch learn_bringup components.launch.py --print
+
 ros2 launch learn_bringup components.launch.py
 ```
 

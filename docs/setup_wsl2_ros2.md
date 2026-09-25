@@ -140,9 +140,13 @@ WSLg バージョン: 1.0.xx
 
    ```bash
    sudo apt update && sudo apt install locales
+
    sudo locale-gen en_US en_US.UTF-8
+
    sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+
    export LANG=en_US.UTF-8
+
    locale  # 確認
    ```
 
@@ -160,10 +164,13 @@ WSLg バージョン: 1.0.xx
 
    ```bash
    sudo apt install software-properties-common
+
    sudo add-apt-repository universe
 
    sudo apt update && sudo apt install curl -y
+
    export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F'"' '{print $4}')
+
    curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}})_all.deb"
    ```
 
@@ -171,6 +178,7 @@ WSLg バージョン: 1.0.xx
 
    ```bash
    dpkg -I /tmp/ros2-apt-source.deb   # 確認用（インストールはしない）
+
    sudo dpkg -i /tmp/ros2-apt-source.deb
    ```
 
@@ -200,7 +208,9 @@ WSLg バージョン: 1.0.xx
 
    ```bash
    sudo apt update
+
    sudo apt upgrade
+
    sudo apt install ros-jazzy-desktop
    ```
 
@@ -249,7 +259,9 @@ WSLg バージョン: 1.0.xx
 
 ```bash
 mkdir -p ~/work/ros2MinimalPhysicalAi
+
 cd ~/work/ros2MinimalPhysicalAi
+
 pwd
 ```
 
@@ -292,7 +304,9 @@ pwd
 2. **リポジトリのclone**（A: SSHの場合はSSH形式、B: `gh` の場合はHTTPS形式）:
    ```bash
    cd ~/work
+
    git clone git@github.com:<GitHubのユーザー名>/ros2MinimalPhysicalAi.git      # A: SSH
+
    # git clone https://github.com/<GitHubのユーザー名>/ros2MinimalPhysicalAi.git  # B: gh認証済みの場合
    cd ros2MinimalPhysicalAi
    ```

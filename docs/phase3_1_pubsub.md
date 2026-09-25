@@ -328,7 +328,9 @@ Python版の4ファイルに共通する要点は、「ノードクラスの `__
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_py
+
 source install/setup.bash
 ```
 
@@ -346,6 +348,7 @@ Summary: 1 package finished [1.8s]
 ```bash
 # T1
 ros2 run learn_py talker
+
 # T2
 ros2 run learn_py listener
 ```
@@ -692,11 +695,14 @@ install(TARGETS
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_cpp
+
 source install/setup.bash
 
 # T1
 ros2 run learn_cpp talker
+
 # T2
 ros2 run learn_cpp listener
 ```
@@ -722,10 +728,15 @@ ros2 run learn_cpp listener
 
 ```bash
 ros2 node list
+
 ros2 topic list -t
+
 ros2 topic info /chatter -v      # -v でPublisher/Subscriberの詳細（QoSも）が出る
+
 ros2 topic echo /sine
+
 ros2 topic hz /sine              # 約10 Hzになること
+
 rqt_graph                        # GUIのウィンドウが開く
 ```
 

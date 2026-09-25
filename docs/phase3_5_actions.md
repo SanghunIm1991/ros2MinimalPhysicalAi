@@ -371,7 +371,9 @@ def main(args=None):
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_py
+
 source install/setup.bash
 ```
 
@@ -689,7 +691,9 @@ install(TARGETS
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_cpp
+
 source install/setup.bash
 ```
 
@@ -700,9 +704,12 @@ source install/setup.bash
 ```bash
 # T1
 ros2 run learn_py fibonacci_server
+
 # T2
 ros2 action list -t
+
 ros2 action info /fibonacci
+
 ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 5}" --feedback
 ```
 
@@ -769,8 +776,10 @@ T1のサーバ側には次のログが出る（Python版の場合。C++版の最
 ```bash
 # T1
 ros2 run learn_py fibonacci_server
+
 # T2
 ros2 run learn_py fibonacci_client --ros-args -p order:=6
+
 # 中断も試す（3秒後に中断要求）
 ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 ```

@@ -123,7 +123,9 @@ Ubuntu 24.04では、`g++` の実体は `g++-13`（GCC 13系）になる。`g++ 
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi
+
 mkdir -p ws/src
+
 cd ws/src
 ```
 
@@ -170,7 +172,9 @@ creating ./learn_py/learn_py/hello.py
 
 ```bash
 find learn_py -type f | sort
+
 cat learn_py/package.xml
+
 cat learn_py/setup.py
 ```
 
@@ -206,7 +210,9 @@ ros2 pkg create --build-type ament_cmake \
   learn_cpp
 
 find learn_cpp -type f | sort
+
 cat learn_cpp/package.xml
+
 cat learn_cpp/CMakeLists.txt
 ```
 
@@ -231,6 +237,7 @@ learn_cpp/src/hello.cpp
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install
 ```
 
@@ -267,7 +274,9 @@ build  install  log  src
 
 ```bash
 source install/setup.bash
+
 ros2 run learn_py hello
+
 ros2 run learn_cpp hello
 ```
 
@@ -284,8 +293,11 @@ hello world learn_cpp package
 
 ```bash
 ros2 pkg list | grep learn
+
 ros2 pkg prefix learn_py
+
 ros2 pkg executables learn_py
+
 ros2 pkg executables learn_cpp
 ```
 
@@ -329,8 +341,11 @@ learn_cpp hello
 
 ```bash
 ls -l install/learn_py/lib/learn_py/
+
 ls -l install/learn_cpp/lib/learn_cpp/
+
 cat install/learn_py/lib/learn_py/hello | head -20
+
 file -L install/learn_cpp/lib/learn_cpp/hello
 ```
 
@@ -378,8 +393,11 @@ Hello, edited!
 
 ```bash
 ros2 run learn_cpp hello    # まだ古い文言
+
 cd ~/work/ros2MinimalPhysicalAi/ws
+
 colcon build --symlink-install --packages-select learn_cpp
+
 ros2 run learn_cpp hello    # 新しい文言になる
 ```
 
@@ -402,7 +420,9 @@ ros2 run learn_cpp hello    # 新しい文言になる
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi
+
 git status --short
+
 git check-ignore -v ws/src/learn_py/package.xml
 ```
 
@@ -425,6 +445,7 @@ git check-ignore -v ws/src/learn_py/package.xml
 
 ```bash
 grep -n 'maintainer' ws/src/learn_py/package.xml ws/src/learn_cpp/package.xml
+
 grep -n 'maintainer' ws/src/learn_py/setup.py
 ```
 
