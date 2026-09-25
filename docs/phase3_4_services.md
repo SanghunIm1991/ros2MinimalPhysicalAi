@@ -357,6 +357,8 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
+**期待する結果**: `Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
+
 ## 5. C++版（`ws/src/learn_cpp`）
 
 > **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、節末の「Python版とC++版の違いのまとめ」を読めば概要が掴める。C++版を作らない場合は、C++向けの依存の追加（`package.xml` と `CMakeLists.txt`）も不要。
@@ -606,6 +608,8 @@ colcon build --symlink-install --packages-select learn_cpp
 
 source install/setup.bash
 ```
+
+**期待する結果**: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
 
 ## 6. 実験
 

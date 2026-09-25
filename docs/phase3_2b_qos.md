@@ -72,6 +72,8 @@ flowchart LR
 ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durability:=volatile
 ```
 
+このコマンドを実際に実行して結果を見るのは、5節の実験である。
+
 （パラメータの詳しい扱いは、次のフェーズ3-3で学ぶ。宣言・取得・型の決まり方は3-3の3節、起動時の `-p` は5-2節、実行中に値を読み書きする `ros2 param` は5-3節、YAMLファイルでの指定は5-4節で扱う。ここでは「起動時に値を渡せる」ことだけを使う。）
 
 ### 2-2. 試す組み合わせ（①〜⑦）

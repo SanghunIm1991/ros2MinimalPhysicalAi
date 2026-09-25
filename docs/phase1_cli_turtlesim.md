@@ -39,6 +39,8 @@ sudo apt update
 sudo apt install -y ros-jazzy-turtlesim ros-jazzy-rqt ros-jazzy-rqt-graph ros-jazzy-rqt-console
 ```
 
+**期待する結果**: 導入するパッケージの一覧が表示され、最後にエラー（`E:` で始まる行）が出ずにプロンプトへ戻れば成功。
+
 導入確認:
 
 ```bash
@@ -113,6 +115,8 @@ rqt_graph      # ノード・トピックの図を出すウィンドウ（フェ
 ros2 run rqt_console rqt_console    # ログ表示ウィンドウ（rqt_console単独のコマンドはPATHになく、ros2 run経由で起動する）
 ```
 
+**期待する結果**: それぞれのウィンドウがWindows側に開けばよい（中身は3-8節（rqtで可視化する）で使う）。確かめたら、ウィンドウを閉じる。
+
 **うまくいかない場合の切り分け**
 
 | 症状 | 確認・対処（この順に） |
@@ -132,6 +136,8 @@ ros2 run rqt_console rqt_console    # ログ表示ウィンドウ（rqt_console�
 ```bash
 export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 ```
+
+**期待する結果**: 何も表示されない（`export` は、成功しても何も表示しない）。`echo $ROS_AUTOMATIC_DISCOVERY_RANGE` で `LOCALHOST` と表示されれば、設定されている。
 
 環境変数は**ターミナルごとの設定**なので、毎回手入力だとT1〜T3の一部だけに設定漏れが起き、通信範囲が食い違って `ros2 node list` が空になる、というフェーズ内・フェーズ間で再現性のない不具合につながる。**`~/.bashrc` に追記する**（追記後は新しく開くターミナルから有効）。
 
@@ -212,7 +218,7 @@ flowchart LR
 ros2 run turtlesim turtlesim_node
 ```
 
-青い背景に亀のウィンドウが出る（ターミナルのログは1-2の手順Bと同じ）。書式は `ros2 run <パッケージ名> <実行ファイル名>`。
+**期待する結果**: 青い背景に亀のウィンドウが出る（ターミナルのログは1-2の手順Bと同じ）。書式は `ros2 run <パッケージ名> <実行ファイル名>`。
 
 ### 3-2. キーボードで動かす（T2）
 
@@ -220,7 +226,7 @@ ros2 run turtlesim turtlesim_node
 ros2 run turtlesim turtle_teleop_key
 ```
 
-起動するとT2に操作方法の案内が出る。
+**期待する結果**: T2に操作方法の案内が出る。
 
 ```text
 Reading from keyboard
@@ -615,7 +621,7 @@ rqt_graph
 ros2 run rqt_console rqt_console
 ```
 
-亀を壁にぶつけると、警告ログ（Warn）が出る。rqt_consoleのウィンドウに、次のような内容の行が表示される（T1のturtlesimのターミナルにも同じ文が出る）。
+**期待する結果**: rqt_consoleのウィンドウが開く。亀を壁にぶつけると、警告ログ（Warn）が出る。rqt_consoleのウィンドウに、次のような内容の行が表示される（T1のturtlesimのターミナルにも同じ文が出る）。
 
 ```text
 [WARN] [1790072100.123456789] [turtlesim]: Oh no! I hit the wall! (Clamping from [x=11.106667, y=5.544445])

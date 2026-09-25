@@ -178,6 +178,8 @@ gz topic -t /model/vehicle_blue/cmd_vel -m gz.msgs.Twist -p "linear: {x: 0.5}, a
 gz topic -t /model/vehicle_blue/cmd_vel -m gz.msgs.Twist -p "linear: {x: 0.0}, angular: {z: 0.0}"
 ```
 
+**期待する結果**: コマンドは何も表示せずにすぐ終わり、青の車両が止まる。加速度に上限があるので、その場でぴたりとは止まらず、少し進みながら減速して止まる。
+
 最後に、同じトピックがROS2から見えるかを確かめる。
 
 ```bash

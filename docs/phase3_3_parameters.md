@@ -209,6 +209,8 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
+**期待する結果**: `Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
+
 `rcl_interfaces` は `rclpy` が依存しているため、追加の宣言なしで `import` できる（明示したい場合は `package.xml` に `<depend>rcl_interfaces</depend>` を足す）。
 
 ## 4. C++版（`ws/src/learn_cpp`）
@@ -359,6 +361,8 @@ colcon build --symlink-install --packages-select learn_cpp
 
 source install/setup.bash
 ```
+
+**期待する結果**: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
 
 ## 5. 実験
 

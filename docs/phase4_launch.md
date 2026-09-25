@@ -114,6 +114,8 @@ mkdir -p learn_bringup/launch learn_bringup/config
 mv ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config/
 ```
 
+**期待する結果**: 何も表示されない（`mv` は、成功しても何も表示しない）。`ls ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config/` で `param_talker.yaml` が見えれば、移っている。
+
 （`ws/config/` が空になったら、`rmdir ~/work/ros2MinimalPhysicalAi/ws/config` で消してよい。）
 
 ### 3-2. `package.xml` に依存を足す
@@ -708,6 +710,8 @@ colcon build --symlink-install --packages-select learn_bringup
 
 source install/setup.bash
 ```
+
+**期待する結果**: `Finished <<< learn_bringup` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
 
 既存のlaunchファイルの**編集だけ**なら、`--symlink-install` により再ビルドなしで反映される（新しいターミナルで確認する）。
 

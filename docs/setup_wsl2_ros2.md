@@ -202,6 +202,8 @@ WSLg バージョン: 1.0.xx
    sudo apt update && sudo apt install ros-dev-tools
    ```
 
+   **期待する結果**: 最後にエラー（`E:` で始まる行）が出ずにプロンプトへ戻れば成功。`colcon --help` で使い方が表示されれば、`colcon` が使える。
+
    - `ros-dev-tools` は、`colcon` のほかに、C++のコンパイラ（`g++`）・`make`・`cmake` も依存として一緒に入れる（`ros-build-essential` → `build-essential` 経由）。C++のコンパイラを別途入れる必要はない。詳細は [`docs/phase2_packages.md`](phase2_packages.md) の1-3節の補足を参照。
 
 4. ROS2本体の導入。学習用には **Desktop Install**（rqt・turtlesim等を含む）を選ぶ。
@@ -222,6 +224,8 @@ WSLg バージョン: 1.0.xx
    source /opt/ros/jazzy/setup.bash
    ```
 
+   **期待する結果**: 何も表示されない（`source` は、成功しても何も表示しない）。
+
    - この行は `~/.bashrc` に追記する（新しいターミナルを開くたびに手動 `source` が必要だと、フェーズ1以降の手順書が前提とする「ROS2は読み込み済み」という前提が崩れ、ターミナルごとに挙動が食い違う原因になる）。追記内容は自分で確認したうえで行う。
    - **`~/.bashrc` 追記行（累積・現時点）**: 以後のフェーズ手順書で追加が必要になった場合、その手順書内で本行を含めた累積リストを記載する。
 
@@ -229,7 +233,6 @@ WSLg バージョン: 1.0.xx
      source /opt/ros/jazzy/setup.bash   # 本手順で追加。ROS2本体の読み込み（常時必要、削除しない）
      ```
 
-   - `source` は、成功しても何も表示しない。
 
 ### 5. 動作確認（Ubuntu内）
 
@@ -280,16 +283,21 @@ pwd
         ```bash
         ssh-keygen -t ed25519 -C "wsl-ubuntu" -f ~/.ssh/id_ed25519
         ```
+
+        **期待する結果**: パスフレーズを2回聞かれる（入力した文字は表示されない）。最後に鍵の指紋（fingerprint）と、記号で描いた図（randomart）が表示されれば、`~/.ssh/id_ed25519`（秘密鍵）と `~/.ssh/id_ed25519.pub`（公開鍵）ができている。
      2. **公開鍵**（`.pub`）だけを表示してコピーする。秘密鍵（拡張子なしのファイル）は絶対に表示・共有しない:
         ```bash
         cat ~/.ssh/id_ed25519.pub
         ```
+
+        **期待する結果**: `ssh-ed25519 AAAA...（長い文字列） wsl-ubuntu` の1行が表示される。この1行を丸ごとコピーする。
      3. ブラウザでGitHubにログインし、Settings → SSH and GPG keys → New SSH key に貼り付けて登録する（Titleは「WSL Ubuntu」など）。
      4. 接続確認（初回は接続先のフィンガープリントの確認が出る。GitHub公式ドキュメントの「GitHub's SSH key fingerprints」に記載のものと一致する場合だけ `yes`。一致しなければ `yes` とせず中断する）:
         ```bash
         ssh -T git@github.com
         ```
-        `Hi <GitHubのユーザー名>! You've successfully authenticated...` と出れば成功。
+
+        **期待する結果**: `Hi <GitHubのユーザー名>! You've successfully authenticated...` と出れば成功。
      5. cloneはSSH形式のURLを使う（この節の2番目の手順のコマンドを参照）。
      - パスフレーズは、clone・pushのたびに入力を求められる。学習用途なら毎回入力で問題ない。手間なら `ssh-agent` に鍵を読み込ませて、セッション中の入力を省ける（`eval "$(ssh-agent -s)"` → `ssh-add ~/.ssh/id_ed25519`。ssh-agentはシェルを閉じると終了する）。
      - 鍵の権限範囲について: 対象のリポジトリだけに効く「Deploy key」という登録方法もある。同じアカウントでpushも行うなら、アカウント全体に効く鍵として扱う。
@@ -311,6 +319,9 @@ pwd
 
    cd ros2MinimalPhysicalAi
    ```
+
+   **期待する結果**: `Cloning into 'ros2MinimalPhysicalAi'...` と表示され、`~/work` の下に同じ名前のフォルダができる。
+
    - Claude Codeにコミットさせる場合は、コミットの作者（author）を区別する規約を、リポジトリの `CLAUDE.md` に書いておく（この教材のリポジトリの例は `CLAUDE.md` の「Git運用」を参照）。committerのメールアドレスには、実際のメールアドレスではなく、GitHubが用意するnoreplyのアドレスを使う（リポジトリ単位の `git config user.email` で設定する）。実際のメールアドレスは、一度コミットに入ると履歴から消すのが難しい。
 3. **Claude Codeの導入**: Anthropic公式のClaude Codeのドキュメントで最新のインストール手順を確認し、その手順で導入する（リンク先は変わりうるため、公式サイトから探す）。出所の分からないスクリプトは使わない。
 4. **Claude Codeの設定を別のPCから引き継ぐ場合**: Claude Codeの設定ディレクトリ `~/.claude` は、Windows側から引き継がれない。自分の設定（グローバルのルール等）をGitHubのリポジトリで管理している場合は、ここへcloneする。
@@ -318,6 +329,9 @@ pwd
    ```bash
    git clone <設定のリポジトリのURL> ~/.claude
    ```
+
+   **期待する結果**: `Cloning into '/home/<ユーザー名>/.claude'...` と表示され、`~/.claude` に設定のファイルが入る。
+
    - clone後、内容にWindows固有の記述（`settings.json` の `permissions` のパス、PowerShell前提のルール等）が残っていないか確認し、必要ならWSL用に調整する。
    - 認証情報・ブラウザのプロファイル等の機微なファイルが含まれていないことも確認する。あわせて `projects/`（メモリ・セッションの履歴）など、Windows側の作業履歴が含まれていないかも確認する。
 5. cloneしたプロジェクトのディレクトリで `claude` を起動する。
