@@ -367,7 +367,7 @@ ros2 run learn_py param_talker
 ros2 topic echo /param_chatter
 ```
 
-期待する結果: 既定値（`message` は `hello`、`period` は `1.0` 秒）どおり、1秒ごとに `hello` が送られる。
+**期待する結果**: 既定値（`message` は `hello`、`period` は `1.0` 秒）どおり、1秒ごとに `hello` が送られる。
 
 ```text
 # T1（param_talker）
@@ -389,7 +389,7 @@ C++版を作った場合は、`ros2 run learn_cpp param_talker` でも同様に�
 ros2 run learn_py param_talker --ros-args -p message:="from cli" -p period:=0.5
 ```
 
-期待する結果: 0.5秒ごと（1秒に2行）に、指定した文字列が出る。コードは1文字も変えていないのに、振る舞いが変わる点が大事。
+**期待する結果**: 0.5秒ごと（1秒に2行）に、指定した文字列が出る。コードは1文字も変えていないのに、振る舞いが変わる点が大事。
 
 ```text
 [INFO] [1790252010.500000000] [param_talker]: publish: from cli
@@ -420,7 +420,7 @@ ros2 param set /param_talker period 0.0      # 拒否される（reasonが表示
 ros2 param get /param_talker period          # 0.2のまま
 ```
 
-期待する結果（T1で `param_talker` を既定値で動かし、別ターミナルで上から順に実行した場合）:
+**期待する結果**（T1で `param_talker` を既定値で動かし、別ターミナルで上から順に実行した場合）:
 
 ```text
 $ ros2 param list /param_talker
@@ -484,7 +484,7 @@ param_talker:
 ros2 run learn_py param_talker --ros-args --params-file ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
 ```
 
-期待する結果: YAMLに書いた値で動く（5-2で `-p` を使ったときと同じ振る舞い）。
+**期待する結果**: YAMLに書いた値で動く（5-2で `-p` を使ったときと同じ振る舞い）。
 
 ```text
 [INFO] [1790252100.500000000] [param_talker]: publish: from yaml
@@ -500,7 +500,7 @@ ros2 param dump /param_talker
 ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
 ```
 
-期待する結果（`ros2 param set` で `message` を `changed`、`period` を `0.2` にした後の例）:
+**期待する結果**（`ros2 param set` で `message` を `changed`、`period` を `0.2` にした後の例）:
 
 ```text
 $ ros2 param dump /param_talker

@@ -42,10 +42,15 @@ sudo apt install -y ros-jazzy-turtlesim ros-jazzy-rqt ros-jazzy-rqt-graph ros-ja
 
 ```bash
 ros2 pkg executables turtlesim
-# turtlesim draw_square
-# turtlesim mimic
-# turtlesim turtle_teleop_key
-# turtlesim turtlesim_node
+```
+
+**期待する結果**: turtlesimパッケージの実行ファイルが4つ並べば、導入できている。
+
+```text
+turtlesim draw_square
+turtlesim mimic
+turtlesim turtle_teleop_key
+turtlesim turtlesim_node
 ```
 
 ### 1-2. GUIが出ることの確認
@@ -55,16 +60,19 @@ turtlesimやrqtはWSLg経由でWindows側にウィンドウが出る。
 **手順A: 表示の前提を確認する（WSL側）**
 
 ```bash
-echo $DISPLAY          # 例: :0 （空でなければよい）
-echo $WAYLAND_DISPLAY  # 例: wayland-0 （空でもX11経由で表示できることが多い）
+echo $DISPLAY          # 空でなければよい
+echo $WAYLAND_DISPLAY  # 空でもX11経由で表示できることが多い
 ls /mnt/wslg           # WSLgの領域が見えること
 ```
 
-期待する結果の例（WSLgが有効な場合）:
+**期待する結果**（WSLgが有効な場合）:
 
 ```text
+$ echo $DISPLAY
 :0
+$ echo $WAYLAND_DISPLAY
 wayland-0
+$ ls /mnt/wslg
 PulseServer  PulseAudioRDPSink  runtime-dir  stderr.log  versions.txt  weston.log  wlog.log
 ```
 
@@ -76,7 +84,7 @@ PulseServer  PulseAudioRDPSink  runtime-dir  stderr.log  versions.txt  weston.lo
 ros2 run turtlesim turtlesim_node
 ```
 
-- 期待: 水色（青系）の背景に亀が1匹いるウィンドウがWindows側に出る。ターミナルには次のようなログが出る（時刻の数字は実行ごとに変わる）。亀の初期位置は画面の中央（x, yとも約5.54）で、向き（theta）は0＝右向き。
+**期待する結果**: 水色（青系）の背景に亀が1匹いるウィンドウがWindows側に出る。ターミナルには次のようなログが出る（時刻の数字は実行ごとに変わる）。亀の初期位置は画面の中央（x, yとも約5.54）で、向き（theta）は0＝右向き。
 
 ```text
 [INFO] [1790072000.123456789] [turtlesim]: Starting turtlesim with node name /turtlesim
@@ -90,7 +98,8 @@ ros2 run turtlesim turtlesim_node
 rqt
 ```
 
-- 期待: 空のrqtウィンドウが出る。上部メニュー `Plugins` が開ければよい（ここではプラグインは使わない）。
+**期待する結果**: 空のrqtウィンドウが出る。上部メニュー `Plugins` が開ければよい（ここではプラグインは使わない）。
+
 - 確認後はウィンドウを閉じるか、`Ctrl+C` で止める。
 
 **手順D: 起動できたものを個別に確認する（任意）**
@@ -222,15 +231,19 @@ Use G|B|V|C|D|E|R|T keys to rotate to absolute orientations. 'F' to cancel a rot
 
 ```bash
 ros2 node list
-# /teleop_turtle
-# /turtlesim
-
 ros2 node info /turtlesim
 ```
 
-`node info` の出力には、そのノードが購読（Subscribers）・配信（Publishers）・提供（Service Servers）・アクション（Action Servers）するものが並ぶ。期待する結果（抜粋。`/turtlesim/describe_parameters` などパラメータ用のサービスが6つほど続くが、省略した）:
+`node list` には、T1とT2で動かしている2つのノードが並ぶ。`node info` の出力には、そのノードが購読（Subscribers）・配信（Publishers）・提供（Service Servers）・アクション（Action Servers）するものが並ぶ。
+
+**期待する結果**（抜粋。`/turtlesim/describe_parameters` などパラメータ用のサービスが6つほど続くが、省略した）:
 
 ```text
+$ ros2 node list
+/teleop_turtle
+/turtlesim
+
+$ ros2 node info /turtlesim
 /turtlesim
   Subscribers:
     /parameter_events: rcl_interfaces/msg/ParameterEvent
@@ -270,7 +283,7 @@ ros2 run turtlesim turtlesim_node --ros-args --remap __node:=my_turtle
 ros2 node list
 ```
 
-期待する結果: ノード一覧の `/turtlesim` が `/my_turtle` に置き換わる。起動ログも `Starting turtlesim with node name /my_turtle` になる。動作（亀のウィンドウ）は何も変わらない。
+**期待する結果**: ノード一覧の `/turtlesim` が `/my_turtle` に置き換わる。起動ログも `Starting turtlesim with node name /my_turtle` になる。動作（亀のウィンドウ）は何も変わらない。
 
 ```text
 /my_turtle
@@ -289,7 +302,7 @@ ros2 topic echo /turtle1/pose      # 亀の状態を流し見る（Ctrl+Cで停�
 ros2 topic hz /turtle1/pose        # 配信周期を測る
 ```
 
-期待する結果（1コマンドずつ。`echo` と `hz` は `Ctrl+C` で止めるまで表示が続く）:
+**期待する結果**（1コマンドずつ。`echo` と `hz` は `Ctrl+C` で止めるまで表示が続く）:
 
 ```text
 $ ros2 topic list -t
@@ -347,7 +360,7 @@ ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0
 ros2 topic pub -r 1 /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0}, angular: {z: 1.8}}"
 ```
 
-期待する結果: どちらのコマンドも、送った内容をターミナルに表示する。
+**期待する結果**: どちらのコマンドも、送った内容をターミナルに表示する。
 
 ```text
 publisher: beginning loop
@@ -372,7 +385,7 @@ ros2 service call /clear std_srvs/srv/Empty                                 # �
 ros2 service call /spawn turtlesim/srv/Spawn "{x: 2.0, y: 2.0, theta: 0.2, name: ''}"   # 亀を追加
 ```
 
-期待する結果（抜粋）:
+**期待する結果**（抜粋）:
 
 ```text
 $ ros2 service list -t
@@ -430,7 +443,7 @@ ros2 param set /turtlesim background_r 150   # 背景色が変わる
 ros2 param dump /turtlesim                   # 現在の設定をYAMLで出力
 ```
 
-期待する結果（`dump` は次の見出しを参照）:
+**期待する結果**（`dump` の分は、この下の読み方の後に載せる）:
 
 ```text
 $ ros2 param list
@@ -461,9 +474,10 @@ Set parameter successful
 
 `param dump` の出力はYAML形式で、フェーズ3（1-3）で「起動時にYAMLでパラメータを与える」際の書式の見本になる。
 
-**`ros2 param dump /turtlesim` の出力例**（`background_r` を150に変えた後の想定）
+**期待する結果**（`ros2 param dump /turtlesim` の分。`background_r` を150に変えた後）:
 
-```yaml
+```text
+$ ros2 param dump /turtlesim
 /turtlesim:
   ros__parameters:
     background_b: 255
@@ -510,7 +524,7 @@ ros2 interface show turtlesim/action/RotateAbsolute
 ros2 action send_goal /turtle1/rotate_absolute turtlesim/action/RotateAbsolute "{theta: 1.57}" --feedback
 ```
 
-期待する結果（抜粋。`send_goal` のfeedbackは実際にはもっと多くの行が流れる）:
+**期待する結果**（抜粋。`send_goal` のfeedbackは実際にはもっと多くの行が流れる）:
 
 ```text
 $ ros2 action list -t

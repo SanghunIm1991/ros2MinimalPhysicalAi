@@ -9,7 +9,7 @@
 
 > **進め方**: 前半（1〜4節）は、Gazeboを導入し、用意されたデモをコマンドだけで動かして仕組みを観察する。後半（5節）で、フェーズ3-1のPublisherを応用した小さなノードを書いて車両を走らせる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルドと `import` まで確認済みで、Gazeboを起動した後の挙動は未確認（出力が違う場合は、実機の表示を優先する）。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。導入の確認（1-3節）とlaunchの引数・展開結果（3-1節）は実機で確かめた表示、ビルドの表示（5-4節）は使い捨ての環境で確かめた表示、Gazeboやノードを起動した後の表示はデモの設定ファイルとROS2の仕様から筆者が想定したもので、実機では時刻・数値の細部が異なる。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。導入の確認（1-3節）とlaunchの引数・展開結果（3-1節）は、実機で確かめた表示。ビルドの表示（5-4節）は、使い捨ての環境で確かめた表示の形式。それ以外（インストール中の表示（1-2節）と、Gazeboやノードを起動した後の表示）は、デモの設定ファイルとROS2の仕様から筆者が想定したもので、実機では時刻・数値の細部が異なる。
 
 ## 0. 学習目標と完了条件
 
@@ -46,7 +46,7 @@ sudo apt install ros-jazzy-ros-gz ros-jazzy-ros-gz-sim-demos
 
 > **PCの負荷について**: Gazeboは3D描画と物理計算を同時に行うため、ここまでのturtlesimやrqtよりはるかに重い。WSL2に割り当てたメモリが少ない環境では、動かす間はブラウザなど他のアプリを閉じておくとよい。
 
-**期待する結果**（仕様から想定した表示。パッケージの数・容量は環境によって異なる）:
+**期待する結果**（パッケージの数・容量は環境によって異なる）:
 
 ```text
 ...
@@ -67,15 +67,17 @@ ros2 pkg list | grep ros_gz
 gz sim --version
 ```
 
-**期待する結果**（実機で確かめた表示。版の細かな数字は、導入した時期によって異なる）:
+**期待する結果**（版の細かな数字は、導入した時期によって異なる）:
 
 ```text
+$ ros2 pkg list | grep ros_gz
 ros_gz
 ros_gz_bridge
 ros_gz_image
 ros_gz_interfaces
 ros_gz_sim
 ros_gz_sim_demos
+$ gz sim --version
 Gazebo Sim, version 8.15.0
 Copyright (C) 2018 Open Source Robotics Foundation.
 Released under the Apache 2.0 License.
@@ -131,7 +133,7 @@ ROS2を使わずに、Gazeboだけでワールドを開く。
 gz sim diff_drive.sdf
 ```
 
-**期待する結果**（仕様から想定した表示）: Gazeboのウィンドウが開き、灰色の地面の上に青と緑の車両が1台ずつ見える。最初の起動は、描画の準備に時間がかかることがある。
+**期待する結果**: Gazeboのウィンドウが開き、灰色の地面の上に青と緑の車両が1台ずつ見える。最初の起動は、描画の準備に時間がかかることがある。
 
 - ウィンドウ左下に再生ボタン（▶）がある。`gz sim` は**一時停止の状態で始まる**ので、▶を押すまで物理の時間は進まない（`-r` を付けて起動すると、始めから再生される）。
 - ▶を押すと、右下の「RTF」（Real Time Factor。シミュレーションの時間が現実の時間の何倍の速さで進んでいるか）が動き出す。100%に近ければ現実と同じ速さ、PCが重くて追いつかないと100%を下回る。
@@ -145,7 +147,7 @@ gz sim diff_drive.sdf
 gz topic -l
 ```
 
-**期待する結果**（仕様から想定した表示。並びと行数は異なる）:
+**期待する結果**（並びと行数は異なる）:
 
 ```text
 /clock
@@ -168,7 +170,7 @@ Gazeboのコマンドで、青の車両に指令を送ってみる。
 gz topic -t /model/vehicle_blue/cmd_vel -m gz.msgs.Twist -p "linear: {x: 0.5}, angular: {z: 0.3}"
 ```
 
-**期待する結果**（仕様から想定した表示）: コマンドは何も表示せずにすぐ終わり、Gazeboの画面で青の車両が左回りの円を描いて走り出す。1回送っただけで走り続けるのは、DiffDriveが最後に受け取った指令を保持し続けるため（4-3節）。止めるには、速度0の指令を送る。
+**期待する結果**: コマンドは何も表示せずにすぐ終わり、Gazeboの画面で青の車両が左回りの円を描いて走り出す。1回送っただけで走り続けるのは、DiffDriveが最後に受け取った指令を保持し続けるため（4-3節）。止めるには、速度0の指令を送る。
 
 ```bash
 gz topic -t /model/vehicle_blue/cmd_vel -m gz.msgs.Twist -p "linear: {x: 0.0}, angular: {z: 0.0}"
@@ -180,7 +182,7 @@ gz topic -t /model/vehicle_blue/cmd_vel -m gz.msgs.Twist -p "linear: {x: 0.0}, a
 ros2 topic list
 ```
 
-**期待する結果**（仕様から想定した表示）:
+**期待する結果**:
 
 ```text
 /parameter_events
@@ -209,7 +211,7 @@ ros2 topic list
 ros2 launch ros_gz_sim_demos diff_drive.launch.py --show-args
 ```
 
-**期待する結果**（実機で確かめた表示。抜粋）:
+**期待する結果**（抜粋）:
 
 ```text
 Arguments (pass arguments as '<name>:=<value>'):
@@ -233,7 +235,7 @@ Arguments (pass arguments as '<name>:=<value>'):
 ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false --print
 ```
 
-**期待する結果**（実機で確かめた表示。オブジェクトのアドレスは実行ごとに変わる。長い行は折り返している）:
+**期待する結果**（オブジェクトのアドレスは実行ごとに変わる。長い行は折り返している）:
 
 ```text
 <launch.launch_description.LaunchDescription object at 0x...>
@@ -258,7 +260,7 @@ ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false --print
 ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false
 ```
 
-**期待する結果**（仕様から想定した表示）: 2-1節と同じGazeboのウィンドウが開き、今度は初めから再生された状態になる。T1には、ブリッジが作った中継の一覧が出る。
+**期待する結果**: 2-1節と同じGazeboのウィンドウが開き、今度は初めから再生された状態になる。T1には、ブリッジが作った中継の一覧が出る。
 
 ```text
 [parameter_bridge-2] [INFO] [...] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/vehicle_blue/odometry (gz.msgs.Odometry) -> /model/vehicle_blue/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
@@ -273,7 +275,7 @@ ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false
 ros2 topic list
 ```
 
-**期待する結果**（仕様から想定した表示）:
+**期待する結果**:
 
 ```text
 /model/vehicle_blue/cmd_vel
@@ -295,7 +297,7 @@ T2から、緑の車両に指令を送る。フェーズ1でturtlesimに送っ�
 ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: 0.3}}"
 ```
 
-**期待する結果**（仕様から想定した表示）:
+**期待する結果**:
 
 ```text
 publisher: beginning loop
@@ -322,7 +324,7 @@ ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 ros2 topic echo --once /model/vehicle_green/odometry
 ```
 
-**期待する結果**（仕様から想定した表示。時刻と位置・向きの値は、走らせた時間によって変わる。`covariance` の行は省略）:
+**期待する結果**（時刻と位置・向きの値は、走らせた時間によって変わる。`covariance` の行は省略）:
 
 ```text
 header:
@@ -379,12 +381,14 @@ ros2 topic hz /model/vehicle_green/odometry
 ros2 topic hz /model/vehicle_blue/odometry
 ```
 
-**期待する結果**（仕様から想定した表示。値は少し揺れる）:
+**期待する結果**（値は少し揺れる）:
 
 ```text
+$ ros2 topic hz /model/vehicle_green/odometry
 average rate: 50.000
 	min: 0.019s max: 0.021s std dev: 0.00050s window: 52
 ...
+$ ros2 topic hz /model/vehicle_blue/odometry
 average rate: 1.000
 	min: 1.000s max: 1.000s std dev: 0.00000s window: 3
 ```
@@ -410,10 +414,12 @@ ros2 node list
 ros2 topic info /model/vehicle_green/cmd_vel
 ```
 
-**期待する結果**（仕様から想定した表示）:
+**期待する結果**:
 
 ```text
+$ ros2 node list
 /ros_gz_bridge
+$ ros2 topic info /model/vehicle_green/cmd_vel
 Type: geometry_msgs/msg/Twist
 Publisher count: 0
 Subscription count: 1
@@ -432,7 +438,7 @@ Subscriberの設定は、`-v` を付けた `ros2 topic info` で確かめられ�
 ros2 topic info -v /model/vehicle_green/cmd_vel
 ```
 
-**期待する結果**（仕様から想定した表示。抜粋。GIDなどの行は省略）:
+**期待する結果**（抜粋。GIDなどの行は省略）:
 
 ```text
 Type: geometry_msgs/msg/Twist
@@ -582,7 +588,7 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
-**期待する結果**（ビルド。使い捨ての環境で確かめた表示の形式。秒数は環境によって変わる）:
+**期待する結果**（ビルド。秒数は環境によって変わる）:
 
 ```text
 Starting >>> learn_py
@@ -602,7 +608,7 @@ source install/setup.bash
 ros2 run learn_py gz_drive
 ```
 
-**期待する結果**（仕様から想定した表示。時刻と数値の細部は異なる）:
+**期待する結果**（時刻と数値の細部は異なる）:
 
 ```text
 [INFO] [1790000000.123456789] [gz_drive]: speed: 0.012 m/s, x: 0.00 m

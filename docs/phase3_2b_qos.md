@@ -303,7 +303,7 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
-期待する結果: フェーズ3-1と同じく、`Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功。`ros2 pkg executables learn_py` を実行すると、今回足した `learn_py qos_listener`・`learn_py qos_talker` の2行が、既存の実行ファイルと一緒に並ぶ。
+**期待する結果**: フェーズ3-1と同じく、`Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功。`ros2 pkg executables learn_py` を実行すると、今回足した `learn_py qos_listener`・`learn_py qos_talker` の2行が、既存の実行ファイルと一緒に並ぶ。
 
 ## 4. C++版（`ws/src/learn_cpp`）
 
@@ -542,7 +542,7 @@ colcon build --symlink-install --packages-select learn_cpp
 source install/setup.bash
 ```
 
-期待する結果: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`install(TARGETS ...)` に作っていないノード（3-2aでC++版を作らなかった場合の `turtle_circle` など）の名前が残っていると、`Failed <<< learn_cpp` になり、その上に `install TARGETS given target "turtle_circle" which does not exist` という趣旨のCMakeのエラーが出る（9節）。
+**期待する結果**: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`install(TARGETS ...)` に作っていないノード（3-2aでC++版を作らなかった場合の `turtle_circle` など）の名前が残っていると、`Failed <<< learn_cpp` になり、その上に `install TARGETS given target "turtle_circle" which does not exist` という趣旨のCMakeのエラーが出る（9節）。
 
 ## 5. 実験: QoSの相性を確かめる
 
@@ -559,7 +559,7 @@ ros2 run learn_py qos_talker
 ros2 run learn_py qos_listener
 ```
 
-期待する結果（抜粋）:
+**期待する結果**（抜粋）:
 
 ```text
 # T1（qos_talker）
@@ -584,7 +584,7 @@ ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort
 ros2 run learn_py qos_listener --ros-args -p reliability:=reliable
 ```
 
-期待する結果: talkerは `publish: msg N` を出し続けるが、listenerには `received:` が1行も出ない。その代わり、両方のターミナルに警告が出る（Python版の場合。C++版では末尾の方針名が `RELIABILITY_QOS_POLICY` になる）。
+**期待する結果**: talkerは `publish: msg N` を出し続けるが、listenerには `received:` が1行も出ない。その代わり、両方のターミナルに警告が出る（Python版の場合。C++版では末尾の方針名が `RELIABILITY_QOS_POLICY` になる）。
 
 ```text
 # T2（qos_listener、reliable）
@@ -602,7 +602,7 @@ ros2 run learn_py qos_listener --ros-args -p reliability:=reliable
 ros2 topic info /qos_test -v
 ```
 
-期待する結果: Publisher・SubscriptionそれぞれのQoS（`Reliability`、`Durability`）が表示される（抜粋）。
+**期待する結果**: Publisher・SubscriptionそれぞれのQoS（`Reliability`、`Durability`）が表示される（抜粋）。
 
 ```text
 Type: std_msgs/msg/String
@@ -645,7 +645,7 @@ ros2 run learn_py qos_talker --ros-args -p durability:=transient_local
 ros2 run learn_py qos_listener --ros-args -p durability:=transient_local
 ```
 
-期待する結果: listenerの起動直後に、それまでの分がまとめて届く。
+**期待する結果**: listenerの起動直後に、それまでの分がまとめて届く。
 
 ```text
 # T2（qos_listener、⑤）

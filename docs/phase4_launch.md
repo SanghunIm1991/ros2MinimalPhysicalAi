@@ -104,7 +104,7 @@ ros2 pkg create --build-type ament_cmake \
 mkdir -p learn_bringup/launch learn_bringup/config
 ```
 
-期待する結果: `ros2 pkg create` の表示は、フェーズ2の2-3（C++パッケージ）と同じ形。`--node-name` と `--dependencies` を付けていないので、`src/` は作られず、`dependencies: []` と表示される。`mkdir` は成功しても何も表示しない。`ls learn_bringup` を実行すると、`CMakeLists.txt  LICENSE  config  include  launch  package.xml  src` のように並ぶ（`include/` と `src/` は雛形が作る空のフォルダで、このパッケージでは使わない）。
+**期待する結果**: `ros2 pkg create` の表示は、フェーズ2の2-3（C++パッケージ）と同じ形。`--node-name` と `--dependencies` を付けていないので、`src/` は作られず、`dependencies: []` と表示される。`mkdir` は成功しても何も表示しない。`ls learn_bringup` を実行すると、`CMakeLists.txt  LICENSE  config  include  launch  package.xml  src` のように並ぶ（`include/` と `src/` は雛形が作る空のフォルダで、このパッケージでは使わない）。
 
 フェーズ3-3で `ws/config/` に作ったパラメータYAMLを、このパッケージへ移す。
 
@@ -225,7 +225,7 @@ ros2 launch learn_bringup pubsub.launch.py --show-args
 ros2 launch learn_bringup pubsub.launch.py --print
 ```
 
-期待する結果（`0x...` のアドレスは毎回変わる）:
+**期待する結果**（`0x...` のアドレスは毎回変わる）:
 
 ```text
 $ ros2 launch learn_bringup pubsub.launch.py --show-args
@@ -258,7 +258,7 @@ ros2 launch learn_bringup pubsub.launch.py
 ros2 launch learn_bringup pubsub.launch.py talker_lang:=cpp listener_lang:=py
 ```
 
-期待する結果（1つ目のコマンドの例）: 2つのノードのログが、1つのターミナルに混ざって出る。各行の先頭の `[talker-1]` などは、launchが付ける「どのプロセスの出力か」の印（`-1` は起動した順の番号）。
+**期待する結果**（1つ目のコマンドの例）: 2つのノードのログが、1つのターミナルに混ざって出る。各行の先頭の `[talker-1]` などは、launchが付ける「どのプロセスの出力か」の印（`-1` は起動した順の番号）。
 
 ```text
 [INFO] [launch]: All log files can be found below /home/<ユーザー名>/.ros/log/2026-09-24-12-00-00-123456-<ホスト名>-12340
@@ -390,7 +390,7 @@ ros2 launch learn_bringup pubsub.launch.xml talker_lang:=cpp --print
 ros2 launch learn_bringup pubsub.launch.yaml talker_lang:=cpp --print
 ```
 
-期待する結果: どちらも、4-1の `pubsub.launch.py --print` と同じ木（`DeclareLaunchArgument` 2つ、`ExecuteProcess` 2つ）が表示される。`talker_lang:=cpp` を付けていても、パッケージ名は `'learn_' + LaunchConfig('talker_lang')` のまま。XMLやYAMLの書式を間違えている場合は、木の代わりに読み込みのエラーが出る。
+**期待する結果**: どちらも、4-1の `pubsub.launch.py --print` と同じ木（`DeclareLaunchArgument` 2つ、`ExecuteProcess` 2つ）が表示される。`talker_lang:=cpp` を付けていても、パッケージ名は `'learn_' + LaunchConfig('talker_lang')` のまま。XMLやYAMLの書式を間違えている場合は、木の代わりに読み込みのエラーが出る。
 
 > 課題4: 3形式（Python/XML/YAML）で同じ`pubsub.launch.*`を実際に動かし、上の表の内容（行数・引数の埋め込み・分岐可否）を自分の目で確かめる。目安: 複雑な条件・計算が要る場合はPython、単純な起動の一覧はXML/YAMLが読みやすい。
 
@@ -478,7 +478,7 @@ ros2 launch learn_bringup param.launch.py
 ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2   # C++版の param_talker を作った場合。作っていなければ lang:=py
 ```
 
-期待する結果（2つ目のコマンドの例。launch自体の行は4-1と同じなので省く）: YAMLの `message`（`from yaml`）が、引数で上書きした周期0.2秒（1秒に5行）で送られる。
+**期待する結果**（2つ目のコマンドの例。launch自体の行は4-1と同じなので省く）: YAMLの `message`（`from yaml`）が、引数で上書きした周期0.2秒（1秒に5行）で送られる。
 
 ```text
 [INFO] [param_talker-1]: process started with pid [12400]
@@ -496,10 +496,12 @@ ros2 param get /param_talker message     # YAMLの値
 ros2 param get /param_talker period      # 引数で上書きした値
 ```
 
-期待する結果（`period:=0.2` で起動した場合）:
+**期待する結果**（`period:=0.2` で起動した場合）:
 
 ```text
+$ ros2 param get /param_talker message
 String value is: from yaml
+$ ros2 param get /param_talker period
 Double value is: 0.2
 ```
 
@@ -562,7 +564,7 @@ def generate_launch_description():
 ros2 launch learn_bringup turtle.launch.py lang:=cpp   # C++版の turtle_circle を作った場合。作っていなければ lang:=py
 ```
 
-期待する結果: turtlesimのウィンドウが開き、少し待つと亀が円を描き始める（フェーズ3-2aの6節と同じ動き）。ターミナルには2つのプロセスの起動が出る。`turtle_circle` はログを出さないので、以降はturtlesim側のログだけが出る。
+**期待する結果**: turtlesimのウィンドウが開き、少し待つと亀が円を描き始める（フェーズ3-2aの6節と同じ動き）。ターミナルには2つのプロセスの起動が出る。`turtle_circle` はログを出さないので、以降はturtlesim側のログだけが出る。
 
 ```text
 [INFO] [turtlesim_node-1]: process started with pid [12500]
@@ -642,25 +644,29 @@ def generate_launch_description():
 - 名前空間を付けたのに、コードが絶対名を使っていて変わらない、という食い違いに注意する。
 - 同じノード名が2つ起動するとログに警告が出る（名前空間を付ける理由の1つ）。
 
-観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、コメントの例（`/demo/talker`、`/demo/listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`Ctrl+C` で全ノードが止まること（この節の末尾の課題8）。
+観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、この下の期待する結果の例（`/demo/talker`、`/demo/listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`Ctrl+C` で全ノードが止まること（この節の末尾の課題8）。
 
 ```bash
+# T1
 ros2 launch learn_bringup compose.launch.py
-ros2 node list       # /demo/talker, /demo/listener, /param_talker
-ros2 topic list      # /demo/chatter, /param_chatter
+# T2（launchを動かしたまま、別のターミナルで）
+ros2 node list
+ros2 topic list
 ```
 
-期待する結果: launchのターミナルには、3つのプロセス（`talker`・`listener`・`param_talker`）のログが混ざって出る。ノード名は名前空間付き（`[demo.talker]` のようにドット区切り）で表示される。
+**期待する結果**: T1（launchのターミナル）には、3つのプロセス（`talker`・`listener`・`param_talker`）のログが混ざって出る。ノード名は名前空間付き（`[demo.talker]` のようにドット区切り）で表示される。
 
 ```text
+# T1（launch）
 [talker-1] [INFO] [1790282300.100000000] [demo.talker]: publish: hello 0
 [listener-2] [INFO] [1790282300.101000000] [demo.listener]: received: hello 0
 [param_talker-3] [INFO] [1790282300.100000000] [param_talker]: publish: from yaml
 ```
 
-別のターミナルでの確認（`ros2 topic list` の抜粋）:
+T2での確認（`ros2 topic list` は抜粋）:
 
 ```text
+# T2
 $ ros2 node list
 /demo/listener
 /demo/talker

@@ -140,7 +140,7 @@ ros2 pkg create --build-type ament_python \
   learn_py
 ```
 
-期待する結果（抜粋）: 設定内容の確認に続いて、作ったファイルが1行ずつ表示される。
+**期待する結果**（抜粋）: 設定内容の確認に続いて、作ったファイルが1行ずつ表示される。
 
 ```text
 going to create a new package
@@ -174,7 +174,7 @@ cat learn_py/package.xml
 cat learn_py/setup.py
 ```
 
-期待する結果（`find` の分）:
+**期待する結果**（`find` の分）:
 
 ```text
 learn_py/LICENSE
@@ -210,7 +210,7 @@ cat learn_cpp/package.xml
 cat learn_cpp/CMakeLists.txt
 ```
 
-期待する結果（`find` の分）: C++版はファイルが4つだけで、Python版より少ない。
+**期待する結果**（`find` の分）: C++版はファイルが4つだけで、Python版より少ない。
 
 ```text
 learn_cpp/CMakeLists.txt
@@ -236,7 +236,9 @@ colcon build --symlink-install
 
 - **必ずワークスペースの直下（`ws/`）で実行する**。`src/` の中で実行すると `build/` などが意図しない場所にできる。
 - 初回のビルド時間は環境による（この手順書の検証環境では約10秒だった）。応答が遅い・止まる場合のみ、メモリ不足を疑って `colcon build --symlink-install --parallel-workers 2` のように並列数を絞る（検証環境ではこの絞り込みは不要だった。WSLのメモリは `setup_wsl2_ros2.md` の1節を参照）。
-- 成功すると `Summary: 2 packages finished` のように表示される。期待する結果の例（秒数は環境によって変わる）:
+- Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい（警告の意味と、無視してよい理由は `docs/tips.md` の3節）。
+
+**期待する結果**（秒数は環境によって変わる）: `Summary: 2 packages finished` の行が出れば成功。
 
 ```text
 Starting >>> learn_cpp
@@ -247,14 +249,18 @@ Finished <<< learn_cpp [10.6s]
 Summary: 2 packages finished [11.1s]
 ```
 
-  2つのパッケージは並行してビルドされるので、`Starting` が2行続けて出る。先に終わった方から `Finished` が出る（C++はコンパイルがある分、遅れて終わることが多い）。
-- Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい（警告の意味と、無視してよい理由は `docs/tips.md` の3節）。
+2つのパッケージは並行してビルドされるので、`Starting` が2行続けて出る。先に終わった方から `Finished` が出る（C++はコンパイルがある分、遅れて終わることが多い）。
 
-確認:
+ビルドの後、ワークスペースの中身を確かめる。
 
 ```bash
 ls
-# build  install  log  src
+```
+
+**期待する結果**: 元からある `src/` に、ビルドで作られた `build/`・`install/`・`log/` の3つが加わる。
+
+```text
+build  install  log  src
 ```
 
 ### 2-5. 環境に登録して実行する
@@ -265,9 +271,9 @@ ros2 run learn_py hello
 ros2 run learn_cpp hello
 ```
 
-期待される表示（雛形の内容。文言が違っていても、実行できていればよい）:
+**期待する結果**（雛形の内容。文言が違っていても、実行できていればよい）:
 
-```
+```text
 Hi from learn_py.
 hello world learn_cpp package
 ```
@@ -283,7 +289,7 @@ ros2 pkg executables learn_py
 ros2 pkg executables learn_cpp
 ```
 
-期待する結果:
+**期待する結果**:
 
 ```text
 $ ros2 pkg list | grep learn
@@ -328,7 +334,7 @@ cat install/learn_py/lib/learn_py/hello | head -20
 file -L install/learn_cpp/lib/learn_cpp/hello
 ```
 
-期待する結果（抜粋。日時・サイズ・パスの途中は環境によって変わる）:
+**期待する結果**（抜粋。日時・サイズ・パスの途中は環境によって変わる）:
 
 ```text
 $ ls -l install/learn_py/lib/learn_py/
@@ -362,7 +368,7 @@ install/learn_cpp/lib/learn_cpp/hello: ELF 64-bit LSB pie executable, x86-64, ..
 ros2 run learn_py hello     # 文言が変わっている
 ```
 
-期待する結果: 例えば `print('Hi from learn_py.')` を `print('Hello, edited!')` に書き換えた場合、ビルドをしていなくても次のように表示される。
+**期待する結果**: 例えば `print('Hi from learn_py.')` を `print('Hello, edited!')` に書き換えた場合、ビルドをしていなくても次のように表示される。
 
 ```text
 Hello, edited!
@@ -377,7 +383,7 @@ colcon build --symlink-install --packages-select learn_cpp
 ros2 run learn_cpp hello    # 新しい文言になる
 ```
 
-期待する結果: 1回目の `ros2 run` では、書き換える前の `hello world learn_cpp package` がそのまま出る（ソースを書き換えても、実行されるのはコンパイル済みの古いバイナリのため）。`colcon build` の後の2回目で、書き換えた文言に変わる。ビルドの表示は `Starting >>> learn_cpp`・`Finished <<< learn_cpp`・`Summary: 1 package finished` の3つになる。
+**期待する結果**: 1回目の `ros2 run` では、書き換える前の `hello world learn_cpp package` がそのまま出る（ソースを書き換えても、実行されるのはコンパイル済みの古いバイナリのため）。`colcon build` の後の2回目で、書き換えた文言に変わる。ビルドの表示は `Starting >>> learn_cpp`・`Finished <<< learn_cpp`・`Summary: 1 package finished` の3つになる。
 
 - `--packages-select <名前>`: 指定したパッケージだけをビルドする。C++は時間がかかるので、普段はこれを使うと速い。
 - 新しい実行ファイルを追加する場合（`setup.py` の `entry_points` や `CMakeLists.txt` の変更）は、`--symlink-install` でも**再ビルドが必要**。
@@ -400,7 +406,7 @@ git status --short
 git check-ignore -v ws/src/learn_py/package.xml
 ```
 
-期待する結果: `git status --short` には、`ws/` に関する行が1行も出ない（他に変更が無ければ、何も表示されない）。この教材のリポジトリは `.gitignore` に `ws/` を登録していて、ワークスペース全体がGitの管理外になっているためである。`git check-ignore -v` は、そのファイルがどの設定で除外されているかを表示するコマンドで、次のように出る（`29` は `.gitignore` の中の行番号で、`.gitignore` の中身によって変わる）。
+**期待する結果**: `git status --short` には、`ws/` に関する行が1行も出ない（他に変更が無ければ、何も表示されない）。この教材のリポジトリは `.gitignore` に `ws/` を登録していて、ワークスペース全体がGitの管理外になっているためである。`git check-ignore -v` は、そのファイルがどの設定で除外されているかを表示するコマンドで、次のように出る（`29` は `.gitignore` の中の行番号で、`.gitignore` の中身によって変わる）。
 
 ```text
 .gitignore:29:ws/	ws/src/learn_py/package.xml

@@ -73,7 +73,7 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 ros2 interface show std_srvs/srv/Trigger
 ```
 
-期待する結果:
+**期待する結果**:
 
 ```text
 $ ros2 interface show example_interfaces/srv/AddTwoInts
@@ -130,7 +130,7 @@ find_package(std_srvs REQUIRED)
 ros2 interface show example_interfaces/srv/AddTwoInts
 ```
 
-期待する結果: 1節と同じく `int64 a` から始まる定義が表示されれば、導入済み。導入されていない場合は `Unknown package 'example_interfaces'` のようなエラーになる。
+**期待する結果**: 1節と同じく `int64 a` から始まる定義が表示されれば、導入済み。導入されていない場合は `Unknown package 'example_interfaces'` のようなエラーになる。
 
 ## 4. Python版（`ws/src/learn_py`）
 
@@ -490,7 +490,7 @@ Python版と同じ流れ（待つ → 要求を作る → 非同期に送る →
 
 落とし穴: `future.get()` は、結果が入っていない状態で呼ぶと待たされるか例外になる。**先に戻り値が `SUCCESS` であることを確認してから**呼ぶ、という順序を守る。また、`spin_until_future_complete` を**サービスのコールバックの中で呼ぶ**と固まる（4節の「重要」と同じ理由）。
 
-動作確認: Python版と同様に、`ros2 run learn_cpp add_client` と `--ros-args -p a:=10 -p b:=20` を、サーバありとなしの両方で試す。サーバなしのときは約5秒後にエラーログが出て、`echo $?` で終了コード1が見える。
+動作確認: Python版と同様に、`ros2 run learn_cpp add_client` と `--ros-args -p a:=10 -p b:=20` を、サーバありとなしの両方で試す。サーバなしのときは約5秒後にエラーログが出て、`echo $?` で終了コード1が見える（表示は6-1節の「期待する結果」を参照）。
 
 ファイル: `ws/src/learn_cpp/src/counter_node.cpp`
 
@@ -615,7 +615,7 @@ ros2 run learn_py add_server
 ros2 run learn_py add_client --ros-args -p a:=3 -p b:=4
 ```
 
-期待する結果: T2のクライアントは1行出して、すぐに終了する（プロンプトに戻る）。T1のサーバは、呼ばれるたびに1行ずつログを出し、動き続ける。
+**期待する結果**: T2のクライアントは1行出して、すぐに終了する（プロンプトに戻る）。T1のサーバは、呼ばれるたびに1行ずつログを出し、動き続ける。
 
 ```text
 # T1（add_server）
@@ -637,7 +637,7 @@ CLIからも呼べる:
 ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 10, b: 20}"
 ```
 
-期待する結果:
+**期待する結果**:
 
 ```text
 waiting for service to become available...
@@ -675,7 +675,7 @@ ros2 topic echo /counter
 ros2 service call /reset_counter std_srvs/srv/Trigger
 ```
 
-期待する結果（T2で数字が7まで進んだところでT3を実行した例）:
+**期待する結果**（T2で数字が7まで進んだところでT3を実行した例）:
 
 ```text
 # T2（ros2 topic echo /counter）

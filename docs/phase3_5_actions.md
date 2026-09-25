@@ -78,7 +78,7 @@ stateDiagram-v2
 ros2 interface show example_interfaces/action/Fibonacci
 ```
 
-期待する結果:
+**期待する結果**:
 
 ```text
 # Goal
@@ -706,7 +706,7 @@ ros2 action info /fibonacci
 ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 5}" --feedback
 ```
 
-期待する結果（抜粋。`Goal accepted with ID:` の後ろのIDは毎回変わる）:
+**期待する結果**（抜粋。`Goal accepted with ID:` の後ろのIDは毎回変わる）:
 
 ```text
 $ ros2 action list -t
@@ -775,7 +775,7 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=6
 ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 ```
 
-期待する結果（`order:=6`、最後まで実行した場合。T2のクライアント）:
+**期待する結果**（`order:=6`、最後まで実行した場合。T2のクライアント）:
 
 ```text
 [INFO] [1790272100.000000000] [fibonacci_client]: goal accepted
@@ -789,7 +789,7 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 
 結果を受け取ると、クライアントは自分で終了する（プロンプトに戻る）。サーバは次のゴールを待って動き続ける。
 
-期待する結果（`order:=10 -p cancel_after:=3.0`、中断した場合）:
+**期待する結果**（`order:=10 -p cancel_after:=3.0`、中断した場合）:
 
 ```text
 # T2（fibonacci_client）

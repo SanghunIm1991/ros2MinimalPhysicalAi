@@ -48,7 +48,7 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptのバイナリパッケージ）を導
 4. 確認: PowerShellで `wsl -l -v`（VERSIONが2であること）と、`wsl --version` を実行する。
    - VERSIONが1の場合は `wsl --set-version Ubuntu-24.04 2` で変換する。
 
-期待する結果（版の数字は更新によって変わる。表示の言語はWindowsの設定による）:
+**期待する結果**（版の数字は更新によって変わる。表示の言語はWindowsの設定による）:
 
 ```text
 PS> wsl -l -v
@@ -77,11 +77,16 @@ WSLg バージョン: 1.0.xx
 
 1. 2節の初回起動でユーザー名・パスワードを設定済みであること、およびUbuntuの中に自分で作ったデータ・ファイルが無いこと（導入直後の状態）を確認する。データがある場合は、先に必要なものを退避する。
 2. Ubuntuの中で、既定のユーザーを固定する。インポートした後は既定のユーザーがrootに戻るため、その対策である。まず `cat /etc/wsl.conf` で既存の内容を確認する。Ubuntu 24.04では、systemd関連の設定（`[boot]` 節など）で既に存在することがある。その場合は既存の内容を消さず、`[user]` の節だけを追記する。存在しない場合は新しく作る。編集は `sudo nano /etc/wsl.conf` で行い、次の内容を書いて保存する（`<ユーザー名>` は2節で作った名前）。
-   ```
+
+   ```ini
    [user]
    default=<ユーザー名>
    ```
-   保存後に `cat /etc/wsl.conf` をもう一度実行し、`[user]` 節が入っていること、既存の節が残っていることを確認する。期待する結果の例（`[boot]` 節が元からあった場合）:
+
+   保存後に `cat /etc/wsl.conf` をもう一度実行し、`[user]` 節が入っていること、既存の節が残っていることを確認する。
+
+   **期待する結果**（`[boot]` 節が元からあった場合）:
+
    ```text
    [boot]
    systemd=true
@@ -106,7 +111,9 @@ WSLg バージョン: 1.0.xx
 ### 3. Ubuntuの更新（Ubuntu内）
 
 1. `sudo apt update && sudo apt upgrade` を実行する。
-2. 確認: `lsb_release -a` が24.04を示す。期待する結果の例:
+2. 確認: `lsb_release -a` が24.04を示す。
+
+   **期待する結果**:
 
    ```text
    No LSB modules are available.
@@ -139,7 +146,7 @@ WSLg バージョン: 1.0.xx
    locale  # 確認
    ```
 
-   期待する結果（`locale` の抜粋）: `LANG=` の行が `UTF-8` で終わっていればよい。WSLのUbuntuでは、最初から `C.UTF-8` になっていることが多い。
+   **期待する結果**（`locale` の抜粋）: `LANG=` の行が `UTF-8` で終わっていればよい。WSLのUbuntuでは、最初から `C.UTF-8` になっていることが多い。
 
    ```text
    LANG=en_US.UTF-8
@@ -171,7 +178,7 @@ WSLg バージョン: 1.0.xx
    - `sudo dpkg -i` の前に、`dpkg -I` の出力でパッケージ名・版・依存関係を目視確認する。これは内容の確認であり、改ざんを検知する整合性検証ではない。
    - `ROS_APT_SOURCE_VERSION` が空になる場合は、GitHub APIの未認証アクセスの回数制限に当たっている可能性がある。`echo "$ROS_APT_SOURCE_VERSION"` で確認し、しばらく待ってからやり直す。
 
-   期待する結果（`dpkg -I` の抜粋。版の数字は取得した時期によって変わる）: `Package:` が `ros2-apt-source` で、`Description:` にROS 2のaptの取得元を設定するパッケージである旨が書かれていれば、意図したファイルである。
+   **期待する結果**（`dpkg -I` の抜粋。版の数字は取得した時期によって変わる）: `Package:` が `ros2-apt-source` で、`Description:` にROS 2のaptの取得元を設定するパッケージである旨が書かれていれば、意図したファイルである。
 
    ```text
     Package: ros2-apt-source
@@ -197,7 +204,7 @@ WSLg バージョン: 1.0.xx
    sudo apt install ros-jazzy-desktop
    ```
 
-   期待する結果: 導入するパッケージの一覧と容量が表示され、`Do you want to continue? [Y/n]` と聞かれるので `Y` で進める。数百のパッケージが入るため、回線によっては数十分かかる。最後にエラー（`E:` で始まる行）が出ずにプロンプトへ戻れば成功。`ls /opt/ros` を実行すると `jazzy` と表示される。
+   **期待する結果**: 導入するパッケージの一覧と容量が表示され、`Do you want to continue? [Y/n]` と聞かれるので `Y` で進める。数百のパッケージが入るため、回線によっては数十分かかる。最後にエラー（`E:` で始まる行）が出ずにプロンプトへ戻れば成功。`ls /opt/ros` を実行すると `jazzy` と表示される。
 
 5. 環境の読み込み。
 
@@ -217,20 +224,22 @@ WSLg バージョン: 1.0.xx
 ### 5. 動作確認（Ubuntu内）
 
 1. `printenv ROS_DISTRO` が `jazzy` を返す。
-2. ターミナルA: `ros2 run demo_nodes_cpp talker`
-3. ターミナルB: `ros2 run demo_nodes_py listener`
-4. Bにメッセージが表示されることを確認し、A・Bとも Ctrl+C で終了する。期待する結果の例（時刻の数字は実行ごとに変わる）:
+2. T1（1つ目のターミナル）: `ros2 run demo_nodes_cpp talker`
+3. T2（2つ目のターミナル）: `ros2 run demo_nodes_py listener`
+4. T2にメッセージが表示されることを確認し、T1・T2とも Ctrl+C で終了する。
+
+   **期待する結果**（時刻の数字は実行ごとに変わる）:
 
    ```text
-   # ターミナルA（C++のtalker）
+   # T1（C++のtalker）
    [INFO] [1790072000.123456789] [talker]: Publishing: 'Hello World: 1'
    [INFO] [1790072001.123456789] [talker]: Publishing: 'Hello World: 2'
 
-   # ターミナルB（Pythonのlistener）
+   # T2（Pythonのlistener）
    [INFO] [1790072001.124567890] [listener]: I heard: [Hello World: 2]
    ```
 
-   Aは1秒ごとに番号を増やしながら送り、Bは同じ番号の文を受け取る。C++で書かれた送信側とPythonで書かれた受信側がつながっており、ROS2の通信が言語をまたいで動くことの最初の確認になる。
+   T1は1秒ごとに番号を増やしながら送り、T2は同じ番号の文を受け取る。C++で書かれた送信側とPythonで書かれた受信側がつながっており、ROS2の通信が言語をまたいで動くことの最初の確認になる。
 
 なお `rqt` や `turtlesim` などGUIアプリの表示（WSLg）は、フェーズ1の1-2節で確認する。この手順書の完了条件には含めない。
 
@@ -244,7 +253,7 @@ cd ~/work/ros2MinimalPhysicalAi
 pwd
 ```
 
-期待する結果: `pwd` が `/home/<ユーザー名>/work/ros2MinimalPhysicalAi` と表示される。`mkdir` と `cd` は、成功しても何も表示しない。
+**期待する結果**: `pwd` が `/home/<ユーザー名>/work/ros2MinimalPhysicalAi` と表示される。`mkdir` と `cd` は、成功しても何も表示しない。
 
 - `/mnt/c`・`/mnt/d` の下（Windows側のドライブ）は使わない。WindowsとLinuxのファイルシステムをまたぐため、ビルドが大幅に遅くなる。
 - この教材のリポジトリを手元に置いて読む場合は、フォルダを作る代わりに、`~/work` の下へ `git clone` してもよい（リポジトリが公開されていれば、HTTPSのURLで認証なしにclone できる。非公開の場合は7節の認証が要る）。フォルダ名が `ros2MinimalPhysicalAi` になるので、以降の手順書のパスはそのまま使える。

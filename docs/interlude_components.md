@@ -76,7 +76,7 @@ ros2 pkg create --build-type ament_cmake \
 - `rclcpp_components` は、コンポーネントを登録するためのマクロとCMakeの関数を持つパッケージ。
 - **`--dependencies` は、パッケージ名の直前に置かない**。このオプションは値をいくつでも取るので、`--dependencies rclcpp rclcpp_components std_msgs learn_components` と書くと、パッケージ名まで依存の一部として読まれ、「パッケージ名が無い」というエラーになる（手順書の作成時に実際に起きた）。上のように、後ろに別のオプションを続ければよい。
 
-期待する結果（抜粋）:
+**期待する結果**（抜粋）:
 
 ```text
 going to create a new package
@@ -259,7 +259,7 @@ ros2 component types
 ros2 pkg executables learn_components
 ```
 
-期待する結果（`ros2 component types` は抜粋。ROS2本体のパッケージのコンポーネントも多数並ぶ）:
+**期待する結果**（`ros2 component types` は抜粋。ROS2本体のパッケージのコンポーネントも多数並ぶ）:
 
 ```text
 Starting >>> learn_components
@@ -303,7 +303,7 @@ ros2 component list
 ros2 component unload /ComponentManager 1
 ```
 
-期待する結果:
+**期待する結果**:
 
 ```text
 # T2
@@ -349,7 +349,7 @@ ros2 run learn_components talker_node
 ros2 run learn_components listener_node
 ```
 
-期待する結果: 表示はフェーズ3-1の3-3節（C++版はフェーズ3-1の4-3節）と同じで、T1に `[talker]: publish: hello N`、T2に `[listener]: received: hello N` が出る。
+**期待する結果**: 表示はフェーズ3-1の3-3節（C++版はフェーズ3-1の4-3節）と同じで、T1に `[talker]: publish: hello N`、T2に `[listener]: received: hello N` が出る。
 
 ```text
 # T1（talker_node）
@@ -437,7 +437,7 @@ ros2 launch learn_bringup components.launch.py --print
 ros2 launch learn_bringup components.launch.py
 ```
 
-期待する結果（`--print`。`0x...` のアドレスは毎回変わる）:
+**期待する結果**（`--print`。`0x...` のアドレスは毎回変わる）:
 
 ```text
 <launch.launch_description.LaunchDescription object at 0x74117d743680>
@@ -446,7 +446,7 @@ ros2 launch learn_bringup components.launch.py
 
 起動されるプロセスは `component_container` の1つだけで、`talker` や `listener` は木に出てこない。コンポーネントは、プロセスが起動した後にコンテナへ読み込まれる「中身」だからである。
 
-期待する結果（起動。抜粋）:
+**期待する結果**（起動。抜粋）:
 
 ```text
 [INFO] [component_container-1]: process started with pid [13000]
@@ -484,7 +484,7 @@ $ ros2 component list
 ros2 run learn_py listener
 ```
 
-期待する結果: Python版の `listener` も、コンテナの中の `talker` からのメッセージを受け取る。
+**期待する結果**: Python版の `listener` も、コンテナの中の `talker` からのメッセージを受け取る。
 
 ```text
 [INFO] [1790292300.110500000] [listener]: received: hello 99

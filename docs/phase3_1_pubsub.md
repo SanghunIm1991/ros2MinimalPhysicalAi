@@ -332,7 +332,7 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
-期待する結果（ビルド）: 次のように `Finished` と `Summary` の行が出れば成功。秒数は環境によって変わる。`Failed` や `Aborted` が出たら、その上に出ているエラー文を読む。
+**期待する結果**（ビルド）: 次のように `Finished` と `Summary` の行が出れば成功。秒数は環境によって変わる。`Failed` や `Aborted` が出たら、その上に出ているエラー文を読む。
 
 ```text
 Starting >>> learn_py
@@ -350,7 +350,7 @@ ros2 run learn_py talker
 ros2 run learn_py listener
 ```
 
-期待する結果: T1には1秒ごとに1行ずつ送信のログが出て、T2には同じ文字列を受信したログが出る。Ctrl+Cで止めるまで続く。
+**期待する結果**: T1には1秒ごとに1行ずつ送信のログが出て、T2には同じ文字列を受信したログが出る。Ctrl+Cで止めるまで続く。
 
 ```text
 # T1（talker）
@@ -369,7 +369,7 @@ ros2 run learn_py listener
 
 `sine_pub` / `sine_sub` も同様に動かす。
 
-期待する結果: `sine_pub` はログを出さないので、T1には何も表示されない（動いていないわけではない）。`sine_sub` 側には1秒に10行、小数点以下3桁の値が出る。値は0.1秒ごとに少しずつ変わり、約2秒で-1〜1を1往復する。
+**期待する結果**: `sine_pub` はログを出さないので、T1には何も表示されない（動いていないわけではない）。`sine_sub` 側には1秒に10行、小数点以下3桁の値が出る。値は0.1秒ごとに少しずつ変わり、約2秒で-1〜1を1往復する。
 
 ```text
 # T2（sine_sub）
@@ -701,7 +701,7 @@ ros2 run learn_cpp talker
 ros2 run learn_cpp listener
 ```
 
-期待する結果: ビルドの表示は3-3と同じ形（`Finished <<< learn_cpp` と `Summary: 1 package finished`）。Pythonより時間がかかり、コンパイルの進行中は `[Processing: learn_cpp]` のような表示が出ることがある。実行時のログはPython版と同じ形式で、本文も同じ文言にしてある。
+**期待する結果**: ビルドの表示は3-3と同じ形（`Finished <<< learn_cpp` と `Summary: 1 package finished`）。Pythonより時間がかかり、コンパイルの進行中は `[Processing: learn_cpp]` のような表示が出ることがある。実行時のログはPython版と同じ形式で、本文も同じ文言にしてある。
 
 ```text
 # T1（talker）
@@ -729,7 +729,7 @@ ros2 topic hz /sine              # 約10 Hzになること
 rqt_graph                        # GUIのウィンドウが開く
 ```
 
-期待する結果: `talker`・`listener`・`sine_pub`・`sine_sub` の4つを動かしている場合の例（抜粋）。
+**期待する結果**: `talker`・`listener`・`sine_pub`・`sine_sub` の4つを動かしている場合の例（抜粋）。
 
 ```text
 $ ros2 node list
@@ -795,7 +795,7 @@ average rate: 10.000
 | C++ → Python | `ros2 run learn_cpp talker` | `ros2 run learn_py listener` |
 | C++ → C++ | `ros2 run learn_cpp talker` | `ros2 run learn_cpp listener` |
 
-期待する結果: 4つの組み合わせすべてで、3-3と同じ表示（T1に `publish: hello N`、T2に `received: hello N`）になる。組み合わせによってログの見た目が変わることはない。どれか1つでもT2に何も出ない場合は、その組み合わせで使っているパッケージのビルドと `source` を確認する。
+**期待する結果**: 4つの組み合わせすべてで、3-3と同じ表示（T1に `publish: hello N`、T2に `received: hello N`）になる。組み合わせによってログの見た目が変わることはない。どれか1つでもT2に何も出ない場合は、その組み合わせで使っているパッケージのビルドと `source` を確認する。
 
 > 課題1: `ros2 topic info /chatter -v` で、PublisherとSubscriberのノード名・型・QoSを確認する。言語が違っても、表示が同じ形式になることを確認する。
 >

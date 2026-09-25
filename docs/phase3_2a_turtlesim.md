@@ -153,7 +153,7 @@ colcon build --symlink-install --packages-select learn_py
 source install/setup.bash
 ```
 
-期待する結果: フェーズ3-1と同じく、`Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功。`ros2 pkg executables learn_py` を実行すると、今回足した `learn_py turtle_circle` の行が、既存の実行ファイルと一緒に並ぶ。
+**期待する結果**: フェーズ3-1と同じく、`Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功。`ros2 pkg executables learn_py` を実行すると、今回足した `learn_py turtle_circle` の行が、既存の実行ファイルと一緒に並ぶ。
 
 ## 5. C++版（`ws/src/learn_cpp`）
 
@@ -258,7 +258,7 @@ colcon build --symlink-install --packages-select learn_cpp
 source install/setup.bash
 ```
 
-期待する結果: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`find_package(geometry_msgs REQUIRED)` を書き忘れていると、ここで `Failed <<< learn_cpp` になり、その上に `geometry_msgs` が見つからないという趣旨のCMakeのエラーが出る（8節）。
+**期待する結果**: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`find_package(geometry_msgs REQUIRED)` を書き忘れていると、ここで `Failed <<< learn_cpp` になり、その上に `geometry_msgs` が見つからないという趣旨のCMakeのエラーが出る（8節）。
 
 ## 6. 実験: Twistでturtlesimを動かす
 
@@ -272,7 +272,7 @@ ros2 run learn_py turtle_circle
 ros2 run learn_cpp turtle_circle
 ```
 
-期待する結果:
+**期待する結果**:
 
 - `turtle_circle` はログを出さないので、T2には何も表示されない。変化はturtlesimのウィンドウに現れる。
 - 亀は画面の中央から右向きに動き出し、左回り（反時計回り）に円を描き続ける。半径は `linear.x / angular.z = 2.0 / 1.0 = 2`（画面の一辺は約11）で、1周にかかる時間は `2π / angular.z` ≒ 6.3秒。通った跡に白い円が残る。
