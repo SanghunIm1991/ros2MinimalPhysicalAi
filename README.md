@@ -94,6 +94,7 @@ flowchart TB
 | 文書 | 内容 | 読める時期 |
 |---|---|---|
 | [参考資料: Nodeクラスの構造](docs/reference_node_class.md) | `rclpy` と `rclcpp` の `Node` クラスの中身を、クラス図で読み解く | フェーズ3-1（上の表の5）の後、いつでも |
+| [Tips集](docs/tips.md) | 本文に入れなかった小さな補足（シミュレーション時刻、`CMakeLists.txt` の読み方、ビルド中の `SetuptoolsDeprecationWarning`） | 関係する手順書を読んでいるとき（項目ごとに独立） |
 
 ## 計画と記録の文書
 

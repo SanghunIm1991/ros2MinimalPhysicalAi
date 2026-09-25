@@ -248,7 +248,7 @@ Summary: 2 packages finished [11.1s]
 ```
 
   2つのパッケージは並行してビルドされるので、`Starting` が2行続けて出る。先に終わった方から `Finished` が出る（C++はコンパイルがある分、遅れて終わることが多い）。
-- Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい。
+- Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい（警告の意味と、無視してよい理由は `docs/tips.md` の3節）。
 
 確認:
 
