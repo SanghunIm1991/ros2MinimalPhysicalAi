@@ -1,38 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 440" width="660" height="440" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: QoSの互換性。reliable/best_effort/transient_local/volatileのつながる組合せとつながらない組合せ">
-<title>図: QoSの互換性。reliable/best_effort/transient_local/volatileのつながる組合せとつながらない組合せ</title>
-<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker><marker id="abs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker></defs>
-<rect x="0" y="0" width="660" height="440" fill="#ffffff"/>
-<g transform="translate(-5.2,17.0)" fill="#1a1a1a">
-<rect x="29.2" y="7.0" width="594.2" height="222.0" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
-<text x="41.2" y="29.0" font-weight="bold" fill="#444">つながる</text>
-<path d="M220.4,70.0 L449.6,70.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M220.4,130.0 L436.6,130.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M250.8,190.0 L449.6,190.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<rect x="46.6" y="227.0" width="594.2" height="172.0" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
-<text x="58.6" y="249.0" font-weight="bold" fill="#444">つながらない</text>
-<path d="M233.4,290.0 L449.6,290.0" fill="none" stroke="#c62828" stroke-width="1.6" stroke-dasharray="6 4"/>
-<path d="M220.4,360.0 L419.2,360.0" fill="none" stroke="#c62828" stroke-width="1.6" stroke-dasharray="6 4"/>
-<rect x="79.6" y="51.0" width="140.8" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="150.0" y="75.0" text-anchor="middle">Pub: reliable</text>
-<rect x="449.6" y="51.0" width="140.8" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="520.0" y="75.0" text-anchor="middle">Sub: reliable</text>
-<rect x="79.6" y="111.0" width="140.8" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="150.0" y="135.0" text-anchor="middle">Pub: reliable</text>
-<rect x="436.6" y="111.0" width="166.9" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="520.0" y="135.0" text-anchor="middle">Sub: best_effort</text>
-<rect x="49.2" y="171.0" width="201.6" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="150.0" y="195.0" text-anchor="middle">Pub: transient_local</text>
-<rect x="449.6" y="171.0" width="140.8" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="520.0" y="195.0" text-anchor="middle">Sub: volatile</text>
-<rect x="66.6" y="271.0" width="166.9" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="150.0" y="295.0" text-anchor="middle">Pub: best_effort</text>
-<rect x="449.6" y="271.0" width="140.8" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="520.0" y="295.0" text-anchor="middle">Sub: reliable</text>
-<text x="341.5" y="277.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">非互換 ✕</text>
-<rect x="79.6" y="341.0" width="140.8" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="150.0" y="365.0" text-anchor="middle">Pub: volatile</text>
-<rect x="419.2" y="341.0" width="201.6" height="38.0" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<text x="520.0" y="365.0" text-anchor="middle">Sub: transient_local</text>
-<text x="319.8" y="347.0" text-anchor="middle" fill="#333333" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">非互換 ✕</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 506" width="720" height="506" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: QoSの相性。reliabilityの①〜④とdurabilityの⑤〜⑦について、配信側と購読側の組み合わせごとに、つながるかどうかを示す">
+<title>図: QoSの相性。reliabilityの①〜④とdurabilityの⑤〜⑦について、配信側と購読側の組み合わせごとに、つながるかどうかを示す</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="720" height="506" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="20" y="48" width="680" height="240" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
+<rect x="20" y="302" width="680" height="190" rx="10" fill="#fafafa" stroke="#999" stroke-dasharray="6 4"/>
+<path d="M280.0,106 L500.0,106" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M280.0,156 L500.0,156" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M280.0,206 L500.0,206" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M280.0,256 L500.0,256" fill="none" stroke="#c62828" stroke-width="1.6" stroke-dasharray="6 4"/>
+<path d="M280.0,360 L500.0,360" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M280.0,410 L500.0,410" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M280.0,460 L500.0,460" fill="none" stroke="#c62828" stroke-width="1.6" stroke-dasharray="6 4"/>
+<rect x="100.0" y="88.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="500.0" y="88.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="100.0" y="138.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="500.0" y="138.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="100.0" y="188.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="500.0" y="188.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="100.0" y="238.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="500.0" y="238.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="100.0" y="342.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="500.0" y="342.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="100.0" y="392.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="500.0" y="392.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="100.0" y="442.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="500.0" y="442.0" width="180" height="36" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="190" y="30" text-anchor="middle" font-weight="bold">qos_talker（配信側・提供する）</text>
+<text x="590" y="30" text-anchor="middle" font-weight="bold">qos_listener（購読側・要求する）</text>
+<text x="34" y="72" font-weight="bold" fill="#444">reliability（信頼性）: 届かなかったメッセージを再送するか</text>
+<text x="58" y="111" text-anchor="middle" font-size="18">①</text>
+<text x="190" y="111" text-anchor="middle">reliable</text>
+<text x="590" y="111" text-anchor="middle">reliable</text>
+<text x="58" y="161" text-anchor="middle" font-size="18">②</text>
+<text x="190" y="161" text-anchor="middle">reliable</text>
+<text x="590" y="161" text-anchor="middle">best_effort</text>
+<text x="58" y="211" text-anchor="middle" font-size="18">③</text>
+<text x="190" y="211" text-anchor="middle">best_effort</text>
+<text x="590" y="211" text-anchor="middle">best_effort</text>
+<text x="58" y="261" text-anchor="middle" font-size="18">④</text>
+<text x="190" y="261" text-anchor="middle">best_effort</text>
+<text x="590" y="261" text-anchor="middle">reliable</text>
+<text x="34" y="326" font-weight="bold" fill="#444">durability（持続性）: 後から来た購読側に、過去のメッセージを渡すか</text>
+<text x="58" y="365" text-anchor="middle" font-size="18">⑤</text>
+<text x="190" y="365" text-anchor="middle">transient_local</text>
+<text x="590" y="365" text-anchor="middle">transient_local</text>
+<text x="58" y="415" text-anchor="middle" font-size="18">⑥</text>
+<text x="190" y="415" text-anchor="middle">transient_local</text>
+<text x="590" y="415" text-anchor="middle">volatile</text>
+<text x="58" y="465" text-anchor="middle" font-size="18">⑦</text>
+<text x="190" y="465" text-anchor="middle">volatile</text>
+<text x="590" y="465" text-anchor="middle">transient_local</text>
+<text x="390.0" y="99" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">つながる</text>
+<text x="390.0" y="149" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">つながる</text>
+<text x="390.0" y="199" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">つながる</text>
+<text x="390.0" y="249" text-anchor="middle" font-size="12" fill="#c62828" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">✕ つながらない</text>
+<text x="390.0" y="353" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">つながる（過去分も届く）</text>
+<text x="390.0" y="403" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">つながる（過去分は届かない）</text>
+<text x="390.0" y="453" text-anchor="middle" font-size="12" fill="#c62828" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">✕ つながらない</text>
 </g>
 </svg>

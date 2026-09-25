@@ -31,27 +31,31 @@
 
 同じトピック `qos_test` を、送り手 `qos_talker` と受け手 `qos_listener` でやり取りする。どちらもQoSを起動時のパラメータで切り替えられるようにしておき、組み合わせを変えて「つながる / つながらない」を観察する。
 
-QoSの相性は、購読側の「要求」を、配信側の「提供」が満たせるかで決まる:
+QoSの相性は、購読側の「要求」を、配信側の「提供」が満たせるかで決まる。この教材で扱うQoSの設定は、reliability（信頼性）とdurability（持続性）の2つで、それぞれの組み合わせは次の図のとおり。図の番号①〜⑦は、2-2節の表（5節の実験で試す組み合わせ）の番号と同じ。
 
-![QoSの互換性。reliable/best_effort/transient_local/volatileのつながる組合せとつながらない組合せ](img/phase3_2_qos.svg)
+![QoSの相性。reliabilityの①〜④とdurabilityの⑤〜⑦について、配信側と購読側の組み合わせごとに、つながるかどうかを示す](img/phase3_2_qos.svg)
 
 <details>
 <summary>同じ図（mermaid版）</summary>
 
 ```mermaid
 flowchart LR
-    subgraph OK["つながる"]
-        A1["Pub: reliable"] --> B1["Sub: reliable"]
-        A2["Pub: reliable"] --> B2["Sub: best_effort"]
-        A3["Pub: transient_local"] --> B3["Sub: volatile"]
+    subgraph REL["reliability（信頼性）: 届かなかったメッセージを再送するか"]
+        P1["① Pub: reliable"] -- つながる --> S1["Sub: reliable"]
+        P2["② Pub: reliable"] -- つながる --> S2["Sub: best_effort"]
+        P3["③ Pub: best_effort"] -- つながる --> S3["Sub: best_effort"]
+        P4["④ Pub: best_effort"] -. ✕ つながらない .- S4["Sub: reliable"]
     end
-    subgraph NG["つながらない"]
-        A4["Pub: best_effort"] -. 非互換 .- B4["Sub: reliable"]
-        A5["Pub: volatile"] -. 非互換 .- B5["Sub: transient_local"]
+    subgraph DUR["durability（持続性）: 後から来た購読側に、過去のメッセージを渡すか"]
+        P5["⑤ Pub: transient_local"] -- つながる（過去分も届く） --> S5["Sub: transient_local"]
+        P6["⑥ Pub: transient_local"] -- つながる（過去分は届かない） --> S6["Sub: volatile"]
+        P7["⑦ Pub: volatile"] -. ✕ つながらない .- S7["Sub: transient_local"]
     end
 ```
 
 </details>
+
+読み方の目安: 配信側（Pub）が購読側（Sub）の要求と同じか、それより手厚いものを提供していればつながる（`reliable` は `best_effort` より、`transient_local` は `volatile` より手厚い）。要求のほうが手厚いと、④と⑦のようにつながらない。
 
 ## 2. 仕様
 
