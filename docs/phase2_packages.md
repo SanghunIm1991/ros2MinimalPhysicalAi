@@ -40,7 +40,7 @@ flowchart TB
 
 </details>
 
-`build/`・`install/`・`log/` は `.gitignore` に登録済み（リポジトリ直下の `.gitignore`）。`src/` だけがGit管理の対象になる。
+一般に、ROS2のワークスペースでGitの管理対象にするのは `src/` だけで、`build/`・`install/`・`log/` の生成物は含めない（この教材のリポジトリでも、直下の `.gitignore` に登録してある）。なお、この教材のリポジトリでは、練習用のワークスペース `ws/` を丸ごと `.gitignore` で除外している。教材のリポジトリに、各自の練習コードが混ざらないようにするためである。練習コードもGitで管理したい場合の方法は、2-8節で扱う。
 
 ### 1-2. ビルドと実行の流れ
 
@@ -397,19 +397,32 @@ ros2 run learn_cpp hello    # 新しい文言になる
 ```bash
 cd ~/work/ros2MinimalPhysicalAi
 git status --short
+git check-ignore -v ws/src/learn_py/package.xml
 ```
 
-- **`ws/src` を一度もコミットしていない時点**（本フェーズで初めて実行する場合）: `?? ws/` の1行だけが出る。これは `ws/build`・`ws/install`・`ws/log` が `.gitignore` で除外されているからではなく、gitの既定動作（追跡ファイルが1つも無いディレクトリは中身を展開せず1行にまとめる）による。`ws/src/` だけが個別に出るわけではない。中身を個別に確認したい場合は `git status --short -uall` を使うと、`ws/src/...` 配下のファイルだけが列挙され、`ws/build`・`ws/install`・`ws/log` は（`.gitignore` どおり）出てこないことを確認できる（フェーズ3-3〜4の途中では、一時的に `ws/config/...` も出る。フェーズ4で移すのでコミットしない）。
-- **`ws/src` を一度コミットした後**: 変更が無ければ何も出ない（クリーン）。新しいファイルを `ws/src` 配下に追加した場合は、そのファイルのパス（例: `?? ws/src/learn_py/learn_py/new_node.py`）だけが個別に出る。
+期待する結果: `git status --short` には、`ws/` に関する行が1行も出ない（他に変更が無ければ、何も表示されない）。この教材のリポジトリは `.gitignore` に `ws/` を登録していて、ワークスペース全体がGitの管理外になっているためである。`git check-ignore -v` は、そのファイルがどの設定で除外されているかを表示するコマンドで、次のように出る（`29` は `.gitignore` の中の行番号で、`.gitignore` の中身によって変わる）。
 
-あわせて、Public化前提のため、次を確認する:
+```text
+.gitignore:29:ws/	ws/src/learn_py/package.xml
+```
+
+「`.gitignore` の29行目の `ws/` という指定で、このファイルが除外されている」と読む。
+
+**練習コードもGitで管理したい場合**は、次のどちらかにする。
+
+- **自分のクローンの `.gitignore` から `ws/` の行を消す**: `build/`・`install/`・`log/` の行は残るので、生成物は引き続き除外される。消した後に `git status --short` を実行すると、次のように表示が変わる。
+  - **`ws/src` を一度もコミットしていない時点**: `?? ws/` の1行だけが出る。これは `ws/build`・`ws/install`・`ws/log` が `.gitignore` で除外されているからではなく、gitの既定動作（追跡ファイルが1つも無いディレクトリは中身を展開せず1行にまとめる）による。`ws/src/` だけが個別に出るわけではない。中身を個別に確認したい場合は `git status --short -uall` を使うと、`ws/src/...` 配下のファイルだけが列挙され、`ws/build`・`ws/install`・`ws/log` は（`.gitignore` どおり）出てこないことを確認できる（フェーズ3-3〜4の途中では、一時的に `ws/config/...` も出る。フェーズ4で移すのでコミットしない）。
+  - **`ws/src` を一度コミットした後**: 変更が無ければ何も出ない（クリーン）。新しいファイルを `ws/src` 配下に追加した場合は、そのファイルのパス（例: `?? ws/src/learn_py/learn_py/new_node.py`）だけが個別に出る。
+- **`ws/` を別のGitリポジトリとして管理する**: `ws/` の中で `git init` し、教材のリポジトリとは独立に管理する。この場合も、`ws/` の中に `.gitignore` を作って `build/`・`install/`・`log/` を除外する。
+
+練習コードをGitで管理し、いつか公開する可能性があるなら、次も確認する:
 
 ```bash
 grep -n 'maintainer' ws/src/learn_py/package.xml ws/src/learn_cpp/package.xml
 grep -n 'maintainer' ws/src/learn_py/setup.py
 ```
 
-実メールアドレスが入っていないこと（`noreply@example.com` であること）。確認できたら、自分のリポジトリの規約に従ってコミットする（`ws/src` だけをコミットし、`ws/build`・`ws/install`・`ws/log` は含めない）。
+実メールアドレスが入っていないこと（`noreply@example.com` であること）。確認できたら、自分のリポジトリの規約に従ってコミットする（`ws/src` だけをコミットし、`ws/build`・`ws/install`・`ws/log` は含めない）。練習コードをGitで管理しない場合は、この確認とコミットは要らない。
 
 ## 3. Python版とC++版の違いのまとめ
 
