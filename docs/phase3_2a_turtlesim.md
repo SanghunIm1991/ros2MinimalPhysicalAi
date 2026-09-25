@@ -18,7 +18,7 @@
 
 必須:
 
-1. `geometry_msgs/msg/Twist` をpublishして、turtlesimを自作ノードから動かせる（フェーズ1で `ros2 topic pub` でやったことをコードで行う。Python版）。
+1. [`geometry_msgs/msg/Twist`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Twist.msg) をpublishして、turtlesimを自作ノードから動かせる（フェーズ1で `ros2 topic pub` でやったことをコードで行う。Python版）。
 2. 新しい依存パッケージ（`geometry_msgs`）を `package.xml` に足す手順を理解する。
 
 任意（発展。余力があれば）:

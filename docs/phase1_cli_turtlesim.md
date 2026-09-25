@@ -18,7 +18,7 @@
 
 完了条件（すべて満たす）:
 
-1. `/turtle1/cmd_vel` の型が `geometry_msgs/msg/Twist` であることを `ros2 interface show` で確認し、フィールドの意味（直進速度・回転速度）を説明できる。
+1. `/turtle1/cmd_vel` の型が [`geometry_msgs/msg/Twist`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Twist.msg) であることを `ros2 interface show` で確認し、フィールドの意味（直進速度・回転速度）を説明できる。
 2. `ros2 topic pub` で亀を動かせる。
 3. トピック・サービス・パラメータ・アクションを、それぞれ1回以上コマンドで操作できる。
 4. 4つの通信の違い（誰が誰に、一方向か往復か、途中経過があるか）を、自分の言葉で説明できる。
@@ -441,7 +441,7 @@ turtlesim.srv.Spawn_Response(name='turtle2')
 
 - `service list` には、ノードごとに自動で作られるパラメータ用のサービス（`describe_parameters` など）が多数並ぶ。自分で使うのは上の `/clear` や `/spawn` など。
 - `interface show` の `---` より上が要求（Request）、下が応答（Response）。サービスの型は、この2つの組である。
-- `/clear` を呼ぶと、画面上の軌跡（白い線）が消える。応答は空（`Empty_Response()`）で、「終わった」ことだけが返る。
+- `/clear` を呼ぶと、画面上の軌跡（白い線）が消える。`/clear` の型は [`std_srvs/srv/Empty`](https://github.com/ros2/common_interfaces/blob/jazzy/std_srvs/srv/Empty.srv) で、要求にも応答にも中身が無い。応答は空（`Empty_Response()`）で、「終わった」ことだけが返る。
 - `/spawn` を呼ぶと、画面の左下寄り（x=2, y=2）に2匹目の亀が現れ、応答として付けられた名前 `turtle2` が返る（`name` を空にしたので自動で付いた）。
 
 `/spawn` の後で `ros2 topic list` を実行すると、2匹目の亀（`/turtle2/...`）用のトピックが増える。ノード名や名前空間で対象が区別されることを確認する。

@@ -36,7 +36,7 @@
 
 ### 1-3. 仕組み: `/clock` トピック
 
-シミュレーションの時刻は、`/clock` というトピック（型は `rosgraph_msgs/msg/Clock`）で配られる。`use_sim_time` が `true` のノードは、このトピックを自動で購読し、届いた時刻を自分の時計の現在時刻にする。rclpyのソース（`rclpy/time_source.py`）では、この購読のQoSは `best_effort`・depth 1になっている（最新の時刻だけが大事なので、取りこぼしても再送しない）。
+シミュレーションの時刻は、`/clock` というトピック（型は [`rosgraph_msgs/msg/Clock`](https://github.com/ros2/rcl_interfaces/blob/jazzy/rosgraph_msgs/msg/Clock.msg)）で配られる。`use_sim_time` が `true` のノードは、このトピックを自動で購読し、届いた時刻を自分の時計の現在時刻にする。rclpyのソース（`rclpy/time_source.py`）では、この購読のQoSは `best_effort`・depth 1になっている（最新の時刻だけが大事なので、取りこぼしても再送しない）。
 
 Gazeboの場合、時刻はまずGazeboの側の `/clock` に出る（フェーズ5-0の2-1節の `gz topic -l` の一覧にある）。ROS2のノードに届けるには、ほかのトピックと同じくブリッジが必要である。
 

@@ -100,7 +100,7 @@ Released under the Apache 2.0 License.
 
 どちらの車両にも、Gazeboの「DiffDrive」プラグイン（左右の車輪の回転速度の差で進む・曲がる2輪車を動かす部品）が付いている。DiffDriveは、速度指令（前進の速さと旋回の速さ）を受け取って左右の車輪を回し、車輪の回転からオドメトリを計算して送り出す。表の値はワールドファイル（`/opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf`）から読み取ったもの。
 
-ここで大事なのは、**Gazeboは、ROS2とは別の通信の仕組み（gz-transport）でトピックをやり取りする**という点である。Gazeboの車両が待っている指令は、ROS2の `geometry_msgs/msg/Twist` ではなく、Gazeboの型 `gz.msgs.Twist` で届く必要がある。この2つの世界をつなぐのが `ros_gz_bridge` の `parameter_bridge` で、型を変換しながらメッセージを中継する。
+ここで大事なのは、**Gazeboは、ROS2とは別の通信の仕組み（gz-transport）でトピックをやり取りする**という点である。Gazeboの車両が待っている指令は、ROS2の [`geometry_msgs/msg/Twist`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Twist.msg) ではなく、Gazeboの型 `gz.msgs.Twist` で届く必要がある。この2つの世界をつなぐのが `ros_gz_bridge` の `parameter_bridge` で、型を変換しながらメッセージを中継する。
 
 ![ROS2側のノードとGazeboの車両のあいだを、parameter_bridgeが型を変換して中継する](img/phase5_0_bridge.svg)
 
@@ -360,7 +360,7 @@ twist:
   ...
 ```
 
-`nav_msgs/msg/Odometry` の読み方:
+[`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg) の読み方:
 
 | フィールド | 意味 |
 |---|---|

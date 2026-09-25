@@ -57,7 +57,7 @@ flowchart LR
 | 項目 | 内容 |
 |---|---|
 | パッケージ | `learn_components`（`ament_cmake`、新規）。フェーズ3-1の `learn_cpp` は変更せず、そのまま残す |
-| コンポーネント | `learn_components::Talker`、`learn_components::Listener`。振る舞いはフェーズ3-1の `talker` / `listener` と同じ（トピック `chatter`、型 `std_msgs/msg/String`、1秒ごとに `hello N`、受信したら `received: ...`） |
+| コンポーネント | `learn_components::Talker`、`learn_components::Listener`。振る舞いはフェーズ3-1の `talker` / `listener` と同じ（トピック `chatter`、型 [`std_msgs/msg/String`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/String.msg)、1秒ごとに `hello N`、受信したら `received: ...`） |
 | ライブラリ | 2つのコンポーネントを、共有ライブラリ `libpubsub_components.so` にまとめる |
 | 単独の実行ファイル | `talker_node`、`listener_node`（ビルド時に自動で作らせる。`main` は自分では書かない） |
 | launch | `learn_bringup` に `components.launch.py` を足す。コンテナを1つ起動し、2つのコンポーネントを読み込む |

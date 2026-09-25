@@ -6,7 +6,7 @@
 - 前提: フェーズ3-1〜3-3完了
 - 所要目安: 1コマ
 - 言語: **Python**（C++版は任意）
-- 使う標準インターフェース: `example_interfaces/srv/AddTwoInts`、`std_srvs/srv/Trigger`
+- 使う標準インターフェース: [`example_interfaces/srv/AddTwoInts`](https://github.com/ros2/example_interfaces/blob/jazzy/srv/AddTwoInts.srv)、[`std_srvs/srv/Trigger`](https://github.com/ros2/common_interfaces/blob/jazzy/std_srvs/srv/Trigger.srv)
 
 > **このフェーズの位置づけ（概要を掴む程度でよい）**: サービスは、フェーズ5の車両シミュレーションでは使わない（ノード同士はトピックでつなぎ、ゲインはパラメータで変える）。ここでは「サービスは1回の要求に1回の応答を返す通信で、トピックとはこう使い分ける」という概念と、CLIからサービスを呼ぶ方法を掴めば十分である。なお、フェーズ3-3の `ros2 param set` も、裏ではノードが自動で持つパラメータ用のサービスを呼んでいる。
 >
@@ -89,7 +89,7 @@ bool success   # indicate successful run of triggered service
 string message # informational, e.g. for error messages
 ```
 
-`---` の上が要求（Request）、下が応答（Response）。`Trigger` は `---` の上に何も無い、つまり要求が空の型である。
+`---` の上が要求（Request）、下が応答（Response）。`Trigger` は `---` の上に何も無い、つまり要求が空の型である。各行は「型 名前」の形で、`int64`（64ビットの整数）・`bool`（真偽値）・`string`（文字列）は、ROS2のメッセージで使える基本の型である。基本の型の一覧は、公式ドキュメントの [Interfaces — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Interfaces.html) の「Field types」の節にある。
 
 ## 2. 仕様
 
@@ -105,7 +105,7 @@ string message # informational, e.g. for error messages
 | 項目 | 内容 |
 |---|---|
 | ノード名・実行ファイル名 | `counter_node`（Python版・C++版で同一） |
-| トピック（型） | `counter`（`std_msgs/msg/Int32`）に、1秒ごとにカウントアップした値を送る（0から） |
+| トピック（型） | `counter`（[`std_msgs/msg/Int32`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Int32.msg)）に、1秒ごとにカウントアップした値を送る（0から） |
 | サービス（型） | `reset_counter`（`std_srvs/srv/Trigger`）。呼ばれたらカウントを0に戻し、`success=true`、`message` に「リセット前の値」を入れて返す |
 
 ## 3. 準備: 依存の追加

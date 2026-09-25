@@ -59,9 +59,9 @@ sequenceDiagram
 
 | ノード | 役割 | トピック（型） | 動作 |
 |---|---|---|---|
-| `talker` | Publisher | `chatter`（`std_msgs/msg/String`） | 1秒ごとに `hello 0`, `hello 1`, ... を送り、送った内容をログに出す |
+| `talker` | Publisher | `chatter`（[`std_msgs/msg/String`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/String.msg)） | 1秒ごとに `hello 0`, `hello 1`, ... を送り、送った内容をログに出す |
 | `listener` | Subscriber | `chatter`（`std_msgs/msg/String`） | 受信した文字列をログに出す |
-| `sine_pub` | Publisher | `sine`（`std_msgs/msg/Float64`） | 10 Hz（0.1秒周期）で、時刻 t に対して `sin(2π × 0.5 × t)` の値を送る（周期2秒の正弦波） |
+| `sine_pub` | Publisher | `sine`（[`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg)） | 10 Hz（0.1秒周期）で、時刻 t に対して `sin(2π × 0.5 × t)` の値を送る（周期2秒の正弦波） |
 | `sine_sub` | Subscriber | `sine`（`std_msgs/msg/Float64`） | 受信した値をログに出す |
 
 - キューの深さ（QoSの `depth`）は10とする（QoSはフェーズ3-2bで扱う）。
@@ -789,7 +789,7 @@ average rate: 10.000
 ```
 
 - `ros2 node list` はノード名を `/` 付きで、アルファベット順に並べる。起動していないノードは出てこない。
-- `ros2 topic list -t` には、自分で作っていない `/parameter_events` と `/rosout` も出る。どちらもノードが自動で作るトピックで、`/rosout` はログの集約先。
+- `ros2 topic list -t` には、自分で作っていない `/parameter_events` と `/rosout` も出る。どちらもノードが自動で作るトピックで、`/rosout` はログの集約先。型はそれぞれ [`rcl_interfaces/msg/ParameterEvent`](https://github.com/ros2/rcl_interfaces/blob/jazzy/rcl_interfaces/msg/ParameterEvent.msg)（パラメータの変更の通知）と [`rcl_interfaces/msg/Log`](https://github.com/ros2/rcl_interfaces/blob/jazzy/rcl_interfaces/msg/Log.msg)（ログの1行）。
 - `ros2 topic info -v` の `History (Depth): KEEP_LAST (10)` の `10` は、コードで渡したdepthの値。`GID` や `Topic type hash` など、上の抜粋より多くの行が出る。
 - `ros2 topic echo` はメッセージを `---` で区切って表示する。`sine_sub` のログと違って書式を指定していないため、桁の多い表示になる。
 - `ros2 topic hz` は数秒ごとに集計を出し直す。`average rate` が10前後なら仕様どおり。

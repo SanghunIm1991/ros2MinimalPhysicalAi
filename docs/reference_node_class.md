@@ -208,7 +208,7 @@ C++版の `Node` が持つ変数（`private:` の部分）は、ほとんどが�
 
 ### 3-2. テンプレートのメソッド
 
-`create_publisher<std_msgs::msg::String>("chatter", 10)` のように、メッセージの型を `< >` で渡すメソッドは、C++のテンプレートである。Python版では型を普通の引数として渡していた（`create_publisher(String, 'chatter', 10)`）。テンプレートにすることで、コンパイルの時点で型が決まり、`publish` に違う型のメッセージを渡すとコンパイルエラーになる（フェーズ3-1の7節の「実行時エラーの出方」）。`declare_parameter<std::string>(...)` も同じで、宣言と同時に型の決まった値を返す。
+`create_publisher<std_msgs::msg::String>("chatter", 10)`（[型の定義](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/String.msg)） のように、メッセージの型を `< >` で渡すメソッドは、C++のテンプレートである。Python版では型を普通の引数として渡していた（`create_publisher(String, 'chatter', 10)`）。テンプレートにすることで、コンパイルの時点で型が決まり、`publish` に違う型のメッセージを渡すとコンパイルエラーになる（フェーズ3-1の7節の「実行時エラーの出方」）。`declare_parameter<std::string>(...)` も同じで、宣言と同時に型の決まった値を返す。
 
 ### 3-3. SharedPtr で返し、呼び出し側が持ち続ける
 

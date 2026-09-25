@@ -6,7 +6,7 @@
 - 前提: フェーズ3-1〜3-3完了。フェーズ3-4（サービス）は概要を掴んでいれば十分
 - 所要目安: 概要を掴むだけなら0.5コマ（1・2・6-1・7節を読む）。サンプルまで書いて動かす場合は2コマ（コード量が多い）
 - 言語: サンプルはPython・C++の両方（実装する場合も、C++版は任意）
-- 使う標準インターフェース: `example_interfaces/action/Fibonacci`（WSLの `/opt/ros/jazzy/share/example_interfaces/action/Fibonacci.action` で内容を確認済み）
+- 使う標準インターフェース: [`example_interfaces/action/Fibonacci`](https://github.com/ros2/example_interfaces/blob/jazzy/action/Fibonacci.action)（WSLの `/opt/ros/jazzy/share/example_interfaces/action/Fibonacci.action` で内容を確認済み）
 
 > **このフェーズの位置づけ（概要を掴む程度で構わない）**: アクションは、このプロジェクトのゴールであるフェーズ5の車両シミュレーション（プラント・PI制御・目標速度の3ノードをトピックでつなぎ、ゲインをパラメータで調整する）では使わない。ここで身に着けたいのは、「アクションは、時間のかかる処理にゴール・途中経過（feedback）・結果（result）・中断（cancel）を付けた通信で、サービスとはこう使い分ける」という**概念まで**である。ナビゲーション（Nav2）やアームの軌道実行など、将来アクションを使うOSSに触れたときに、何をしているかが分かれば十分。
 >

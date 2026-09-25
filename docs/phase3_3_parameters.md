@@ -73,7 +73,7 @@ sequenceDiagram
 |---|---|
 | ノード名・実行ファイル名 | `param_talker`（Python版・C++版で同一） |
 | 役割 | Publisher |
-| トピック（型） | `param_chatter`（`std_msgs/msg/String`） |
+| トピック（型） | `param_chatter`（[`std_msgs/msg/String`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/String.msg)） |
 | パラメータ | `message`（文字列、既定 `hello`）、`period`（実数、既定 `1.0` 秒） |
 | 動作 | `period` 秒ごとに `message` の内容を送り、ログにも出す |
 | 実行中の変更 | `message` は次の送信から反映する。`period` は**タイマーを作り直して**反映する。`period <= 0` は**拒否**する（変更前の値のまま） |
@@ -223,7 +223,7 @@ source install/setup.bash
 |---|---|
 | 宣言（既定値つき・値も返る） | `declare_parameter<double>("名前", 既定値)` |
 | 取得 | `get_parameter("名前").as_double()`、`.as_string()` |
-| 変更の検証・反映 | `add_on_set_parameters_callback(...)`、引数は `std::vector<rclcpp::Parameter>`、戻り値は `rcl_interfaces::msg::SetParametersResult` |
+| 変更の検証・反映 | `add_on_set_parameters_callback(...)`、引数は `std::vector<rclcpp::Parameter>`、戻り値は [`rcl_interfaces::msg::SetParametersResult`](https://github.com/ros2/rcl_interfaces/blob/jazzy/rcl_interfaces/msg/SetParametersResult.msg) |
 | ハンドルの保持 | 戻り値の `OnSetParametersCallbackHandle::SharedPtr` を**メンバに保存する**（捨てるとコールバックが無効になる） |
 | 周期が秒（実数）のタイマー | `create_wall_timer(std::chrono::duration<double>(period), ...)` |
 
