@@ -321,7 +321,7 @@ pwd
 
    **期待する結果**: `Cloning into 'ros2MinimalPhysicalAi'...` と表示され、`~/work` の下に同じ名前のフォルダができる。A（SSH）の場合は、途中で鍵のパスフレーズを聞かれる（入力した文字は表示されない）。
 
-   - Claude Codeにコミットさせる場合は、Claudeが関与したコミットを区別する規約（メッセージの接頭辞等）を、リポジトリの `CLAUDE.md` に書いておく（この教材のリポジトリの例は `CLAUDE.md` の「Git運用」を参照）。committerのメールアドレスには、実際のメールアドレスではなく、GitHubが用意するnoreplyのアドレスを使う（リポジトリ単位の `git config user.email` で設定する）。実際のメールアドレスは、一度コミットに入ると履歴から消すのが難しい。
+   - Claude Codeにコミットさせる場合は、Claudeが関与したコミットを区別する規約（メッセージの接頭辞等）を、リポジトリの `CLAUDE.md` に書いておく（この教材のリポジトリの例は `CLAUDE.md` の「Git運用」を参照）。コミットに記録されるメールアドレス（author・committerのどちらにも `user.email` が使われる）には、実際のメールアドレスではなく、GitHubが用意するnoreplyのアドレスを使う（リポジトリ単位の `git config user.email` で設定する）。実際のメールアドレスは、一度コミットに入ると履歴から消すのが難しい。
 3. **Claude Codeの導入**: Anthropic公式のClaude Codeのドキュメントで最新のインストール手順を確認し、その手順で導入する（リンク先は変わりうるため、公式サイトから探す）。出所の分からないスクリプトは使わない。
 4. **Claude Codeの設定を別のPCから引き継ぐ場合**: Claude Codeの設定ディレクトリ `~/.claude` は、Windows側から引き継がれない。自分の設定（グローバルのルール等）をGitHubのリポジトリで管理している場合は、ここへcloneする。
    - **Claude Codeを初めて起動する前に行う**（起動すると `~/.claude` が作られ、clone先が空でなくなる）。既に存在する場合は、中身を確認してから退避する（例: `mv ~/.claude ~/.claude.bak`）。
