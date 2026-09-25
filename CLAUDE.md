@@ -12,7 +12,7 @@
 
 ## Git運用
 
-- コミットは `git-conventions` スキルに従う（author `ClaudeCode <noreply@anthropic.com>`、接頭辞 `[claude]`）。
+- コミットは `git-conventions` スキルに従う（author・committerはユーザー本人のGitHubのnoreplyアドレス、接頭辞 `[claude]`、`Co-Authored-By` トレーラー）。
 - **`git push` は都度確認**（コミットとセットにしない）。GitHubリポジトリの作成・公開範囲の変更も実行前に承認を得る。
 - リポジトリは当面 **private**。ただし **Public化を前提**に、次を常に意識する。
   - セキュリティ: 認証情報・APIキー・個人情報・PC固有の機微情報を含めない。push前に追跡ファイルの内容と `git log` のメタデータ（author名・email）を機密スキャンする。
@@ -21,7 +21,8 @@
   - 手順書（`docs/phase*.md` と間章の `docs/interlude_components.md`）とTips集（`docs/tips.md`。雛形の `CMakeLists.txt` の各行とsetuptoolsの警告文を一部引用）と参考資料（`docs/reference_node_class.md`。`rclpy`・`rclcpp` のソースの構造を自分の言葉で解説したもの）は、公式チュートリアルの例と同等のコマンド・API利用パターンを含む。各冊の出典注記（CC BY 4.0、逐語の転載でない旨）と、`docs/phase1_cli_turtlesim.md` の「コマンド例の値は公式の例と同等」の記述を、Public化前に全冊で確認する。
   - `docs/img/`のSVGは、手順書のmermaid図と同内容の自作の図（生成スクリプトで作成）。権利上の問題はない想定だが、Public化前の棚卸しの対象に含め、第三者の図・ロゴ等が混入していないか確認する。
   - Public化の前には、上記を全履歴に対して精査し直す。
-  - **初期のコミットのcommitterに実メールアドレスが残っている**（2026-09-20〜23の29件。`c68b213`〜`35092f3`。authorは`ClaudeCode`だが、当時のローカルgit設定が実メールだった）。2026-09-24に設定をGitHubのnoreplyアドレスへ変えたので、それ以降のコミットは問題ない。加えて、コミット`4a87b6c`で追加した`docs/qa_log.md`の1行の本文にも実メールが平文で入っていた（2026-09-24に現在のファイルからは伏せたが、そのコミットの中身には残る）。どちらもpush済みで、GitHubのprivateリポジトリの履歴にも含まれる。履歴の書き換えは禁止操作のため、Public化時の選択肢は「履歴なしで新規リポジトリに作り直す」か「許容する」のどちらかで、実施前にユーザーへ判断を仰ぐ。2026-09-25に、ユーザーから「Windows側の環境で必要な対応をする」との回答があった。Public化の作業はユーザーがWindows側で行う前提とし、Claudeは求められたときに確認・手順の整理を手伝う。
+  - **履歴の実メールアドレスは、2026-09-25に全履歴から取り除いた**（`git-history-rewrite` スキルに従い、書き換えとforce pushはユーザーが実行）。全80コミットのauthor・committerをユーザーのnoreplyアドレスに直し、`docs/qa_log.md` の過去の版の本文にあった実メールも伏せた。これに伴い、2026-09-25以前のコミットIDはすべて変わった（`docs/qa_log.md` 等に書かれた古いコミットIDは、今の履歴には存在しない）。
+  - **Public化の前に残っている作業**: force pushの前の古いコミットは、GitHub上でIDを直接指定すると参照できる状態で残っている。Public化の前に、GitHubのリポジトリを削除して作り直しpushし直す（推奨）か、GitHubサポートへ削除を依頼する（ユーザーが実施）。また、書き換える前のクローン（WSL内等）からpushすると古い履歴が戻るため、古いクローンは削除してcloneし直す。バックアップ（実メールを含む）はリポジトリの外にあり、問題が無いことを確認した後にユーザーが削除する。
   - `docs/`内の実測PCスペック（RAM・ディスク容量等）もPC固有情報に近いため、Public化前の精査対象に含める。`docs/idea_origin.md`も、PCの機微性・スペック制約・グローバル安全ルールへの言及を含むため、名指しで精査対象とする。
 - 改行コードはLFに統一（`.gitattributes`）。
 
