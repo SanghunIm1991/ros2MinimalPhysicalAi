@@ -643,7 +643,7 @@ Python版クライアントと同じ役割。構造の違いは、Pythonが `Fut
 | `self.done = True` で `main` のループを抜ける | `rclcpp::shutdown()` で `spin` を終わらせる |
 
 - **`to_text`**: 数列を `[0, 1, 1]` の形の文字列にする補助関数。`RCLCPP_INFO` の書式（`%s`）にはそのまま配列を渡せないため。`.c_str()` で `const char *` に直して渡している。
-- **コンストラクタ**: `declare_parameter<int64_t>("order", 5)` で宣言と同時に値を受け取る（Pythonの `declare_parameter` → `get_parameter` の2手順を1回にした形）。ROSの整数パラメータは64ビットなので `int64_t`。ゴールに入れるときに `int32_t` へ `static_cast` している。
+- **コンストラクタ**: `declare_parameter<int64_t>("order", 5)` で宣言と同時に値を受け取る（このフェーズのPython版は、コンストラクタで宣言だけしておき、ゴールを送るときなどに `get_parameter(...).value` で読んでいる。C++版は、宣言と同時に受け取った値をメンバに保存する形にした。なお、Pythonの `declare_parameter` も値の入った `Parameter` を返すので、`declare_parameter(...).value` で宣言と同時に値を受け取ることもできる）。ROSの整数パラメータは64ビットなので `int64_t`。ゴールに入れるときに `int32_t` へ `static_cast` している。
 - **`send_goal`**: `wait_for_action_server(5s)` は、サーバが見つかるまで最大5秒ブロックする（`5s` は `chrono_literals` の書き方）。見つからなければ `shutdown()` して終える。ここはスピン前に呼んでいるので、待っている間は他のコールバックが動かないが、まだ何も登録していないので問題ない。
 - **`goal_response_callback`**: 引数は `GoalHandle::SharedPtr`。**拒否されたときは空（null）** で渡るので、`if (!goal_handle)` で判定する。受理なら `goal_handle_` に保存して、あとの中断で使う。`cancel_after_ > 0.0` ならタイマを作り、そのコールバックで1回だけ `async_cancel_goal(goal_handle_)` を呼ぶ。`create_wall_timer` は周期タイマなので、Python版と同じく `cancel()` で自分を止める。
 - **`feedback_callback`**: 第1引数（ゴールの取っ手）は使わないので名前なしで受け、第2引数の feedback から `sequence` を取る。
