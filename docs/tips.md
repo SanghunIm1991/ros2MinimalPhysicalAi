@@ -26,7 +26,7 @@
 - **現実の時刻**（`use_sim_time` が `false`。既定）: PCの時計そのもの。1秒は現実の1秒。
 - **シミュレーションの時刻**（`use_sim_time` が `true`）: シミュレータが「今、シミュレーションの中では何秒か」を知らせてくる時刻。シミュレータを一時停止すれば止まり、PCが重ければ現実よりゆっくり進む。
 
-フェーズ5-0の2-1節では、Gazeboが一時停止の状態で始まること、右下のRTF（シミュレーションの時間が現実の何倍の速さで進んでいるか）が100%を下回ることがあることを見た。このとき、シミュレーションの中の車両は「シミュレーションの時刻」で動いている。フェーズ5-0の4節で見たオドメトリの `header.stamp` も、Gazeboを起動してからのシミュレーションの時刻だった。
+フェーズ5-0の2-1節では、Gazeboが一時停止の状態で始まること、右下のRTF（シミュレーションの時間が現実の何倍の速さで進んでいるか）が100%を下回ることがあることを見た。このとき、シミュレーションの中の車両は「シミュレーションの時刻」で動いている。フェーズ5-0の3-4節（オドメトリを観察する）で見た `header.stamp` も、Gazeboを起動してからのシミュレーションの時刻だった。
 
 ### 1-2. なぜ合わせる必要があるのか
 
@@ -50,25 +50,27 @@ Gazeboの場合、時刻はまずGazeboの側の `/clock` に出る（フェー�
 
 ### 1-4. 切り替え方
 
-実行時に、ほかのパラメータと同じ書き方で渡す（フェーズ3-3の5-2節の `-p`）。
+実行時に、ほかのパラメータと同じ書き方で渡す（フェーズ3-3の5-2節の `-p`）。launchファイルでは、ノードに渡すパラメータに `{'use_sim_time': True}` を加える（フェーズ4のパラメータの渡し方と同じ）。
+
+次の例は、フェーズ3-1の `talker` をシミュレーションの時刻で動かし、別のターミナルで設定を確かめるものである。シミュレータは動かしていないので、`/clock` はどこからも届かない。
 
 ```bash
+# T1
 ros2 run learn_py talker --ros-args -p use_sim_time:=true
-```
 
-launchファイルでは、ノードに渡すパラメータに `{'use_sim_time': True}` を加える（フェーズ4のパラメータの渡し方と同じ）。起動中のノードの設定は `ros2 param get` で確かめられる。
-
-```bash
+# T2
 ros2 param get /talker use_sim_time
 ```
 
-**期待する結果**（書式はフェーズ1の `ros2 param get` と同じ）:
+**期待する結果**（書式はフェーズ1の `ros2 param get` と同じ）: T1には、`publish:` のログが1行も出ない。
 
 ```text
+# T2
+$ ros2 param get /talker use_sim_time
 Boolean value is: True
 ```
 
-`True` なら、そのノードの時計はシミュレーションの時刻を使っている。
+T2の `True` は、そのノードの時計がシミュレーションの時刻を使っていることを示す。T1にログが出ないのは、壊れたのではない。`/clock` が届かないので時刻が0のまま進まず、ノードの時計で数えるタイマー（Pythonの `create_timer`）が一度も発火しないためである（1-5節の表の「`/clock` が届くまで時刻は0」「タイマーも時計に従う」）。確かめたら、T1を `Ctrl+C` で止める。
 
 ### 1-5. 気をつける点
 
@@ -167,7 +169,7 @@ SetuptoolsDeprecationWarning: setup.py install is deprecated.
 
 ## 4. 参考資料
 
-確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節の警告文の中に示されているもの）。
+確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。
 
 - [Using the ros2 param command-line tool — Jazzy](https://docs.ros.org/en/jazzy/How-To-Guides/Using-ros2-param.html)（`use_sim_time` などのパラメータの扱い）
 - [ament_cmake user documentation — Jazzy](https://docs.ros.org/en/jazzy/How-To-Guides/Ament-CMake-Documentation.html)（`ament_target_dependencies` などの `ament_` の関数）

@@ -737,9 +737,9 @@ ros2 topic info /chatter -v      # -v でPublisher/Subscriberの詳細（QoSも�
 
 ros2 topic echo /sine
 
-ros2 topic hz /sine              # 約10 Hzになること
+ros2 topic hz /sine              # 配信の周期を測る
 
-rqt_graph                        # GUIのウィンドウが開く
+rqt_graph                        # ノードとトピックのつながりを図で見る
 ```
 
 **期待する結果**: `talker`・`listener`・`sine_pub`・`sine_sub` の4つを動かしている場合の例（抜粋）。

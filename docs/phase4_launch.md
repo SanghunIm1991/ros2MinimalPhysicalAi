@@ -501,9 +501,9 @@ ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2   # C++版の pa
 別ターミナルで、実際に値が入っているか確認する:
 
 ```bash
-ros2 param get /param_talker message     # YAMLの値
+ros2 param get /param_talker message     # YAMLで渡した値を確かめる
 
-ros2 param get /param_talker period      # 引数で上書きした値
+ros2 param get /param_talker period      # launchの引数で上書きした値を確かめる
 ```
 
 **期待する結果**（`period:=0.2` で起動した場合）:

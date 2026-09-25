@@ -308,6 +308,7 @@ pwd
    git clone git@github.com:<GitHubのユーザー名>/ros2MinimalPhysicalAi.git      # A: SSH
 
    # git clone https://github.com/<GitHubのユーザー名>/ros2MinimalPhysicalAi.git  # B: gh認証済みの場合
+
    cd ros2MinimalPhysicalAi
    ```
    - Claude Codeにコミットさせる場合は、コミットの作者（author）を区別する規約を、リポジトリの `CLAUDE.md` に書いておく（この教材のリポジトリの例は `CLAUDE.md` の「Git運用」を参照）。committerのメールアドレスには、実際のメールアドレスではなく、GitHubが用意するnoreplyのアドレスを使う（リポジトリ単位の `git config user.email` で設定する）。実際のメールアドレスは、一度コミットに入ると履歴から消すのが難しい。

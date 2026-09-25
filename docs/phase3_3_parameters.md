@@ -426,9 +426,9 @@ ros2 param set /param_talker message "changed"
 
 ros2 param set /param_talker period 0.2
 
-ros2 param set /param_talker period 0.0      # 拒否される（reasonが表示される）
+ros2 param set /param_talker period 0.0      # 範囲外の値を設定してみる
 
-ros2 param get /param_talker period          # 0.2のまま
+ros2 param get /param_talker period          # 設定が拒否された後の値を確かめる
 ```
 
 **期待する結果**（T1で `param_talker` を既定値で動かし、別ターミナルで上から順に実行した場合）:

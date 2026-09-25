@@ -284,9 +284,10 @@ $ ros2 node info /turtlesim
 ノード名の変更（remap）も試す。T1のturtlesimを止めて、名前を変えて再起動する。
 
 ```bash
+# T1
 ros2 run turtlesim turtlesim_node --ros-args --remap __node:=my_turtle
 
-# 別ターミナルで
+# T3
 ros2 node list
 ```
 

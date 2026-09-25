@@ -392,13 +392,13 @@ Hello, edited!
 **C++（再ビルド必須）**: `learn_cpp/src/hello.cpp` の文言を書き換え、ビルドせずに実行する。
 
 ```bash
-ros2 run learn_cpp hello    # まだ古い文言
+ros2 run learn_cpp hello    # ビルドする前に実行する
 
 cd ~/work/ros2MinimalPhysicalAi/ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
-ros2 run learn_cpp hello    # 新しい文言になる
+ros2 run learn_cpp hello    # ビルドした後に実行する
 ```
 
 **期待する結果**: 1回目の `ros2 run` では、書き換える前の `hello world learn_cpp package` がそのまま出る（ソースを書き換えても、実行されるのはコンパイル済みの古いバイナリのため）。`colcon build` の後の2回目で、書き換えた文言に変わる。ビルドの表示は `Starting >>> learn_cpp`・`Finished <<< learn_cpp`・`Summary: 1 package finished` の3つになる。
