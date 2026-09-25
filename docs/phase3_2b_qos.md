@@ -11,6 +11,8 @@
 > **このフェーズの位置づけ**: 「QoSという設定があり、合わないと**エラーも出ずに黙ってつながらない**ことがある」と知るのが目的で、概要を掴む程度でよい（フェーズ5では、全ノードが既定のQoSのまま通信する）。2-2節の7通りの組み合わせのうち、①（talker・listenerとも `reliable`。つながる）と④（talkerが `best_effort`、listenerが `reliable`。つながらない）の2つを試せば十分で、残りは任意。C++版（4節）も任意とする。
 >
 > **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。3節・4節冒頭の「主なAPI」表（C++版の4節は任意）とサンプルコード・解説を読んで理解し、QoSのパラメータを変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
+>
+> **パラメータについて（詳しくは次のフェーズ3-3）**: このフェーズでは、QoSの設定を起動時に切り替えるために、ROSのパラメータ（ノードの外から与えられる設定値）を使う。ただし、パラメータそのものの解説は、次のフェーズ3-3（`docs/phase3_3_parameters.md`）で行う。ここでは「`declare_parameter` で名前と既定値を宣言し、起動時に `-p 名前:=値` で値を渡すと、ノードの中で読み取れる」という使い方だけを押さえておけば十分で、細かな仕組みが分からなくても先へ進んでよい。
 
 > **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容や画面の様子とその読み方を載せている。コードとROS2の仕様から筆者が想定したもので、実機では時刻などの細部が異なる。
 
@@ -66,7 +68,7 @@ flowchart LR
 ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durability:=volatile
 ```
 
-（パラメータの詳しい扱いはフェーズ3-3で学ぶ。ここでは「起動時に値を渡せる」ことだけ使う。）
+（パラメータの詳しい扱いは、次のフェーズ3-3で学ぶ。宣言・取得・型の決まり方は3-3の3節、起動時の `-p` は5-2節、実行中に値を読み書きする `ros2 param` は5-3節、YAMLファイルでの指定は5-4節で扱う。ここでは「起動時に値を渡せる」ことだけを使う。）
 
 ### 2-2. 試す組み合わせ（①〜⑦）
 
@@ -93,7 +95,7 @@ ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durabilit
 
 ## 3. Python版（`ws/src/learn_py`）
 
-`ws/src/learn_py/learn_py/` に `qos_talker.py`, `qos_listener.py` を作る。使うメッセージ型は `std_msgs` のもので、依存はフェーズ3-1で `package.xml` に足してあるので、新たに足す依存は無い。
+`ws/src/learn_py/learn_py/` に `qos_util.py`, `qos_talker.py`, `qos_listener.py` の3つを作る。`qos_util.py` はノードではなく、talkerとlistenerが共通で使う関数 `make_qos` を置く部品である。使うメッセージ型は `std_msgs` のもので、依存はフェーズ3-1で `package.xml` に足してあるので、新たに足す依存は無い。
 
 主なAPI（rclpy）:
 
@@ -101,34 +103,72 @@ ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durabilit
 |---|---|
 | QoSの設定 | `from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy`、`QoSProfile(depth=10, reliability=..., durability=...)` |
 | パラメータの宣言と取得 | `self.declare_parameter('名前', 既定値)`、`self.get_parameter('名前').get_parameter_value().string_value` |
+| 同じパッケージの自作モジュールを使う | `from learn_py.qos_util import make_qos`（`パッケージ名.モジュール名`） |
 
 ### サンプルコードと解説
+
+ファイル: `ws/src/learn_py/learn_py/qos_util.py`
+
+<!-- file: ws/src/learn_py/learn_py/qos_util.py -->
+```python
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+
+
+# パラメータの文字列（reliability / durability）から QoSProfile を組み立てる。
+# 想定外の値なら ValueError で止める。qos_talker と qos_listener の両方から使う。
+def make_qos(reliability_str, durability_str):
+    if reliability_str not in ('reliable', 'best_effort'):
+        raise ValueError(f'invalid reliability: {reliability_str}')
+    if durability_str not in ('volatile', 'transient_local'):
+        raise ValueError(f'invalid durability: {durability_str}')
+    return QoSProfile(
+        depth=10,
+        reliability=(ReliabilityPolicy.RELIABLE if reliability_str == 'reliable'
+                     else ReliabilityPolicy.BEST_EFFORT),
+        durability=(DurabilityPolicy.TRANSIENT_LOCAL if durability_str == 'transient_local'
+                    else DurabilityPolicy.VOLATILE),
+    )
+```
+
+**`qos_util.py` の解説**
+
+役割は「talkerとlistenerが同じ規則でQoSを組み立てるための、共通の関数」。ノードではないので `main` は無く、`setup.py` の `entry_points` にも足さない（`entry_points` に書くのは、`ros2 run` で起動する実行ファイルだけ）。
+
+- `make_qos(reliability_str, durability_str)`: 文字列2つから `QoSProfile` を作る関数。想定外の文字列は `ValueError` にして、綴りミスに気づけるようにしている（黙って既定値に落とすと、実験結果が何の設定だったか分からなくなる）。
+- `QoSProfile(depth=10, reliability=..., durability=...)` の各項目:
+  - `depth`: 履歴（history）の深さ。直近何件まで保持するか。ここでは「直近10件を保持する」設定（keep last）になる。
+  - `reliability`: `RELIABLE` は届くまで再送を試みる。`BEST_EFFORT` は再送せず、取りこぼしを許す（その代わり軽い）。
+  - `durability`: `VOLATILE` は「送った時点でつながっている相手にだけ届く」。`TRANSIENT_LOCAL` は「Publisherが直近の `depth` 件を覚えておき、あとから接続した購読側にも渡す」。
+- **1か所にまとめる理由**: この実験では、talkerとlistenerが「同じ文字列を同じQoSに変換する」ことが前提になっている。同じ関数を2つのファイルに書き写すと、片方だけ直したとき（受け付ける文字列を増やす、`depth` を変える等）に食い違いが起き、「QoSが合わないからつながらない」のか「変換の規則がずれている」のかが区別できなくなる。1か所に置けば、直す場所も1つで済む。
+- **置き場所と読み込み方**: `ws/src/learn_py/learn_py/` に置いた `.py` ファイルは、パッケージ `learn_py` の一部としてインストールされる。そのため、同じパッケージの別のファイルから `from learn_py.qos_util import make_qos`（`パッケージ名.モジュール名`）で読み込める。ファイル名の `.py` は付けない。
+
+> **補足: 変数名とパラメータ名を分けている理由**
+>
+> このサンプルでは、パラメータ名は `reliability` だが、その値を受け取るローカル変数と `make_qos` の引数は `reliability_str` と名前を変えている（`durability` も同じ）。
+>
+> **一般的な書き方**: パラメータの値を、同じ名前の変数に入れる書き方は、ROS2のコードでよく見かける。どのパラメータがどの変数に入るかが一目で分かるからである。C++では、メンバ変数に末尾の `_` を付けて区別することが多い（フェーズ3-3のC++版の `"message"` → `message_`、`"period"` → `period_`）。受け取った値を型も意味も変えずにそのまま使うなら、同じ名前でも困ることは少ない。
+>
+> **このサンプルで分けた理由**: ここでは、パラメータから読んだ文字列（`'reliable'` など）を、APIが求める列挙値（`ReliabilityPolicy.RELIABLE` など）に変換してから渡す。仮に全部を `reliability` と書くと、同じ名前が中身の違う3つのものを指すことになる。
+>
+> | 書く場所 | 何の名前か | 中身 | 名前を変えられるか |
+> |---|---|---|---|
+> | `declare_parameter('reliability', ...)`、`-p reliability:=best_effort` | ROSパラメータの名前 | ノードの外から見える設定の名前 | 変えられる（ただし起動コマンドも変わる） |
+> | `reliability_str = ...`、`make_qos(reliability_str, ...)` | コードの中の変数・引数 | 文字列 `'reliable'` / `'best_effort'` | 自由に付けられる |
+> | `QoSProfile(..., reliability=...)` | rclpyのAPIのキーワード引数 | 列挙値 `ReliabilityPolicy.RELIABLE` など | 変えられない（APIが決めている） |
+>
+> 特に `make_qos` の中の `reliability=(ReliabilityPolicy.RELIABLE if reliability_str == 'reliable' ...)` の行は、変数も `reliability` という名前だと、1行の中に同じ名前の別物が並んでしまう。そこで、学習のためのサンプルとして読み間違いを防ぐことを優先し、「パラメータから読んだ、変換前の文字列」だと分かるように末尾に `_str` を付けた。一方、ログやエラーの文言（`QoS: reliability=...`、`invalid reliability: ...`）は、ノードを使う人が `-p` で指定する名前と対応させるため、パラメータ名のままにしている。
+>
+> **実務での目安**: 値を別の型や意味に変換する前と後で名前を分ける書き方（`_str`・`_name` を付ける、変換後を `reliability_policy` とする等）は、ROS2に限らずよく使われる。どちらの書き方にするかは、チームのコーディング規約があればそれに従う。
 
 ファイル: `ws/src/learn_py/learn_py/qos_talker.py`
 
 <!-- file: ws/src/learn_py/learn_py/qos_talker.py -->
 ```python
+from learn_py.qos_util import make_qos
 import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
-from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import String
-
-
-# パラメータの文字列（reliability / durability）から QoSProfile を組み立てる。
-# 想定外の値なら ValueError で止める。
-def make_qos(reliability, durability):
-    if reliability not in ('reliable', 'best_effort'):
-        raise ValueError(f'invalid reliability: {reliability}')
-    if durability not in ('volatile', 'transient_local'):
-        raise ValueError(f'invalid durability: {durability}')
-    return QoSProfile(
-        depth=10,
-        reliability=(ReliabilityPolicy.RELIABLE if reliability == 'reliable'
-                     else ReliabilityPolicy.BEST_EFFORT),
-        durability=(DurabilityPolicy.TRANSIENT_LOCAL if durability == 'transient_local'
-                    else DurabilityPolicy.VOLATILE),
-    )
 
 
 # パラメータで決めた QoS で、1秒ごとに "msg N" を qos_test へ送るノード。
@@ -138,10 +178,14 @@ class QosTalker(Node):
         super().__init__('qos_talker')
         self.declare_parameter('reliability', 'reliable')
         self.declare_parameter('durability', 'volatile')
-        reliability = self.get_parameter('reliability').get_parameter_value().string_value
-        durability = self.get_parameter('durability').get_parameter_value().string_value
-        self.get_logger().info(f'QoS: reliability={reliability}, durability={durability}')
-        self.pub = self.create_publisher(String, 'qos_test', make_qos(reliability, durability))
+        reliability_str = (
+            self.get_parameter('reliability').get_parameter_value().string_value)
+        durability_str = (
+            self.get_parameter('durability').get_parameter_value().string_value)
+        self.get_logger().info(
+            f'QoS: reliability={reliability_str}, durability={durability_str}')
+        self.pub = self.create_publisher(
+            String, 'qos_test', make_qos(reliability_str, durability_str))
         self.count = 0
         self.timer = self.create_timer(1.0, self.on_timer)
 
@@ -172,13 +216,10 @@ def main(args=None):
 
 役割は「QoSを起動時のパラメータで切り替えられる Publisher」。1秒ごとに `msg 0`, `msg 1`, ... と送る。QoSの相性実験（5節）の送り手になる。
 
-- `make_qos(reliability, durability)`: 文字列2つから `QoSProfile` を作る関数。想定外の文字列は `ValueError` にして、綴りミスに気づけるようにしている（黙って既定値に落とすと、実験結果が何の設定だったか分からなくなる）。
-- `QoSProfile(depth=10, reliability=..., durability=...)` の各項目:
-  - `depth`: 履歴（history）の深さ。直近何件まで保持するか。ここでは「直近10件を保持する」設定（keep last）になる。
-  - `reliability`: `RELIABLE` は届くまで再送を試みる。`BEST_EFFORT` は再送せず、取りこぼしを許す（その代わり軽い）。
-  - `durability`: `VOLATILE` は「送った時点でつながっている相手にだけ届く」。`TRANSIENT_LOCAL` は「Publisherが直近の `depth` 件を覚えておき、あとから接続した購読側にも渡す」。
+- `from learn_py.qos_util import make_qos`: 上の `qos_util.py` の関数を読み込む。QoSの組み立ては `make_qos` に任せたので、このファイルでは `rclpy.qos` を `import` しない。`import` の並べ方は、ROS2の標準のLinter（`ament_flake8`。`colcon test` で動く）の規則に合わせている。この規則では、自分のパッケージ `learn_py` も `rclpy`・`std_msgs` と同じ「インストール済みのパッケージ」として扱い、モジュール名のアルファベット順に並べる（`learn_py` → `rclpy` → `std_msgs`）。一般的なPythonの慣習（PEP 8）では自作のモジュールを最後に分けて書くことも多いが、ROS2のパッケージではLinterの規則に従うほうが、`colcon test` で指摘されずに済む。
+- 次の2項目（`declare_parameter` と `get_parameter`）は、フェーズ3-3で詳しく学ぶパラメータの先取りである。ここでは「こう書くと `-p` で渡した値を読める」と分かれば十分。
 - `declare_parameter('reliability', 'reliable')`: パラメータを名前と既定値つきで宣言する。宣言していないパラメータは `-p` で渡しても受け付けられない。既定値の型（ここでは文字列）が、そのパラメータの型になる。
-- `get_parameter(...).get_parameter_value().string_value`: 値は `ParameterValue` という入れ物で返るので、型に合ったフィールド（文字列なら `string_value`）を取り出す。整数なら `integer_value`、実数なら `double_value`。
+- `get_parameter(...).get_parameter_value().string_value`: `get_parameter` が返すのは `Parameter`（名前と値の組）で、そこから `get_parameter_value()` で値の入れ物 `ParameterValue` を取り出し、型に合ったフィールド（文字列なら `string_value`）を読む。整数なら `integer_value`、実数なら `double_value`。フェーズ3-3では、型を問わずに値を取り出せる、より短い `get_parameter(...).value` の書き方を使う（3-3の3節の「主なAPI」表）。
 - 起動時に `QoS: reliability=..., durability=...` をログに出しているのは、「今どの設定で動いているか」をターミナルで確認するため。実験で設定を取り違えないための工夫。
 - `on_timer`: `f'msg {self.count}'` で連番の文字列を作り、`publish` してログに出す。ログの `publish:` は「送ろうとした」印であり、受け取り側がいるかどうかは関係なく出る。**つながらない組み合わせでも、talker側は普通にログを出し続ける**（相手が受け取れないだけで、送り手のエラーにはならない）。
 
@@ -193,26 +234,11 @@ def main(args=None):
 
 <!-- file: ws/src/learn_py/learn_py/qos_listener.py -->
 ```python
+from learn_py.qos_util import make_qos
 import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
-from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import String
-
-
-# パラメータの文字列から QoSProfile を組み立てる（qos_talker.py と同じ関数）。
-def make_qos(reliability, durability):
-    if reliability not in ('reliable', 'best_effort'):
-        raise ValueError(f'invalid reliability: {reliability}')
-    if durability not in ('volatile', 'transient_local'):
-        raise ValueError(f'invalid durability: {durability}')
-    return QoSProfile(
-        depth=10,
-        reliability=(ReliabilityPolicy.RELIABLE if reliability == 'reliable'
-                     else ReliabilityPolicy.BEST_EFFORT),
-        durability=(DurabilityPolicy.TRANSIENT_LOCAL if durability == 'transient_local'
-                    else DurabilityPolicy.VOLATILE),
-    )
 
 
 # パラメータで決めた QoS で qos_test を購読し、届いた文字列をログに出すノード。
@@ -222,11 +248,14 @@ class QosListener(Node):
         super().__init__('qos_listener')
         self.declare_parameter('reliability', 'reliable')
         self.declare_parameter('durability', 'volatile')
-        reliability = self.get_parameter('reliability').get_parameter_value().string_value
-        durability = self.get_parameter('durability').get_parameter_value().string_value
-        self.get_logger().info(f'QoS: reliability={reliability}, durability={durability}')
+        reliability_str = (
+            self.get_parameter('reliability').get_parameter_value().string_value)
+        durability_str = (
+            self.get_parameter('durability').get_parameter_value().string_value)
+        self.get_logger().info(
+            f'QoS: reliability={reliability_str}, durability={durability_str}')
         self.sub = self.create_subscription(
-            String, 'qos_test', self.on_message, make_qos(reliability, durability))
+            String, 'qos_test', self.on_message, make_qos(reliability_str, durability_str))
 
     # メッセージが1件届くたびに呼ばれ、ログに出す。
     def on_message(self, msg):
@@ -254,7 +283,7 @@ def main(args=None):
 - `create_subscription(String, 'qos_test', self.on_message, make_qos(...))`: 引数の順は「型・トピック名・**コールバック**・QoS」。Publisherの `create_publisher(型, 名前, QoS)` とは違い、コールバックがQoSより前に来る。順番を逆にすると、型エラーになる。
 - `on_message(self, msg)`: メッセージが届くたびに呼ばれる。`msg` は `String` 型で、中身は `msg.data`。コールバックは `spin` の中で呼ばれるので、`spin` に入っていないと何も起きない。
 - `self.sub` に保持しているのは、後から参照できるようにするため（Pythonではノードも内部で保持するので、必須ではない）。
-- `make_qos` を talker と listener に同じ内容で二重に書いているのは、1ファイルで読み切れるようにするための割り切り。実務なら共通モジュールに切り出す。
+- `make_qos` は、talkerと同じく `qos_util.py` から読み込む。talkerとlistenerが同じ関数を使うので、同じパラメータの値を渡せば、必ず同じQoSが組み立てられる。
 
 観察ポイント: listenerを起動したときのログ `QoS: reliability=..., durability=...` を、talker側の値と見比べる。「つながる / つながらない」は、この2つの組（購読側の要求と配信側の提供）で決まる。つながらないとき、`received:` は1件も出ない。
 
@@ -278,9 +307,9 @@ source install/setup.bash
 
 ## 4. C++版（`ws/src/learn_cpp`）
 
-> **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、下の各ファイルの解説（特に `qos_talker.cpp` の解説にある対応表）を読めば概要が掴める。
+> **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、下の各ファイルの解説（特に `qos_util.hpp` の解説にある対応表）を読めば概要が掴める。
 
-`ws/src/learn_cpp/src/` に `qos_talker.cpp`, `qos_listener.cpp` を作る。`std_msgs` の依存はフェーズ3-1で足してあるので、`package.xml` と `find_package` の追加は要らない。
+`ws/src/learn_cpp/include/learn_cpp/` に共通のヘッダ `qos_util.hpp` を、`ws/src/learn_cpp/src/` に `qos_talker.cpp`, `qos_listener.cpp` を作る。Python版の `qos_util.py` と同じく、`make_qos` をヘッダの1か所に置き、2つのノードから使う。`include/learn_cpp/` は、フェーズ2の `ros2 pkg create` が空のフォルダとして作ってある。`std_msgs` の依存はフェーズ3-1で足してあるので、`package.xml` と `find_package` の追加は要らない。
 
 主なAPI（rclcpp）:
 
@@ -288,8 +317,69 @@ source install/setup.bash
 |---|---|
 | QoSの設定 | `rclcpp::QoS qos(10); qos.reliable(); qos.best_effort(); qos.transient_local(); qos.durability_volatile();` |
 | パラメータの宣言と取得 | `declare_parameter<std::string>("名前", "既定値")`（宣言と同時に値が返る） |
+| 共通のヘッダを使う | `#include "learn_cpp/qos_util.hpp"`、CMakeの `target_include_directories(ターゲット PRIVATE include)` |
 
 ### サンプルコードと解説
+
+ファイル: `ws/src/learn_cpp/include/learn_cpp/qos_util.hpp`
+
+<!-- file: ws/src/learn_cpp/include/learn_cpp/qos_util.hpp -->
+```cpp
+#ifndef LEARN_CPP__QOS_UTIL_HPP_
+#define LEARN_CPP__QOS_UTIL_HPP_
+
+#include <stdexcept>
+#include <string>
+
+#include "rclcpp/rclcpp.hpp"
+
+// パラメータの文字列から QoS を組み立てる。想定外の値なら例外を投げて止める。
+// qos_talker.cpp と qos_listener.cpp の両方から使う。
+inline rclcpp::QoS make_qos(
+  const std::string & reliability_str, const std::string & durability_str)
+{
+  if (reliability_str != "reliable" && reliability_str != "best_effort") {
+    throw std::invalid_argument("invalid reliability: " + reliability_str);
+  }
+  if (durability_str != "volatile" && durability_str != "transient_local") {
+    throw std::invalid_argument("invalid durability: " + durability_str);
+  }
+  rclcpp::QoS qos(10);
+  if (reliability_str == "best_effort") {
+    qos.best_effort();
+  } else {
+    qos.reliable();
+  }
+  if (durability_str == "transient_local") {
+    qos.transient_local();
+  } else {
+    qos.durability_volatile();
+  }
+  return qos;
+}
+
+#endif  // LEARN_CPP__QOS_UTIL_HPP_
+```
+
+**`qos_util.hpp` の解説**
+
+Python版の `qos_util.py` にあたる、talkerとlistenerの共通部品。1か所にまとめる理由は、`qos_util.py` の解説と同じ（2つのノードの変換の規則がずれないようにするため）。
+
+- `make_qos`: Pythonでは `QoSProfile(...)` に引数で渡していたものを、C++では `rclcpp::QoS qos(10);`（深さ10）を作ってから、メソッドで設定を上書きしていく。対応は次のとおり。
+
+| Python | C++ |
+|---|---|
+| `ReliabilityPolicy.RELIABLE` | `qos.reliable()` |
+| `ReliabilityPolicy.BEST_EFFORT` | `qos.best_effort()` |
+| `DurabilityPolicy.TRANSIENT_LOCAL` | `qos.transient_local()` |
+| `DurabilityPolicy.VOLATILE` | `qos.durability_volatile()` |
+
+  最後だけ名前が `durability_volatile()` なのは、`volatile` がC++の予約語だから。
+- `#ifndef LEARN_CPP__QOS_UTIL_HPP_` 〜 `#endif`: インクルードガード。同じヘッダが1つの `.cpp` の中で2回以上読み込まれても、中身が1回分だけになるようにする決まり文句。マクロの名前は「パッケージ名__ファイル名_」を大文字にする形が、ROS2のC++のコードでよく使われる。
+- `inline`: ヘッダに関数の本体まで書くときに付ける。ヘッダは複数の `.cpp` に読み込まれるので、`inline` が無いと、同じ関数が複数の場所で定義されたことになり、1つの実行ファイルに複数の `.cpp` をまとめたときにリンクエラーになる（今回はtalkerとlistenerが別の実行ファイルなので起きないが、ヘッダに本体を書くときの決まりとして付けておく）。
+- 引数の `const std::string &` は「コピーせず参照で受け取り、書き換えない」の意味。
+- `throw std::invalid_argument(...)`: Pythonの `ValueError` に相当。コンストラクタで例外が出るとノードは作られず、プロセスが例外で終了する。
+- `#include <stdexcept>`（`std::invalid_argument`）と `#include <string>` は、このヘッダ自身が使うものなので、ヘッダの中で読み込む。ヘッダを読み込む側の `.cpp` に頼らないことで、どの `.cpp` から読み込んでもそのままビルドできる。
 
 ファイル: `ws/src/learn_cpp/src/qos_talker.cpp`
 
@@ -297,36 +387,13 @@ source install/setup.bash
 ```cpp
 #include <chrono>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
+#include "learn_cpp/qos_util.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
 using namespace std::chrono_literals;
-
-// パラメータの文字列から QoS を組み立てる。想定外の値なら例外を投げて止める。
-static rclcpp::QoS make_qos(const std::string & reliability, const std::string & durability)
-{
-  if (reliability != "reliable" && reliability != "best_effort") {
-    throw std::invalid_argument("invalid reliability: " + reliability);
-  }
-  if (durability != "volatile" && durability != "transient_local") {
-    throw std::invalid_argument("invalid durability: " + durability);
-  }
-  rclcpp::QoS qos(10);
-  if (reliability == "best_effort") {
-    qos.best_effort();
-  } else {
-    qos.reliable();
-  }
-  if (durability == "transient_local") {
-    qos.transient_local();
-  } else {
-    qos.durability_volatile();
-  }
-  return qos;
-}
 
 // パラメータで決めた QoS で、1秒ごとに "msg N" を qos_test へ送るノード。
 class QosTalker : public rclcpp::Node
@@ -335,12 +402,13 @@ public:
   // コンストラクタ: パラメータを宣言・取得し、その QoS で Publisher とタイマーを作る。
   QosTalker() : Node("qos_talker")
   {
-    const auto reliability = declare_parameter<std::string>("reliability", "reliable");
-    const auto durability = declare_parameter<std::string>("durability", "volatile");
+    const auto reliability_str = declare_parameter<std::string>("reliability", "reliable");
+    const auto durability_str = declare_parameter<std::string>("durability", "volatile");
     RCLCPP_INFO(
       get_logger(), "QoS: reliability=%s, durability=%s",
-      reliability.c_str(), durability.c_str());
-    pub_ = create_publisher<std_msgs::msg::String>("qos_test", make_qos(reliability, durability));
+      reliability_str.c_str(), durability_str.c_str());
+    pub_ = create_publisher<std_msgs::msg::String>(
+      "qos_test", make_qos(reliability_str, durability_str));
     timer_ = create_wall_timer(1s, [this]() { on_timer(); });
   }
 
@@ -371,22 +439,11 @@ int main(int argc, char ** argv)
 
 **`qos_talker.cpp` の解説**
 
-Python版 `qos_talker.py` と同じ仕様（QoSをパラメータで切り替える Publisher）。QoSの各項目（depth・reliability・durability）の意味は Python版の解説を参照し、ここでは対応関係と言語固有の点を書く。
+Python版 `qos_talker.py` と同じ仕様（QoSをパラメータで切り替える Publisher）。QoSの各項目（depth・reliability・durability）の意味は Python版の `qos_util.py` の解説を参照し、ここでは言語固有の点を書く。
 
-- `make_qos`: Pythonでは `QoSProfile(...)` に引数で渡していたものを、C++では `rclcpp::QoS qos(10);`（深さ10）を作ってから、メソッドで設定を上書きしていく。対応は次のとおり。
-
-| Python | C++ |
-|---|---|
-| `ReliabilityPolicy.RELIABLE` | `qos.reliable()` |
-| `ReliabilityPolicy.BEST_EFFORT` | `qos.best_effort()` |
-| `DurabilityPolicy.TRANSIENT_LOCAL` | `qos.transient_local()` |
-| `DurabilityPolicy.VOLATILE` | `qos.durability_volatile()` |
-
-  最後だけ名前が `durability_volatile()` なのは、`volatile` がC++の予約語だから。
-- `static`: この関数をそのファイル内だけで使う指定（他のファイルとの名前衝突を避ける）。引数の `const std::string &` は「コピーせず参照で受け取り、書き換えない」の意味。
-- `throw std::invalid_argument(...)`: Pythonの `ValueError` に相当。コンストラクタで例外が出るとノードは作られず、プロセスが例外で終了する。
-- `declare_parameter<std::string>("reliability", "reliable")`: 宣言と同時に**値が返る**（Pythonでは `declare_parameter` のあとに `get_parameter` が別途必要だった）。`const auto` で受けると `std::string` になる。テンプレート引数の型を付けないと、既定値の型から推論される場面もあるが、文字列は `<std::string>` と明示しておくほうが安全。
-- `RCLCPP_INFO(get_logger(), "...%s...", reliability.c_str())`: ログ用のマクロで、書式はprintf形式。`%s` には `std::string` そのものではなく `.c_str()`（C形式の文字列）を渡す。`std::string` を直接渡すと、実行時に不正な表示になったり落ちたりする。
+- `#include "learn_cpp/qos_util.hpp"`: 上の共通のヘッダを読み込む。パスは `include/` からの相対パスで書く（`include/` をどこから探すかは、後で `CMakeLists.txt` の `target_include_directories` で指定する）。自分のパッケージのヘッダも、`rclcpp` などと同じ `" "` の形で読み込む。
+- `declare_parameter<std::string>("reliability", "reliable")`（パラメータの先取り。詳しくはフェーズ3-3の4節のC++版）: 宣言と同時に**値が返る**（このサンプルのPython版では、宣言の後に `get_parameter` で読み直していた。rclpyの `declare_parameter` も値の入った `Parameter` を返すので、`self.declare_parameter('名前', 既定値).value` と1行で書くこともできる）。`const auto` で受けると `std::string` になる。テンプレート引数の型を付けないと、既定値の型から推論される場面もあるが、文字列は `<std::string>` と明示しておくほうが安全。受け取る変数を `reliability_str` とパラメータ名から変えているのは、Python版と同じ理由（3節の `qos_util.py` の解説の後にある補足「変数名とパラメータ名を分けている理由」。変換前の文字列だと分かるようにするため）。
+- `RCLCPP_INFO(get_logger(), "...%s...", reliability_str.c_str())`: ログ用のマクロで、書式はprintf形式。`%s` には `std::string` そのものではなく `.c_str()`（C形式の文字列）を渡す。`std::string` を直接渡すと、実行時に不正な表示になったり落ちたりする。
 - `create_publisher<std_msgs::msg::String>("qos_test", make_qos(...))`: QoSの引数には、整数の代わりに `rclcpp::QoS` を渡せる。
 - `create_wall_timer(1s, [this]() { on_timer(); })`: 1秒周期のタイマー。`1s` は `std::chrono_literals` の時間リテラルで、ラムダの `[this]` はメンバ関数を呼ぶためにオブジェクト自身を取り込む指定（フェーズ3-1の `talker.cpp` と同じ書き方）。
 - `"msg " + std::to_string(count_++)`: `count_++` は現在の値を使ってから1増やす。`"msg "` は `const char *` だが、右辺が `std::string` なので連結できる。`std::to_string` を通さず `"msg " + count_` と書くと、意図しないポインタ演算になる。
@@ -399,34 +456,11 @@ Python版 `qos_talker.py` と同じ仕様（QoSをパラメータで切り替え
 <!-- file: ws/src/learn_cpp/src/qos_listener.cpp -->
 ```cpp
 #include <memory>
-#include <stdexcept>
 #include <string>
 
+#include "learn_cpp/qos_util.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-
-// パラメータの文字列から QoS を組み立てる（qos_talker.cpp と同じ関数）。
-static rclcpp::QoS make_qos(const std::string & reliability, const std::string & durability)
-{
-  if (reliability != "reliable" && reliability != "best_effort") {
-    throw std::invalid_argument("invalid reliability: " + reliability);
-  }
-  if (durability != "volatile" && durability != "transient_local") {
-    throw std::invalid_argument("invalid durability: " + durability);
-  }
-  rclcpp::QoS qos(10);
-  if (reliability == "best_effort") {
-    qos.best_effort();
-  } else {
-    qos.reliable();
-  }
-  if (durability == "transient_local") {
-    qos.transient_local();
-  } else {
-    qos.durability_volatile();
-  }
-  return qos;
-}
 
 // パラメータで決めた QoS で qos_test を購読し、届いた文字列をログに出すノード。
 class QosListener : public rclcpp::Node
@@ -435,13 +469,13 @@ public:
   // コンストラクタ: パラメータを宣言・取得し、その QoS で購読を作る。
   QosListener() : Node("qos_listener")
   {
-    const auto reliability = declare_parameter<std::string>("reliability", "reliable");
-    const auto durability = declare_parameter<std::string>("durability", "volatile");
+    const auto reliability_str = declare_parameter<std::string>("reliability", "reliable");
+    const auto durability_str = declare_parameter<std::string>("durability", "volatile");
     RCLCPP_INFO(
       get_logger(), "QoS: reliability=%s, durability=%s",
-      reliability.c_str(), durability.c_str());
+      reliability_str.c_str(), durability_str.c_str());
     sub_ = create_subscription<std_msgs::msg::String>(
-      "qos_test", make_qos(reliability, durability),
+      "qos_test", make_qos(reliability_str, durability_str),
       [this](const std_msgs::msg::String & msg) {
         RCLCPP_INFO(get_logger(), "received: %s", msg.data.c_str());
       });
@@ -463,7 +497,7 @@ int main(int argc, char ** argv)
 
 **`qos_listener.cpp` の解説**
 
-Python版 `qos_listener.py` と同じ Subscriber。`make_qos` とパラメータ取得は talker と同内容なので、差分だけ書く。
+Python版 `qos_listener.py` と同じ Subscriber。`make_qos` はtalkerと同じく `qos_util.hpp` から読み込み、パラメータ取得もtalkerと同内容なので、差分だけ書く。
 
 - `create_subscription<std_msgs::msg::String>("qos_test", make_qos(...), コールバック)`: 引数の順は「トピック名・QoS・コールバック」。**Python版はコールバックが先でQoSが後**なので、言語を行き来するときに取り違えやすい。
 - コールバックは `[this](const std_msgs::msg::String & msg) {...}` というラムダ。引数は「メッセージへのconst参照」で、コピーが起きない。本文中で `get_logger()` を呼ぶために `[this]` の取り込みが要る。`msg.data` は `std::string` なので、ログには `.c_str()` を付ける。
@@ -477,9 +511,11 @@ Python版 `qos_listener.py` と同じ Subscriber。`make_qos` とパラメータ
 <!-- snippet: cmake_qos -->
 ```cmake
 add_executable(qos_talker src/qos_talker.cpp)
+target_include_directories(qos_talker PRIVATE include)
 ament_target_dependencies(qos_talker rclcpp std_msgs)
 
 add_executable(qos_listener src/qos_listener.cpp)
+target_include_directories(qos_listener PRIVATE include)
 ament_target_dependencies(qos_listener rclcpp std_msgs)
 
 install(TARGETS
@@ -495,6 +531,7 @@ install(TARGETS
 ```
 
 - `add_executable(実行ファイル名 ソース)`: ソースから実行ファイルをビルドする指定。Pythonの `entry_points` にあたる。
+- `target_include_directories(ターゲット PRIVATE include)`: そのターゲットをビルドするとき、`#include "..."` のヘッダを、パッケージの `include/` フォルダからも探すように指定する。これで `#include "learn_cpp/qos_util.hpp"` が `include/learn_cpp/qos_util.hpp` を指す。`PRIVATE` は「このターゲットの中だけで使う」の意味。フェーズ2で `ros2 pkg create` が `hello` 用に書いた `target_include_directories` はもっと長い形（`$<BUILD_INTERFACE:...>` と `$<INSTALL_INTERFACE:...>`）だが、あれは「ビルドするとき」と「インストールした後」でヘッダの探し先を切り替える書き方である。この切り替えが要るのは、主にヘッダをライブラリとして他のパッケージへ公開する場合で、実行ファイルがパッケージの中のヘッダを読むだけの今回は、この短い形で足りる。
 - `ament_target_dependencies(ターゲット 依存...)`: そのターゲットが使うパッケージ（ヘッダ・ライブラリ）を、ターゲットごとに列挙する。`qos_talker` と `qos_listener` は `String` を使うので `std_msgs`、それと `rclcpp` が必要。
 - `install(TARGETS ... DESTINATION lib/${PROJECT_NAME})`: ビルドした実行ファイルを `install/learn_cpp/lib/learn_cpp/` へ置く。`ros2 run learn_cpp ...` はこの場所を探すので、ここに名前がないと `No executable found` になる。既存の名前は消さずに残し、新しい2つを足す。
 - `install(TARGETS ...)` の `turtle_circle` は、フェーズ3-2aでC++版の `turtle_circle` を作った場合だけ書く。作っていないのに名前を書くと、存在しないターゲットを指定したことになり、CMakeの段階でビルドがエラーになる。
@@ -660,8 +697,9 @@ ros2 run learn_py qos_listener --ros-args -p durability:=transient_local
 | 観点 | Python | C++ |
 |---|---|---|
 | QoSの組み立て | `QoSProfile(depth=10, reliability=..., durability=...)` に、列挙型（`ReliabilityPolicy.RELIABLE` など）を引数で渡す | `rclcpp::QoS qos(10);` を作ってから、`qos.reliable()`・`qos.transient_local()` などのメソッドで上書きする（`volatile` は予約語なので `durability_volatile()`） |
-| パラメータの宣言と取得 | `declare_parameter` の後に、`get_parameter(...).get_parameter_value().string_value` で取り出す（2手順） | `declare_parameter<std::string>(...)` が宣言と同時に値を返す（1行） |
+| パラメータの宣言と取得 | このサンプルでは、`declare_parameter` の後に、`get_parameter(...).get_parameter_value().string_value` で取り出す（2行。`declare_parameter` の戻り値から読むこともできる） | `declare_parameter<std::string>(...)` が宣言と同時に値を返す（1行） |
 | 想定外の値の扱い | `raise ValueError(...)` | `throw std::invalid_argument(...)` |
+| 共通の関数の切り出し | 同じパッケージのモジュール `qos_util.py` に置き、`from learn_py.qos_util import make_qos` で読み込む。ビルドの設定は変えなくてよい | ヘッダ `include/learn_cpp/qos_util.hpp` に `inline` 関数として置き、`#include` する。`CMakeLists.txt` に `target_include_directories` を足す |
 | `create_subscription` の引数の順 | 型・トピック名・**コールバック**・QoS | トピック名・**QoS**・コールバック（型はテンプレート引数） |
 | ログへの文字列の渡し方 | f文字列をそのまま渡す | printf形式。`std::string` は `.c_str()` を付ける |
 
@@ -672,6 +710,8 @@ ros2 run learn_py qos_listener --ros-args -p durability:=transient_local
 | 症状 | 確認すること |
 |---|---|
 | `ValueError: invalid reliability` | パラメータの綴り。`reliable` か `best_effort`（小文字） |
+| Python版の起動時に `ModuleNotFoundError: No module named 'learn_py.qos_util'` | `qos_util.py` を `ws/src/learn_py/learn_py/`（`setup.py` のある階層の、1つ下の `learn_py/`）に置いたか。ファイル名の綴り。`--symlink-install` を付けずにビルドしている場合は、ファイルを足した後に再ビルドが要る |
+| C++版のビルドで `fatal error: learn_cpp/qos_util.hpp: No such file or directory` | ヘッダを `ws/src/learn_cpp/include/learn_cpp/` に置いたか。`CMakeLists.txt` の、エラーが出たターゲット（`qos_talker` など）に `target_include_directories(... PRIVATE include)` を書いたか |
 | 2-2節の⑤（両方 `transient_local`）で過去分が届かない | talkerが `transient_local` か、listener側も `transient_local` か。talkerを先に起動して待ったか |
 | 非互換の警告が出ない | 警告はノードのログ（ターミナル）に出る。`rqt_console` でも確認できる |
 | C++版のビルドで `install TARGETS given target "turtle_circle" which does not exist` のようなエラー | `install(TARGETS ...)` に、作っていないノード（フェーズ3-2aでC++版を作らなかった場合の `turtle_circle` など）の名前を書いていないか |
