@@ -202,7 +202,7 @@ WSLg バージョン: 1.0.xx
    sudo apt update && sudo apt install ros-dev-tools
    ```
 
-   - `ros-dev-tools` は、`colcon` のほかに、C++のコンパイラ（`g++`）・`make`・`cmake` も依存として一緒に入れる（`ros-build-essential` → `build-essential` 経由）。C++のコンパイラを別途入れる必要はない。詳細は `docs/phase2_packages.md` の1-3節の補足を参照。
+   - `ros-dev-tools` は、`colcon` のほかに、C++のコンパイラ（`g++`）・`make`・`cmake` も依存として一緒に入れる（`ros-build-essential` → `build-essential` 経由）。C++のコンパイラを別途入れる必要はない。詳細は [`docs/phase2_packages.md`](phase2_packages.md) の1-3節の補足を参照。
 
 4. ROS2本体の導入。学習用には **Desktop Install**（rqt・turtlesim等を含む）を選ぶ。
 
@@ -268,7 +268,7 @@ pwd
 **期待する結果**: `pwd` が `/home/<ユーザー名>/work/ros2MinimalPhysicalAi` と表示される。`mkdir` と `cd` は、成功しても何も表示しない。
 
 - `/mnt/c`・`/mnt/d` の下（Windows側のドライブ）は使わない。WindowsとLinuxのファイルシステムをまたぐため、ビルドが大幅に遅くなる。
-- この教材のリポジトリを手元に置いて読む場合は、フォルダを作る代わりに、`~/work` の下へ `git clone` してもよい（リポジトリが公開されていれば、HTTPSのURLで認証なしにclone できる。非公開の場合は7節の認証が要る）。フォルダ名が `ros2MinimalPhysicalAi` になるので、以降の手順書のパスはそのまま使える。
+- この教材はGitHubで読む前提で、リポジトリをcloneする必要はない。手元に置きたい場合は、フォルダを作る代わりに `~/work` の下へ `git clone` してもよい（フォルダ名が `ros2MinimalPhysicalAi` になるので、以降の手順書のパスはそのまま使える）。
 
 ### 7.（任意）GitHubの認証・Claude Codeの環境（Ubuntu内）
 
@@ -337,7 +337,7 @@ pwd
 
 ## 次へ
 
-フェーズ1（`docs/phase1_cli_turtlesim.md`）へ進む。フェーズ1の1-2節で、この手順書では確かめなかったGUIの表示（WSLg）を確認し、turtlesimを動かしながら `ros2` コマンドでROS2の通信を観察する。ROS2の全体像を先に知りたい場合は、コマンドを使わない読み物のフェーズ0（`docs/phase0_overview.md`）を先に読んでもよい。
+フェーズ1（[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)）へ進む。フェーズ1の1-2節で、この手順書では確かめなかったGUIの表示（WSLg）を確認し、turtlesimを動かしながら `ros2` コマンドでROS2の通信を観察する。ROS2の全体像を先に知りたい場合は、コマンドを使わない読み物のフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）を先に読んでもよい。
 
 ## 公式ドキュメント
 

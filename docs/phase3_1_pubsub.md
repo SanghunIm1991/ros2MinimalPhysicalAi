@@ -1,6 +1,6 @@
 # フェーズ3-1 手順書: Publisher / Subscriber（トピック）をPython・C++で書く
 
-`docs/learning_plan.md` フェーズ3（idea_origin.md ステップ1の1-2 ①②）に対応する。同じ仕様のノードをPythonとC++の両方で書き、動作と書き方の違いを比べる。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-2 ①②）に対応する。同じ仕様のノードをPythonとC++の両方で書き、動作と書き方の違いを比べる。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ2完了（`ws/src/learn_py` と `ws/src/learn_cpp` があり、`colcon build --symlink-install` が通る）
@@ -659,7 +659,7 @@ C++版のコードには、`SharedPtr`・`std::make_shared`・`->` が何度も�
 
 **Pythonとの考え方の違い（軽く）**: Pythonでは、すべてのオブジェクトが最初から「参照の数を数えて自動で片付ける」仕組みで管理されている（CPythonの参照カウント）。つまり、Pythonの変数は、C++でいえば常に `shared_ptr` のようなものである。そのうえで、`rclpy` の `Node` は、`create_publisher` や `create_timer` で作ったものを**ノード自身の内部のリストにも入れて持ち続ける**。このため、Python版で `self.timer = ...` と代入しなかったとしても、タイマーは片付けられずに動き続ける。Pythonで `self.pub` に入れるのは「後で `publish` に使うため」「コードを読む人に、何を持つノードかを示すため」であって、生かしておくためではない。
 
-まとめると、Pythonでは「ライブラリ（`Node`）が持っていてくれる」のに対し、C++では「**持ち主を自分で決めて、コードに書く**」必要がある。C++のrclcppがこうなっているのは、ノードを部品として軽く保ち、不要になったものを確実に片付けられるようにするためである。持ち主を明示することは手間だが、「このタイマーはこのノードが生きている間だけ動く」という寿命の関係が、メンバ変数の宣言を見ればはっきり分かる、という利点もある。`rclcpp::Node` が作ったものを持たない理由と、`rclpy` の `Node` の内部のリストについては、参考資料 `docs/reference_node_class.md` の2-4節・3-3節で、クラス図を使って詳しく解説している。
+まとめると、Pythonでは「ライブラリ（`Node`）が持っていてくれる」のに対し、C++では「**持ち主を自分で決めて、コードに書く**」必要がある。C++のrclcppがこうなっているのは、ノードを部品として軽く保ち、不要になったものを確実に片付けられるようにするためである。持ち主を明示することは手間だが、「このタイマーはこのノードが生きている間だけ動く」という寿命の関係が、メンバ変数の宣言を見ればはっきり分かる、という利点もある。`rclcpp::Node` が作ったものを持たない理由と、`rclpy` の `Node` の内部のリストについては、参考資料 [`docs/reference_node_class.md`](reference_node_class.md) の2-4節・3-3節で、クラス図を使って詳しく解説している。
 
 ### 4-2. `CMakeLists.txt` に登録する
 
@@ -831,7 +831,7 @@ average rate: 10.000
 
 C++の方が記述量・手数は増えるが、コールバック配線の間違い（型の取り違え等）をコンパイル時に検出できる点は利点。Pythonは手数が少なく反復しやすい分、実行してみるまで誤りに気づきにくい。
 
-この違いが `Node` クラスのどんな作りから来ているか（例: Pythonでは作ったPublisherなどをノードが自分で保持するが、C++では呼び出し側が `SharedPtr` で持ち続ける必要がある）は、参考資料 `docs/reference_node_class.md` でクラス図を使って解説している。
+この違いが `Node` クラスのどんな作りから来ているか（例: Pythonでは作ったPublisherなどをノードが自分で保持するが、C++では呼び出し側が `SharedPtr` で持ち続ける必要がある）は、参考資料 [`docs/reference_node_class.md`](reference_node_class.md) でクラス図を使って解説している。
 
 ## 8. つまずきやすい点
 
@@ -847,11 +847,11 @@ C++の方が記述量・手数は増えるが、コールバック配線の間�
 
 ## 9. 次へ
 
-フェーズ3-2a（`docs/phase3_2a_turtlesim.md`）で、Twistでturtlesimを動かす。続くフェーズ3-2b（`docs/phase3_2b_qos.md`）では、QoSの相性を体験する（3-2aとは独立したテーマ）。
+フェーズ3-2a（[`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md)）で、Twistでturtlesimを動かす。続くフェーズ3-2b（[`docs/phase3_2b_qos.md`](phase3_2b_qos.md)）では、QoSの相性を体験する（3-2aとは独立したテーマ）。
 
 ## 10. 公式ドキュメント・参考資料
 
-確認状況（2026-09-20）: 下記は `docs/idea_origin.md` に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。
+確認状況（2026-09-20）: 下記は [`docs/idea_origin.md`](idea_origin.md) に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。
 
 ### 公式（ROS 2 Jazzy）
 

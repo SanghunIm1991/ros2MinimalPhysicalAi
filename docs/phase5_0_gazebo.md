@@ -1,6 +1,6 @@
 # フェーズ5-0 手順書: Gazeboを導入し、用意されたロボットをROS2から動かす
 
-`docs/learning_plan.md` フェーズ5の冒頭（idea_origin.md ステップ5）に対応する。3D物理シミュレータのGazebo（Harmonic）を導入し、公式のデモ集 `ros_gz_sim_demos` に入っている2輪の車両を、ROS2のトピックで走らせる。フェーズ5-1以降で自作する「車両」の速度制御を、物理シミュレータの車両で先に体験しておく位置づけ。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ5の冒頭（idea_origin.md ステップ5）に対応する。3D物理シミュレータのGazebo（Harmonic）を導入し、公式のデモ集 `ros_gz_sim_demos` に入っている2輪の車両を、ROS2のトピックで走らせる。フェーズ5-1以降で自作する「車両」の速度制御を、物理シミュレータの車両で先に体験しておく位置づけ。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ1（`ros2 topic pub` でTwistを送れる）とフェーズ3-1（Publisherを書ける。`ws/src/learn_py` がある）。launchファイルは起動するだけで、書き方（フェーズ4）は知らなくてよい
@@ -683,7 +683,7 @@ ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 
 ## 10. 公式ドキュメント・参考資料
 
-確認状況（2026-09-24）: Gazebo公式の2ページはこの手順書の作成時に本文を確認した。DiffDriveプラグインの既定値（オドメトリの送信周期50 Hz、トピック名の決まり）と、指令のタイムアウトが無いことは、GitHubのgz-simのソース（gz-sim8ブランチ）で確認した。日本語の記事は `docs/idea_origin.md` に掲載済みのもので、今回は再確認していない。
+確認状況（2026-09-24）: Gazebo公式の2ページはこの手順書の作成時に本文を確認した。DiffDriveプラグインの既定値（オドメトリの送信周期50 Hz、トピック名の決まり）と、指令のタイムアウトが無いことは、GitHubのgz-simのソース（gz-sim8ブランチ）で確認した。日本語の記事は [`docs/idea_origin.md`](idea_origin.md) に掲載済みのもので、今回は再確認していない。
 
 ### 公式
 

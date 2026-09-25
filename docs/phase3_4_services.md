@@ -1,6 +1,6 @@
 # フェーズ3-4 手順書: サービス（要求と応答）
 
-`docs/learning_plan.md` フェーズ3（idea_origin.md ステップ1の1-4）に対応する。「1回の要求に1回の応答を返す」通信を扱う（概要を掴む程度でよい。サンプルはPython版・C++版の両方を載せる）。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-4）に対応する。「1回の要求に1回の応答を返す」通信を扱う（概要を掴む程度でよい。サンプルはPython版・C++版の両方を載せる）。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ3-1〜3-3完了
@@ -752,11 +752,11 @@ std_srvs.srv.Trigger_Response(success=True, message='counter reset (was 8)')
 
 ## 10. 次へ
 
-フェーズ3-5（`docs/phase3_5_actions.md`）で、途中経過を返せる「アクション」を扱う。
+フェーズ3-5（[`docs/phase3_5_actions.md`](phase3_5_actions.md)）で、途中経過を返せる「アクション」を扱う。
 
 ## 11. 公式ドキュメント・参考資料
 
-確認状況（2026-09-20）: 下記は `docs/idea_origin.md` に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。
+確認状況（2026-09-20）: 下記は [`docs/idea_origin.md`](idea_origin.md) に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。
 
 ### 公式（ROS 2 Jazzy）
 

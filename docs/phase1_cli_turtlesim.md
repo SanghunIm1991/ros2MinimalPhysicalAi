@@ -1,8 +1,8 @@
 # フェーズ1 手順書: turtlesimとCLIでROS2の通信を観察する
 
-`docs/learning_plan.md` フェーズ1（idea_origin.md ステップ1の1-1）に対応する。コードは書かず、既製のノード（turtlesim）を動かしながら `ros2` コマンドとrqtでROS2の仕組みを観察する。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ1（idea_origin.md ステップ1の1-1）に対応する。コードは書かず、既製のノード（turtlesim）を動かしながら `ros2` コマンドとrqtでROS2の仕組みを観察する。
 
-- 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（`docs/setup_wsl2_ros2.md` 完了済み）
+- 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（[`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) 完了済み）
 - 所要目安: 1〜2コマ
 - 言語: 本フェーズは言語非依存（Python/C++の区別なし）。
 
@@ -31,7 +31,7 @@
 turtlesimとrqtはROS2の公式aptパッケージ。環境構築の手順書のとおり Desktop Install で導入していれば、既に入っている（下のコマンドを実行しても、「最新版です」と表示されるだけで害は無い）。
 
 - 目的: 観察用のシミュレータ（turtlesim）とGUIツール（rqt）を入れる
-- セキュリティへの影響: 公式aptリポジトリ（手順書 `setup_wsl2_ros2.md` で登録済み）からの導入で、外部通信はapt取得のみ。追加のリポジトリ登録はない
+- セキュリティへの影響: 公式aptリポジトリ（手順書 [`setup_wsl2_ros2.md`](setup_wsl2_ros2.md) で登録済み）からの導入で、外部通信はapt取得のみ。追加のリポジトリ登録はない
 
 ```bash
 sudo apt update
@@ -135,7 +135,7 @@ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 
 環境変数は**ターミナルごとの設定**なので、毎回手入力だとT1〜T3の一部だけに設定漏れが起き、通信範囲が食い違って `ros2 node list` が空になる、というフェーズ内・フェーズ間で再現性のない不具合につながる。**`~/.bashrc` に追記する**（追記後は新しく開くターミナルから有効）。
 
-**`~/.bashrc` 追記行（累積・この時点）**: `docs/setup_wsl2_ros2.md` の4節の5番目の手順の分に、本節の分を加えると次の状態になっているはず。
+**`~/.bashrc` 追記行（累積・この時点）**: [`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) の4節の5番目の手順の分に、本節の分を加えると次の状態になっているはず。
 
 ```bash
 source /opt/ros/jazzy/setup.bash                  # セットアップ手順（ステップ0）で追加。ROS2本体の読み込み（常時必要、削除しない）
@@ -526,7 +526,7 @@ QoS（Quality of Service）は、トピック通信の「信頼性」「過去�
 | `durability` | `volatile`＝過去分は保存しない。`transient_local`＝後から参加した相手にも直近分を渡す |
 | `history` / `depth` | `keep_last` ＋ `depth`＝最新N件だけキューに保持する（例では1000件） |
 
-- Publisher側とSubscriber側のQoSが噛み合わないと、**エラーにならず黙ってつながらない**ことがある。実際の相性の体験はフェーズ3-2b（`docs/phase3_2b_qos.md`）で行う（キューの深さ `10` の意味はフェーズ3-1でも触れる）。
+- Publisher側とSubscriber側のQoSが噛み合わないと、**エラーにならず黙ってつながらない**ことがある。実際の相性の体験はフェーズ3-2b（[`docs/phase3_2b_qos.md`](phase3_2b_qos.md)）で行う（キューの深さ `10` の意味はフェーズ3-1でも触れる）。
 - 今の段階では「トピックにはQoSという設定があり、`ros2 topic info /turtle1/cmd_vel -v` でも見られる」と知っておけば十分。
 
 > 課題5: `ros2 param dump /turtlesim > /tmp/turtlesim_params.yaml` で保存し、中身を読む（保存先は `/tmp` 等の作業外でよい。リポジトリには入れない）。
@@ -655,7 +655,7 @@ ros2 run rqt_console rqt_console
 
 ## 7. 公式ドキュメント・参考資料
 
-確認状況（2026-09-20）: 「Beginner: CLI tools」「Using turtlesim, ros2, and rqt」「Using rqt_console」とQiita 2件は、今回のWeb検索結果で実在を確認した。「Launching nodes」「Introspection with command line tools」「Basic Concepts」は `idea_origin.md` に掲載済みのURLで、今回は再確認していない。docs.ros.orgは本文取得がボット対策で拒否されたため、内容の照合はできていない。
+確認状況（2026-09-20）: 「Beginner: CLI tools」「Using turtlesim, ros2, and rqt」「Using rqt_console」とQiita 2件は、今回のWeb検索結果で実在を確認した。「Launching nodes」「Introspection with command line tools」「Basic Concepts」は [`idea_origin.md`](idea_origin.md) に掲載済みのURLで、今回は再確認していない。docs.ros.orgは本文取得がボット対策で拒否されたため、内容の照合はできていない。
 
 ### 公式（ROS 2 Jazzy）
 

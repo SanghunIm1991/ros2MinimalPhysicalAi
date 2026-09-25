@@ -1,11 +1,11 @@
 # フェーズ2 手順書: ワークスペースとパッケージ作成・ビルド
 
-`docs/learning_plan.md` フェーズ2（idea_origin.md ステップ1の1-0）に対応する。`ament_python` と `ament_cmake` の空パッケージを1つずつ作り、ビルドと実行の流れの違いを確認する。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ2（idea_origin.md ステップ1の1-0）に対応する。`ament_python` と `ament_cmake` の空パッケージを1つずつ作り、ビルドと実行の流れの違いを確認する。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（`colcon`、`gcc`/`g++`、`cmake` は、環境構築の `ros-dev-tools` の導入で入っている。1-3節の補足を参照）
 - 所要目安: 1コマ
 - 言語: **Python（`ament_python`）とC++（`ament_cmake`）の両方**
-- 前提: フェーズ1（`docs/phase1_cli_turtlesim.md`）で `ros2 run <パッケージ> <実行ファイル>` の書式に触れていること
+- 前提: フェーズ1（[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)）で `ros2 run <パッケージ> <実行ファイル>` の書式に触れていること
 
 > **この手順書の位置づけ**: コマンドはROS2 Jazzyの実機の雛形（`ros2 pkg create` のテンプレート）を読んで確認しているが、公式チュートリアルの本文とは照合できていない（docs.ros.orgがボット対策で取得不可）。出力が違う場合は、実機の表示を優先する。文章・構成は自分の言葉で書いた。公式ドキュメント（CC BY 4.0）の出典は末尾に記載する。
 
@@ -40,7 +40,7 @@ flowchart TB
 
 </details>
 
-一般に、ROS2のワークスペースでGitの管理対象にするのは `src/` だけで、`build/`・`install/`・`log/` の生成物は含めない（この教材のリポジトリでも、直下の `.gitignore` に登録してある）。なお、この教材のリポジトリでは、練習用のワークスペース `ws/` を丸ごと `.gitignore` で除外している。教材のリポジトリに、各自の練習コードが混ざらないようにするためである。練習コードもGitで管理したい場合の方法は、2-8節で扱う。
+一般に、ROS2のワークスペースでGitの管理対象にするのは `src/` だけで、`build/`・`install/`・`log/` の生成物は含めない（この教材のリポジトリでも、直下の `.gitignore` に登録してある）。なお、この教材のリポジトリでは、練習用のワークスペース `ws/` を丸ごと `.gitignore` で除外している。教材のリポジトリに、各自の練習コードが混ざらないようにするためである。練習コードもGitで管理したい場合の方法は、2-8節（練習コードをGitで管理する）で扱う。
 
 ### 1-2. ビルドと実行の流れ
 
@@ -74,7 +74,7 @@ flowchart LR
 
 #### 補足: C++のコンパイラはどこから来て、いつ使われるか
 
-C++のコンパイラを自分で入れた覚えが無くても、`colcon build` でC++のパッケージがビルドできるのは、環境構築（`docs/setup_wsl2_ros2.md` の手順4の3番目）で入れた `ros-dev-tools` が、依存としてコンパイラ一式を連れてきているからである。依存は次のようにたどれる（`apt-cache depends <パッケージ名>` で1段ずつ確認できる）。
+C++のコンパイラを自分で入れた覚えが無くても、`colcon build` でC++のパッケージがビルドできるのは、環境構築（[`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) の手順4の3番目）で入れた `ros-dev-tools` が、依存としてコンパイラ一式を連れてきているからである。依存は次のようにたどれる（`apt-cache depends <パッケージ名>` で1段ずつ確認できる）。
 
 ```text
 ros-dev-tools
@@ -113,11 +113,11 @@ Ubuntu 24.04では、`g++` の実体は `g++-13`（GCC 13系）になる。`g++ 
 | ノード | 実行時（ランタイム）の単位。`rclpy.Node` / `rclcpp::Node` のインスタンス | `ros2 node list`、トピック/サービス/パラメータの持ち主 |
 | launchファイル | 複数の実行ファイル（＝複数のノード）をまとめて起動する設定の単位 | `ros2 launch <pkg> <ファイル>`（フェーズ4で扱う） |
 
-この手順書のように「1つの実行ファイルの `main()` が1つのノードを作ってspinする」のが最小構成では最も単純で典型的な形だが、**実行ファイルとノードは厳密には1対1ではない**。1つの実行ファイル（1プロセス）が複数のノードを作って同時にspinすることもできるし、逆にノード単体を `ros2 run` で直接起動する方法はない（必ず「それを起動する実行ファイル」を経由する）。launchファイルはさらに1段上の層で、`ros2 pkg executables` には出てこず、`ros2 run` の対象にもならない（`ros2 launch` 専用のファイル）。フェーズ4（`docs/phase4_launch.md`）で、launchファイルが複数の実行ファイル＝ノードをまとめて起動する様子を実際に書いて確認する。
+この手順書のように「1つの実行ファイルの `main()` が1つのノードを作ってspinする」のが最小構成では最も単純で典型的な形だが、**実行ファイルとノードは厳密には1対1ではない**。1つの実行ファイル（1プロセス）が複数のノードを作って同時にspinすることもできるし、逆にノード単体を `ros2 run` で直接起動する方法はない（必ず「それを起動する実行ファイル」を経由する）。launchファイルはさらに1段上の層で、`ros2 pkg executables` には出てこず、`ros2 run` の対象にもならない（`ros2 launch` 専用のファイル）。フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）で、launchファイルが複数の実行ファイル＝ノードをまとめて起動する様子を実際に書いて確認する。
 
 ## 2. 手順
 
-以降、コマンドは `~/work/ros2MinimalPhysicalAi`（本リポジトリのclone先）を起点に書く。場所が違う場合は読み替える。
+以降、コマンドは `~/work/ros2MinimalPhysicalAi`（環境構築の6節で作った作業フォルダ）を起点に書く。場所が違う場合は読み替える。
 
 ### 2-1. ワークスペースを作る
 
@@ -242,8 +242,8 @@ colcon build --symlink-install
 ```
 
 - **必ずワークスペースの直下（`ws/`）で実行する**。`src/` の中で実行すると `build/` などが意図しない場所にできる。
-- 初回のビルド時間は環境による（この手順書の検証環境では約10秒だった）。応答が遅い・止まる場合のみ、メモリ不足を疑って `colcon build --symlink-install --parallel-workers 2` のように並列数を絞る（検証環境ではこの絞り込みは不要だった。WSLのメモリは `setup_wsl2_ros2.md` の1節を参照）。
-- Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい（警告の意味と、無視してよい理由は `docs/tips.md` の3節）。
+- 初回のビルド時間は環境による（この手順書の検証環境では約10秒だった）。応答が遅い・止まる場合のみ、メモリ不足を疑って `colcon build --symlink-install --parallel-workers 2` のように並列数を絞る（検証環境ではこの絞り込みは不要だった。WSLのメモリは [`setup_wsl2_ros2.md`](setup_wsl2_ros2.md) の1節を参照）。
+- Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい（警告の意味と、無視してよい理由は [`docs/tips.md`](tips.md) の3節）。
 
 **期待する結果**（秒数は環境によって変わる）: `Summary: 2 packages finished` の行が出れば成功。
 
@@ -414,42 +414,58 @@ ros2 run learn_cpp hello    # 新しい文言になる
 
 > 課題4: `--symlink-install` を付けずに `colcon build` して、Pythonのソースを書き換えても反映されないことを確認する。確認後は `rm -rf build install log` で消して、`--symlink-install` 付きでビルドし直す（`ws/` の中だけを消すこと）。
 
-### 2-8. Git管理の確認
+### 2-8. 練習コードをGitで管理する（任意）
 
-> この節は、`~/work/ros2MinimalPhysicalAi` をGitのリポジトリとして持っている場合（この教材のリポジトリをcloneした場合など）だけ行う。環境構築の6節でフォルダを作っただけの場合は、`git status` が `fatal: not a git repository` と表示されるので、この節は飛ばしてよい。
+> この節は任意。練習コードの変更履歴を残したい場合だけ行う。この教材はGitHubで読む前提なので、教材のリポジトリをcloneしていなければ、`~/work/ros2MinimalPhysicalAi` はGitの管理下にないただのフォルダである。
+
+練習コードをGitで管理するには、ワークスペース `ws/` をそのままGitのリポジトリにする。1-1節のとおり、管理するのは `src/` だけで、生成物の `build/`・`install/`・`log/` は `.gitignore` で除外する。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi
+cd ~/work/ros2MinimalPhysicalAi/ws
+
+git init -b main
+
+printf 'build/\ninstall/\nlog/\n' > .gitignore
 
 git status --short
-
-git check-ignore -v ws/src/learn_py/package.xml
 ```
 
-**期待する結果**: `git status --short` には、`ws/` に関する行が1行も出ない（他に変更が無ければ、何も表示されない）。この教材のリポジトリは `.gitignore` に `ws/` を登録していて、ワークスペース全体がGitの管理外になっているためである。`git check-ignore -v` は、そのファイルがどの設定で除外されているかを表示するコマンドで、次のように出る（`29` は `.gitignore` の中の行番号で、`.gitignore` の中身によって変わる）。
+**期待する結果**（`git init` の行のパスは環境によって変わる）:
 
 ```text
-.gitignore:29:ws/	ws/src/learn_py/package.xml
+$ git init -b main
+Initialized empty Git repository in /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/.git/
+$ git status --short
+?? .gitignore
+?? src/
 ```
 
-「`.gitignore` の29行目の `ws/` という指定で、このファイルが除外されている」と読む。
+- `git init -b main` は、`ws/` をGitのリポジトリにして、最初のブランチの名前を `main` にする（`-b main` を付けないと、ブランチ名についての長いヒントが表示される）。
+- `printf` の行は、`build/`・`install/`・`log/` の3行を書いた `.gitignore` を作る。
+- `git status --short` の `??` は「まだ管理していないファイル」の印。`src/` と `.gitignore` だけが出て、`build/`・`install/`・`log/` が出なければ、除外が効いている。`src/` の中身が1行にまとまっているのは、まだ1つもコミットしていないディレクトリを、Gitが中身を展開せずに表示するため（`git status --short -uall` にすると、`src/learn_py/package.xml` のようにファイルごとに出る）。フェーズ3-3〜4の途中では、一時的に `?? config/` も出る（フェーズ4で `learn_bringup/config/` へ移すので、コミットしなくてよい）。
 
-**練習コードもGitで管理したい場合**は、次のどちらかにする。
+> **教材のリポジトリをcloneした場合**: 教材のリポジトリは、各自の練習コードが混ざらないように、直下の `.gitignore` で `ws/` を丸ごと除外している。そのため、上と同じように `ws/` の中で `git init` すれば、教材のリポジトリとは独立に練習コードを管理できる。
 
-- **自分のクローンの `.gitignore` から `ws/` の行を消す**: `build/`・`install/`・`log/` の行は残るので、生成物は引き続き除外される。消した後に `git status --short` を実行すると、次のように表示が変わる。
-  - **`ws/src` を一度もコミットしていない時点**: `?? ws/` の1行だけが出る。これは `ws/build`・`ws/install`・`ws/log` が `.gitignore` で除外されているからではなく、gitの既定動作（追跡ファイルが1つも無いディレクトリは中身を展開せず1行にまとめる）による。`ws/src/` だけが個別に出るわけではない。中身を個別に確認したい場合は `git status --short -uall` を使うと、`ws/src/...` 配下のファイルだけが列挙され、`ws/build`・`ws/install`・`ws/log` は（`.gitignore` どおり）出てこないことを確認できる（フェーズ3-3〜4の途中では、一時的に `ws/config/...` も出る。フェーズ4で移すのでコミットしない）。
-  - **`ws/src` を一度コミットした後**: 変更が無ければ何も出ない（クリーン）。新しいファイルを `ws/src` 配下に追加した場合は、そのファイルのパス（例: `?? ws/src/learn_py/learn_py/new_node.py`）だけが個別に出る。
-- **`ws/` を別のGitリポジトリとして管理する**: `ws/` の中で `git init` し、教材のリポジトリとは独立に管理する。この場合も、`ws/` の中に `.gitignore` を作って `build/`・`install/`・`log/` を除外する。
-
-練習コードをGitで管理し、いつか公開する可能性があるなら、次も確認する:
+練習コードをGitで管理し、いつか公開する可能性があるなら、コミットの前に、雛形に書いた連絡先を確かめる（`ws/` で実行する）。
 
 ```bash
-grep -n 'maintainer' ws/src/learn_py/package.xml ws/src/learn_cpp/package.xml
+grep -n 'maintainer' src/learn_py/package.xml src/learn_cpp/package.xml
 
-grep -n 'maintainer' ws/src/learn_py/setup.py
+grep -n 'maintainer' src/learn_py/setup.py
 ```
 
-実メールアドレスが入っていないこと（`noreply@example.com` であること）。確認できたら、自分のリポジトリの規約に従ってコミットする（`ws/src` だけをコミットし、`ws/build`・`ws/install`・`ws/log` は含めない）。練習コードをGitで管理しない場合は、この確認とコミットは要らない。
+**期待する結果**（2-2節・2-3節のコマンドで作った場合）:
+
+```text
+$ grep -n 'maintainer' src/learn_py/package.xml src/learn_cpp/package.xml
+src/learn_py/package.xml:7:  <maintainer email="noreply@example.com">learner</maintainer>
+src/learn_cpp/package.xml:7:  <maintainer email="noreply@example.com">learner</maintainer>
+$ grep -n 'maintainer' src/learn_py/setup.py
+16:    maintainer='learner',
+17:    maintainer_email='noreply@example.com',
+```
+
+メールアドレスが `noreply@example.com` で、実際のメールアドレスが入っていなければよい。確認できたら、`git add .gitignore src` と `git commit` でコミットする。初めてGitでコミットする環境では、先に `git config --global user.name` と `git config --global user.email` で名前とメールアドレスを設定する必要がある。公開する可能性があるなら、ここにも実際のメールアドレスではなく、GitHubが用意する公開用のアドレス（noreply）を使う。
 
 ## 3. Python版とC++版の違いのまとめ
 
@@ -481,7 +497,7 @@ grep -n 'maintainer' ws/src/learn_py/setup.py
 
 ## 6. 公式ドキュメント・参考資料
 
-確認状況（2026-09-20）: 下記は `docs/idea_origin.md` に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。コマンドとテンプレートの内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）の雛形を直接読んで確認した。
+確認状況（2026-09-20）: 下記は [`docs/idea_origin.md`](idea_origin.md) に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。コマンドとテンプレートの内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）の雛形を直接読んで確認した。
 
 ### 公式
 

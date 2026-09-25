@@ -1,6 +1,6 @@
 # フェーズ3-2a 手順書: Twistでturtlesimを動かす
 
-`docs/learning_plan.md` フェーズ3（idea_origin.md ステップ1の1-2 ③）に対応する。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-2 ③）に対応する。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（turtlesimはフェーズ1で導入済み）
 - 前提: フェーズ3-1完了（`talker` 等が動く）
@@ -8,7 +8,7 @@
 - 言語: **Python**（C++版は任意）
 - OSS: turtlesim（GUIのウィンドウが開く）
 
-> **このフェーズの位置づけ**: フェーズ3-2は、互いに独立した2つのテーマに分けている。この3-2aでは、速度指令 `Twist` を送って相手（turtlesim）を動かす `turtle_circle` を作る。フェーズ5の車両シミュレーションで直接使う内容なので、Python版は必須。もう1つのテーマ（QoSの相性）は `docs/phase3_2b_qos.md`（フェーズ3-2b）で扱う。C++版（5節）は任意とする。
+> **このフェーズの位置づけ**: フェーズ3-2は、互いに独立した2つのテーマに分けている。この3-2aでは、速度指令 `Twist` を送って相手（turtlesim）を動かす `turtle_circle` を作る。フェーズ5の車両シミュレーションで直接使う内容なので、Python版は必須。もう1つのテーマ（QoSの相性）は [`docs/phase3_2b_qos.md`](phase3_2b_qos.md)（フェーズ3-2b）で扱う。C++版（5節）は任意とする。
 >
 > **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。4節・5節冒頭の「主なAPI」表（C++版の5節は任意）とサンプルコード・解説を読んで理解し、送る値を変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
 
@@ -313,11 +313,11 @@ C++では、依存を書く場所が3つ（`<depend>`・`find_package`・`ament_
 
 ## 9. 次へ
 
-フェーズ3-2b（`docs/phase3_2b_qos.md`）で、QoSの相性を体験する。3-2aとは独立したテーマで、ここで作った `turtle_circle` は使わない。
+フェーズ3-2b（[`docs/phase3_2b_qos.md`](phase3_2b_qos.md)）で、QoSの相性を体験する。3-2aとは独立したテーマで、ここで作った `turtle_circle` は使わない。
 
 ## 10. 公式ドキュメント・参考資料
 
-確認状況（2026-09-20）: 下記は `docs/idea_origin.md` に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。
+確認状況（2026-09-20）: 下記は [`docs/idea_origin.md`](idea_origin.md) に掲載済みのURLで、今回は再確認していない（docs.ros.orgは本文取得がボット対策で拒否される）。
 
 ### 公式（ROS 2 Jazzy）
 

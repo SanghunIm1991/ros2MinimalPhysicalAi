@@ -1,6 +1,6 @@
 # 学習プラン（ROS2 × Python/C++ でシミュレーション環境を作る）
 
-`docs/idea_origin.md` のロードマップ（ステップ0〜7）を、学習の5テーマ×2言語の視点で実行順に並べ直したもの。技術選定の決定事項（Jazzy、PI制御、1D質点、オイラー法、rqt_plot 等）はidea_origin.mdを正とし、ここでは繰り返さない。
+[`docs/idea_origin.md`](idea_origin.md) のロードマップ（ステップ0〜7）を、学習の5テーマ×2言語の視点で実行順に並べ直したもの。技術選定の決定事項（Jazzy、PI制御、1D質点、オイラー法、rqt_plot 等）はidea_origin.mdを正とし、ここでは繰り返さない。
 
 ## 目的とゴール
 
@@ -24,7 +24,7 @@
 
 ### 環境構築（ステップ0）— 2時間程度
 
-- 内容: WSL2・Ubuntu 24.04・ROS2 Jazzyの導入（`docs/setup_wsl2_ros2.md`）。別ドライブへの移動（2b節）と、GitHubの認証・Claude Codeの環境（7節）は任意。
+- 内容: WSL2・Ubuntu 24.04・ROS2 Jazzyの導入（[`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md)）。別ドライブへの移動（2b節）と、GitHubの認証・Claude Codeの環境（7節）は任意。
 - 完了条件: `ros2 run demo_nodes_cpp talker` と `ros2 run demo_nodes_py listener` の間でメッセージが届く。フェーズ0（読み物）とは、どちらを先にしてもよい。
 
 ### フェーズ0: ROS2の概要（読み物）— 1コマ
@@ -111,7 +111,7 @@
 ## 進め方・役割分担
 
 - 環境構築（追加パッケージの導入含む）と実行・実装は**ユーザー**が行う。Claudeは各フェーズの手順書（`docs/` 配下、末尾に公式ドキュメント節）、つまずきの切り分け、貼られたコード・出力のレビュー、学習の手がかりとなる最小限のサンプルコードを担当する。
-- 各フェーズ開始時に、その段階の決定事項を `docs/qa_log.md` に記録する。
+- 各フェーズ開始時に、その段階の決定事項を [`docs/qa_log.md`](qa_log.md) に記録する。
 - 1-7振り返りは、各手順書に既に書かれている「Python版とC++版の違いのまとめ」節を読み返す形で行う（空欄の比較表を新たに作らない。2026-09-23、ユーザー判断）。フェーズ5の言語方針は既に決定済み（下記フェーズ5参照）。
 - GUI（rqt、turtlesim、RViz2）はユーザー自身が起動・確認する。
 
@@ -128,21 +128,21 @@
 
 | フェーズ | 手順書 | 言語 | 状態 |
 |---|---|---|---|
-| 環境構築 | `docs/setup_wsl2_ros2.md` | 言語非依存 | 教材として一般化済み（2026-09-24。2b節（別ドライブへの移動）と7節（GitHubの認証・Claude Codeの環境）は任意）。ユーザーが実機で導入済み |
-| 0 | `docs/phase0_overview.md` | 言語非依存（読み物） | 作成済み（2026-09-23。コマンド実行なしのため「実機確認」の対象外） |
-| 1 | `docs/phase1_cli_turtlesim.md` | 言語非依存 | 学習完了（ユーザーが全コマンドの動作を実機で確認済み、2026-09-21） |
-| 2 | `docs/phase2_packages.md` | Python・C++ | 学習完了（ユーザーが2-5のノード実行を実機で確認済み、2026-09-22。期待どおりの表示） |
-| 3-1 | `docs/phase3_1_pubsub.md` | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
-| 3-2a | `docs/phase3_2a_turtlesim.md` | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。2026-09-24に旧3-2（Twist・QoS）から分割 |
-| 3-2b | `docs/phase3_2b_qos.md` | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。2026-09-24に旧3-2から分割 |
-| 3-3 | `docs/phase3_3_parameters.md` | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
-| 3-4 | `docs/phase3_4_services.md` | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
-| 3-5 | `docs/phase3_5_actions.md` | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
-| 4 | `docs/phase4_launch.md` | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認） |
-| 間章 | `docs/interlude_components.md` | C++のみ（launchはPython） | 作成済み（ビルド・`ros2 component types`・launchの`--print`確認済み。ノード実行は未確認） |
-| 参考資料 | `docs/reference_node_class.md` | Python・C++（読み物） | 作成済み（2026-09-24。`Node` クラスの構造をクラス図（`docs/img/reference_node_rclpy.svg`・`reference_node_rclcpp.svg`）で解析。ローカルのソースで確認。図の見た目は画像にして確認していない） |
-| Tips集 | `docs/tips.md` | 言語非依存（読み物） | 作成済み（2026-09-25。シミュレーション時刻・`CMakeLists.txt` の読み方・`SetuptoolsDeprecationWarning` の3項目。雛形と警告は使い捨ての環境で確認、`use_sim_time` の挙動はローカルのソースで確認。ノードの起動は未確認）。分量の少ない補足を随時追加する |
-| 5-0 | `docs/phase5_0_gazebo.md` | 言語非依存＋自作ノードはPython | 作成済み（2026-09-24。導入の確認はユーザーの実機の表示、launchは`--show-args`・`--print`、サンプルはビルド・import確認済み。Gazeboとノードを起動した挙動は未確認。図（`docs/img/phase5_0_bridge.svg`）の見た目は未確認） |
+| 環境構築 | [`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) | 言語非依存 | 教材として一般化済み（2026-09-24。2b節（別ドライブへの移動）と7節（GitHubの認証・Claude Codeの環境）は任意）。ユーザーが実機で導入済み |
+| 0 | [`docs/phase0_overview.md`](phase0_overview.md) | 言語非依存（読み物） | 作成済み（2026-09-23。コマンド実行なしのため「実機確認」の対象外） |
+| 1 | [`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md) | 言語非依存 | 学習完了（ユーザーが全コマンドの動作を実機で確認済み、2026-09-21） |
+| 2 | [`docs/phase2_packages.md`](phase2_packages.md) | Python・C++ | 学習完了（ユーザーが2-5のノード実行を実機で確認済み、2026-09-22。期待どおりの表示） |
+| 3-1 | [`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md) | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 3-2a | [`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。2026-09-24に旧3-2（Twist・QoS）から分割 |
+| 3-2b | [`docs/phase3_2b_qos.md`](phase3_2b_qos.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。2026-09-24に旧3-2から分割 |
+| 3-3 | [`docs/phase3_3_parameters.md`](phase3_3_parameters.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 3-4 | [`docs/phase3_4_services.md`](phase3_4_services.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 3-5 | [`docs/phase3_5_actions.md`](phase3_5_actions.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認） |
+| 間章 | [`docs/interlude_components.md`](interlude_components.md) | C++のみ（launchはPython） | 作成済み（ビルド・`ros2 component types`・launchの`--print`確認済み。ノード実行は未確認） |
+| 参考資料 | [`docs/reference_node_class.md`](reference_node_class.md) | Python・C++（読み物） | 作成済み（2026-09-24。`Node` クラスの構造をクラス図（`docs/img/reference_node_rclpy.svg`・`reference_node_rclcpp.svg`）で解析。ローカルのソースで確認。図の見た目は画像にして確認していない） |
+| Tips集 | [`docs/tips.md`](tips.md) | 言語非依存（読み物） | 作成済み（2026-09-25。シミュレーション時刻・`CMakeLists.txt` の読み方・`SetuptoolsDeprecationWarning` の3項目。雛形と警告は使い捨ての環境で確認、`use_sim_time` の挙動はローカルのソースで確認。ノードの起動は未確認）。分量の少ない補足を随時追加する |
+| 5-0 | [`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md) | 言語非依存＋自作ノードはPython | 作成済み（2026-09-24。導入の確認はユーザーの実機の表示、launchは`--show-args`・`--print`、サンプルはビルド・import確認済み。Gazeboとノードを起動した挙動は未確認。図（`docs/img/phase5_0_bridge.svg`）の見た目は未確認） |
 | 5-1〜 | 着手時に作成 | Python中心 | 未作成 |
 
 - フェーズ3は、トピック（3-1・3-2a・3-2b）、パラメータ、サービス、アクションの6冊に分けた（3-2aのTwistと3-2bのQoSは互いに独立したテーマなので、2026-09-24に1冊から分けた）。各冊はPython・C++を同じ仕様で並べ、比較しやすくしている（言語別ファイルには分けていない）。
