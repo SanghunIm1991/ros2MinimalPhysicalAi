@@ -202,7 +202,7 @@ WSLg バージョン: 1.0.xx
    sudo apt update && sudo apt install ros-dev-tools
    ```
 
-   **期待する結果**: 最後にエラー（`E:` で始まる行）が出ずにプロンプトへ戻れば成功。`colcon --help` で使い方が表示されれば、`colcon` が使える。
+   **期待する結果**: 導入するパッケージの一覧が表示され、`Do you want to continue? [Y/n]` と聞かれるので `Y` で進める。最後にエラー（`E:` で始まる行）が出ずにプロンプトへ戻れば成功。`colcon --help` で使い方が表示されれば、`colcon` が使える。
 
    - `ros-dev-tools` は、`colcon` のほかに、C++のコンパイラ（`g++`）・`make`・`cmake` も依存として一緒に入れる（`ros-build-essential` → `build-essential` 経由）。C++のコンパイラを別途入れる必要はない。詳細は [`docs/phase2_packages.md`](phase2_packages.md) の1-3節の補足を参照。
 
@@ -232,7 +232,6 @@ WSLg バージョン: 1.0.xx
      ```bash
      source /opt/ros/jazzy/setup.bash   # 本手順で追加。ROS2本体の読み込み（常時必要、削除しない）
      ```
-
 
 ### 5. 動作確認（Ubuntu内）
 
@@ -320,7 +319,7 @@ pwd
    cd ros2MinimalPhysicalAi
    ```
 
-   **期待する結果**: `Cloning into 'ros2MinimalPhysicalAi'...` と表示され、`~/work` の下に同じ名前のフォルダができる。
+   **期待する結果**: `Cloning into 'ros2MinimalPhysicalAi'...` と表示され、`~/work` の下に同じ名前のフォルダができる。A（SSH）の場合は、途中で鍵のパスフレーズを聞かれる（入力した文字は表示されない）。
 
    - Claude Codeにコミットさせる場合は、コミットの作者（author）を区別する規約を、リポジトリの `CLAUDE.md` に書いておく（この教材のリポジトリの例は `CLAUDE.md` の「Git運用」を参照）。committerのメールアドレスには、実際のメールアドレスではなく、GitHubが用意するnoreplyのアドレスを使う（リポジトリ単位の `git config user.email` で設定する）。実際のメールアドレスは、一度コミットに入ると履歴から消すのが難しい。
 3. **Claude Codeの導入**: Anthropic公式のClaude Codeのドキュメントで最新のインストール手順を確認し、その手順で導入する（リンク先は変わりうるため、公式サイトから探す）。出所の分からないスクリプトは使わない。

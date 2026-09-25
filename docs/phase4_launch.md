@@ -106,7 +106,7 @@ ros2 pkg create --build-type ament_cmake \
 mkdir -p learn_bringup/launch learn_bringup/config
 ```
 
-**期待する結果**: `ros2 pkg create` の表示は、フェーズ2の2-3（C++パッケージ）と同じ形。`--node-name` と `--dependencies` を付けていないので、`src/` は作られず、`dependencies: []` と表示される。`mkdir` は成功しても何も表示しない。`ls learn_bringup` を実行すると、`CMakeLists.txt  LICENSE  config  include  launch  package.xml  src` のように並ぶ（`include/` と `src/` は雛形が作る空のフォルダで、このパッケージでは使わない）。
+**期待する結果**: `ros2 pkg create` の表示は、フェーズ2の2-3（C++パッケージ）と同じ形。`--node-name` を付けていないので、`src/` の中に実行ファイルの雛形（フェーズ2の `hello.cpp` にあたるもの）は作られない（`src/` と `include/learn_bringup/` は、空のフォルダとして作られる）。`--dependencies` を付けていないので、`dependencies: []` と表示される。`mkdir` は成功しても何も表示しない。`ls learn_bringup` を実行すると、`CMakeLists.txt  LICENSE  config  include  launch  package.xml  src` のように並ぶ（`include/` と `src/` は雛形が作る空のフォルダで、このパッケージでは使わない）。
 
 フェーズ3-3で `ws/config/` に作ったパラメータYAMLを、このパッケージへ移す。
 
