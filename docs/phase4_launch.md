@@ -10,7 +10,7 @@
 
 > **進め方**: 2節の仕様は「何を作るか」の定義で、launchのAPIの使い方までは書いていない。まず各節冒頭の「主なAPI」表でそのファイルに必要なAPIを把握し、続くサンプルと解説を読んで、1行ずつ何をしているか理解する。読んで分かったら、引数の既定値や起動するノードを変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時に、`ros2 launch --print`（起動せずに内容を表示する）で読み込めることまで確認済み。ノードを実際に起動した結果は未確認（出力が違う場合は、実機の表示を優先する）。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。`--show-args` と `--print` の表示は手順書の作成時に使い捨ての環境で実行して確かめたもの、ノードを起動した後の表示はコードとROS2の仕様から筆者が想定したもので、実機では時刻・プロセス番号（pid）などの細部が異なる。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。`--show-args` と `--print` の表示は手順書の作成時に使い捨ての環境で実行して確かめたもの、ノードを起動した後の表示はコードとROS2の仕様から筆者が想定したもので、実機では時刻・プロセス番号（pid）などの細部が異なる。ただし、4-1節の `Ctrl+C` の後の表示は、同じ `main` の書き方をした公式のサンプル（`demo_nodes_py`・`demo_nodes_cpp` の `talker`）とフェーズ5-3のノードを、使い捨ての環境でlaunchから起動して確かめたもの（2026-09-26。端末の `Ctrl+C` を模して、プロセスのグループ全体に割り込みを送る方法で確かめた）。
 
 ## 0. 学習目標と完了条件
 
@@ -282,11 +282,26 @@ ros2 launch learn_bringup pubsub.launch.py talker_lang:=cpp listener_lang:=py
 
 `Ctrl+C` を押すと、2つのノードがまとめて終了する。
 
+**期待する結果**（1つ目のコマンド（どちらもPython版）を止めた場合の抜粋。pidは実行ごとに変わる。`listener` にも `talker` と同じ数行が出る）:
+
 ```text
 ^C[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
-[INFO] [listener-2]: process has finished cleanly [pid 12346]
-[INFO] [talker-1]: process has finished cleanly [pid 12345]
+[INFO] [listener-2]: sending signal 'SIGINT' to process[listener-2]
+[INFO] [talker-1]: sending signal 'SIGINT' to process[talker-1]
+[talker-1] Traceback (most recent call last):
+...
+[talker-1]     node.destroy_node()
+...
+[talker-1] KeyboardInterrupt
+[ERROR] [talker-1]: process has died [pid 12345, exit code -2, cmd '.../install/learn_py/lib/learn_py/talker --ros-args -r __node:=talker'].
+...
 ```
+
+- `Traceback` や `[ERROR] ... process has died` が出るが、**ノードは止まっており、異常ではない**。
+- 理由: `Ctrl+C` を押すと、端末がlaunchと各ノードにまとめて割り込み（SIGINT）を送り、さらにlaunchも各ノードへ割り込みを送り直す（`sending signal 'SIGINT'` の行）。Pythonのノードは、1回目の割り込みで `spin` を抜けて後片付け（`destroy_node`）に入るが、その最中に2回目の割り込みが届き、後片付けが中断されて `KeyboardInterrupt` の表示になる。`exit code -2` は「割り込みの信号（SIGINT、番号2）で終わった」という意味。
+- ROS2の公式のサンプル（`demo_nodes_py` の `talker`）も、フェーズ3-1と同じ `main` の書き方で、launchから起動して `Ctrl+C` で止めると同じ表示になる。
+- C++版のノード（`talker_lang:=cpp` など）では、`[rclcpp]: signal_handler(SIGINT/SIGTERM)` の行が出た後、`process has finished cleanly` と表示されて終わる（rclcppは、2回目の割り込みも後片付けの妨げにしない）。
+- `user interrupted with ctrl-c (SIGINT) again, ignoring...` の行が続けて出ることもある。これも問題ない。
 
 2つ目のコマンド（`talker_lang:=cpp`）でも、ログの見た目は同じになる。どちらの言語が動いているかは、ログではなく `ros2 node info /talker` などで調べる（この節の末尾の課題1）。同じく課題2の `talker_lang:=rust` では、ノードは1つも起動せず、`[ERROR] [launch]: Caught exception in launch (see debug for traceback): ...` に続いて、`learn_rust` というパッケージが見つからないという趣旨のメッセージが出て終わる。
 
@@ -736,6 +751,7 @@ source install/setup.bash
 | `ros2 launch` でパラメータが効かない | YAMLの1行目のノード名と、`Node(name=...)` が一致しているか。`ros__parameters` の綴り |
 | 型の不一致（`period`） | `ParameterValue(..., value_type=float)` を使っているか。YAMLの `period: 1` のような整数になっていないか |
 | ノードが起動しない・すぐ終了する | `output='screen'` にして、エラーログを見る。`ros2 launch ... --print` でファイルが読み込めるか、`--show-args` で引数の名前と既定値を確認（置換の値は `--print` では評価されない） |
+| `Ctrl+C` で `Traceback` と `process has died (exit code -2)` が出る | Pythonのノードでは異常ではない（4-1節の `Ctrl+C` の期待する結果の後の説明） |
 | XML/YAMLで引数が展開されない | `$(var 引数名)` の書式（`$(arg ...)` は古い書き方）。引数を `<arg>` / `arg:` で宣言しているか |
 
 ## 8. 次へ
