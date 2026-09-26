@@ -53,22 +53,28 @@ flowchart LR
 
 `turtle_circle` は `geometry_msgs` を使うので、まず依存を足す。
 
-**Python（`ws/src/learn_py/package.xml`）**: 既存の `<depend>` の並びに1行足す。
+**Python版**: 足すのは `ws/src/learn_py/package.xml` の1か所だけ。既存の `<depend>` の並びに1行足す。
 
 ```xml
 <depend>geometry_msgs</depend>
 ```
 
-**C++（`ws/src/learn_cpp/package.xml`）**（C++版を作る場合のみ）: 同じく足す。加えて `CMakeLists.txt` に `find_package(geometry_msgs REQUIRED)` を、既存の `find_package(std_msgs REQUIRED)` の隣へ足す（5節の終わりのCMake追記で、`ament_target_dependencies` にも書く）。
+**C++版**（C++版を作る場合のみ）: 足すのは `package.xml` と `CMakeLists.txt` の2ファイル。
+
+(1) `ws/src/learn_cpp/package.xml` の、既存の `<depend>` の並びに1行足す（Python版と同じ行）。
 
 ```xml
 <depend>geometry_msgs</depend>
 ```
+
+(2) `ws/src/learn_cpp/CMakeLists.txt` の、既存の `find_package(std_msgs REQUIRED)` の隣に1行足す。
 
 <!-- snippet: cmake_find_geometry -->
 ```cmake
 find_package(geometry_msgs REQUIRED)
 ```
+
+`CMakeLists.txt` では、もう1か所の `ament_target_dependencies` にも `geometry_msgs` を書く。これは5節の終わりで `turtle_circle` を登録するときに、まとめて行う。
 
 `package.xml` の `<depend>` は「このパッケージは `geometry_msgs` に依存する」という宣言で、`colcon` が依存関係からビルド順を決めたり、`rosdep` が不足を検出したりするために使う。`<depend>` はビルド時・実行時の両方の依存をまとめて宣言する書き方。一方 `CMakeLists.txt` の `find_package` は、C++のビルド時にヘッダやライブラリの場所を探す指示。C++では**両方**必要で、片方だけだとビルドエラーになる（8節）。Pythonは `package.xml` だけでよい。
 
