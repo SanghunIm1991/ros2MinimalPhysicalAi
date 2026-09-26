@@ -9,7 +9,7 @@
 
 > **このフェーズの位置づけ**: パラメータは、フェーズ5のPI制御ノードでゲイン（Kp・Ki）を外から与え、実行中に調整するのにそのまま使う（6節）。**Python版は必須**として、手を動かして身に着ける。C++版（4節）は任意とする。
 >
-> **進め方**: 仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でパラメータ関連のAPIを把握し、サンプルコードと解説を読んで理解する。読んで分かったら、既定値や型を変える、パラメータを増やすなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
+> **進め方**: 仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でパラメータ関連のAPIを把握し、サンプルコードと解説を読んで理解する。読んで分かったら、既定値や型を変える、パラメータを増やすなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済み。ノードの実行結果は、5-3節・5-4節の `ros2 param` の表示（Python版）だけを実機で確認済みで、それ以外は未確認（出力が違う場合は、実機の表示を優先する）。
 
 > **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。コードとROS2の仕様（エラー文言はローカルのrclpy・rclcppのソース）から筆者が想定したもので、実機では時刻などの細部が異なる。ただし、5-3節の `ros2 param` の表示と、5-4節の `ros2 param dump`・`load` の表示（どちらもPython版）は、実機で確かめたもの（`dump` の値は、実行した時点の設定によって変わる）。
 
@@ -420,6 +420,10 @@ rclpy.exceptions.InvalidParameterTypeException: Trying to set parameter 'period'
 ### 5-3. 実行中に読む・変える（`ros2 param`）
 
 ```bash
+# T1
+ros2 run learn_py param_talker
+
+# T2
 ros2 param list /param_talker
 
 ros2 param describe /param_talker period
@@ -435,7 +439,7 @@ ros2 param set /param_talker period 0.0      # 範囲外の値を設定してみ
 ros2 param get /param_talker period          # 設定が拒否された後の値を確かめる
 ```
 
-**期待する結果**（T1でPython版の `param_talker` を既定値で動かし、別ターミナルで上から順に実行した場合）:
+**期待する結果**（T2の分。T1でPython版の `param_talker` を既定値で動かし、T2で上から順に実行した場合）:
 
 ```text
 $ ros2 param list /param_talker
@@ -469,8 +473,7 @@ Double value is: 0.2
 - `param describe` の `Type: double` は、宣言時の既定値 `1.0` から決まった型。`Constraints:` の下が空なのは、範囲などの制約を付けていないから（5-4節の課題6で、`ParameterDescriptor` を使って範囲を付ける）。
 - `message` を変えると、T1のログが次の送信から `publish: changed` に変わる。`period` を0.2にすると、ログが1秒に5行に増える。
 - `period 0.0` の失敗の後ろに続く `period must be > 0` は、コードの `reason` に書いた文字列そのもの。拒否されたので、値は0.2のまま。
-
-- `period` を変えると、`ros2 topic echo` の間隔が変わる。
+- 5-1節のように、別のターミナルで `ros2 topic echo /param_chatter` を動かしておけば、`period` を変えたときに、表示される間隔も変わる。
 - `ros2 param set /param_talker period 2` （整数）も型の不一致で失敗する。`2.0` と書く。Python版のノードでは `Setting parameter failed: Wrong parameter type, expected 'Type.DOUBLE' got 'Type.INTEGER'` と表示される（起動時の `-p` と違って、ノードは終了せず動き続ける）。
 
 > 課題2: `period` を `0.0` に設定して拒否されることと、その後も動作が変わらないことを確認する。

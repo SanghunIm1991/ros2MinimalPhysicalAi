@@ -7,7 +7,7 @@
 
 > **実行環境が無くても読めるように**: コマンドを載せた箇所には、その直後に「期待する結果」として表示の例と読み方を書いている。ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。
 
-> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。
+> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。
 
 ## 項目の一覧
 
@@ -236,7 +236,7 @@ DDSは、データを送る前に次の2段階で相手を探す。
 
 自分のノードに付ける練習は、フェーズ3-3の5-4節の末尾にある課題6（発展。`ParameterDescriptor` に説明文と `FloatingPointRange` を付ける）で行える。
 
-起動中のノードに対しては、Tabキーでの補完も効く。`ros2 param get /turtlesim ` や `ros2 param describe /turtlesim ` のようにノード名まで打ってTabキーを押すと、そのノードに問い合わせて、パラメータ名の候補を出す。`ros2` の補完は、`source /opt/ros/jazzy/setup.bash` で自動的に有効になる（`ros2cli` パッケージが、Pythonの補完ライブラリ `argcomplete` を登録する）。起動する前の `--ros-args -p` で補完が効かないのは、問い合わせる相手のノードがまだ無いからである。
+起動中のノードに対しては、Tabキーでの補完も効く。`ros2 param get /turtlesim ` や `ros2 param describe /turtlesim ` のようにノード名まで打ってTabキーを押すと、そのノードに問い合わせて、パラメータ名の候補を出す。`ros2` の補完は、`source /opt/ros/jazzy/setup.bash` で自動的に有効になる（`ros2cli` パッケージが、Pythonの補完ライブラリ `argcomplete` を登録する）。一方、`ros2 run` は、実行ファイル名より後ろの引数（`--ros-args -p ...`）を補完しない。補完しようにも、起動する前のノードからはパラメータの一覧を取れないからである（5-1節）。
 
 ### 5-3. turtlesimで確かめる
 
@@ -272,6 +272,7 @@ $ ros2 param list /turtlesim
   qos_overrides./parameter_events.publisher.reliability
   start_type_description_service
   use_sim_time
+
 $ ros2 param describe /turtlesim background_r
 Parameter name: background_r
   Type: integer
@@ -280,13 +281,16 @@ Parameter name: background_r
     Min value: 0
     Max value: 255
     Step: 1
+
 $ ros2 param describe /turtlesim holonomic
 Parameter name: holonomic
   Type: boolean
   Description: If true, then turtles will be holonomic
   Constraints:
+
 $ ros2 param set /turtlesim background_r 300
 Setting parameter failed: Parameter {background_r} doesn't comply with integer range.
+
 $ ros2 param set /turtlesim background_r 150
 Set parameter successful
 ```

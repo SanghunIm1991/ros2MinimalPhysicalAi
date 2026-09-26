@@ -135,7 +135,7 @@
 | 3-1 | [`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md) | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
 | 3-2a | [`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。2026-09-24に旧3-2（Twist・QoS）から分割 |
 | 3-2b | [`docs/phase3_2b_qos.md`](phase3_2b_qos.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。2026-09-24に旧3-2から分割 |
-| 3-3 | [`docs/phase3_3_parameters.md`](phase3_3_parameters.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
+| 3-3 | [`docs/phase3_3_parameters.md`](phase3_3_parameters.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は、5-3節・5-4節の `ros2 param` の表示（Python版）だけを実機で確認済み（2026-09-26）で、それ以外は未確認） |
 | 3-4 | [`docs/phase3_4_services.md`](phase3_4_services.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
 | 3-5 | [`docs/phase3_5_actions.md`](phase3_5_actions.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
 | 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認） |
