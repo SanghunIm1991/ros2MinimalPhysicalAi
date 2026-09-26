@@ -9,7 +9,7 @@
 
 > **進め方**: 前半（1〜4節）は、Gazeboを導入し、用意されたデモをコマンドだけで動かして仕組みを観察する。後半（5節）で、フェーズ3-1のPublisherを応用した小さなノードを書いて車両を走らせる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルドと `import` まで確認済みで、Gazeboを起動した後の挙動は未確認（出力が違う場合は、実機の表示を優先する）。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。導入の確認（1-3節）、Gazeboのトピックの一覧（2-1節の `gz topic -l`）、launchの引数・展開結果（3-1節）は、実機で確かめた表示。ビルドの表示（5-4節）は、使い捨ての環境で確かめた表示の形式。それ以外（インストール中の表示（1-2節）と、Gazeboやノードを起動した後の表示）は、デモの設定ファイルとROS2の仕様から筆者が想定したもので、実機では時刻・数値の細部が異なる。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。導入の確認（1-3節）、Gazeboのトピックの一覧（2-1節の `gz topic -l`）、launchの引数・展開結果（3-1節）、ブリッジのトピックの情報（4-1節の `ros2 topic info`）は、実機で確かめた表示。ビルドの表示（5-4節）は、使い捨ての環境で確かめた表示の形式。それ以外（インストール中の表示（1-2節）と、Gazeboやノードを起動した後の表示）は、デモの設定ファイルとROS2の仕様から筆者が想定したもので、実機では時刻・数値の細部が異なる。
 
 ## 0. 学習目標と完了条件
 
@@ -432,12 +432,14 @@ average rate: 1.000
 
 ## 4. 仕組み: ブリッジとQoS、指令の保持
 
+この節のコマンドは、3-2節で起動したデモ（Gazeboとブリッジ）が動いたままであることを前提とする。閉じてしまった場合は、3-2節のT1のコマンドで起動し直してから、T2で実行する。
+
 ### 4-1. `parameter_bridge` の役割
 
-`parameter_bridge` は、ROS2のノードであると同時に、gz-transportのクライアントでもある。3-1節の引数1本ごとに、次の2つを作る。
+`parameter_bridge` は、ROS2のノードであると同時に、gz-transportのクライアントでもある。3-1節の引数1本ごとに、指定された向きの中継を作る。このデモの引数は区切りが `@`（双方向）なので、1本ごとに次の2つの向きが両方できる。
 
-- ROS2→Gazeboの向き: ROS2のSubscriberで受けた `geometry_msgs/msg/Twist` を `gz.msgs.Twist` に詰め替え、Gazeboのトピックへ送る。
-- Gazebo→ROS2の向き: Gazeboから受けた `gz.msgs.Odometry` を `nav_msgs/msg/Odometry` に詰め替え、ROS2のPublisherで送る。
+- ROS2→Gazeboの向き: ROS2のSubscriberで受けたメッセージをGazeboの型に詰め替え、Gazeboのトピックへ送る。cmd_velの指令が通るのはこちら（`geometry_msgs/msg/Twist` → `gz.msgs.Twist`）。
+- Gazebo→ROS2の向き: Gazeboから受けたメッセージをROS2の型に詰め替え、ROS2のPublisherで送る。odometryが通るのはこちら（`gz.msgs.Odometry` → `nav_msgs/msg/Odometry`）。
 
 `ros2 node list` を見ると、ブリッジは1つのROS2ノードとして見える（ノード名は `ros_gz_bridge`）。
 
@@ -455,11 +457,16 @@ $ ros2 node list
 /ros_gz_bridge
 $ ros2 topic info /model/vehicle_green/cmd_vel
 Type: geometry_msgs/msg/Twist
-Publisher count: 0
+Publisher count: 1
 Subscription count: 1
 ```
 
-`/model/vehicle_green/cmd_vel` を購読しているのがブリッジ（Subscription count: 1）で、そこへ `ros2 topic pub` や5節の自作ノードがPublisherとして加わる。
+Subscription count と Publisher count の1つずつは、どちらもブリッジである。
+
+- Subscription count: 1 は、ROS2→Gazeboの向きのSubscriber。指令を受けてGazeboへ送る、本来の役目の側。
+- Publisher count: 1 は、Gazebo→ROS2の向きのPublisher。引数を `@`（双方向）で書いたので、cmd_velにもこちらの向きが作られている。Gazebo側のcmd_velに届いたメッセージをROS2へ流すためのもので、ROS2から車両を動かすだけなら使わない。cmd_velを `]`（ROS2→Gazeboだけ）で書けば、このPublisherは作られない。
+
+`ros2 topic pub` や5節の自作ノードを動かしている間は、それがPublisherとして加わり、Publisher countが1つ増える。
 
 ### 4-2. QoS: 指令は `reliable` で受ける
 
@@ -477,7 +484,14 @@ ros2 topic info -v /model/vehicle_green/cmd_vel
 ```text
 Type: geometry_msgs/msg/Twist
 
-Publisher count: 0
+Publisher count: 1
+
+Node name: ros_gz_bridge
+Node namespace: /
+Topic type: geometry_msgs/msg/Twist
+...
+Endpoint type: PUBLISHER
+...
 
 Subscription count: 1
 
@@ -492,7 +506,7 @@ QoS profile:
   ...
 ```
 
-`Endpoint type: SUBSCRIPTION`（受ける側）の `Node name` がブリッジで、その `Reliability` が `RELIABLE` であることを確かめる。
+Publisherの側もSubscriberの側も、`Node name` はブリッジである（4-1節のとおり、双方向の中継のため）。確かめるのは、`Endpoint type: SUBSCRIPTION`（受ける側）の `Reliability` が `RELIABLE` であること。
 
 > **launchファイルのQoSの指定について**: `diff_drive.launch.py` には、ブリッジのパラメータとして `qos_overrides./model/vehicle_green.subscriber.reliability: reliable` が書かれている。ただし、このキーのトピック名の部分（`/model/vehicle_green`）は実際のトピック名（`/model/vehicle_green/cmd_vel`）と一致していないので、この指定が効いているかどうかは疑わしい（この手順書の作成時には確かめていない）。いずれにしても、ROS2のSubscriberの既定は `reliable` なので、上の表示で確かめた設定が実際の値である。
 
