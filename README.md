@@ -80,7 +80,7 @@ ROS2に初めて触れる人を対象にしています。ロボット工学の�
 | グラフィックス | Intel Iris Xe Graphics（CPUに内蔵。専用のGPUは無い） |
 | Linux環境 | WSL2 + Ubuntu 24.04 + ROS 2 Jazzy |
 
-必要なディスクの空きの目安とWSL2のメモリの設定は、[環境構築の手順書](docs/setup_wsl2_ros2.md)に書いています。
+必要なディスクの空きの目安と、WSL2のメモリは既定の設定のままでよいことは、[環境構築の手順書](docs/setup_wsl2_ros2.md)に書いています。
 
 ## 読む順番
 

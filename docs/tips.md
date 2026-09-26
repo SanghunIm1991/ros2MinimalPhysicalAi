@@ -202,7 +202,7 @@ DDSは、データを送る前に次の2段階で相手を探す。
 - **`best_effort`**: 送りっぱなしで、届いたかどうかを確かめない。途中で失われたデータは、そのまま失われる。「受け手の事情を考えない」送り方に近いのは、こちらである。
 - **`reliable`**: 配信側が「ここまで送った」という知らせ（HEARTBEAT）を出し、購読側が「ここまで受け取った、これが欠けている」（ACKNACK）と返す。配信側は、欠けた分を送り直す。TCPに似た仕組みだが、DDSの通信規約（RTPS）がUDPの上で自前で行っている。送り直せるのは、配信側が手元に残している分（QoSの `depth` の件数）だけである。
 
-`durability` の `transient_local` も、相手を把握しているからこそできる。配信側が送ったデータを手元に残しておき、後から参加した購読側を見つけた時点で、残しておいた分を渡す。渡すのは、購読側も `transient_local` を求めている場合だけである。フェーズ3-2bの5-2節では、⑤（talker・listenerとも `transient_local`）で過去の分が届き、⑥（listenerが `volatile`）ではつながるが過去の分は届かない。⑦（talkerが `volatile`、listenerが `transient_local`）は、4-2節の突き合わせでつながらない。
+`durability` の `transient_local` も、相手を把握しているからこそできる。配信側が送ったデータを手元に残しておき、後から参加した購読側を見つけた時点で、残しておいた分を渡す。渡すのは、購読側も `transient_local` を求めている場合だけである。フェーズ3-2bの5-2節では、⑤（talker・listenerとも `transient_local`）で過去の分が届き、⑥（listenerが `volatile`）ではつながるが過去の分は届かない。⑦（talkerが `volatile`、listenerが `transient_local`）は、この文書の4-2節で説明したQoSの突き合わせで、つながらない。
 
 ### 4-4. まとめ
 
