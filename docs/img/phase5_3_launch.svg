@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 370" width="900" height="370" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: vehicle_sim.launch.py が目標速度・PI制御・疑似プラントを起動し、引数 gazebo が true のときはGazeboのデモと表示用ノードも起動する">
+<title>図: vehicle_sim.launch.py が目標速度・PI制御・疑似プラントを起動し、引数 gazebo が true のときはGazeboのデモと表示用ノードも起動する</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="900" height="370" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="10" y="10" width="880" height="350" rx="10" fill="#fbfbfd" stroke="#9aa3b2" stroke-dasharray="6 4"/>
+<rect x="340" y="232" width="540" height="120" rx="10" fill="#f6fbf4" stroke="#9cc49a" stroke-dasharray="6 4"/>
+<path d="M210,109 L360,109" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M540,109 L690,109" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M730,148 L730,200 L470,200 L470,148" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M810,148 L810,270" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M690,309 L540,309" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="30" y="70" width="180" height="78" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
+<rect x="360" y="70" width="180" height="78" rx="8" fill="#eef1f5" stroke="#6b7a90" stroke-width="1.5"/>
+<rect x="690" y="70" width="180" height="78" rx="8" fill="#eef1f5" stroke="#6b7a90" stroke-width="1.5"/>
+<rect x="690" y="270" width="180" height="78" rx="8" fill="#eef1f5" stroke="#6b7a90" stroke-width="1.5"/>
+<rect x="360" y="270" width="180" height="78" rx="8" fill="#eaf6e8" stroke="#4a8f45" stroke-width="1.5"/>
+<text x="22" y="30" font-weight="bold">vehicle_sim.launch.py（learn_bringup）</text>
+<text x="352" y="252" font-weight="bold">引数 gazebo:=true のときだけ</text>
+<text x="120.0" y="96.0" text-anchor="middle">target_generator</text>
+<text x="120.0" y="114.0" text-anchor="middle">階段状の目標速度</text>
+<text x="120.0" y="132.0" text-anchor="middle">（この手順書）</text>
+<text x="450.0" y="105.0" text-anchor="middle">pi_controller</text>
+<text x="450.0" y="123.0" text-anchor="middle">（5-2）</text>
+<text x="780.0" y="105.0" text-anchor="middle">vehicle_plant</text>
+<text x="780.0" y="123.0" text-anchor="middle">（5-1）</text>
+<text x="780.0" y="305.0" text-anchor="middle">gz_display</text>
+<text x="780.0" y="323.0" text-anchor="middle">（5-1）</text>
+<text x="450.0" y="296.0" text-anchor="middle">5-0のデモ</text>
+<text x="450.0" y="314.0" text-anchor="middle">Gazebo＋ブリッジ</text>
+<text x="450.0" y="332.0" text-anchor="middle">（include）</text>
+<text x="285" y="86" text-anchor="middle" font-size="12">/target_velocity</text>
+<text x="285" y="101" text-anchor="middle" font-size="12">Float64</text>
+<text x="615" y="86" text-anchor="middle" font-size="12">/plant/pedal</text>
+<text x="615" y="101" text-anchor="middle" font-size="12">Float64</text>
+<text x="600" y="194" text-anchor="middle" font-size="12">/plant/velocity（現在速度）</text>
+<text x="802" y="222" text-anchor="end" font-size="12">/plant/velocity</text>
+<text x="615" y="286" text-anchor="middle" font-size="12">cmd_vel</text>
+<text x="615" y="301" text-anchor="middle" font-size="12">Twist</text>
+</g>
+</svg>
