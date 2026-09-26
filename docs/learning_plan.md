@@ -143,7 +143,7 @@
 | 参考資料 | [`docs/reference_node_class.md`](reference_node_class.md) | Python・C++（読み物） | 作成済み（2026-09-24。`Node` クラスの構造をクラス図（`docs/img/reference_node_rclpy.svg`・`reference_node_rclcpp.svg`）で解析。ローカルのソースで確認。図の見た目は画像にして確認していない） |
 | 置き方 | [`docs/howto_place_code.md`](howto_place_code.md) | 言語非依存（読み物） | 作成済み（2026-09-25。サンプルコードを `touch`＋`nano`、またはVS Codeで練習環境に置く方法。`touch`・`ls`・`head` の表示は使い捨ての環境で確認、`nano` とVS Codeの画面は仕様から想定） |
 | Tips集 | [`docs/tips.md`](tips.md) | 言語非依存（読み物） | 作成済み（2026-09-25。シミュレーション時刻・`CMakeLists.txt` の読み方・`SetuptoolsDeprecationWarning` の3項目。雛形と警告は使い捨ての環境で確認、`use_sim_time` の挙動はローカルのソースで確認。ノードの起動は未確認。2026-09-26にトピック通信の裏側（ディスカバリと届いたことの確認）を4項目めとして追加。DDSの一般的な仕組みから書き、通信の観察はしていない。同日、パラメータを利用者に知らせる方法を5項目めとして追加。turtlesimの `ros2 param` の表示は実機で確認）。分量の少ない補足を随時追加する |
-| 5-0 | [`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md) | 言語非依存＋自作ノードはPython | 作成済み（2026-09-24。導入の確認はユーザーの実機の表示、launchは`--show-args`・`--print`、サンプルはビルド・import確認済み。Gazeboとノードを起動した挙動は未確認。図（`docs/img/phase5_0_bridge.svg`）の見た目は未確認） |
+| 5-0 | [`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md) | 言語非依存＋自作ノードはPython | 学習完了（ユーザーが実機で確認済み、2026-09-26。2-1・3-4・4-1・5-5節は実機の表示に合わせて修正済み）。作成は2026-09-24で、launchは`--show-args`・`--print`、サンプルはビルド・import確認済み。図（`docs/img/phase5_0_bridge.svg`）の見た目は未確認 |
 | 5-1〜 | 着手時に作成 | Python中心 | 未作成 |
 
 - フェーズ3は、トピック（3-1・3-2a・3-2b）、パラメータ、サービス、アクションの6冊に分けた（3-2aのTwistと3-2bのQoSは互いに独立したテーマなので、2026-09-24に1冊から分けた）。各冊はPython・C++を同じ仕様で並べ、比較しやすくしている（言語別ファイルには分けていない）。
