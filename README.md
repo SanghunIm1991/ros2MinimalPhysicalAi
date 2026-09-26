@@ -141,7 +141,7 @@ flowchart TB
 |---|---|---|
 | [参考資料: Nodeクラスの構造](docs/reference_node_class.md) | `rclpy` と `rclcpp` の `Node` クラスの中身を、クラス図で読み解く | フェーズ3-1（上の表の5）の後、いつでも |
 | [サンプルコードを練習環境に置く方法](docs/howto_place_code.md) | GitHubのページからコピーしたコードを、`touch` と `nano`、またはVS Codeで練習環境のファイルに置く | フェーズ3-1で最初にサンプルコードを置く前 |
-| [Tips集](docs/tips.md) | 本文に入れなかった小さな補足（シミュレーション時刻、`CMakeLists.txt` の読み方、ビルド中の `SetuptoolsDeprecationWarning`、トピック通信の裏側） | 関係する手順書を読んでいるとき（項目ごとに独立） |
+| [Tips集](docs/tips.md) | 本文に入れなかった小さな補足（シミュレーション時刻、`CMakeLists.txt` の読み方、ビルド中の `SetuptoolsDeprecationWarning`、トピック通信の裏側、パラメータを利用者に知らせる方法） | 関係する手順書を読んでいるとき（項目ごとに独立） |
 
 ## 計画と記録の文書
 

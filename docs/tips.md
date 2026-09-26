@@ -5,7 +5,7 @@
 - 対象: ROS2 Jazzy（Ubuntu 24.04）。版に依存する記述は、この資料の作成時に `/opt/ros/jazzy` とUbuntuのパッケージに入っていたもので確かめた
 - 所要目安: 1項目あたり5〜15分（読み物）
 
-> **実行環境が無くても読めるように**: コマンドを載せた箇所には、その直後に「期待する結果」として表示の例と読み方を書いている。ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。
+> **実行環境が無くても読めるように**: コマンドを載せた箇所には、その直後に「期待する結果」として表示の例と読み方を書いている。ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。
 
 > **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。
 
@@ -17,6 +17,7 @@
 | 2 | `CMakeLists.txt` の読み方（モダンCMakeの要点） | フェーズ2の2-3節以降、C++のサンプルすべて |
 | 3 | ビルド中の `SetuptoolsDeprecationWarning` の意味 | フェーズ2の2-4節 |
 | 4 | トピック通信の裏側（ディスカバリと届いたことの確認） | フェーズ3-2b（QoS） |
+| 5 | パラメータを利用者に知らせる方法 | フェーズ3-3（パラメータ）、フェーズ4（launch） |
 
 ## 1. シミュレーション時刻（`use_sim_time`）
 
@@ -212,7 +213,109 @@ DDSは、データを送る前に次の2段階で相手を探す。
 | 送信（`best_effort`） | 把握している（宛先を知っている） | しない（送りっぱなし） |
 | 送信（`reliable`） | 把握している | する（HEARTBEAT・ACKNACKで、欠けた分を送り直す） |
 
-## 5. 参考資料
+## 5. パラメータを利用者に知らせる方法
+
+### 5-1. 困りごと: 起動するまで一覧が分からない
+
+作ったノードを人に渡すとき、「どんなパラメータがあり、どんな値を入れてよいか」をどう伝えるか。ソースコードを読んでもらうか、実際に動かして試してもらうのでは不便である。`ros2 run パッケージ 実行ファイル --ros-args -p 名前:=値` と打つときに、Tabキーでパラメータ名の候補が出ることもない。
+
+これは、ROS2のパラメータが、ノードが起動して `declare_parameter` を呼んだ時点で初めて決まる仕組みだからである。実行ファイルを起動しないまま、そのパラメータの一覧を取り出す標準の方法は無い。そこで実務では、「起動中のノードに問い合わせる方法」と「起動しなくても分かるように、別の形で知らせる方法」を組み合わせる。
+
+### 5-2. 起動中のノードに問い合わせる
+
+ノードが動いていれば、`ros2 param list /ノード名` で一覧が、`ros2 param describe /ノード名 パラメータ名` で型・説明・値の制約が分かる（フェーズ3-3（[`docs/phase3_3_parameters.md`](phase3_3_parameters.md)）の5-3節）。
+
+`describe` に説明や値の範囲を出すには、ノードの側で、`declare_parameter` の引数に `ParameterDescriptor`（パラメータの説明書き）を渡しておく。主に設定できるのは次の項目で、範囲を付けておくと、範囲の外の値を設定しようとしたときに自動で拒否される。
+
+| 項目 | 中身 |
+|---|---|
+| `description` | 説明文 |
+| `read_only` | 起動した後は変えられないようにするか |
+| `integer_range` / `floating_point_range` | 整数・小数の値の範囲（最小・最大・刻み） |
+| `additional_constraints` | 範囲では表せない制約を、文章で書く |
+
+自分のノードに付ける練習は、フェーズ3-3の5-4節の末尾にある課題6（発展。`ParameterDescriptor` に説明文と `FloatingPointRange` を付ける）で行える。
+
+起動中のノードに対しては、Tabキーでの補完も効く。`ros2 param get /turtlesim ` や `ros2 param describe /turtlesim ` のようにノード名まで打ってTabキーを押すと、そのノードに問い合わせて、パラメータ名の候補を出す。`ros2` の補完は、`source /opt/ros/jazzy/setup.bash` で自動的に有効になる（`ros2cli` パッケージが、Pythonの補完ライブラリ `argcomplete` を登録する）。起動する前の `--ros-args -p` で補完が効かないのは、問い合わせる相手のノードがまだ無いからである。
+
+### 5-3. turtlesimで確かめる
+
+turtlesimは、背景色のパラメータに説明文と値の範囲（0〜255）を付けている。フェーズ1で使った `ros2 param get`・`set` に加えて、`describe` で説明と範囲を読み、範囲の外の値を入れてみる。
+
+```bash
+# T1
+ros2 run turtlesim turtlesim_node
+
+# T2
+ros2 param list /turtlesim
+
+ros2 param describe /turtlesim background_r
+
+ros2 param describe /turtlesim holonomic
+
+ros2 param set /turtlesim background_r 300
+
+ros2 param set /turtlesim background_r 150
+```
+
+**期待する結果**（T2の分）:
+
+```text
+$ ros2 param list /turtlesim
+  background_b
+  background_g
+  background_r
+  holonomic
+  qos_overrides./parameter_events.publisher.depth
+  qos_overrides./parameter_events.publisher.durability
+  qos_overrides./parameter_events.publisher.history
+  qos_overrides./parameter_events.publisher.reliability
+  start_type_description_service
+  use_sim_time
+$ ros2 param describe /turtlesim background_r
+Parameter name: background_r
+  Type: integer
+  Description: Red channel of the background color
+  Constraints:
+    Min value: 0
+    Max value: 255
+    Step: 1
+$ ros2 param describe /turtlesim holonomic
+Parameter name: holonomic
+  Type: boolean
+  Description: If true, then turtles will be holonomic
+  Constraints:
+$ ros2 param set /turtlesim background_r 300
+Setting parameter failed: Parameter {background_r} doesn't comply with integer range.
+$ ros2 param set /turtlesim background_r 150
+Set parameter successful
+```
+
+- `background_r` の `Description` が説明文、`Constraints` の下の `Min value`・`Max value`・`Step` が値の範囲で、どちらも `ParameterDescriptor` に書かれた内容である。
+- `holonomic` は説明文だけを付けていて、範囲は付けていないので、`Constraints:` の下が空になる。
+- 範囲の外の300は `Setting parameter failed` で拒否され、背景色は変わらない。範囲の中の150は `Set parameter successful` になり、turtlesimのウィンドウの背景が紫がかった色に変わる。
+- `ros2 param describe /turtlesim ` まで打ってTabキーを2回押すと、`background_b`・`background_g` などの候補が並ぶ（T1のturtlesimを止めると、候補は出なくなる）。
+
+### 5-4. 起動しなくても分かるようにする
+
+利用者が起動する前に知りたい情報は、次のような形で知らせる。
+
+- **launchの引数として見せる**: 利用者に変えてほしい値を、launchファイルの `DeclareLaunchArgument` に説明と既定値を付けて宣言する。`ros2 launch パッケージ ファイル --show-args` で、起動せずに名前・説明・既定値の一覧を表示できる（フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）の4-1節）。配布するときは、ノードを直接 `ros2 run` してもらうのではなく、launchファイルを入口にするのが一般的な形である。
+- **既定値のYAMLファイルを同梱する**: すべてのパラメータと既定値を並べたYAMLを、パッケージの `config/` に置き、コメントで説明や範囲を書いておく。利用者は、これを写して書き換える（YAMLでの指定のしかたは、フェーズ3-3の5-4節）。インストールしておけば、`ros2 pkg prefix パッケージ` で示される場所の `share/パッケージ/config/` で見つけられる。
+- **定義ファイルからコードと説明書を作る**: 外部のライブラリ `generate_parameter_library`（PickNik社のOSS。Jazzy向けのaptパッケージは `ros-jazzy-generate-parameter-library`）を使うと、パラメータの名前・型・既定値・説明・制約をYAMLに1回書くだけで、宣言と値の検査をするC++/Pythonのコードと、説明書（Markdown等）を生成できる。コードと説明書の内容がずれないのが利点で、ros2_controlなどが採用している。
+
+### 5-5. 使い分けの目安
+
+| 方法 | 起動しなくても分かるか | 向いている場面 |
+|---|---|---|
+| `ParameterDescriptor`＋`ros2 param describe` | 分からない（起動中のノードに問い合わせる） | どのノードでも、まず付けておく。範囲の検査も兼ねる |
+| launchの引数＋`--show-args` | 分かる | 利用者に変えてほしい値が、少数に絞れるとき |
+| 既定値のYAMLの同梱 | 分かる（ファイルを読む） | パラメータが多く、まとめて書き換えてもらうとき |
+| `generate_parameter_library` | 分かる（生成した説明書を読む） | パラメータが多く、説明書との食い違いを防ぎたいとき |
+
+小さなパッケージなら、上の3つ（`ParameterDescriptor`、launchの引数、YAML）で足りる。
+
+## 6. 参考資料
 
 確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。
 
