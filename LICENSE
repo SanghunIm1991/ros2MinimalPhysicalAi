@@ -55,6 +55,9 @@ the author (SanghunIm1991) and the license are credited.
 
    - docs/setup_wsl2_ros2.md の手順4で抜粋したコマンド:
      ROS 2 Documentation（Open Robotics）, CC BY 4.0
+   - docs/phase1_cli_turtlesim.md 等で、公式チュートリアルの例と同じ値を使った
+     コマンド例（文書の冒頭や末尾に、その旨を書いている）:
+     ROS 2 Documentation（Open Robotics）, CC BY 4.0
    - docs/tips.md で引用した `CMakeLists.txt` の各行:
      `ros2 pkg create` の雛形（ros2pkg）, Apache License 2.0
    - docs/tips.md で引用した警告の文面: setuptools, MIT License
