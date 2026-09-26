@@ -28,7 +28,7 @@
 <text x="592.0" y="238.0" fill="#444444">環境変数 RMW_IMPLEMENTATION で</text>
 <text x="592.0" y="258.0" fill="#444444">DDS実装を切り替えられる</text>
 <rect x="580.0" y="413.0" width="340.0" height="70.0" rx="8" fill="#fafafa" stroke="#999999" stroke-width="1.3" stroke-dasharray="6 4"/>
-<text x="592.0" y="438.0" fill="#444444">ROS1のroscoreのような</text>
-<text x="592.0" y="458.0" fill="#444444">中央のサーバは無い（自律的discovery）</text>
+<text x="592.0" y="438.0" fill="#444444">まとめ役の中央サーバは無い</text>
+<text x="592.0" y="458.0" fill="#444444">（互いに自動で見つけ合う）</text>
 </g>
 </svg>

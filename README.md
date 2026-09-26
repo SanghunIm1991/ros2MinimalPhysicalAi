@@ -118,7 +118,7 @@ flowchart TB
 
 | 順 | 文書 | 内容 | 区分 | 前提 | 所要 |
 |---|---|---|---|---|---|
-| 1 | [フェーズ0: ROS2の概要と全体像](docs/phase0_overview.md) | 通信の仕組み（DDS・QoS等）、ROS2でできること、業界ごとの活用、用語、学習の地図。コマンドは使わない | 必須（読み物） | なし | 1コマ |
+| 1 | [フェーズ0: ROS2の概要と全体像](docs/phase0_overview.md) | 通信の仕組みの概要（層を積み重ねた構造）、ROS2でできること、業界ごとの活用、用語、学習の地図。コマンドは使わない | 必須（読み物） | なし | 1コマ |
 | 2 | [環境構築: WSL2 + Ubuntu 24.04 + ROS2 Jazzy](docs/setup_wsl2_ros2.md) | WSL2・Ubuntu・ROS2の導入と、作業ディレクトリの用意 | 必須（2b節・7節は任意） | なし | 2時間程度 |
 | 3 | [フェーズ1: turtlesimとCLIで通信を観察する](docs/phase1_cli_turtlesim.md) | 既製のノードを動かし、`ros2` コマンドとrqtで観察する。コードは書かない | 必須 | 2 | 1〜2コマ |
 | 4 | [フェーズ2: ワークスペースとパッケージ](docs/phase2_packages.md) | Python・C++のパッケージを作り、`colcon build` から `ros2 run` までを通す | 必須 | 3 | 1コマ |
@@ -151,7 +151,7 @@ flowchart TB
 |---|---|---|
 | [参考資料: Nodeクラスの構造](docs/reference_node_class.md) | `rclpy` と `rclcpp` の `Node` クラスの中身を、クラス図で読み解く | フェーズ3-1（上の表の5）の後、いつでも |
 | [サンプルコードを練習環境に置く方法](docs/howto_place_code.md) | GitHubのページからコピーしたコードを、`touch` と `nano`、またはVS Codeで練習環境のファイルに置く | フェーズ3-1で最初にサンプルコードを置く前 |
-| [Tips集](docs/tips.md) | 本文に入れなかった小さな補足（シミュレーション時刻、`CMakeLists.txt` の読み方、ビルド中の `SetuptoolsDeprecationWarning`、トピック通信の裏側、パラメータを利用者に知らせる方法） | 関係する手順書を読んでいるとき（項目ごとに独立） |
+| [Tips集](docs/tips.md) | 本文に入れなかった小さな補足（シミュレーション時刻、`CMakeLists.txt` の読み方、ビルド中の `SetuptoolsDeprecationWarning`、トピック通信の裏側、パラメータを利用者に知らせる方法、ROS2の通信の層の詳細、ROS1との違い、名前空間が効く範囲） | 関係する手順書を読んでいるとき（項目ごとに独立） |
 
 ## 計画と記録の文書
 

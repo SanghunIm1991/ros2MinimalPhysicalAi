@@ -49,6 +49,10 @@ flowchart LR
 | 動作 | 10 Hz（0.1秒周期）で `linear.x = 2.0`、`angular.z = 1.0` を送り続ける（亀が円を描く） |
 | 備考 | パラメータ化はフェーズ3-3で行うので、今は固定値でよい |
 
+**`Twist` はturtlesim専用の型ではない**: 型の名前の先頭の `geometry_msgs` は、ROS2が標準で用意している、位置・姿勢・速度などを表す型を集めたパッケージである（`std_msgs` の仲間）。`Twist` は、その中にある「並進と回転の速度」を表す汎用の型で、turtlesimは、速度指令の受け取りにこの標準の型を使っているだけである。turtlesimのために作られた型は、亀の位置を表す `turtlesim/msg/Pose` のように、先頭が `turtlesim` になる。
+
+標準の型なので、相手がturtlesimでなくても、移動するロボットへの速度指令には、ふつう `Twist`（時刻と座標系の名前を添えた版の [`geometry_msgs/msg/TwistStamped`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/TwistStamped.msg) を含む）を使う。フェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)）では、ROS2の側から同じ `Twist` を送って、Gazeboの車両を動かす（Gazebo向けの形への変換は、橋渡し役のノードが行う）。自律移動のNav2のような大きなパッケージも、最後にはこの型で速度指令を出す。この手順書で書く `turtle_circle` も、送り先のトピック名（`/turtle1/cmd_vel`）を差し替えるだけで、別のロボットへの速度指令になる（フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）の4-6節で扱うremap（トピック名の付け替え）を使えば、コードを書き換えずに差し替えられる）。
+
 ## 3. 準備: 依存の追加（`geometry_msgs`）
 
 `turtle_circle` は `geometry_msgs` を使うので、まず依存を足す。
@@ -136,7 +140,7 @@ def main(args=None):
 
 - `import` 部: `Twist` は `geometry_msgs` パッケージのメッセージ型。だから `package.xml` に `geometry_msgs` の依存が要る（3節）。`ExternalShutdownException` は終了処理で使う（この解説の最後から2つ目の項「`main` 内の流れ」で説明する）。
 - `super().__init__('turtle_circle')`: 親クラス `Node` を、ノード名 `turtle_circle` で初期化する。これを呼ばないと、以降の `create_*` 系が使えない。
-- `create_publisher(Twist, '/turtle1/cmd_vel', 10)`: 引数は「メッセージ型・トピック名・QoS」。QoSに整数を渡すと「深さ（キューに溜める件数）が10で、他は既定値（reliable・volatile）」の意味になる（QoSの中身はフェーズ3-2bで扱う）。先頭の `/` を付けると絶対名になり、名前空間に左右されない。turtlesimの購読トピックは `/turtle1/cmd_vel` なので、綴りが違うと亀は動かず、エラーも出ない。
+- `create_publisher(Twist, '/turtle1/cmd_vel', 10)`: 引数は「メッセージ型・トピック名・QoS」。QoSに整数を渡すと「深さ（キューに溜める件数）が10で、他は既定値（reliable・volatile）」の意味になる（QoSの中身はフェーズ3-2bで扱う）。先頭の `/` を付けると絶対名になり、ノードに名前空間を付けて起動しても、組み立てられるトピック名が変わらない（名前空間が効く範囲と、意識しなければならない場面は、Tips集（[`docs/tips.md`](tips.md)）の8節）。turtlesimの購読トピックは `/turtle1/cmd_vel` なので、綴りが違うと亀は動かず、エラーも出ない。
 - `create_timer(0.1, self.on_timer)`: 0.1秒（=10 Hz）ごとに `on_timer` を呼ぶ。第1引数の単位は**秒**。`self.timer` に保持しているのは、後から止めたり周期を変えたりできるようにするため（Pythonではノードも内部で保持するので、必須ではない）。
 - `on_timer`: `Twist()` は全フィールドが0で作られる。`Twist` は `linear`（並進速度 x, y, z、単位 m/s）と `angular`（回転速度 x, y, z、単位 rad/s）の2つのベクトルを持つ。turtlesimは2次元なので、使うのは `linear.x`（前進）と `angular.z`（旋回）だけ。前進2.0と旋回1.0を同時に出し続けるので、亀は半径 `2.0 / 1.0 = 2.0` の円を描く（6節の課題2で、値を変えて半径が変わることを確かめる）。
 - `main` 内の流れ: `rclpy.init` → ノード生成 → `rclpy.spin`（コールバックを処理し続けて、ここで待つ）→ 終了時に後始末。`Ctrl+C` は `KeyboardInterrupt`、外部からのシャットダウンは `ExternalShutdownException` になるので、どちらも握りつぶして正常終了させる。`finally` の `destroy_node()` と `rclpy.try_shutdown()` は、途中で例外が出ても必ず実行したい後始末。`try_shutdown` は「すでにシャットダウン済みでもエラーにならない」版。

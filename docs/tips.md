@@ -5,9 +5,9 @@
 - 対象: ROS2 Jazzy（Ubuntu 24.04）。版に依存する記述は、この資料の作成時に `/opt/ros/jazzy` とUbuntuのパッケージに入っていたもので確かめた
 - 所要目安: 1項目あたり5〜15分（読み物）
 
-> **実行環境が無くても読めるように**: コマンドを載せた箇所には、その直後に「期待する結果」として表示の例と読み方を書いている。ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。
+> **実行環境が無くても読めるように**: コマンドを載せた箇所には、その直後に「期待する結果」として表示の例と読み方を書いている。ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの。
 
-> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。
+> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節・7節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の9節）に基づいて書いた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。
 
 ## 項目の一覧
 
@@ -18,6 +18,9 @@
 | 3 | ビルド中の `SetuptoolsDeprecationWarning` の意味 | フェーズ2の2-4節 |
 | 4 | トピック通信の裏側（ディスカバリと届いたことの確認） | フェーズ3-2b（QoS） |
 | 5 | パラメータを利用者に知らせる方法 | フェーズ3-3（パラメータ）、フェーズ4（launch） |
+| 6 | ROS2の通信の層を詳しく（DDS・RMW・ディスカバリ・QoS） | フェーズ0の2節 |
+| 7 | ROS1との違い | フェーズ0の1節 |
+| 8 | 名前空間（namespace）が効く範囲 | フェーズ3-2a（絶対名のトピック）、フェーズ4の4-6節（名前空間・remap） |
 
 ## 1. シミュレーション時刻（`use_sim_time`）
 
@@ -319,7 +322,106 @@ Set parameter successful
 
 小さなパッケージなら、上の3つ（`ParameterDescriptor`、launchの引数、YAML）で足りる。
 
-## 6. 参考資料
+## 6. ROS2の通信の層を詳しく
+
+フェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の2節では、ROS2の通信が層を積み重ねた構造（プロトコルスタック）になっていることだけを説明した。ここでは、図に出てきた各層と、関係する仕組みの名前を補う。
+
+- **DDS（Data Distribution Service）**: OMG（Object Management Group）という標準化団体が定めた、分散型のpublish/subscribe通信の規格。ROS2は、このDDS（正確には、その通信規約のDDS/RTPS）を標準の通信層として使っている。
+- **RMW（ROS Middleware Interface）**: ROS2のAPIと、DDSの実装製品をつなぐ層。この層のおかげで、ROS2のコードを変えずにDDSの実装を差し替えられる。ROS2のバイナリ配布は、Fast DDS（Jazzyの既定）・Cyclone DDS・RTI Connext・GurumDDS等に対応しており、環境変数 `RMW_IMPLEMENTATION` で切り替える。
+- **ディスカバリ（自動発見）**: 各ノードは起動すると、マルチキャストでお互いを見つけ合う。同じネットワークにある別のシステムと混ざらないよう、`ROS_DOMAIN_ID`（ドメインID）の番号で通信の範囲を分ける。見つけた相手と何を確かめ合っているかは、この資料の4節で説明した。
+- **QoS（Quality of Service）**: トピックごとに、信頼性（reliability: 送りっぱなしか、確実に届けるか）、持続性（durability: 後から参加した購読側に過去のデータを渡すか）、履歴（history: 直近の何件を手元に残すか）等を決められる。配信側と購読側のQoSが噛み合わないと、つながらない（購読側が求める水準を、配信側が満たしているかで決まる）。実際に試すのはフェーズ3-2b（[`docs/phase3_2b_qos.md`](phase3_2b_qos.md)）。
+
+## 7. ROS1との違い
+
+ROS2は、初代のROS（ROS1）を作り直したものである。古い記事やサンプルにはROS1向けのものが多いので、読み分けるために違いの要点を知っておくと役に立つ。
+
+ROS1では、`roscore`（マスター）という中央のプロセスがノードの名前の取りまとめを担い、通信にはROS独自の規約（TCPROS・XMLRPC）を使っていた。マスターが止まると新しい接続が作れなくなり、複数台のロボットの構成・セキュリティ・リアルタイム制御には、別の工夫が必要だった。
+
+ROS2は、この反省から、通信の層に業界標準のDDS（この資料の6節）を採用し、**中央の管理者がいない分散型の構成**に作り直された。リアルタイム制御・組み込み機器・複数台のロボット・セキュリティを、最初から考えに入れた設計になっている。
+
+ROS1の最後の版（Noetic）のサポートは2025年5月に終了しており、今の新規開発はROS2が前提である。記事やサンプルが `roscore`・`rosrun`・`catkin_make` を使っていたら、ROS1向けと見分けられる（ROS2では `ros2 run`・`colcon build` を使う）。
+
+## 8. 名前空間（namespace）が効く範囲
+
+### 8-1. 疑問: 「名前空間を付けても変わらない」とは、どこの話か
+
+フェーズ3-2a（[`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md)）の4節では、`'/turtle1/cmd_vel'` のように先頭に `/` を付けたトピック名は「ノードに名前空間を付けて起動しても、組み立てられるトピック名が変わらない」と書いた。これは、ノードの中でトピック名を組み立てるときの話である。
+
+名前空間は、**ノードに付く属性**である。ノードがPublisherやSubscriberを作るとき、渡されたトピック名が相対名（先頭に `/` が無い名前）なら、ノードの名前空間を前に付けて、完全な名前にする。絶対名（先頭が `/`）なら、そのまま使う。この組み立ては、ノードの中（ROS2のクライアントライブラリ）で済んでしまう。
+
+トピック通信の側が扱うのは、組み立て終わった完全な名前だけである。`/demo/chatter` は「`demo` という区画の中の `chatter`」ではなく、単に `/demo/chatter` という1つの長い名前として扱われる。だから、名前空間は通信を仕切る壁ではない。名前空間が違うノード同士でも、完全な名前が同じならつながる。通信の範囲そのものを分けたい場合は、名前空間ではなく `ROS_DOMAIN_ID`（この資料の6節）を使う。
+
+### 8-2. 名前の3つの書き方
+
+ノードの名前空間が `/demo`、ノード名が `talker` のとき、トピック名は次のように組み立てられる。
+
+| 書き方 | 例 | 完全な名前 |
+|---|---|---|
+| 絶対名 | `/chatter` | `/chatter`（名前空間は付かない） |
+| 相対名 | `chatter` | `/demo/chatter` |
+| プライベート名 | `~/chatter` | `/demo/talker/chatter`（ノードの完全な名前の下） |
+
+名前空間は、起動するときに外から付けられる。`ros2 run` なら `--ros-args -r __ns:=/demo`、launchなら `PushRosNamespace`（フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）の4-6節）である。コードの側は、相対名で書いておけば、付けられた名前空間に従う。
+
+### 8-3. 名前空間を意識しなければならない場面
+
+**同じノードを複数動かすとき。** ロボットを2台動かすなら、それぞれのノードを `/robot1`・`/robot2` の名前空間で起動し、`/robot1/cmd_vel`・`/robot2/cmd_vel` に分けるのがふつうのやり方である。turtlesimの `/turtle1/cmd_vel` と `/turtle2/cmd_vel`（フェーズ1（[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)）の3-5節で、`/spawn` で2匹目を出したときに増えるトピック）も、同じ発想で分かれている。このとき、コードの中のトピック名が絶対名だと、名前空間を付けても全員が同じトピックに集まり、指令が混ざる。複数動かす前提のノードは、相対名で書く。
+
+**名前空間の違う相手とつなぐとき。** 3-2aの `turtle_circle` は、相手のturtlesimが待っている `/turtle1/cmd_vel` に確実に届けるため、絶対名で書いている。ところが、こう書いたノードは、名前空間を付けるだけでは送り先が変わらないので、ロボットごとに名前空間で分ける使い方ができない。別の亀やロボットに向け直すには、remap（トピック名の付け替え。フェーズ4の4-6節）を使う（remapは絶対名にも効く）。複数台で使い回す前提なら、相対名で書いておくと、名前空間を付けるだけで分けられる。どちらにしても、つながるかどうかは、両側の完全な名前が一致するかで決まる。
+
+**コマンドから触るとき。** `ros2 topic echo`・`ros2 param get` などは、完全な名前で指定する（`ros2 param get /demo/talker use_sim_time` のように）。`ros2 topic pub chatter ...` のように相対名で書くと、コマンドの側は名前空間の外（`/`）にいるので `/chatter` に送ってしまい、`/demo/chatter` を待つノードには届かない。`ros2 topic list` で完全な名前を確かめてから指定するとよい。
+
+**パラメータのYAMLファイルを渡すとき。** YAMLの先頭に書くノード名は、名前空間を含めた完全な名前と照らし合わされる。`talker:` と書いたファイルは、名前空間の無い `/talker` にしか効かない。名前空間を付けて起動したノードには、`/demo/talker:` のように名前空間まで書くか、すべてのノードに当てはまる `/**:` を使う。この違いはエラーにならず、値が黙って既定値のままになるので気づきにくい。
+
+### 8-4. 確かめる: YAMLのノード名と名前空間
+
+ROS2に付属するデモのtalker（`demo_nodes_cpp`）を、名前空間 `/demo` で起動し、`use_sim_time: true` を書いたYAMLを渡す。ノード名の書き方だけが違う、次の3つのファイルを用意する（置き場所はどこでもよいが、T1はそのディレクトリで実行する。別の場所から実行する場合は、`--params-file` に絶対パスで渡す）。
+
+```yaml
+# talker.yaml
+talker:
+  ros__parameters:
+    use_sim_time: true
+```
+
+```yaml
+# demo_talker.yaml
+/demo/talker:
+  ros__parameters:
+    use_sim_time: true
+```
+
+```yaml
+# all.yaml
+/**:
+  ros__parameters:
+    use_sim_time: true
+```
+
+T1で1つめのファイルを渡して起動し、T2で確かめる。確かめたら、T1を `Ctrl+C` で止め、残りのファイルでも同じことを繰り返す。
+
+```bash
+# T1
+ros2 run demo_nodes_cpp talker --ros-args -r __ns:=/demo --params-file talker.yaml
+
+# T2
+ros2 topic list
+
+ros2 param get /demo/talker use_sim_time
+```
+
+**期待する結果**（T2。`talker.yaml` を渡した場合。`ros2 topic list` は抜粋）:
+
+```text
+$ ros2 topic list
+/demo/chatter
+$ ros2 param get /demo/talker use_sim_time
+Boolean value is: False
+```
+
+トピックが `/demo/chatter` になっていれば、名前空間が付いている。`use_sim_time` は `False` のままで、`talker:` と書いたYAMLの値が効いていない。`demo_talker.yaml` か `all.yaml` を渡した場合は、同じコマンドで `Boolean value is: True` になる。Python版のデモ（`ros2 run demo_nodes_py talker ...`）でも、結果は同じである。
+
+## 9. 参考資料
 
 確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。
 
