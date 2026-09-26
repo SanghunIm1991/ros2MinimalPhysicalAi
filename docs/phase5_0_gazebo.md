@@ -744,13 +744,18 @@ ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 
 ## 10. 公式ドキュメント・参考資料
 
-確認状況（2026-09-24）: Gazebo公式の2ページはこの手順書の作成時に本文を確認した。DiffDriveプラグインの既定値（オドメトリの送信周期50 Hz、トピック名の決まり）と、指令のタイムアウトが無いことは、GitHubのgz-simのソース（gz-sim8ブランチ）で確認した。日本語の記事は [`docs/idea_origin.md`](idea_origin.md) に掲載済みのもので、今回は再確認していない。
+確認状況（2026-09-24）: Gazebo公式の2ページはこの手順書の作成時に本文を確認した。2026-09-26に、次の説明のページ（Gazeboの「Moving the robot」「Use ROS 2 to interact with Gazebo」、DiffDriveのAPIリファレンス、`ros_gz_sim_demos` のパッケージのドキュメント、ROS 2のGazeboのチュートリアル）を追加した。GazeboとROS 2のチュートリアルは本文（ROS 2は `ros2/ros2_documentation` の原稿）を確認し、パッケージのドキュメントは検索結果で実在と内容の概要だけを確認した（docs.ros.orgはボット対策で本文を取得できないため）。DiffDriveプラグインの既定値（オドメトリの送信周期50 Hz、トピック名の決まり）と、指令のタイムアウトが無いことは、GitHubのgz-simのソース（gz-sim8ブランチ）で確認した。日本語の記事は [`docs/idea_origin.md`](idea_origin.md) に掲載済みのもので、今回は再確認していない。
 
 ### 公式
 
 - [Installing Gazebo with ROS — Gazebo Harmonic](https://gazebosim.org/docs/harmonic/ros_installation/)（ROS2の版とGazeboの版の対応、Jazzyでの導入方法）
-- [gazebosim/ros_gz — ros_gz_sim_demos（GitHub、jazzyブランチ）](https://github.com/gazebosim/ros_gz/tree/jazzy/ros_gz_sim_demos)（デモの一覧と起動方法）
-- [gazebosim/gz-sim — DiffDriveプラグイン（GitHub、gz-sim8ブランチ）](https://github.com/gazebosim/gz-sim/tree/gz-sim8/src/systems/diff_drive)（パラメータの一覧と既定値はヘッダ `DiffDrive.hh` のコメントにある）
+- [Setting up a robot simulation (Gazebo) — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Simulators/Gazebo/Gazebo.html)（ROS 2の公式の入口。導入の確認までで、その先はGazeboのチュートリアルへ案内している）
+- [Use ROS 2 to interact with Gazebo — Gazebo Harmonic](https://gazebosim.org/docs/harmonic/ros2_integration/)（`parameter_bridge` の使い方。`@`・`[`・`]` の向きの書き分け、YAMLでの設定、QoSの上書き）
+- [Moving the robot — Gazebo Harmonic](https://gazebosim.org/docs/harmonic/moving_robot/)（DiffDriveプラグインをロボットに付けて、Gazeboのコマンドで動かすチュートリアル。ROS 2は使わない）
+- [gz::sim::systems::DiffDrive — Gazebo Sim 8 APIリファレンス](https://gazebosim.org/api/sim/8/classgz_1_1sim_1_1systems_1_1DiffDrive.html)（DiffDriveのパラメータの一覧と既定値。トピック名の決まり、オドメトリの送信周期、速度・加速度の上限など）
+- [ros_gz_sim_demos — Jazzy のパッケージのドキュメント](https://docs.ros.org/en/ros2_packages/jazzy/api/ros_gz_sim_demos/)（デモの一覧と起動方法。下のGitHubにあるREADMEを元にしたページ）
+- [gazebosim/ros_gz — ros_gz_sim_demos（GitHub、jazzyブランチ）](https://github.com/gazebosim/ros_gz/tree/jazzy/ros_gz_sim_demos)（デモのソース。launchファイルとブリッジの設定）
+- [gazebosim/gz-sim — DiffDriveプラグイン（GitHub、gz-sim8ブランチ）](https://github.com/gazebosim/gz-sim/tree/gz-sim8/src/systems/diff_drive)（DiffDriveのソース。パラメータの説明は、上のAPIリファレンスと同じくヘッダ `DiffDrive.hh` のコメントにある）
 
 ### 日本語
 
