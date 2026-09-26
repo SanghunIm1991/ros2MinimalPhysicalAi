@@ -9,7 +9,7 @@
 
 > **進め方**: 前半（1〜4節）は、Gazeboを導入し、用意されたデモをコマンドだけで動かして仕組みを観察する。後半（5節）で、フェーズ3-1のPublisherを応用した小さなノードを書いて車両を走らせる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルドと `import` まで確認済みで、Gazeboを起動した後の挙動は未確認（出力が違う場合は、実機の表示を優先する）。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。導入の確認（1-3節）とlaunchの引数・展開結果（3-1節）は、実機で確かめた表示。ビルドの表示（5-4節）は、使い捨ての環境で確かめた表示の形式。それ以外（インストール中の表示（1-2節）と、Gazeboやノードを起動した後の表示）は、デモの設定ファイルとROS2の仕様から筆者が想定したもので、実機では時刻・数値の細部が異なる。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。導入の確認（1-3節）、Gazeboのトピックの一覧（2-1節の `gz topic -l`）、launchの引数・展開結果（3-1節）は、実機で確かめた表示。ビルドの表示（5-4節）は、使い捨ての環境で確かめた表示の形式。それ以外（インストール中の表示（1-2節）と、Gazeboやノードを起動した後の表示）は、デモの設定ファイルとROS2の仕様から筆者が想定したもので、実機では時刻・数値の細部が異なる。
 
 ## 0. 学習目標と完了条件
 
@@ -143,30 +143,43 @@ gz sim diff_drive.sdf
 
 ウィンドウが開かない・真っ黒になる場合は、8節の表を参照する。
 
-▶を押して再生した状態で、**別のターミナル**からGazeboのトピックを見る。
+**別のターミナル**からGazeboのトピックを見る。
 
 ```bash
 gz topic -l
 ```
 
-**期待する結果**（並びと行数は異なる）:
+**期待する結果**（一時停止のままでも再生中でも同じ。末尾の行は実行ごとに1行ほど増減することがある）:
 
 ```text
 /clock
-/model/vehicle_blue/cmd_vel
+/gazebo/resource_paths
+/gui/camera/pose
+/gui/currently_tracked
+/gui/track
 /model/vehicle_blue/odometry
 /model/vehicle_blue/tf
-/model/vehicle_green/cmd_vel
 /model/vehicle_green/odometry
 /model/vehicle_green/tf
 /stats
 /world/diff_drive/clock
-...
+/world/diff_drive/dynamic_pose/info
+/world/diff_drive/pose/info
+/world/diff_drive/scene/deletion
+/world/diff_drive/scene/info
+/world/diff_drive/state
+/world/diff_drive/stats
+/model/vehicle_blue/cmd_vel
+/model/vehicle_blue/enable
+/model/vehicle_green/cmd_vel
+/model/vehicle_green/enable
+/world/diff_drive/light_config
+/world/diff_drive/material_color
 ```
 
-`/model/<車両名>/cmd_vel` が指令を受け付けるトピック、`/model/<車両名>/odometry` がオドメトリを送り出すトピック。これらの名前は、DiffDriveプラグインの既定の決まり（`/model/{モデル名}/...`）で付いている。
+並びは名前順ではないので、車両の名前（`vehicle_blue`・`vehicle_green`）で探す。`/model/<車両名>/cmd_vel` が指令を受け付けるトピック、`/model/<車両名>/odometry` がオドメトリを送り出すトピック。これらの名前は、DiffDriveプラグインの既定の決まり（`/model/{モデル名}/...`）で付いている。トピックはワールドを開いた時点で用意されるので、▶を押す前から一覧に出る。
 
-Gazeboのコマンドで、青の車両に指令を送ってみる。
+▶を押して再生した状態で、Gazeboのコマンドで青の車両に指令を送ってみる（一時停止のままだと、物理の時間が進まないので車両は動かない）。
 
 ```bash
 gz topic -t /model/vehicle_blue/cmd_vel -m gz.msgs.Twist -p "linear: {x: 0.5}, angular: {z: 0.3}"
