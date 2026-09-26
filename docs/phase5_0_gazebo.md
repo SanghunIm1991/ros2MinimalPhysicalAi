@@ -343,7 +343,7 @@ ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 ros2 topic echo --once /model/vehicle_green/odometry
 ```
 
-**期待する結果**（時刻と位置・向きの値は、走らせた時間によって変わる。`covariance` の行は省略）:
+**期待する結果**（時刻と位置・向きの値は、走らせた時間によって変わる。`covariance` は36行のうち先頭の2行だけ載せる）:
 
 ```text
 header:
@@ -363,7 +363,10 @@ pose:
       y: 0.0
       z: 0.29
       w: 0.96
-  ...
+  covariance:
+  - 0.0
+  - 0.0
+  ...（0.0 が全部で36行）
 twist:
   twist:
     linear:
@@ -374,7 +377,10 @@ twist:
       x: 0.0
       y: 0.0
       z: 0.3
-  ...
+  covariance:
+  - 0.0
+  - 0.0
+  ...（0.0 が全部で36行）
 ```
 
 [`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg) の読み方:
@@ -386,10 +392,17 @@ twist:
 | `child_frame_id` | 動いている物体の座標系（車両の車体 `chassis`） |
 | `pose.pose` | 位置（`position`、m）と向き（`orientation`。クォータニオンという4つの数で向きを表す形式） |
 | `twist.twist` | 速度。車体から見た前進の速さ（`linear.x`、m/s）と旋回の速さ（`angular.z`、rad/s） |
+| `pose.covariance`・`twist.covariance` | 位置・速度の値がどのくらい不確かか（共分散）。36個の数で6×6の表を表す。このデモでは、すべて0.0 |
 
 `twist.twist.linear.x` が指令の0.5に、`angular.z` が0.3に近ければ、指令どおりに走っている。フェーズ5で扱う「現在速度」にあたるのがこの `linear.x` である。
 
 > **オドメトリは推定値**: DiffDriveは、車輪の回転の角度から走った距離を計算してオドメトリを出している。車輪が滑ると、実際の位置とずれていく（実物のロボットでも同じ問題が起きる）。
+
+> **`covariance`（共分散）**: 推定値がどのくらい当てにならないかを表す数。`pose` と `twist` にそれぞれ36個ずつあり、6×6の表を1行目から順に並べたものである（定義は [`geometry_msgs/msg/PoseWithCovariance`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/PoseWithCovariance.msg)）。表の行と列は、x・y・zと、X軸・Y軸・Z軸まわりの回転の6つ。対角（1・8・15・22・29・36個目）がそれぞれの値の分散で、大きいほど不確か。それ以外は、2つの値のずれ方の関係を表す。
+>
+> このデモですべて0.0になっているのは、「誤差が無い」という意味ではなく、**誰も値を入れていない**からである。Gazeboのオドメトリの型（`gz.msgs.Odometry`）には、共分散の欄がそもそも無い。ブリッジはこれを `nav_msgs/msg/Odometry` に変換するときに、`covariance` を0.0のままにしておく。
+>
+> 共分散は、複数のセンサーを組み合わせて位置を推定するとき（例: オドメトリとIMUを重ねる `robot_localization`）に、「どのセンサーをどのくらい信用するか」の重みとして使われる。そのため、実物のロボットのドライバは、車輪の滑りやすさなどから見積もった値を入れて送るのが普通である。フェーズ5で扱う速度制御は `twist.twist.linear.x` しか使わないので、0.0のままで困ることはない。
 
 次に、2台のオドメトリの送信周期を比べる。
 
