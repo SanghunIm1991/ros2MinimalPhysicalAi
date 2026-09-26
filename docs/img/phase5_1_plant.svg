@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 350" width="900" height="350" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: ペダルの指令を疑似プラントが速度に変え、表示用ノードが縮尺をかけてGazeboの車両へ送る">
+<title>図: ペダルの指令を疑似プラントが速度に変え、表示用ノードが縮尺をかけてGazeboの車両へ送る</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="900" height="350" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="335" y="28" width="555" height="140" rx="10" fill="#fffaf0" stroke="#d9b26a" stroke-dasharray="6 4"/>
+<rect x="335" y="203" width="555" height="138" rx="10" fill="#f6fbf4" stroke="#9cc49a" stroke-dasharray="6 4"/>
+<path d="M200,109 L350,109" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M530,109 L680,109" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M770,148 L770,245" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M680,284 L530,284" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="20" y="70" width="180" height="78" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="350" y="70" width="180" height="78" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
+<rect x="680" y="70" width="180" height="78" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
+<rect x="680" y="245" width="180" height="78" rx="8" fill="#eaf6e8" stroke="#4a8f45" stroke-width="1.5"/>
+<rect x="350" y="245" width="180" height="78" rx="8" fill="#eaf6e8" stroke="#4a8f45" stroke-width="1.5"/>
+<text x="347" y="48" font-weight="bold">この手順書で作るノード（learn_py）</text>
+<text x="347" y="223" font-weight="bold">5-0のデモ（diff_drive.launch.py）</text>
+<text x="110.0" y="96.0" text-anchor="middle">ros2 topic pub</text>
+<text x="110.0" y="114.0" text-anchor="middle">ペダルを踏む</text>
+<text x="110.0" y="132.0" text-anchor="middle">（5-2でPI制御に）</text>
+<text x="440.0" y="96.0" text-anchor="middle">vehicle_plant</text>
+<text x="440.0" y="114.0" text-anchor="middle">VehicleModel</text>
+<text x="440.0" y="132.0" text-anchor="middle">（数理モデル）</text>
+<text x="770.0" y="105.0" text-anchor="middle">gz_display</text>
+<text x="770.0" y="123.0" text-anchor="middle">速度 × 0.025</text>
+<text x="770.0" y="280.0" text-anchor="middle">parameter_bridge</text>
+<text x="770.0" y="298.0" text-anchor="middle">（ros_gz_bridge）</text>
+<text x="440.0" y="271.0" text-anchor="middle">gz sim</text>
+<text x="440.0" y="289.0" text-anchor="middle">vehicle_green</text>
+<text x="440.0" y="307.0" text-anchor="middle">（DiffDrive）</text>
+<text x="275.0" y="86.0" text-anchor="middle" font-size="12">/plant/pedal</text>
+<text x="275.0" y="101.0" text-anchor="middle" font-size="12">Float64</text>
+<text x="605.0" y="86.0" text-anchor="middle" font-size="12">/plant/velocity</text>
+<text x="605.0" y="101.0" text-anchor="middle" font-size="12">Float64</text>
+<text x="762" y="182.5" text-anchor="end" font-size="12">/model/vehicle_green/cmd_vel</text>
+<text x="762" y="197.5" text-anchor="end" font-size="12">Twist（縮尺をかけた速度）</text>
+<text x="605.0" y="276.0" text-anchor="middle" font-size="12">gz.msgs.Twist</text>
+</g>
+</svg>
