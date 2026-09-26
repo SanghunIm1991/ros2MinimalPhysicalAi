@@ -132,13 +132,13 @@
 | 0 | [`docs/phase0_overview.md`](phase0_overview.md) | 言語非依存（読み物） | 作成済み（2026-09-23。コマンド実行なしのため「実機確認」の対象外） |
 | 1 | [`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md) | 言語非依存 | 学習完了（ユーザーが全コマンドの動作を実機で確認済み、2026-09-21） |
 | 2 | [`docs/phase2_packages.md`](phase2_packages.md) | Python・C++ | 学習完了（ユーザーが2-5のノード実行を実機で確認済み、2026-09-22。期待どおりの表示） |
-| 3-1 | [`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md) | Python・C++ | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
-| 3-2a | [`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。2026-09-24に旧3-2（Twist・QoS）から分割 |
-| 3-2b | [`docs/phase3_2b_qos.md`](phase3_2b_qos.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。2026-09-24に旧3-2から分割 |
-| 3-3 | [`docs/phase3_3_parameters.md`](phase3_3_parameters.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は、5-3節・5-4節の `ros2 param` の表示（Python版）だけを実機で確認済み（2026-09-26）で、それ以外は未確認） |
-| 3-4 | [`docs/phase3_4_services.md`](phase3_4_services.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
-| 3-5 | [`docs/phase3_5_actions.md`](phase3_5_actions.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認） |
-| 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認） |
+| 3-1 | [`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md) | Python・C++ | 学習完了（ユーザーが実機で確認済み、2026-09-26）。作成時にビルド・import確認済み |
+| 3-2a | [`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-26）。作成時にビルド・import確認済み。2026-09-24に旧3-2（Twist・QoS）から分割 |
+| 3-2b | [`docs/phase3_2b_qos.md`](phase3_2b_qos.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-26）。作成時にビルド・import確認済み。2026-09-24に旧3-2から分割 |
+| 3-3 | [`docs/phase3_3_parameters.md`](phase3_3_parameters.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-26）。作成時にビルド・import確認済み。5-3節・5-4節の `ros2 param` の表示（Python版）は実機の表示に合わせて修正済み |
+| 3-4 | [`docs/phase3_4_services.md`](phase3_4_services.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断） |
+| 3-5 | [`docs/phase3_5_actions.md`](phase3_5_actions.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断） |
+| 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断。フェーズ5-1以降ではlaunchを使うため、5-1より前に進める） |
 | 間章 | [`docs/interlude_components.md`](interlude_components.md) | C++のみ（launchはPython） | 作成済み（ビルド・`ros2 component types`・launchの`--print`確認済み。ノード実行は未確認） |
 | 参考資料 | [`docs/reference_node_class.md`](reference_node_class.md) | Python・C++（読み物） | 作成済み（2026-09-24。`Node` クラスの構造をクラス図（`docs/img/reference_node_rclpy.svg`・`reference_node_rclcpp.svg`）で解析。ローカルのソースで確認。図の見た目は画像にして確認していない） |
 | 置き方 | [`docs/howto_place_code.md`](howto_place_code.md) | 言語非依存（読み物） | 作成済み（2026-09-25。サンプルコードを `touch`＋`nano`、またはVS Codeで練習環境に置く方法。`touch`・`ls`・`head` の表示は使い捨ての環境で確認、`nano` とVS Codeの画面は仕様から想定） |
