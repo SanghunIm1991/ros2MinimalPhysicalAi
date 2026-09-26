@@ -7,9 +7,9 @@
 - 所要目安: 2コマ
 - 言語: Python
 
-> **進め方**: 前半（2節）で、車両に働く力とアクセル・ブレーキの遅れを式にし、手計算で答え（落ち着く速さと、落ち着くまでの時間の目安）を出しておく。4節で、その式をROS2を使わないPythonのクラスとして書き、計算結果が手計算と合うことを確かめる。5節でクラスをノードで包み、6節でログとGazeboの画面で動きを見る。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルドと `import` まで確認済みで、ノードを起動した後の挙動は未確認（出力が違う場合は、実機の表示を優先する）。
+> **進め方**: 前半（2節）で、車両に働く力とアクセル・ブレーキの遅れを式にし、手計算で答え（落ち着く速さと、落ち着くまでの時間の目安）を出しておく。4節で、その式をROS2を使わないPythonのクラスとして書き、計算結果が手計算と合うことを確かめる。5節でクラスをノードで包み、6節でログとGazeboの画面で動きを見る。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時にビルドと `import` まで確認し、Gazeboを使わない部分（6-1節・6-3節と、`gz_display` が速度を縮尺して送ること）は使い捨ての環境でノードを起動して確かめた。Gazeboと組み合わせた挙動は、画面なしのGazeboでオドメトリの速度が縮尺どおりに変わることと、`vehicle_plant` を止めると車両が止まることまで確かめた。画面の見え方は未確認（出力が違う場合は、実機の表示を優先する）。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。4節のモデル単体の計算結果は、使い捨ての環境で実際に実行した表示（同じコードなら、同じ数値になる）。ビルドの表示（5-3節）は、使い捨ての環境で確かめた表示の形式。ノードを起動した後の表示（6節）は、4節のモデルの計算とROS2の仕様から筆者が想定したもので、時刻と、ペダルを送った時刻による数値の細部は実機で異なる。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。4節のモデル単体の計算結果は、使い捨ての環境で実際に実行した表示（同じコードなら、同じ数値になる）。ビルドの表示（5-3節）は、使い捨ての環境で確かめた表示の形式。ノードを起動した後の表示のうち、Gazeboを使わない部分（6-1節・6-3節の `vehicle_plant` のログと `ros2 param` の表示、6-2節の最後の `gz_display` のログ）は、使い捨ての環境で実際に実行した表示で、時刻と、ペダルを送った時刻による数値の細部は実行ごとに異なる。6-2節のオドメトリの値は、使い捨ての環境でGazeboを画面なし（`gz sim -s`）で起動し、ブリッジを手で起動して確かめた表示。6-2節の画面の様子は、筆者が想定したもの。
 
 ## 0. 学習目標と完了条件
 
@@ -433,6 +433,7 @@ def main(args=None):
 import rclpy
 from geometry_msgs.msg import Twist
 from rcl_interfaces.msg import SetParametersResult
+from rclpy.clock import Clock, ClockType
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from std_msgs.msg import Float64
@@ -441,11 +442,12 @@ from std_msgs.msg import Float64
 # 疑似プラントの速度に縮尺をかけ、Gazeboの緑の車両への速度指令として送る表示用のノード。
 # プラントからの速度が途絶えたら、車両を止める。
 class GzDisplay(Node):
-    # 縮尺のパラメータを宣言し、通信の口と、途絶えたかを調べるタイマーを用意する。
+    # 縮尺のパラメータを宣言し、通信の口と、途絶えたかを調べるタイマー・時計を用意する。
     def __init__(self):
         super().__init__('gz_display')
         self.declare_parameter('scale', 0.025)
         self.scale = self.get_parameter('scale').value
+        self.steady_clock = Clock(clock_type=ClockType.STEADY_TIME)
         self.last_received = None
 
         self.pub = self.create_publisher(Twist, '/model/vehicle_green/cmd_vel', 10)
@@ -455,7 +457,7 @@ class GzDisplay(Node):
 
     # プラントの速度が届くたびに、縮尺をかけた速度指令を送る。
     def on_velocity(self, msg):
-        self.last_received = self.get_clock().now()
+        self.last_received = self.steady_clock.now()
         cmd = Twist()
         cmd.linear.x = msg.data * self.scale
         self.pub.publish(cmd)
@@ -464,7 +466,7 @@ class GzDisplay(Node):
     def on_watchdog(self):
         if self.last_received is None:
             return
-        elapsed = (self.get_clock().now() - self.last_received).nanoseconds * 1e-9
+        elapsed = (self.steady_clock.now() - self.last_received).nanoseconds * 1e-9
         if elapsed > 0.5:
             self.pub.publish(Twist())
             self.last_received = None
@@ -499,7 +501,8 @@ def main(args=None):
 
 - **`on_velocity`**: 速度が届くたびに、縮尺をかけて `Twist` の `linear.x` に入れて送る。フェーズ5-0の `gz_drive` の `on_timer` と同じ形で、送る値が一定の0.3ではなく、プラントの速度 × 縮尺になっただけ。`vehicle_plant` が100 Hzで送るので、Gazeboへの指令も100 Hzになる。
 - **`on_watchdog`**（途絶えの見張り）: Gazeboの車両（DiffDrive）は、最後に受け取った指令を保持し続ける（フェーズ5-0の4-3節）。そのため、`vehicle_plant` を止めると、Gazeboの車両は最後の速度のまま走り続けてしまう。0.1秒ごとに「最後に速度が届いてから何秒たったか」を調べ、0.5秒を超えたら停止の指令（全フィールドが0の `Twist()`）を1回送る。一定時間指令が途絶えたら止める仕組みは、実物のロボットでもよく使われる（ウォッチドッグと呼ばれる）。
-  - `self.get_clock().now()` はノードの時計の現在時刻。2つの時刻の差は `Duration` になり、`.nanoseconds` でナノ秒の整数を取り出して秒に直している。
+  - 経過時間は、`__init__` で作った `self.steady_clock`（`ClockType.STEADY_TIME`。単調増加する時計）で測る。2つの時刻の差は `Duration` になり、`.nanoseconds` でナノ秒の整数を取り出して秒に直している。
+  - ノードの時計（`self.get_clock()`）を使わないのは、ノードの時計がふつうはPCの現在時刻で、時刻合わせ（NTPなど）で数秒飛ぶことがあるからである。現在時刻が前へ飛ぶと、速度が届いているのに「0.5秒以上届いていない」と誤って判定し、停止の指令を送ってしまう（この手順書の作成時に、使い捨ての環境で実際に起きた）。単調増加する時計は、時刻合わせの影響を受けず、戻ったり飛んだりしない。一般に、タイムアウトや処理時間など**経過時間を測るときは単調増加する時計**、ログの記録など**いつ起きたかを残すときは現在時刻**を使う。
   - 停止の指令を送った後は `self.last_received = None` に戻し、何度も送らないようにしている。
 - **`on_params`**: `scale` を正の値に限って受け付ける。実行中に縮尺を変えると、その後に届いた速度から新しい縮尺で送られる。
 - `gz_display` 自身を先に止めた場合（`Ctrl+C`）は、停止の指令を送る前に終わるので、Gazeboの車両は走り続ける。止める順は、**`vehicle_plant` が先、`gz_display` が後**にする。
@@ -575,20 +578,22 @@ source install/setup.bash
 ros2 topic pub --once /plant/pedal std_msgs/msg/Float64 "{data: 0.5}"
 ```
 
-**期待する結果**（T1の分。T2でペダル0.5を送った後の数秒。時刻は実行ごとに変わり、数値もペダルを送った時刻とログの時刻のずれで少し変わる）:
+**期待する結果**（T1の分。T2でペダル0.5を送った前後。時刻は実行ごとに変わり、数値もペダルが届いた時刻とログの時刻のずれで少し変わる）:
 
 ```text
-[INFO] [1790300000.010000000] [vehicle_plant]: pedal: +0.00, velocity:  0.00 m/s, drive:     0 N, brake:     0 N
+[INFO] [1790401347.906197978] [vehicle_plant]: pedal: +0.00, velocity:  0.00 m/s, drive:     0 N, brake:     0 N
 ...
-[INFO] [1790300010.020000000] [vehicle_plant]: pedal: +0.50, velocity:  0.41 m/s, drive:  1301 N, brake:     0 N
-[INFO] [1790300011.020000000] [vehicle_plant]: pedal: +0.50, velocity:  1.14 m/s, drive:  1474 N, brake:     0 N
-[INFO] [1790300012.020000000] [vehicle_plant]: pedal: +0.50, velocity:  1.84 m/s, drive:  1497 N, brake:     0 N
-[INFO] [1790300013.020000000] [vehicle_plant]: pedal: +0.50, velocity:  2.49 m/s, drive:  1500 N, brake:     0 N
+[INFO] [1790401350.924728804] [vehicle_plant]: pedal: +0.00, velocity:  0.00 m/s, drive:     0 N, brake:     0 N
+[INFO] [1790401351.934830672] [vehicle_plant]: pedal: +0.50, velocity:  0.31 m/s, drive:  1231 N, brake:     0 N
+[INFO] [1790401352.944361550] [vehicle_plant]: pedal: +0.50, velocity:  1.03 m/s, drive:  1465 N, brake:     0 N
+[INFO] [1790401353.944690823] [vehicle_plant]: pedal: +0.50, velocity:  1.75 m/s, drive:  1495 N, brake:     0 N
+[INFO] [1790401354.954452196] [vehicle_plant]: pedal: +0.50, velocity:  2.41 m/s, drive:  1499 N, brake:     0 N
 ...
 ```
 
-- 起動直後はペダル0で、速度も力も0のまま。ペダル0.5が届くと、`pedal: +0.50` に変わり、駆動力が1500 Nへ、速度が少しずつ上がっていく。4節の計算結果（1秒で0.41 m/s・1301 N）と同じ数字が並ぶ。
-- 30秒ほど待つと、速度は9 m/s前後で増え方がほとんど止まる（定常速度は9.14 m/s）。
+- 起動直後はペダル0で、速度も力も0のまま。ペダル0.5が届くと、`pedal: +0.50` に変わり、駆動力が1500 Nへ、速度が少しずつ上がっていく。
+- 数字は、4節の表（1秒で0.41 m/s・1301 N）とぴったりは同じにならない。ログは1秒おきで、ペダルが届いた瞬間とは揃っていないためである。この例の `pedal: +0.50` の1行目は、駆動力1231 Nから逆算すると、ペダルが届いてから約0.9秒後の値。
+- そのまま待つと、ペダルを送ってから30秒で8.4 m/s前後、45秒で8.9 m/s前後と、定常速度の9.14 m/sへ近づきながら、増え方が小さくなっていく。
 
 続けてT2でブレーキを踏む。
 
@@ -597,14 +602,15 @@ ros2 topic pub --once /plant/pedal std_msgs/msg/Float64 "{data: 0.5}"
 ros2 topic pub --once /plant/pedal std_msgs/msg/Float64 "{data: -0.3}"
 ```
 
-**期待する結果**（T1の分。定常速度付近でブレーキ0.3を送った後。数値の細部は変わる）:
+**期待する結果**（T1の分。ペダル0.5を約45秒踏んだ後（8.93 m/s）でブレーキ0.3を送った前後。数値の細部は変わる）:
 
 ```text
-[INFO] [1790300050.020000000] [vehicle_plant]: pedal: -0.30, velocity:  7.20 m/s, drive:   199 N, brake:  2684 N
-[INFO] [1790300051.020000000] [vehicle_plant]: pedal: -0.30, velocity:  4.76 m/s, drive:    26 N, brake:  2700 N
-[INFO] [1790300052.020000000] [vehicle_plant]: pedal: -0.30, velocity:  2.48 m/s, drive:     3 N, brake:  2700 N
-[INFO] [1790300053.020000000] [vehicle_plant]: pedal: -0.30, velocity:  0.40 m/s, drive:     0 N, brake:  2700 N
-[INFO] [1790300054.020000000] [vehicle_plant]: pedal: -0.30, velocity:  0.00 m/s, drive:     0 N, brake:  2700 N
+[INFO] [1790401395.794488988] [vehicle_plant]: pedal: +0.50, velocity:  8.93 m/s, drive:  1500 N, brake:     0 N
+[INFO] [1790401396.804495879] [vehicle_plant]: pedal: -0.30, velocity:  7.58 m/s, drive:   317 N, brake:  2648 N
+[INFO] [1790401397.814433044] [vehicle_plant]: pedal: -0.30, velocity:  5.11 m/s, drive:    41 N, brake:  2700 N
+[INFO] [1790401398.814484135] [vehicle_plant]: pedal: -0.30, velocity:  2.81 m/s, drive:     5 N, brake:  2700 N
+[INFO] [1790401399.824574118] [vehicle_plant]: pedal: -0.30, velocity:  0.68 m/s, drive:     1 N, brake:  2700 N
+[INFO] [1790401400.834040141] [vehicle_plant]: pedal: -0.30, velocity:  0.00 m/s, drive:     0 N, brake:  2700 N
 ```
 
 制動力はすぐに2700 Nに達し、駆動力はゆっくり0へ減る。約4秒で止まり、速度は0のまま負にならない。T1は、次の6-2節でもそのまま使う。
@@ -643,14 +649,14 @@ Gazebo側の車両の速さは、フェーズ5-0の3-4節のオドメトリで�
 ros2 topic echo --once /model/vehicle_green/odometry --field twist.twist.linear.x
 ```
 
-**期待する結果**（値は、待った時間によって変わり、少し揺れる）:
+**期待する結果**（ペダルを送ってから約30秒後の例。値は、待った時間によって変わり、少し揺れる）:
 
 ```text
-0.2214...
+0.22084287765338217
 ---
 ```
 
-T1のログの速度に縮尺をかけた値（たとえば8.86 m/s × 0.025 ≈ 0.221 m/s。定常速度の9.14 m/sなら約0.228 m/s）に近ければ、表示用ノードとブリッジが正しくつながっている。
+T1のログの速度に縮尺をかけた値（この例では、同じころのプラントの速度が8.79 m/sで、8.79 × 0.025 ≈ 0.220 m/s。定常速度の9.14 m/sなら約0.228 m/s）に近ければ、表示用ノードとブリッジが正しくつながっている。加速している最中は、T1のログとこのコマンドを実行した時刻のずれの分だけ、値が食い違って見える。
 
 止めるときは、T2でブレーキを踏んで止めてから、**T1の `vehicle_plant` → T4の `gz_display` の順**に `Ctrl+C` で止める（5-2節の解説の最後の項目）。
 
@@ -666,7 +672,7 @@ ros2 topic pub --once /plant/pedal std_msgs/msg/Float64 "{data: -1.0}"
 **期待する結果**（T4の分。T1を止めて0.5秒ほど後）:
 
 ```text
-[INFO] [1790300120.100000000] [gz_display]: plant/velocity timed out; sent a stop command
+[INFO] [1790401890.127369923] [gz_display]: plant/velocity timed out; sent a stop command
 ```
 
 走っている車両が、プラントの計算とは関係なく、Gazeboの加速度の上限（1 m/s²。1/40の縮尺では実車の40 m/s²に相当）で急に止まる。プラントが止まったので、表示も止めた、という意味である。
@@ -709,16 +715,22 @@ $ ros2 param get /vehicle_plant tau_accel
 Double value is: 3.0
 ```
 
-**期待する結果**（T1の分。4行目でペダル0.5を送った後の数秒。数値の細部は変わる）:
+**期待する結果**（T1の分。2行目でペダルを0に戻した後から、4行目でペダル0.5を送った後の数秒まで。数値の細部は変わる）:
 
 ```text
-[INFO] [1790300200.020000000] [vehicle_plant]: pedal: +0.50, velocity:  0.04 m/s, drive:   426 N, brake:     0 N
-[INFO] [1790300201.020000000] [vehicle_plant]: pedal: +0.50, velocity:  0.27 m/s, drive:   731 N, brake:     0 N
-[INFO] [1790300202.020000000] [vehicle_plant]: pedal: +0.50, velocity:  0.64 m/s, drive:   949 N, brake:     0 N
-[INFO] [1790300203.020000000] [vehicle_plant]: pedal: +0.50, velocity:  1.10 m/s, drive:  1105 N, brake:     0 N
+[INFO] [1790401413.574582144] [vehicle_plant]: pedal: +0.00, velocity:  0.00 m/s, drive:     0 N, brake:  1573 N
+[INFO] [1790401414.584671332] [vehicle_plant]: pedal: +0.00, velocity:  0.00 m/s, drive:     0 N, brake:     9 N
+...
+[INFO] [1790401418.603926456] [vehicle_plant]: pedal: +0.50, velocity:  0.00 m/s, drive:   125 N, brake:     0 N
+[INFO] [1790401419.604337331] [vehicle_plant]: pedal: +0.50, velocity:  0.08 m/s, drive:   515 N, brake:     0 N
+[INFO] [1790401420.604458720] [vehicle_plant]: pedal: +0.50, velocity:  0.35 m/s, drive:   795 N, brake:     0 N
+[INFO] [1790401421.614351042] [vehicle_plant]: pedal: +0.50, velocity:  0.76 m/s, drive:   997 N, brake:     0 N
+[INFO] [1790401422.624536416] [vehicle_plant]: pedal: +0.50, velocity:  1.24 m/s, drive:  1141 N, brake:     0 N
 ```
 
-同じペダル0.5で、既定値（`tau_accel` 0.5）と比べると次のようになる（ペダルを踏んでからの秒数。既定値の列は6-1節の期待する結果の値）。
+ペダルを0に戻すと、制動力は約1秒で抜ける（ブレーキの時定数0.2秒）。ペダル0.5を送った後の1行目は、ペダルが届いてから約0.3秒後の値で、以降のログも約0.3秒ずつずれている。
+
+ログの時刻のずれを除くため、4節のモデルで「ペダルを踏んでからちょうど1〜4秒」の値を計算して、既定値（`tau_accel` 0.5）と比べると次のようになる。
 
 | 経過 | 駆動力（0.5秒） | 駆動力（3.0秒） | 速度（0.5秒） | 速度（3.0秒） |
 |---|---|---|---|---|
@@ -774,6 +786,7 @@ Gazeboを表示していれば、緑の車両の動き出しが、既定値の�
 | `ros2 param set ... tau_accel 1` が失敗する | 整数を渡している。`1.0` と書く（フェーズ3-3の5-3節） |
 | Gazeboの車両が動かない | T3のデモとT4の `gz_display` が動いているか。`ros2 topic list` に `/model/vehicle_green/cmd_vel` があるか |
 | Gazeboの車両が止まらない | `gz_display` を `vehicle_plant` より先に止めた。T2で `ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"` を送る（フェーズ5-0の3-3節） |
+| ログの時刻が、途中で数秒飛ぶ | PCの時計が時刻合わせ（NTPなど）で進められたときに起きる（WSL2で起きることがある）。ログの時刻は現在時刻なので飛ぶが、`vehicle_plant` の計算は周期の回数で進むので影響しない。`gz_display` の途絶えの見張りも、単調増加する時計で測っているので影響しない（5-2節） |
 | ログの `brake` が正負に大きく振れる | 時定数を刻み幅（`period`）に比べて小さくしすぎた（2-4節、6-3節の末尾の課題3）。既定値に戻すか、起動し直す |
 
 ## 10. 次へ
