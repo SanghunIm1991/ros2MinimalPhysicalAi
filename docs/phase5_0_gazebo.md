@@ -248,6 +248,8 @@ Arguments (pass arguments as '<name>:=<value>'):
 
 `rviz` の既定は `true` で、何も指定しないとRViz2も一緒に開く。Gazeboと同時に開くと重いので、この手順書では `rviz:=false` を付けて起動する。`on_exit_shutdown` が `false` なので、Gazeboのウィンドウを閉じてもブリッジは止まらない（止めるときはlaunchのターミナルで `Ctrl+C`）。
 
+次に、`--print` を付けて、このlaunchファイルが何を起動するのかを一覧にする。`--print` を付けると、`ros2 launch` はlaunchファイルを読み込んで、中身（起動する予定のプロセスと、その引数）を木の形で表示するだけで終わる。Gazeboもブリッジも起動しない。launchファイルはPythonのコードなので、ファイルを開いて読むより、読み込まれた結果を見る方が早い。ここでは、ブリッジにどのトピックが渡されるか（ROS2から見えるようになるトピックはどれか）を、起動する前に確かめるのが目的である（`--print` の詳しい読み方は、フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）の4-1節で扱う）。
+
 ```bash
 ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false --print
 ```
