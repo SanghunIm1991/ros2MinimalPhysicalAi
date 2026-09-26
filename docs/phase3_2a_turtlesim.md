@@ -74,7 +74,7 @@ flowchart LR
 find_package(geometry_msgs REQUIRED)
 ```
 
-`CMakeLists.txt` では、もう1か所の `ament_target_dependencies` にも `geometry_msgs` を書く。これは5節の終わりで `turtle_circle` を登録するときに、まとめて行う。
+`CMakeLists.txt` には、この後もう1行、`turtle_circle` 専用の `ament_target_dependencies(turtle_circle rclcpp geometry_msgs)` を書く。これは5節の終わりで、`add_executable(turtle_circle ...)` と一緒に新しく足す行で、ここではまだ書かない。雛形が `hello` 用に作った `ament_target_dependencies(hello "rclcpp" "std_msgs")` のブロック（複数行に分けて書かれている）は、ターゲットごとの指定なので `hello` 以外には効かない。`geometry_msgs` を足す必要はない。
 
 `package.xml` の `<depend>` は「このパッケージは `geometry_msgs` に依存する」という宣言で、`colcon` が依存関係からビルド順を決めたり、`rosdep` が不足を検出したりするために使う。`<depend>` はビルド時・実行時の両方の依存をまとめて宣言する書き方。一方 `CMakeLists.txt` の `find_package` は、C++のビルド時にヘッダやライブラリの場所を探す指示。C++では**両方**必要で、片方だけだとビルドエラーになる（8節）。Pythonは `package.xml` だけでよい。
 
