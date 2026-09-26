@@ -7,7 +7,7 @@
 
 > **実行環境が無くても読めるように**: コマンドを載せた箇所には、その直後に「期待する結果」として表示の例と読み方を書いている。ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの。
 
-> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節・7節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の9節）に基づいて書いた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。
+> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節・7節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の9節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。
 
 ## 項目の一覧
 
@@ -327,7 +327,7 @@ Set parameter successful
 フェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の2節では、ROS2の通信が層を積み重ねた構造（プロトコルスタック）になっていることだけを説明した。ここでは、図に出てきた各層と、関係する仕組みの名前を補う。
 
 - **DDS（Data Distribution Service）**: OMG（Object Management Group）という標準化団体が定めた、分散型のpublish/subscribe通信の規格。ROS2は、このDDS（正確には、その通信規約のDDS/RTPS）を標準の通信層として使っている。
-- **RMW（ROS Middleware Interface）**: ROS2のAPIと、DDSの実装製品をつなぐ層。この層のおかげで、ROS2のコードを変えずにDDSの実装を差し替えられる。ROS2のバイナリ配布は、Fast DDS（Jazzyの既定）・Cyclone DDS・RTI Connext・GurumDDS等に対応しており、環境変数 `RMW_IMPLEMENTATION` で切り替える。
+- **RMW（ROS Middleware Interface）**: ROS2のAPIと、DDSの実装製品をつなぐ層。この層のおかげで、ROS2のコードを変えずにDDSの実装を差し替えられる。ROS2と一緒に入るのは、既定のFast DDS向けのRMW（`rmw_fastrtps_cpp`）だけである。ROS2のaptのリポジトリには、Cyclone DDS・RTI Connext・GurumDDS向けのRMWのパッケージもあり、使う実装のパッケージを別に導入してから、環境変数 `RMW_IMPLEMENTATION` で切り替える。RTI ConnextとGurumDDSは企業の商用製品で、使う条件（ライセンス）は提供元が定めている。特にConnextは、RMWのパッケージを入れただけでは動かず、製品本体も別に導入する必要がある。
 - **ディスカバリ（自動発見）**: 各ノードは起動すると、マルチキャストでお互いを見つけ合う。同じネットワークにある別のシステムと混ざらないよう、`ROS_DOMAIN_ID`（ドメインID）の番号で通信の範囲を分ける。見つけた相手と何を確かめ合っているかは、この資料の4節で説明した。
 - **QoS（Quality of Service）**: トピックごとに、信頼性（reliability: 送りっぱなしか、確実に届けるか）、持続性（durability: 後から参加した購読側に過去のデータを渡すか）、履歴（history: 直近の何件を手元に残すか）等を決められる。配信側と購読側のQoSが噛み合わないと、つながらない（購読側が求める水準を、配信側が満たしているかで決まる）。実際に試すのはフェーズ3-2b（[`docs/phase3_2b_qos.md`](phase3_2b_qos.md)）。
 
