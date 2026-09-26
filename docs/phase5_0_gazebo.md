@@ -681,7 +681,7 @@ ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 
 ## 9. 次へ
 
-フェーズ5-1で、1次元の車両の疑似プラントを自作する。フェーズ3-2a（Twistとturtlesim）・3-3（パラメータ）・4（launch）をまだ終えていない場合は、先にそちらを進める（5-1以降では、パラメータとlaunchを使う）。
+フェーズ5-1で、1次元の車両の疑似プラントを自作する（手順書はまだ無い。作成の状況は、学習計画（[`docs/learning_plan.md`](learning_plan.md)）の「手順書一覧」で確かめられる）。フェーズ3-2a（Twistとturtlesim）・3-3（パラメータ）・4（launch）をまだ終えていない場合は、先にそちらを進める（5-1以降では、パラメータとlaunchを使う）。
 
 ## 10. 公式ドキュメント・参考資料
 

@@ -495,7 +495,7 @@ $ grep -n 'maintainer' src/learn_py/setup.py
 
 ## 5. 次のフェーズへ
 
-フェーズ3（ノードの基本）では、この2つのパッケージ（`learn_py`、`learn_cpp`）に、Publisher/Subscriber・パラメータ・サービス・アクションのノードを**同じ仕様で**追加していく。
+フェーズ3（ノードの基本）では、この2つのパッケージ（`learn_py`、`learn_cpp`）に、Publisher/Subscriber・パラメータ・サービス・アクションのノードを**同じ仕様で**追加していく。最初はフェーズ3-1（[`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md)）で、Publisher/Subscriberを書く。
 
 ## 6. 公式ドキュメント・参考資料
 

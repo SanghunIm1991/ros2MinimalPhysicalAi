@@ -660,7 +660,7 @@ ros2 run rqt_console rqt_console
 
 ## 6. 次のフェーズへ
 
-フェーズ2（パッケージ作成とビルド）では、`ament_python` と `ament_cmake` の空パッケージを作る。本フェーズで確認した `ros2 run <パッケージ> <実行ファイル>` の書式が、自作パッケージでも同じように使える。
+フェーズ2（[`docs/phase2_packages.md`](phase2_packages.md)）で、パッケージの作成とビルドを学ぶ。`ament_python` と `ament_cmake` の空パッケージを作る。本フェーズで確認した `ros2 run <パッケージ> <実行ファイル>` の書式が、自作パッケージでも同じように使える。
 
 ## 7. 公式ドキュメント・参考資料
 
