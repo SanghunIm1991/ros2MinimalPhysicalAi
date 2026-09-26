@@ -606,7 +606,7 @@ ros2 run learn_py qos_listener --ros-args -p reliability:=reliable
 [WARN] [1790242010.200000000] [qos_talker]: New subscription discovered on topic '/qos_test', requesting incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY
 ```
 
-警告は「相手を見つけたが、QoSが合わないのでメッセージをやり取りしない」という意味で、最後の `Last incompatible policy` が食い違っている項目を示す。エラーで止まるわけではないので、ログを見落とすと「何も起きない」ように見える。
+警告は「相手を見つけたが、QoSが合わないのでメッセージをやり取りしない」という意味で、最後の `Last incompatible policy` が食い違っている項目を示す。エラーで止まるわけではないので、ログを見落とすと「何も起きない」ように見える。配信側と受信側がどうやってお互いを見つけ、QoSを突き合わせているのか、`reliable` では届いたことをどう確かめているのかは、[`docs/tips.md`](tips.md) の4節（トピック通信の裏側）にまとめた。
 
 ④のまま、3つ目のターミナルでQoSを確かめる。
 
