@@ -7,9 +7,9 @@
 - 所要目安: 2〜3コマ
 - 言語: Python（launchもPython形式）
 
-> **進め方**: 2節でGazeboの車両を力で動かせるワールドを用意し、3節で実車の単位とGazeboの縮尺の関係を式にする。4節で、ペダルを車輪のトルクに変えるノードを書き、5節でシミュレーション時刻の扱いを押さえる。6節のlaunchで一式を起動し、7節で5-3の結果と比べる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時に、使い捨ての環境でビルドし、Gazeboを画面なしで起動して一連の動きを確かめた（画面の見え方は未確認）。出力が違う場合は、実機の表示を優先する。
+> **進め方**: 2節でGazeboの車両を力で動かせるワールドを用意し、3節で実車の単位とGazeboの縮尺の関係を式にする。4節で、ペダルを車輪のトルクに変えるノードを書き、5節でシミュレーション時刻の扱いを押さえる。6節のlaunchで一式を起動し、7節で5-3の結果と比べる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時に、使い捨ての環境でビルドし、Gazeboを画面なしで起動して一連の動きを確かめた（画面の見え方と、`rqt_plot` のグラフは未確認）。出力が違う場合は、実機の表示を優先する。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。`gz sdf -k`・ビルド・launchの `--show-args`・`--print` の表示と、6-3節のlaunchのログ・7節の比較の数値は、使い捨ての環境で実際に実行した表示（Gazeboは画面なし）で、時刻・pidは実行ごとに異なる（ログは抜粋）。3-2節の加速度の値は、筆者が実験で測った値。6-3節の画面の様子は、ログの数値から筆者が想定したもの。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。`gz sdf -k`・ビルド・launchの `--show-args`・`--print` の表示と、6-3節のlaunchのログ・7節の比較の数値は、使い捨ての環境で実際に実行した表示（Gazeboは画面なし）で、時刻・pidは実行ごとに異なる（ログは抜粋）。3-2節の加速度の値は、筆者が実験で測った値。6-3節の画面の様子と、6-4節のグラフの見え方は、ログの数値から筆者が想定したもの。
 
 ## 0. 学習目標と完了条件
 
@@ -164,7 +164,7 @@ install(DIRECTORY launch config worlds
 
 ### 3-1. 速度と力の縮尺
 
-`pi_controller` は、5-2で実車の単位（10 m/sなど）でゲインを決めた。Gazeboの車両は長さ約2 m・質量約6 kgの小さな車両なので、5-1と同じく1/40の縮尺で対応させる。
+`pi_controller` は、5-2で実車の単位（10 m/sなど）でゲインを決めた。Gazeboの車両の速度とは、5-1の `gz_display` と同じく1/40の縮尺で対応させる。DiffDriveを外したので、5-1で縮尺を決めた理由（最高速度0.5 m/sの上限）はもう無いが、縮尺をそろえておくと、5-1〜5-3で表示器として見た車両と同じ速さで画面の車両が走り、見比べやすい。一方、Gazeboの車両の質量は約6 kgで、実車の1500 kgとは比率が違うので、力の縮尺は速度とは別に決める（下の3つめの項目）。
 
 - **速度**: Gazeboの速度 ＝ 実車の速度 × $s$（$s = 0.025$）。`gz_plant` は、Gazeboのオドメトリの速度を $s$ で割って、実車の単位に戻してから `/plant/velocity` へ送る。
 - **加速度**: 時間の縮尺はそのまま（1秒は1秒）なので、加速度も同じ比率 $s$ になる。実車で2 m/s²の加速は、Gazeboでは0.05 m/s²。
@@ -199,7 +199,29 @@ $$
 
 ## 4. ペダルを車輪のトルクに変えるノード
 
-### 4-1. アクチュエータのモデル（`actuator_model.py`）
+### 4-1. 仕様
+
+- パッケージ: `learn_py` にファイルを2つ、`learn_bringup` にファイルを3つ足す（`learn_bringup` の分は2節と6節）。
+
+| ファイル | 中身 |
+|---|---|
+| `learn_py/actuator_model.py` | アクセルとブレーキの遅れだけを計算するクラス `ActuatorModel` と、パラメータをまとめる `ActuatorParams`。**ROS2を使わない** |
+| `learn_py/gz_plant_node.py` | `ActuatorModel` を包み、Gazeboの車両をプラントにするノード `gz_plant`（実行ファイル名も `gz_plant`） |
+| `learn_bringup/worlds/vehicle_force.sdf` | 緑の車両を力で動かせるように改造したワールド（2-2節） |
+| `learn_bringup/config/gazebo_plant.yaml` | 各ノードのパラメータ（6-1節） |
+| `learn_bringup/launch/gazebo_plant.launch.py` | Gazebo・ブリッジ・3つのノードを起動するlaunch（6-2節） |
+
+- `gz_plant`:
+  - 受ける: `/plant/pedal`（[`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg)、−1〜1）と、`/model/vehicle_green/odometry`（[`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg)、Gazeboの単位）。
+  - 送る: `/plant/velocity`（`std_msgs/msg/Float64`、実車の単位のm/s）を、オドメトリが届くたびに。左右の車輪のトルク（`/model/vehicle_green/joint/<関節名>/cmd_force`、`std_msgs/msg/Float64`、N·m）を、`period` 秒ごとに。
+  - パラメータ: アクチュエータの4つ（5-1の2-5節の表と同じ名前・既定値）と、`scale`・`force_scale`・`wheel_radius`・`brake_speed_band`・`period`。実行中に `ros2 param set` で変えられる（すべて正の値だけを受け付ける）。
+  - ログ: 1秒に1回、ペダル・速度・駆動力・制動力・トルクを出す。
+
+`/plant/pedal` と `/plant/velocity` の名前・型・単位は、5-1の `vehicle_plant` と同じにする。`pi_controller` から見て、相手を区別できないようにするためである（1節）。
+
+主なAPI（これまでの手順書で使ったもの以外）: ノードのコードに新しいAPIは無い。5-1の `plant_node.py` と同じ形（ROS2を使わないクラスをノードで包み、パラメータを `dataclasses.fields` でまとめて宣言する）である。新しく使うのは、Gazeboのプラグイン（2-1節）と、パラメータ `use_sim_time`（5節）。
+
+### 4-2. アクチュエータのモデル（`actuator_model.py`）
 
 ファイル: `ws/src/learn_py/learn_py/actuator_model.py`
 
@@ -245,7 +267,7 @@ class ActuatorModel:
 
 > 課題2: 5-1の `VehicleModel` を、`ActuatorModel`（この節）と、車体だけを計算するクラスの組み合わせに書き直す。`vehicle_model.py` の `main` の表示（5-1の4節）が、書き直す前と1桁も変わらないことを確かめる。
 
-### 4-2. Gazeboをプラントにするノード（`gz_plant_node.py`）
+### 4-3. Gazeboをプラントにするノード（`gz_plant_node.py`）
 
 ファイル: `ws/src/learn_py/learn_py/gz_plant_node.py`
 
@@ -365,8 +387,8 @@ def main(args=None):
 役割は、「`/plant/pedal` を受けて `/plant/velocity` を送る」という、5-1の `vehicle_plant` と同じ外側を持ちながら、車体の計算をGazeboに任せること。
 
 - **パラメータ**: アクチュエータの4つ（5-1と同じ名前・既定値）は、5-1と同じく `dataclasses.fields` でまとめて宣言する。ほかに、速度の縮尺 `scale`、力の縮尺 `force_scale`（3-2節）、車輪の半径 `wheel_radius`、ブレーキの向きを決めるための `brake_speed_band`、計算の周期 `period` を持つ。
-- **`on_odom`**: Gazeboのオドメトリ（ブリッジが [`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg) に変換したもの）の前後の速さ（`twist.twist.linear.x`、Gazeboの単位）を $s$ で割って実車の単位に戻し、`/plant/velocity` へ送る。オドメトリは50 Hzで届くので、`/plant/velocity` も50 Hzになる（5-1の `vehicle_plant` は100 Hz）。
-- **`on_timer`**: 周期ごとに、アクチュエータのモデルで駆動力と制動力を計算し（送るトルクの型は [`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg)。ブリッジが `gz.msgs.Double` に変換する）、合計の力を $F_{gz}$ に縮めて、車輪1つあたりのトルク $F_{gz} \times r / 2$ にして、左右の車輪へ同じ値を送る。
+- **`on_odom`**: Gazeboのオドメトリ（ブリッジが `nav_msgs/msg/Odometry` に変換したもの）の前後の速さ（`twist.twist.linear.x`、Gazeboの単位）を $s$ で割って実車の単位に戻し、`/plant/velocity` へ送る。オドメトリは50 Hzで届くので、`/plant/velocity` も50 Hzになる（5-1の `vehicle_plant` は100 Hz）。
+- **`on_timer`**: 周期ごとに、アクチュエータのモデルで駆動力と制動力を計算し（送るトルクの型は `std_msgs/msg/Float64`。ブリッジが `gz.msgs.Double` に変換する）、合計の力を $F_{gz}$ に縮めて、車輪1つあたりのトルク $F_{gz} \times r / 2$ にして、左右の車輪へ同じ値を送る。
   - 左右のトルクは、同じ周期の中で続けて送る。片方だけが先に届くと、その間だけ左右の力がずれて車両が向きを変え、力で動かす車両には向きを元に戻す仕組みが無いので、曲がったまま走り続ける（筆者が `gz topic` で左右に1つずつ送って試したときに起きた）。
 - **ブレーキの向き**: ブレーキは、動いている向きと逆に働く力である。5-1では「後ろへは進まない」として速度を0で止めたが、ここではGazeboが速度を計算するので、その手は使えない。そこで、制動力に「速度 ÷ `brake_speed_band`（−1〜1に収める）」を掛けて向きを決める。速く動いているときは全部の制動力が逆向きにかかり、止まる直前（0.1 m/s未満）では弱まって、止まったときは0になる。止まった車両をブレーキが後ろへ押し出さないようにするための工夫である。
 - **ログ**: 5-1の `vehicle_plant` と同じ形に、送ったトルクを足した。
@@ -552,6 +574,7 @@ ros2 launch learn_bringup gazebo_plant.launch.py --print
 中身を確かめたら、起動する。
 
 ```bash
+# T1
 ros2 launch learn_bringup gazebo_plant.launch.py
 ```
 
@@ -624,6 +647,25 @@ ros2 launch learn_bringup gazebo_plant.launch.py
 >
 > 画面は開かないが、ログと、`ros2 topic echo` などでの観察はそのままできる（この手順書の作成時の確認は、この方法で行った）。
 
+### 6-4. グラフで見る（`rqt_plot`）
+
+トピックの名前は5-3と同じなので、5-3の4-3節と同じコマンドで、目標・速度・ペダルを重ねて表示できる。launchを起動した直後（目標が10 m/sに切り替わる15秒後より前）に、別のターミナルで開く。
+
+```bash
+# T2
+ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/pedal/data
+```
+
+**期待する結果**: `rqt_plot` のウィンドウが開き、3本の線が時間とともに右へ伸びていく。5-3の4-3節のグラフと見比べると、次の違いが目に付く（6-3節のログの数値から想定した形）。
+
+| 区間 | 5-3（自作のプラント） | 5-4（Gazeboの物理） |
+|---|---|---|
+| 目標10 m/sに上げた後 | 速度の線は10を超えずに近づき、ペダルの線は+0.54で平らになる | 速度の線は10を少し超えてから戻り、ペダルの線はほぼ0で平らになる |
+| 目標5 m/sに下げた直後 | 速度の線は5で下げ止まる（下回らない） | 速度の線は5を少し下回ってから戻る |
+| 目標0に下げた後 | 速度の線は0近くからわずかに浮く | 速度の線は約1秒で0になり、そのまま動かない |
+
+どれも、7節の表と同じ違いである。
+
 ## 7. 同じゲインで追従が変わる理由
 
 5-3（自作のプラント）と、この手順書（Gazeboの物理）を、同じゲイン（`kp` 0.5・`ki` 0.1）で比べる。5-4の値は、Gazeboのオドメトリを1回ずつすべて記録した値（ログより細かい）。5-3の値は、「目標0の後」の行が5-3の5節の計算の表の値で、それ以外は5-3の4-1節のログの値。
@@ -634,7 +676,7 @@ ros2 launch learn_bringup gazebo_plant.launch.py
 | 10 m/sで落ち着いたときのペダル | 0.54 | ほぼ0 |
 | そのときの積分の項 | 0.540 | ほぼ0 |
 | 目標5 m/sでの最低速度 | 5.00 m/s（下回らない） | 4.52 m/s（約10%下回る） |
-| 目標0の後 | 0.2 m/sほどまで浮き、約20秒かけて止まる | 約1秒で止まり、動かない |
+| 目標0の後 | 0.25 m/sほどまで浮き、約20秒かけて止まる | 約1秒で止まり、動かない |
 
 理由は、プラントの車体の性質の違いにある。
 
@@ -660,23 +702,43 @@ ros2 launch learn_bringup gazebo_plant.launch.py
 - `pi_controller` は変えずに、プラントを自作の式からGazeboの物理に差し替えられた。トピックの名前・型・単位を合わせておけば、部品を入れ替えられる。
 - 同じゲインでも、プラントの性質（抵抗の有無、速度の計り方の遅れ）が違えば、追従は変わる。モデルと物理（シミュレーションと現実）の差をどう埋めるかは、フィジカルAIの中心的な課題である。
 
-## 9. つまずきやすい点
+## 9. フェーズ5のまとめ
+
+フェーズ5-0〜5-4で、次のものを作り、つないだ。
+
+| 冊 | 作ったもの | 役割 |
+|---|---|---|
+| 5-0 | `gz_drive` | Gazeboの車両をROS2から動かす入口 |
+| 5-1 | `VehicleModel`、`vehicle_plant`、`gz_display` | 車両の数理モデルと、その速度をGazeboで見せる表示器 |
+| 5-2 | `PIController`、`closed_loop_sim.py`、`pi_controller` | PI制御の式と、ROS2なしの閉ループの計算と、それをつないだノード |
+| 5-3 | `target_generator`、`vehicle_sim.launch.py`、`vehicle_sim.yaml` | 目標の自動化と、一式の起動・設定の切り替え |
+| 5-4 | `vehicle_force.sdf`、`ActuatorModel`、`gz_plant`、`gazebo_plant.launch.py`、`gazebo_plant.yaml` | Gazeboの物理をプラントにする改造と、同じゲインでの比較 |
+
+学習計画のフェーズ5の完了条件のうち、「ステップ入力の目標速度に追従する」はフェーズ5-3の4-1節のログで、「アクセル/ブレーキの非対称性の影響をグラフで説明する」は同じく4-3節のグラフの読み方で、「同じゲインで、自作のプラントとGazeboの物理の追従の違いを説明する」はこの手順書の7節で確かめた。
+
+冊をまたいで通っている考え方は、次の3つである。
+
+- **式をROS2から分ける**: 車両のモデル（5-1）、PI制御（5-2）、アクチュエータ（5-4）は、どれもROS2を使わないクラスにして、ノードはそれを包むだけにした。式はROS2なしで確かめられ、閉ループの計算（`closed_loop_sim.py`）にもそのまま使える。
+- **トピックの名前・型・単位で部品をつなぐ**: `/plant/pedal`（−1〜1）と `/plant/velocity`（実車のm/s）をそろえたので、プラントを `vehicle_plant` から `gz_plant` とGazeboに差し替えても、`pi_controller` は変えずに済んだ。
+- **Gazeboの車両の使い方を段階的に変える**: 5-0でデモの車両を速度で動かし、5-1〜5-3では計算結果を見せる表示器にし、5-4では力で動かす形に改造してプラントそのものにした。
+
+## 10. つまずきやすい点
 
 | 症状 | 確認すること |
 |---|---|
 | `gz sdf -k` がエラーを出す | 2-2節の3か所の書き換えで、タグの閉じ忘れ（`</plugin>` など）や、消しすぎ・消し残しがないか |
 | 車両が動かない | ブリッジのトピック名が、ワールドの関節名（`left_wheel_joint`・`right_wheel_joint`）と一致しているか。緑の車両のDiffDriveを消したか（残っていると、速度0を保ち続ける） |
-| 車両がまっすぐ走らず、曲がっていく | 左右のトルクを別々のタイミングで送っていないか（4-2節の解説）。車両がひっくり返った・向きが変わった場合は、launchを起動し直す |
+| 車両がまっすぐ走らず、曲がっていく | 左右のトルクを別々のタイミングで送っていないか（4-3節の解説）。車両がひっくり返った・向きが変わった場合は、launchを起動し直す |
 | `/plant/velocity` が届かない | ブリッジのオドメトリの行と、ワールドの OdometryPublisher。`ros2 topic hz /model/vehicle_green/odometry` で約50 Hzか |
 | 制御がずれる・時間の進みが合わない | `gz_plant`・`pi_controller` に `use_sim_time: true` が渡っているか（`ros2 param get /pi_controller use_sim_time`）。ブリッジで `/clock` を中継しているか |
 | `file 'vehicle_force.sdf' ... not found` | `CMakeLists.txt` に `worlds` を足してビルドし直したか（2-3節） |
 | `Ctrl+C` で `Traceback` と `process has died` | 異常ではない（5-3の4-4節） |
 
-## 10. 次へ
+## 11. 次へ
 
 これで、フェーズ5（車両シミュレーション本体）の手順書はそろった。学習計画（[`docs/learning_plan.md`](learning_plan.md)）では、次はフェーズ6（`rqt_plot` と `ros2 bag` での記録・分析）である。手順書はまだ無い。作成の状況は、学習計画の「手順書一覧」で確かめられる。
 
-## 11. 公式ドキュメント・参考資料
+## 12. 公式ドキュメント・参考資料
 
 確認状況（2026-09-26）: Gazeboの2ページは、フェーズ5-0の10節で本文を確認したもの。ApplyJointForce・OdometryPublisherのAPIリファレンスは、この手順書の作成時に実在を確認し、トピック名と振る舞いはGitHubのgz-simのソース（gz-sim8ブランチ）で確かめた。
 

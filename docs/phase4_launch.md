@@ -756,7 +756,7 @@ source install/setup.bash
 
 ## 8. 次へ
 
-次は間章（[`docs/interlude_components.md`](interlude_components.md)）で、フェーズ3-1のC++版 `talker` / `listener` をコンポーネント（`main` を持たず、どのプロセスで動かすかを起動時に決められるノード）に作り直す。この節で書いたlaunchも、コンテナを起動する形に発展させる。その後、フェーズ5（車両シミュレーション本体）に進む。最初はフェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)）で、Gazeboを導入して動かす。フェーズ5-1以降の手順書は、フェーズ3・4の振り返り（1-7）を踏まえて、着手時に作る。フェーズ5では、`learn_bringup` に車両シミュレーション用のlaunchファイルを追加していく予定。
+次は間章（[`docs/interlude_components.md`](interlude_components.md)）で、フェーズ3-1のC++版 `talker` / `listener` をコンポーネント（`main` を持たず、どのプロセスで動かすかを起動時に決められるノード）に作り直す。この節で書いたlaunchも、コンテナを起動する形に発展させる。その後、フェーズ5（車両シミュレーション本体）に進む。最初はフェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)）で、Gazeboを導入して動かす。フェーズ5-3・5-4では、`learn_bringup` に車両シミュレーション用のlaunchファイル（[`docs/phase5_3_launch.md`](phase5_3_launch.md) の `vehicle_sim.launch.py`、[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md) の `gazebo_plant.launch.py`）を追加する。
 
 ## 9. 公式ドキュメント・参考資料
 
