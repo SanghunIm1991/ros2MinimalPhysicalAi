@@ -142,12 +142,12 @@
 | 3-3 | [`docs/phase3_3_parameters.md`](phase3_3_parameters.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-26）。作成時にビルド・import確認済み。5-3節・5-4節の `ros2 param` の表示（Python版）は実機の表示に合わせて修正済み |
 | 3-4 | [`docs/phase3_4_services.md`](phase3_4_services.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断） |
 | 3-5 | [`docs/phase3_5_actions.md`](phase3_5_actions.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断） |
-| 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断。フェーズ5-1以降ではlaunchを使うため、5-1より前に進める） |
+| 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断。フェーズ5-1はlaunchを書かないので4より先でもよい。launch化するフェーズ5-3までに終える） |
 | 間章 | [`docs/interlude_components.md`](interlude_components.md) | C++のみ（launchはPython） | 作成済み（ビルド・`ros2 component types`・launchの`--print`確認済み。ノード実行は未確認） |
 | 参考資料 | [`docs/reference_node_class.md`](reference_node_class.md) | Python・C++（読み物） | 作成済み（2026-09-24。`Node` クラスの構造をクラス図（`docs/img/reference_node_rclpy.svg`・`reference_node_rclcpp.svg`）で解析。ローカルのソースで確認。図の見た目は画像にして確認していない） |
 | 置き方 | [`docs/howto_place_code.md`](howto_place_code.md) | 言語非依存（読み物） | 作成済み（2026-09-25。サンプルコードを `touch`＋`nano`、またはVS Codeで練習環境に置く方法。`touch`・`ls`・`head` の表示は使い捨ての環境で確認、`nano` とVS Codeの画面は仕様から想定） |
 | Tips集 | [`docs/tips.md`](tips.md) | 言語非依存（読み物） | 作成済み（2026-09-25。シミュレーション時刻・`CMakeLists.txt` の読み方・`SetuptoolsDeprecationWarning` の3項目。雛形と警告は使い捨ての環境で確認、`use_sim_time` の挙動はローカルのソースで確認。ノードの起動は未確認。2026-09-26にトピック通信の裏側（ディスカバリと届いたことの確認）を4項目めとして追加。DDSの一般的な仕組みから書き、通信の観察はしていない。同日、パラメータを利用者に知らせる方法を5項目めとして追加。turtlesimの `ros2 param` の表示は実機で確認）。分量の少ない補足を随時追加する |
-| 5-0 | [`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md) | 言語非依存＋自作ノードはPython | 学習完了（ユーザーが実機で確認済み、2026-09-26。2-1・3-4・4-1・5-5節は実機の表示に合わせて修正済み。図（`docs/img/phase5_0_bridge.svg`）の見た目もユーザーが確認済み）。作成は2026-09-24で、launchは`--show-args`・`--print`、サンプルはビルド・import確認済み |
+| 5-0 | [`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md) | 言語非依存＋自作ノードはPython | 学習完了（ユーザーが実機で確認済み、2026-09-26。2-1・3-4・4-1・4-2・5-5節は実機の表示に合わせて修正済み。3-1節には `--print` の意図、10節には公式ドキュメントを追記。図（`docs/img/phase5_0_bridge.svg`）の見た目もユーザーが確認済み）。作成は2026-09-24で、launchは`--show-args`・`--print`、サンプルはビルド・import確認済み |
 | 5-1 | [`docs/phase5_1_plant.md`](phase5_1_plant.md) | Python | 作成済み（2026-09-26。使い捨ての環境で、モデル単体の計算、6-1・6-3節のノードのログと `ros2 param`、画面なしのGazeboでのオドメトリの速度と停止まで確認。Gazeboの画面の見え方と、ユーザーの実機での実行は未確認。図（`docs/img/phase5_1_plant.svg`）の見た目はユーザーが確認済み） |
 | 5-2〜 | 着手時に作成 | Python中心 | 未作成 |
 

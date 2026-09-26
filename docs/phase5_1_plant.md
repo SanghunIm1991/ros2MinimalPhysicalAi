@@ -176,7 +176,7 @@ $\Delta t = 0.01$ 秒なら、時定数が0.01秒より長い限り、なめら�
   - パラメータ: `scale`（既定0.025 ＝ 1/40）。
   - `/plant/velocity` が0.5秒以上届かなければ、停止の指令を1回送る。
 
-トピックの型は、速度もペダルも1つの数なので、いちばん単純な `Float64` にした。位置や向きまで含む `nav_msgs/msg/Odometry`（フェーズ5-0で見た型）は、前後の速さだけを扱うこの車両には大きすぎる。フェーズ5-2のPI制御ノードも、この2つのトピックをそのまま使う。
+トピックの型は、速度もペダルも1つの数なので、いちばん単純な `Float64` にした。位置や向きまで含む [`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg)（フェーズ5-0で見た型）は、前後の速さだけを扱うこの車両には大きすぎる。フェーズ5-2のPI制御ノードも、この2つのトピックをそのまま使う。
 
 縮尺を1/40にしたのは、フェーズ5-0の2節の表のとおり、Gazeboの車両の最高速度が0.5 m/sだからである。アクセル全開の約20 m/sが、1/40で約0.5 m/sに収まる。縮尺は `gz_display` が送る直前にかけるだけなので、`vehicle_plant` の計算には影響しない。
 
@@ -511,7 +511,7 @@ def main(args=None):
 
 依存の追加は要らない。`Float64` の `std_msgs` はフェーズ3-1で、`Twist` の `geometry_msgs` はフェーズ5-0で `package.xml` に足してあり、`rcl_interfaces` は `rclpy` を通じて使える（フェーズ3-3と同じ）。
 
-`ws/src/learn_py/setup.py` の `entry_points` に2行足す（既存の行はすべて残す）。フェーズ5-0まで進めた状態なら、次のようになる。
+`ws/src/learn_py/setup.py` の `entry_points` に2行足す（既存の行はすべて残す）。必須の冊（フェーズ3-1〜3-3と5-0）まで進めた状態なら、次のようになる。
 
 <!-- snippet: py_entry_points_plant -->
 ```python
@@ -522,6 +522,10 @@ def main(args=None):
             'listener = learn_py.listener:main',
             'sine_pub = learn_py.sine_pub:main',
             'sine_sub = learn_py.sine_sub:main',
+            'turtle_circle = learn_py.turtle_circle:main',
+            'qos_talker = learn_py.qos_talker:main',
+            'qos_listener = learn_py.qos_listener:main',
+            'param_talker = learn_py.param_talker:main',
             'gz_drive = learn_py.gz_drive:main',
             'vehicle_plant = learn_py.plant_node:main',
             'gz_display = learn_py.gz_display:main',
@@ -529,7 +533,7 @@ def main(args=None):
     },
 ```
 
-フェーズ3-2a以降の行（`turtle_circle`・`param_talker` など）がある場合も、それらは残して2行を足す。`vehicle_model.py` は実行ファイルではない（ノードから `import` される部品）ので、登録しない。
+並び順や、任意の冊（フェーズ3-4・3-5など）で足した行の有無は、進め方によって違ってよい。既存の行は残して、最後の2行を足す。`vehicle_model.py` は実行ファイルではない（ノードから `import` される部品）ので、登録しない。
 
 ```bash
 cd ~/work/ros2MinimalPhysicalAi/ws
@@ -560,7 +564,7 @@ learn_py vehicle_plant
 
 ### 6-1. プラントだけを動かす
 
-まずGazeboを使わずに、プラントのログだけで動きを確かめる。ターミナルを2つ使う。T2も、`learn_py` を使うので `source` しておく。
+まずGazeboを使わずに、プラントのログだけで動きを確かめる。ターミナルを2つ使う。T2は `ros2 topic pub` と `ros2 param` しか使わないが、ほかのターミナルと手順をそろえるため、同じように `source` しておく。
 
 ```bash
 # T1
@@ -593,7 +597,7 @@ ros2 topic pub --once /plant/pedal std_msgs/msg/Float64 "{data: 0.5}"
 
 - 起動直後はペダル0で、速度も力も0のまま。ペダル0.5が届くと、`pedal: +0.50` に変わり、駆動力が1500 Nへ、速度が少しずつ上がっていく。
 - 数字は、4節の表（1秒で0.41 m/s・1301 N）とぴったりは同じにならない。ログは1秒おきで、ペダルが届いた瞬間とは揃っていないためである。この例の `pedal: +0.50` の1行目は、駆動力1231 Nから逆算すると、ペダルが届いてから約0.9秒後の値。
-- そのまま待つと、ペダルを送ってから30秒で8.4 m/s前後、45秒で8.9 m/s前後と、定常速度の9.14 m/sへ近づきながら、増え方が小さくなっていく。
+- そのまま待つと、ペダルを送ってから30秒で8.5 m/s前後、40秒で8.9 m/s前後と（4節の表の値）、定常速度の9.14 m/sへ近づきながら、増え方が小さくなっていく。
 
 続けてT2でブレーキを踏む。
 
@@ -602,7 +606,7 @@ ros2 topic pub --once /plant/pedal std_msgs/msg/Float64 "{data: 0.5}"
 ros2 topic pub --once /plant/pedal std_msgs/msg/Float64 "{data: -0.3}"
 ```
 
-**期待する結果**（T1の分。ペダル0.5を約45秒踏んだ後（8.93 m/s）でブレーキ0.3を送った前後。数値の細部は変わる）:
+**期待する結果**（T1の分。ペダル0.5を約41秒踏んだ後（8.93 m/s）でブレーキ0.3を送った前後。数値の細部は変わる）:
 
 ```text
 [INFO] [1790401395.794488988] [vehicle_plant]: pedal: +0.50, velocity:  8.93 m/s, drive:  1500 N, brake:     0 N
@@ -649,7 +653,7 @@ Gazebo側の車両の速さは、フェーズ5-0の3-4節のオドメトリで�
 ros2 topic echo --once /model/vehicle_green/odometry --field twist.twist.linear.x
 ```
 
-**期待する結果**（ペダルを送ってから約30秒後の例。値は、待った時間によって変わり、少し揺れる）:
+**期待する結果**（ペダルを送ってから約36秒後の例。値は、待った時間によって変わり、少し揺れる）:
 
 ```text
 0.22084287765338217
