@@ -160,6 +160,7 @@
 | 5-2 | [`docs/phase5_2_pi.md`](phase5_2_pi.md) | Python | 作成済み（2026-09-26。使い捨ての環境で、閉ループのシミュレーション、6節のノードのログ・`ros2 param`・YAML、画面なしのGazeboでのオドメトリの速度まで確認。Gazeboの画面の見え方と、ユーザーの実機での実行は未確認。図（`docs/img/phase5_2_pi.svg`）の見た目は未確認） |
 | 5-3 | [`docs/phase5_3_launch.md`](phase5_3_launch.md) | Python（launchもPython形式） | 作成済み（2026-09-26。使い捨ての環境で、ビルド、launchの`--show-args`・`--print`、`gazebo:=false` での起動のログ、画面なしのGazeboでのオドメトリの速度、`Ctrl+C` の後の表示まで確認。Gazeboの画面の見え方、`rqt_plot` のグラフ、ユーザーの実機での実行は未確認。図（`docs/img/phase5_3_launch.svg`）の見た目は未確認） |
 | 5-4 | [`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md) | Python（launchもPython形式）＋ワールドファイル | 作成済み（2026-09-26。使い捨ての環境で、ワールドの `gz sdf -k`、ビルド、launchの`--show-args`・`--print`、画面なしのGazeboでの起動のログと、オドメトリの記録による比較まで確認。Gazeboの画面の見え方と、ユーザーの実機での実行は未確認。図（`docs/img/phase5_4_gazebo_plant.svg`）の見た目は未確認） |
+| 6-1 | [`docs/phase6_1_record.md`](phase6_1_record.md) | Python（launchもPython形式） | 作成済み（2026-09-27。使い捨ての環境で、手での記録・`ros2 bag info`・再生、2つの記録の同時再生、`record.launch.py` で5-3の一式と5-4の一式（画面なしのGazebo）を決めた時間で記録して止まるまでを確認。`rqt_plot` の画面、Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図（`docs/img/phase6_1_record.svg`）の見た目は未確認） |
 | 6〜 | 着手時に作成 | — | 未作成 |
 
 - フェーズ3は、トピック（3-1・3-2a・3-2b）、パラメータ、サービス、アクションの6冊に分けた（3-2aのTwistと3-2bのQoSは互いに独立したテーマなので、2026-09-24に1冊から分けた）。各冊はPython・C++を同じ仕様で並べ、比較しやすくしている（言語別ファイルには分けていない）。

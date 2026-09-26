@@ -736,7 +736,7 @@ ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/ped
 
 ## 11. 次へ
 
-これで、フェーズ5（車両シミュレーション本体）の手順書はそろった。学習計画（[`docs/learning_plan.md`](learning_plan.md)）では、次はフェーズ6（`rqt_plot` と `ros2 bag` での記録・分析）である。手順書はまだ無い。作成の状況は、学習計画の「手順書一覧」で確かめられる。
+これで、フェーズ5（車両シミュレーション本体）の手順書はそろった。学習計画（[`docs/learning_plan.md`](learning_plan.md)）では、次はフェーズ6（`rqt_plot` と `ros2 bag` での記録・分析）である。最初のフェーズ6-1（[`docs/phase6_1_record.md`](phase6_1_record.md)）で、この手順書と5-3の一式を記録し、2つの記録を重ねて比べる。作成の状況は、学習計画の「手順書一覧」で確かめられる。
 
 ## 12. 公式ドキュメント・参考資料
 

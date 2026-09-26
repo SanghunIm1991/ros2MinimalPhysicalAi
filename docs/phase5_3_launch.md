@@ -478,7 +478,7 @@ ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/ped
 - アクセルの遅れ（0.5秒）はブレーキ（0.2秒）より長い。全開から0.54へ戻す途中でも、駆動力はすぐには減らない。
 - 5-2の2-4節で見たとおり、ブレーキ側ではループが約3倍強く効く。減速が速いのはそのためで、ゲインを上げると、減速のほうから先に行き過ぎや振動が出始める。
 
-グラフの詳しい使い方（軸の範囲の固定、画像の保存、記録した値の再生など）は、フェーズ6で扱う。
+グラフの詳しい使い方（軸の範囲の固定、画像の保存、記録した値の再生など）は、フェーズ6-1（[`docs/phase6_1_record.md`](phase6_1_record.md)）の3節で扱う。
 
 ### 4-4. 止める（`Ctrl+C`）
 
@@ -582,7 +582,7 @@ PI制御は、「偏差を0にする」ための仕組みで、「止まる」�
 
 ## 8. 次へ
 
-次は、フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）で、プラントをGazeboの物理に差し替え、PI制御ノードは変えずにつなぐ。その後のフェーズ6（可視化・記録）の手順書はまだ無い。作成の状況は、学習計画（[`docs/learning_plan.md`](learning_plan.md)）の「手順書一覧」で確かめられる。
+次は、フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）で、プラントをGazeboの物理に差し替え、PI制御ノードは変えずにつなぐ。その後のフェーズ6-1（[`docs/phase6_1_record.md`](phase6_1_record.md)）で、この手順書の一式を記録して、再生して見直す。作成の状況は、学習計画（[`docs/learning_plan.md`](learning_plan.md)）の「手順書一覧」で確かめられる。
 
 ## 9. 公式ドキュメント・参考資料
 
