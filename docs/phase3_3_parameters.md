@@ -11,7 +11,7 @@
 >
 > **進め方**: 仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でパラメータ関連のAPIを把握し、サンプルコードと解説を読んで理解する。読んで分かったら、既定値や型を変える、パラメータを増やすなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。コードとROS2の仕様（エラー文言はローカルのrclpy・rclcppのソース）から筆者が想定したもので、実機では時刻などの細部が異なる。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。コードとROS2の仕様（エラー文言はローカルのrclpy・rclcppのソース）から筆者が想定したもので、実機では時刻などの細部が異なる。ただし、5-3節の `ros2 param` の表示（Python版）は、実機で確かめたもの。
 
 ## 0. 学習目標と完了条件
 
@@ -435,16 +435,12 @@ ros2 param set /param_talker period 0.0      # 範囲外の値を設定してみ
 ros2 param get /param_talker period          # 設定が拒否された後の値を確かめる
 ```
 
-**期待する結果**（T1で `param_talker` を既定値で動かし、別ターミナルで上から順に実行した場合）:
+**期待する結果**（T1でPython版の `param_talker` を既定値で動かし、別ターミナルで上から順に実行した場合）:
 
 ```text
 $ ros2 param list /param_talker
   message
   period
-  qos_overrides./parameter_events.publisher.depth
-  qos_overrides./parameter_events.publisher.durability
-  qos_overrides./parameter_events.publisher.history
-  qos_overrides./parameter_events.publisher.reliability
   start_type_description_service
   use_sim_time
 
@@ -469,7 +465,7 @@ $ ros2 param get /param_talker period
 Double value is: 0.2
 ```
 
-- `param list` には、自分で宣言した `message`・`period` のほかに、ノードが自動で持つパラメータ（`use_sim_time` など）も並ぶ。
+- `param list` には、自分で宣言した `message`・`period` のほかに、ノードが自動で持つパラメータ（`use_sim_time` など）も並ぶ。C++版の `param_talker` では、さらに `qos_overrides./parameter_events.publisher.depth` など、`qos_overrides.` で始まる4つが並ぶ。これは、パラメータの変更を知らせる内部のトピック（`/parameter_events`）の通信の設定（QoS）を、起動時に変えられるようにするためのもので、rclcpp（C++）はこれを自動で宣言し、rclpy（Python）は宣言しない。
 - `param describe` の `Type: double` は、宣言時の既定値 `1.0` から決まった型。`Constraints:` の下が空なのは、範囲などの制約を付けていないから（5-4節の課題6で、`ParameterDescriptor` を使って範囲を付ける）。
 - `message` を変えると、T1のログが次の送信から `publish: changed` に変わる。`period` を0.2にすると、ログが1秒に5行に増える。
 - `period 0.0` の失敗の後ろに続く `period must be > 0` は、コードの `reason` に書いた文字列そのもの。拒否されたので、値は0.2のまま。
@@ -516,7 +512,7 @@ ros2 param dump /param_talker
 ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
 ```
 
-**期待する結果**（`ros2 param set` で `message` を `changed`、`period` を `0.2` にした後の例）:
+**期待する結果**（Python版の `param_talker` で、`ros2 param set` で `message` を `changed`、`period` を `0.2` にした後の例）:
 
 ```text
 $ ros2 param dump /param_talker
@@ -524,13 +520,6 @@ $ ros2 param dump /param_talker
   ros__parameters:
     message: changed
     period: 0.2
-    qos_overrides:
-      /parameter_events:
-        publisher:
-          depth: 1000
-          durability: volatile
-          history: keep_last
-          reliability: reliable
     start_type_description_service: true
     use_sim_time: false
 
@@ -539,7 +528,7 @@ Set parameter message successful
 Set parameter period successful
 ```
 
-`dump` の出力は、5-4の冒頭で書いたYAMLと同じ書式（ノード名 → `ros__parameters` → 値）になっている。そのままファイルに保存すれば、今の設定を次回の起動に使える。`load` の後は、T1のログが `publish: from yaml` に、間隔が0.5秒に戻る。
+`dump` の出力は、5-4の冒頭で書いたYAMLと同じ書式（ノード名 → `ros__parameters` → 値）になっている。C++版の `param_talker` では、5-3節で見た `qos_overrides.` の4つが、`qos_overrides:` の下に入れ子になって加わる。そのままファイルに保存すれば、今の設定を次回の起動に使える。`load` の後は、T1のログが `publish: from yaml` に、間隔が0.5秒に戻る。
 
 #### YAMLでパラメータを渡すメリット
 
