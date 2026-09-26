@@ -365,8 +365,8 @@ def main(args=None):
 役割は、「`/plant/pedal` を受けて `/plant/velocity` を送る」という、5-1の `vehicle_plant` と同じ外側を持ちながら、車体の計算をGazeboに任せること。
 
 - **パラメータ**: アクチュエータの4つ（5-1と同じ名前・既定値）は、5-1と同じく `dataclasses.fields` でまとめて宣言する。ほかに、速度の縮尺 `scale`、力の縮尺 `force_scale`（3-2節）、車輪の半径 `wheel_radius`、ブレーキの向きを決めるための `brake_speed_band`、計算の周期 `period` を持つ。
-- **`on_odom`**: Gazeboのオドメトリの前後の速さ（`twist.twist.linear.x`、Gazeboの単位）を $s$ で割って実車の単位に戻し、`/plant/velocity` へ送る。オドメトリは50 Hzで届くので、`/plant/velocity` も50 Hzになる（5-1の `vehicle_plant` は100 Hz）。
-- **`on_timer`**: 周期ごとに、アクチュエータのモデルで駆動力と制動力を計算し、合計の力を $F_{gz}$ に縮めて、車輪1つあたりのトルク $F_{gz} \times r / 2$ にして、左右の車輪へ同じ値を送る。
+- **`on_odom`**: Gazeboのオドメトリ（ブリッジが [`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg) に変換したもの）の前後の速さ（`twist.twist.linear.x`、Gazeboの単位）を $s$ で割って実車の単位に戻し、`/plant/velocity` へ送る。オドメトリは50 Hzで届くので、`/plant/velocity` も50 Hzになる（5-1の `vehicle_plant` は100 Hz）。
+- **`on_timer`**: 周期ごとに、アクチュエータのモデルで駆動力と制動力を計算し（送るトルクの型は [`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg)。ブリッジが `gz.msgs.Double` に変換する）、合計の力を $F_{gz}$ に縮めて、車輪1つあたりのトルク $F_{gz} \times r / 2$ にして、左右の車輪へ同じ値を送る。
   - 左右のトルクは、同じ周期の中で続けて送る。片方だけが先に届くと、その間だけ左右の力がずれて車両が向きを変え、力で動かす車両には向きを元に戻す仕組みが無いので、曲がったまま走り続ける（筆者が `gz topic` で左右に1つずつ送って試したときに起きた）。
 - **ブレーキの向き**: ブレーキは、動いている向きと逆に働く力である。5-1では「後ろへは進まない」として速度を0で止めたが、ここではGazeboが速度を計算するので、その手は使えない。そこで、制動力に「速度 ÷ `brake_speed_band`（−1〜1に収める）」を掛けて向きを決める。速く動いているときは全部の制動力が逆向きにかかり、止まる直前（0.1 m/s未満）では弱まって、止まったときは0になる。止まった車両をブレーキが後ろへ押し出さないようにするための工夫である。
 - **ログ**: 5-1の `vehicle_plant` と同じ形に、送ったトルクを足した。
@@ -614,7 +614,7 @@ ros2 launch learn_bringup gazebo_plant.launch.py
 - 目標5 m/sでは、ブレーキ全開で急に減速し、5 m/sを少し下回ってから戻る。目標0では、約1秒で止まり、その後は動かない（5-3では、止まりきらずにしばらく動いた）。
 - 違いの理由は7節で読み解く。
 
-止めるときは `Ctrl+C`。5-3の4-4節と同じく、各ノード（とGazebo）について `Traceback` や `process has died` が出るが、異常ではない。
+止めるときは `Ctrl+C`。5-3の4-4節と同じく、Pythonのノード（`gz_plant`・`pi_controller`・`target_generator`）には `Traceback` と `process has died` が、Gazebo（`gazebo-1`）には `process has died` だけが出る。ブリッジ（C++）は `process has finished cleanly` で終わる。どれも異常ではない。
 
 > **PCが重い場合**: Gazeboの画面（描画）を出さずに、物理の計算だけを動かすこともできる。`gz_args` に `-s`（サーバーだけ）を足す。ワールドのパスは、`ros2 pkg prefix --share learn_bringup` の下の `worlds/vehicle_force.sdf` になる。
 >
@@ -626,7 +626,7 @@ ros2 launch learn_bringup gazebo_plant.launch.py
 
 ## 7. 同じゲインで追従が変わる理由
 
-5-3（自作のプラント）と、この手順書（Gazeboの物理）を、同じゲイン（`kp` 0.5・`ki` 0.1）で比べる。5-4の値は、Gazeboのオドメトリを1回ずつすべて記録した値（ログより細かい）で、5-3の値は5-3の4-1節のログの値。
+5-3（自作のプラント）と、この手順書（Gazeboの物理）を、同じゲイン（`kp` 0.5・`ki` 0.1）で比べる。5-4の値は、Gazeboのオドメトリを1回ずつすべて記録した値（ログより細かい）。5-3の値は、「目標0の後」の行が5-3の5節の計算の表の値で、それ以外は5-3の4-1節のログの値。
 
 | 項目 | 5-3（自作のプラント） | 5-4（Gazeboの物理） |
 |---|---|---|

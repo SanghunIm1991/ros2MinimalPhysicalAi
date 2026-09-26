@@ -303,7 +303,7 @@ ros2 launch learn_bringup pubsub.launch.py talker_lang:=cpp listener_lang:=py
 - C++版のノード（`talker_lang:=cpp` など）では、`[rclcpp]: signal_handler(SIGINT/SIGTERM)` の行が出た後、`process has finished cleanly` と表示されて終わる（rclcppは、2回目の割り込みも後片付けの妨げにしない）。
 - `user interrupted with ctrl-c (SIGINT) again, ignoring...` の行が続けて出ることもある。これも問題ない。
 
-2つ目のコマンド（`talker_lang:=cpp`）でも、ログの見た目は同じになる。どちらの言語が動いているかは、ログではなく `ros2 node info /talker` などで調べる（この節の末尾の課題1）。同じく課題2の `talker_lang:=rust` では、ノードは1つも起動せず、`[ERROR] [launch]: Caught exception in launch (see debug for traceback): ...` に続いて、`learn_rust` というパッケージが見つからないという趣旨のメッセージが出て終わる。
+2つ目のコマンド（`talker_lang:=cpp`）でも、動作中のログ（`publish:`・`received:` の行）の見た目は同じになる（`Ctrl+C` の後の表示は、上の説明のとおり言語によって違い、この場合はC++版の `talker` とPython版の `listener` の表示が混ざる）。どちらの言語が動いているかは、ログではなく `ros2 node info /talker` などで調べる（この節の末尾の課題1）。同じく課題2の `talker_lang:=rust` では、ノードは1つも起動せず、`[ERROR] [launch]: Caught exception in launch (see debug for traceback): ...` に続いて、`learn_rust` というパッケージが見つからないという趣旨のメッセージが出て終わる。
 
 > 課題1: 4通りの組み合わせをすべて起動し、`ros2 node list` と `ros2 topic info /chatter -v` で、どの言語のノードがつながっているか確認する。
 >

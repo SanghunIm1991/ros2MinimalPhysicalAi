@@ -660,7 +660,7 @@ ros2 run learn_py pi_controller --ros-args -p anti_windup:=false
 
 ### 6-3. YAMLでゲインを渡し、調整した結果を残す
 
-ゲインの組み合わせは、フェーズ3-3の5-4節のとおり、YAMLのファイルにまとめておくと、何度でも同じ条件で試せる。`ws/config/pi_controller.yaml` を作る（`ws/config/` はフェーズ3-3で作ったフォルダ。フェーズ4を済ませていれば、`learn_bringup/config/` に置いてもよい。フェーズ5-3ではそちらを使う）。
+ゲインの組み合わせは、フェーズ3-3の5-4節のとおり、YAMLのファイルにまとめておくと、何度でも同じ条件で試せる。`ws/config/pi_controller.yaml` を作る（`ws/config/` はフェーズ3-3で作ったフォルダ。フェーズ4の3-1節で空になって消した場合は、`mkdir -p ~/work/ros2MinimalPhysicalAi/ws/config` で作り直す。フェーズ4を済ませていれば、`learn_bringup/config/` に置いてもよい。フェーズ5-3ではそちらを使う）。
 
 ```yaml
 pi_controller:
