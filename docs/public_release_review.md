@@ -83,14 +83,14 @@ git ls-files | grep -E '^(notes|ws)/|\.(env|pem|key|tar|vhdx)$'
 | 図 | `docs/img/` のSVGが自作のもので、第三者の図・ロゴ・埋め込み画像が混ざっていないか | `docs/img/` |
 | サンプルコード | 公式チュートリアルや他のリポジトリのコードを、丸ごと転載していないか | 各手順書のコードブロック |
 | 第三者のファイル | データシート・PDF・フォント・画像など、ライセンスが不明なファイルが追跡されていないか | `git ls-files` |
-| リポジトリのライセンス | リポジトリ自体のライセンス（`LICENSE`）をどうするか（現在は置いていない。Public化の前に決める） | リポジトリの直下 |
+| リポジトリのライセンス | `LICENSE` の「第三者の著作物」の一覧が最新か（前回以降に、公式ドキュメントの抜粋や、雛形・ツールの出力の引用を足していないか）。サンプルコードが使うパッケージに、コピーレフト（GPL等）のものが加わっていないか | [`LICENSE`](../LICENSE)、`README.md` のライセンスの節 |
 
 ### 2-2. 機械点検
 
 追跡しているファイルのうち、Markdown・SVG・Gitの設定以外のものを一覧する。
 
 ```bash
-git ls-files | grep -vE '\.(md|svg)$|^\.git(attributes|ignore)$'
+git ls-files | grep -vE '\.(md|svg)$|^\.git(attributes|ignore)$|^LICENSE(-APACHE-2\.0)?$'
 ```
 
 SVGに、外部の画像や外部へのリンクが埋め込まれていないかを見る。

@@ -1,0 +1,68 @@
+ros2MinimalPhysicalAi
+Copyright (c) 2026 SanghunIm1991
+https://github.com/SanghunIm1991/ros2MinimalPhysicalAi
+
+このリポジトリは、2つのライセンスで公開しています。どちらも、商用を含めて自由に
+使い、改変し、再配布できます。条件は、作者（SanghunIm1991）とライセンスを
+表示することです。
+
+This repository is released under two licenses. Both allow free use,
+modification, and redistribution, including commercial use, provided that
+the author (SanghunIm1991) and the license are credited.
+
+
+1. サンプルコードとコマンド: Apache License 2.0
+   Sample code and commands: Apache License, Version 2.0
+
+   対象: 手順書のコードブロックに載せた、ファイルとして保存するためのコード
+   （Python・C++・CMake・XML・YAML・launchファイル等）と、実行するコマンド。
+   ROS2本体や、手順書で作るパッケージ（`--license Apache-2.0`）と同じライセンス
+   なので、自分のパッケージへそのまま写して使える。
+
+   Scope: code in the code blocks of the documents that is meant to be
+   saved as files (Python, C++, CMake, XML, YAML, launch files, etc.),
+   and the commands to be run.
+
+   全文 / Full text: LICENSE-APACHE-2.0（このリポジトリの直下）
+   https://www.apache.org/licenses/LICENSE-2.0
+
+
+2. 文章と図: Creative Commons 表示 4.0 国際（CC BY 4.0）
+   Text and figures: Creative Commons Attribution 4.0 International
+
+   対象: 上の1以外のすべて（手順書・資料の文章、表、`docs/img/` の図など）。
+   ROS 2の公式ドキュメントと同じライセンス。
+
+   Scope: everything not covered by section 1 (text, tables, and the
+   figures in `docs/img/`).
+
+   https://creativecommons.org/licenses/by/4.0/
+   https://creativecommons.org/licenses/by/4.0/legalcode
+
+   表示の例 / Example credit:
+   "ros2MinimalPhysicalAi" by SanghunIm1991
+   (https://github.com/SanghunIm1991/ros2MinimalPhysicalAi), CC BY 4.0.
+   改変した場合は、その旨も書く。 / Indicate if changes were made.
+
+
+3. 第三者の著作物（上の1・2の対象外）
+   Third-party material (not covered by sections 1 and 2)
+
+   次の部分は、それぞれの権利者のもので、元のライセンスに従う。各文書の該当箇所に
+   出典を書いている。
+   The following parts belong to their respective owners and remain under
+   their original licenses. Each is credited where it appears.
+
+   - docs/setup_wsl2_ros2.md の手順4で抜粋したコマンド:
+     ROS 2 Documentation（Open Robotics）, CC BY 4.0
+   - docs/tips.md で引用した `CMakeLists.txt` の各行:
+     `ros2 pkg create` の雛形（ros2pkg）, Apache License 2.0
+   - docs/tips.md で引用した警告の文面: setuptools, MIT License
+   - 「期待する結果」等に載せたコマンドの出力: 各ツールの表示
+
+   このリポジトリは、ROS2・Gazebo・turtlesim等のソフトウェアを同梱していない。
+   サンプルコードは、読者が各自で導入したそれらを利用するだけである。それらの
+   ライセンスは、それぞれのパッケージに従う。
+   This repository does not bundle ROS 2, Gazebo, turtlesim, or other
+   software. The sample code only uses them as installed by the reader,
+   and they remain under their own licenses.
