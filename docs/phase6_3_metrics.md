@@ -9,7 +9,7 @@
 
 > **進め方**: 2節で指標の定義を決め、3節で時間の数え方を考える。4節で、指標をROS2を使わない関数として書き、5-2の閉ループの計算に当てはめて確かめる。5節で解析のノードを書き、6節で記録を解析し、7節で3つの条件を比べる。8節でC++版を動かし、9節で強化学習とのつながりを考える。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時に、使い捨ての環境でビルドし、6-1と同じ方法で取った記録を実際に解析して確かめた。出力が違う場合は、実機の表示を優先する。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。4節の計算の結果、6〜8節の解析のノードのログと `ros2 topic info`・`ros2 bag play` の表示は、使い捨ての環境で実際に実行した表示で、時刻は実行ごとに異なる。指標の値は、同じ記録なら同じになるが、記録を取り直すと少し変わる。ビルドの表示は、ほかの手順書と同じ形式である。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。4節の計算の結果、6〜8節の解析のノードのログと `ros2 topic info`・`ros2 bag play` の表示は、使い捨ての環境で実際に実行した表示で、時刻は実行ごとに異なる（作成時には、再生を進めるのにスペースキーの代わりに、同じ処理を呼ぶ `ros2 bag play` のサービス `/rosbag2_player/resume` を使った）。指標の値は、同じ記録なら同じになるが、記録を取り直すと少し変わる。ビルドの表示は、ほかの手順書と同じ形式である。
 
 ## 0. 学習目標と完了条件
 
@@ -31,18 +31,18 @@
 
 ```mermaid
 flowchart LR
-    BAG[("6-1の記録<br/>sim_default・slow_brake・gz_default")]
+    BAG[("6-1の記録<br/>sim_default など")]
     P["ros2 bag play -r 5 -p<br/>（つながってから<br/>スペースキーで再生）"]
     subgraph N["解析のノード"]
         PY["metrics（Python版）<br/>metrics_node.py"]
         CPP["metrics_cpp（C++版）<br/>metrics_node.cpp"]
     end
-    M["metrics.py<br/>指標の計算<br/>（ROS2を使わない）"]
-    SIM["closed_loop_sim.py<br/>（5-2の閉ループの計算）"]
+    M["metrics.py<br/>指標の計算（ROS2なし）"]
+    SIM["closed_loop_sim.py<br/>（5-2の計算）"]
     T["段ごとの指標と<br/>全体のRMSの表"]
     BAG --> P
-    P -- "/target_velocity<br/>/plant/velocity<br/>/plant/pedal" --> PY
-    P -- "同じ3つのトピック" --> CPP
+    P -- "目標・速度・ペダルの<br/>3つのトピック" --> PY
+    P --> CPP
     PY -- "計算を任せる" --> M
     SIM -- "答え合わせ（4節）" --> M
     PY --> T
@@ -114,13 +114,13 @@ from dataclasses import dataclass
 # 1つの段（目標が変わってから、次に変わるまで）の指標。時間の単位は秒、速度はm/s。
 @dataclass
 class StepResult:
-    target_from: float      # 変わる前の目標
-    target_to: float        # 変わった後の目標
-    overshoot: float        # 行き過ぎ量 [%]（変化の大きさに対する割合）
-    rise_time: float        # 立ち上がり時間（変化の10%→90%）。届かなければ None
-    settling_time: float    # 整定時間（±2%に収まるまで）。収まらなければ None
-    steady_error: float     # 定常偏差（目標 − 段の最後の1秒の速度の平均）
-    saturated_time: float   # ペダルが±1に張り付いていた時間
+    target_from: float            # 変わる前の目標
+    target_to: float              # 変わった後の目標
+    overshoot: float              # 行き過ぎ量 [%]（変化の大きさに対する割合）
+    rise_time: float | None       # 立ち上がり時間（変化の10%→90%）。届かなければ None
+    settling_time: float | None   # 整定時間（±2%に収まるまで）。収まらなければ None
+    steady_error: float           # 定常偏差（目標 − 段の最後の1秒の速度の平均）
+    saturated_time: float         # ペダルが±1に張り付いていた時間
 
 
 # 時刻・目標・速度・ペダルの並び（同じ長さ）から、段ごとの指標と、全体のRMSを計算する。
@@ -390,9 +390,12 @@ ros2 topic info /plant/velocity
 **期待する結果**（T3の分）:
 
 ```text
-Type: std_msgs/msg/Float64
-Publisher count: 1
-Subscription count: 1
+[INFO] [1790471199.943961270] [metrics_cpp]: 9971 samples (99.71 s)
+[INFO] [1790471199.944867317] [metrics_cpp]: step          over[%]  rise[s]  settle[s]  error  sat[s]
+[INFO] [1790471199.946345560] [metrics_cpp]:  0.0 -> 10.0     0.00    6.19    13.75   +0.00    6.08
+[INFO] [1790471199.946389380] [metrics_cpp]: 10.0 ->  5.0     0.00    0.95     6.66   -0.00    0.48
+[INFO] [1790471199.946406084] [metrics_cpp]:  5.0 ->  0.0     0.00    0.83     7.78   -0.01    0.58
+[INFO] [1790471199.946420151] [metrics_cpp]: RMS error: 1.776 m/s
 ```
 
 `Publisher count: 1` が再生（T1）、`Subscription count: 1` が解析のノード（T2）。両方が1になっていれば、つながっている。確かめたら、**T1でスペースキーを押して**再生を進める。
@@ -416,7 +419,7 @@ Subscription count: 1
 [INFO] [1790469970.436995432] [metrics]: RMS error: 1.776 m/s
 ```
 
-- 1行目は、ためたサンプルの数と、それが表す時間（数 × 0.01秒）。6-1の `ros2 bag info sim_default` の `/plant/velocity` の `Count`（この例の記録では9984）より少しだけ少ないのは、最初の目標が届く前の速度（この例では13個）を捨てているためである（5-1節の仕様）。差がこれより大きいときは、途中の速度が届いていない（11節の表の「サンプルの数が記録より大きく少ない」）。
+- 1行目は、ためたサンプルの数と、それが表す時間（数 × 0.01秒）。記録の中の数（フェーズ6-1の2-2節と同じく `ros2 bag info sim_default` で確かめられる `/plant/velocity` の `Count`。この手順書の作成時の記録では9984）より少しだけ少ないのは、最初の目標が届く前の速度（この例では13個）を捨てているためである（5-1節の仕様）。差がこれより大きいときは、途中の速度が届いていない（11節の表の「サンプルの数が記録より大きく少ない」）。
 - 0 → 10と10 → 5の段の値は、4節の計算とほぼ同じである（10 → 5の段の整定時間だけ、6.69秒と6.66秒で少し違う。記録では、目標を切り替えた時刻と、制御の周期の区切りの関係が、計算と少し違うためと考えられる）。自作のプラントは、記録を再生しても、ROS2なしで計算しても、同じ式で動いていることが確かめられる。
 - 5 → 0の段は、フェーズ5-3の5節の「目標0で止まりきらない」現象の段である。行き過ぎ量は0%（0より下には行かない）だが、速度がいったん浮くので、整定時間が7.78秒と、10 → 5の段より長い。
 - 表を出した後、T2の `metrics` は自分で終わる。T1の再生も、最後まで進めば自分で終わる。
@@ -425,7 +428,7 @@ Subscription count: 1
 
 ### 7-1. 残りの2つの記録を解析する
 
-この手順書の6-1節と同じ手順で、`slow_brake` と `gz_default` を解析する。**5-4の記録（`gz_default`）では `sample_period` を0.02にする**（3節。速度が50 Hzで送られているため）。
+この手順書の6-1節と同じ手順で、`slow_brake` と `gz_default` を解析する。T1・T2・T3は、6-1節で使ったターミナルをそのまま使う（T1は `ws/bags` に、T2は `source` 済みの `ws` にいる）。**5-4の記録（`gz_default`）では `sample_period` を0.02にする**（3節。速度が50 Hzで送られているため）。
 
 ```bash
 # T1
@@ -467,7 +470,7 @@ ros2 run learn_py metrics --ros-args -p sample_period:=0.02
 [INFO] [1790470037.523950968] [metrics]: RMS error: 1.623 m/s
 ```
 
-`gz_default` のサンプル数5176は、6-1の `ros2 bag info gz_default` の `/plant/velocity` の `Count` と同じになる（この例では、最初の速度より先に目標が届いていたので、捨てた速度が無かった）。
+`gz_default` のサンプル数5176は、`ros2 bag info gz_default` の `/plant/velocity` の `Count`（この手順書の作成時の記録では5176）と同じになる（この例では、最初の速度より先に目標が届いていたので、捨てた速度が無かった）。
 
 ### 7-2. 比較表
 
@@ -487,9 +490,9 @@ ros2 run learn_py metrics --ros-args -p sample_period:=0.02
 | | 整定時間 | 7.78 s | 11.00 s | 1.10 s |
 | 全体 | RMS | 1.776 m/s | 1.825 m/s | 1.623 m/s |
 
-定常偏差は、どの条件・どの段でも0.01 m/s以下なので、表から省いた。読み取れることは次のとおり。
+定常偏差は、どの条件・どの段でも0.01 m/s以下なので、表から省いた。5 → 0の段の立ち上がり時間と張り付いた時間も、どの条件でも1秒前後で差が小さいので省いた（値は、この手順書の6-2節と7-1節のログにある）。読み取れることは次のとおり。
 
-- **1節の問いの答え**: 5-4の行き過ぎは、0 → 10の段で3.10%（最高10.31 m/s）、10 → 5の段で9.49%（最低4.53 m/s）。行き過ぎる代わりに、立ち上がり時間も整定時間も5-3より短い。抵抗が無いので速く加速でき、同じ理由で止まりにくい（フェーズ5-4の7節）。
+- **1節の問いの答え**: 5-4の行き過ぎは、0 → 10の段で3.10%（最高10.31 m/s）、10 → 5の段で9.49%（最低4.53 m/s）。行き過ぎる代わりに、立ち上がり時間も整定時間も5-3より短い。抵抗が無いので速く加速でき、減速でも勢いが残って行き過ぎやすい（10 → 5の段で9.49%。フェーズ5-4の7節）。
 - **ブレーキの遅れの影響**: `tau_brake` を1.0にすると、加速の段（0 → 10）は1つも変わらず、減速の段だけが悪くなる（10 → 5の行き過ぎ量0% → 22%、整定時間6.66秒 → 12.31秒）。ブレーキの遅れは、ブレーキを使う段にだけ効く。
 - **アクセルとブレーキの非対称性**: 5-3の既定では、10 m/s上げる段でアクセル全開に6.08秒張り付くのに対し、5 m/s下げる段でブレーキ全開に張り付くのは0.48秒である。変化の大きさの違い（10と5）を考えても、減速のほうがずっと短い時間で済んでいる。フェーズ5-3の4-3節でグラフから読んだ非対称性を、数で言えるようになった。
 - **RMSだけで比べると**: RMSは5-4がいちばん小さい。行き過ぎはあるが、目標に速く近づくので、外れている時間の合計が短いためである。1つの数にまとめると、「行き過ぎるが速い」と「行き過ぎないが遅い」の違いが見えなくなる。段ごとの指標と、全体の1つの数は、目的に応じて使い分ける（9節）。
@@ -511,6 +514,7 @@ ros2 run learn_py metrics --ros-args -p sample_period:=0.02
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "rclcpp/rclcpp.hpp"
@@ -561,6 +565,38 @@ StepResult evaluate_step(
   return r;
 }
 
+// 時刻・目標・速度・ペダルの並びから、段ごとの指標と、全体のRMSを計算する。Python版の evaluate と同じ手順。
+// RMSは、最初に目標が変わってから最後までの誤差で計算する（段が無ければ値なし）。
+std::pair<std::vector<StepResult>, std::optional<double>> evaluate(
+  const std::vector<double> & times, const std::vector<double> & targets,
+  const std::vector<double> & velocities, const std::vector<double> & pedals)
+{
+  std::vector<size_t> changes;
+  for (size_t i = 1; i < targets.size(); ++i) {
+    if (targets[i] != targets[i - 1]) {changes.push_back(i);}
+  }
+  std::vector<StepResult> results;
+  for (size_t k = 0; k < changes.size(); ++k) {
+    const size_t i0 = changes[k];
+    const size_t i1 = k + 1 < changes.size() ? changes[k + 1] : targets.size();
+    auto seg = [&](const std::vector<double> & x) {
+        return std::vector<double>(x.begin() + i0, x.begin() + i1);
+      };
+    results.push_back(
+      evaluate_step(seg(times), targets[i0 - 1], targets[i0], seg(velocities), seg(pedals)));
+  }
+  std::optional<double> rms;
+  if (!changes.empty()) {
+    double sum = 0.0;
+    for (size_t i = changes.front(); i < targets.size(); ++i) {
+      const double e = targets[i] - velocities[i];
+      sum += e * e;
+    }
+    rms = std::sqrt(sum / (targets.size() - changes.front()));
+  }
+  return {results, rms};
+}
+
 // 目標・速度・ペダルを受け取ってためておき、届かなくなったら指標を計算して表示するノード（Python版と同じ仕様）。
 class MetricsNode : public rclcpp::Node
 {
@@ -597,29 +633,17 @@ private:
     }
     RCLCPP_INFO(get_logger(), "%zu samples (%.2f s)", times_.size(), times_.size() * sample_period_);
     RCLCPP_INFO(get_logger(), "step          over[%%]  rise[s]  settle[s]  error  sat[s]");
-    size_t first_change = 0;
-    for (size_t i0 = 1; i0 < targets_.size(); ++i0) {
-      if (targets_[i0] == targets_[i0 - 1]) {continue;}
-      if (first_change == 0) {first_change = i0;}
-      size_t i1 = i0 + 1;
-      while (i1 < targets_.size() && targets_[i1] == targets_[i0]) {++i1;}
-      auto seg = [&](const std::vector<double> & x) {
-          return std::vector<double>(x.begin() + i0, x.begin() + i1);
-        };
-      const StepResult r = evaluate_step(
-        seg(times_), targets_[i0 - 1], targets_[i0], seg(velocities_), seg(pedals_));
+    const auto [results, rms] = evaluate(times_, targets_, velocities_, pedals_);
+    for (const StepResult & r : results) {
       RCLCPP_INFO(
         get_logger(), "%4.1f -> %4.1f  %7.2f  %s   %s   %+5.2f  %6.2f",
         r.target_from, r.target_to, r.overshoot, sec(r.rise_time).c_str(),
         sec(r.settling_time).c_str(), r.steady_error, r.saturated_time);
     }
-    if (first_change > 0) {
-      double sum = 0.0;
-      for (size_t i = first_change; i < targets_.size(); ++i) {
-        const double e = targets_[i] - velocities_[i];
-        sum += e * e;
-      }
-      RCLCPP_INFO(get_logger(), "RMS error: %.3f m/s", std::sqrt(sum / (targets_.size() - first_change)));
+    if (rms) {
+      RCLCPP_INFO(get_logger(), "RMS error: %.3f m/s", *rms);
+    } else {
+      RCLCPP_INFO(get_logger(), "RMS error: -");
     }
     rclcpp::shutdown();
   }
@@ -654,7 +678,7 @@ int main(int argc, char ** argv)
 Python版との主な違いだけを挙げる。
 
 - **値が無いことの表し方**: Python版の `None` の代わりに、C++17の `std::optional<double>`（値があるか無いかを持てる型）を使う。
-- **1つのファイル**: Python版は、指標の計算（`metrics.py`）とノード（`metrics_node.py`）をファイルで分けた。C++版では、計算の関数 `evaluate_step` とノードのクラスを1つのファイルに書いた（ファイルを分ける場合は、ヘッダとライブラリをCMakeで作る必要があり、この手順書の範囲を超えるため）。関数とクラスを分けている点は同じである。
+- **1つのファイル**: Python版は、指標の計算（`metrics.py`）とノード（`metrics_node.py`）をファイルで分けた。C++版では、計算の関数（`evaluate_step` と `evaluate`）とノードのクラスを1つのファイルに書いた（ファイルを分ける場合は、ヘッダとライブラリをCMakeで作る必要があり、この手順書の範囲を超えるため）。計算を関数に分け、ノードの `on_watchdog` は `evaluate` を呼んで表示するだけにしている点は、Python版と同じである。`evaluate` は、段ごとの指標とRMSの組（`std::pair`）を返し、呼ぶ側はC++17の構造化束縛（`const auto [results, rms] = ...`）で2つに分けて受け取る。
 - **コールバック**: 3つの Subscription のコールバックはラムダで書き、コンストラクタの中で渡している。引数を `const std_msgs::msg::Float64 & msg` で受け取るのも、フェーズ3-1のC++版の `listener` と同じ書き方である。
 - **タイマー**: `create_wall_timer` は、名前のとおり現実の時間で数える（[`docs/tips.md`](tips.md) の1-5節の表）。途絶えの見張りに向いている。
 
@@ -691,9 +715,17 @@ cd ~/work/ros2MinimalPhysicalAi/ws/bags
 ros2 bag play sim_default -r 5 -p
 
 # T2
+cd ~/work/ros2MinimalPhysicalAi/ws
+
+source install/setup.bash
+
 ros2 run learn_py metrics
 
 # T3
+cd ~/work/ros2MinimalPhysicalAi/ws
+
+source install/setup.bash
+
 ros2 run learn_cpp metrics --ros-args -r __node:=metrics_cpp
 
 # T4
@@ -713,7 +745,7 @@ T4で `Subscription count: 2` になったら、T1でスペースキーを押す
 [INFO] [1790470352.485149943] [metrics_cpp]: RMS error: 1.776 m/s
 ```
 
-T2（Python版）の表と、数が同じになる。ただし、張り付いた時間が0.01〜0.02秒（1サンプル分）違うことがある。ペダルと速度は別のトピックなので、2つのノードで、ペダルと速度の届く順番が1つ入れ替わることがあるためである（この手順書の作成時に、`slow_brake`・`gz_default` で1サンプル分の違いが出た）。
+T2（Python版）の表と、数が同じになる。ただし、1サンプル分（0.01〜0.02秒）違う値が出ることがある。ペダルや目標と、速度は別のトピックなので、2つのノードで、届く順番が1つ入れ替わることがあるためである。この手順書の作成時に違いが出たのは、張り付いた時間（`slow_brake`・`gz_default` で1サンプル分）だけだった。
 
 ## 9. 強化学習へのつながり
 
@@ -741,6 +773,7 @@ T2（Python版）の表と、数が同じになる。ただし、張り付いた
 | `metrics` が表を出さずに止まらない | 再生が終わってから `idle_timeout`（2秒）待つ。一時停止のままなら、T1でスペースキーを押したか |
 | `python3 -m learn_py.metrics` で `No module named learn_py` | ビルドして `source install/setup.bash` したか（フェーズ5-2の9節の表と同じ） |
 | C++版のビルドで `std::optional` が見つからない | `#include <optional>` があるか。Jazzyの既定のC++の版（C++17）で使える |
+| 表の数が途中で切れている・段が足りない | 再生の途中でスペースキーをもう一度押して、一時停止していないか。一時停止のまま `idle_timeout`（2秒）たつと、それまでの分だけで計算して終わる。記録を再生し直して、解析もやり直す |
 | 2つの `metrics` が同じ名前で動いて、警告が出る | C++版に `-r __node:=metrics_cpp` を付けたか（8-3節） |
 
 ## 12. フェーズ6のまとめ
@@ -770,7 +803,7 @@ T2（Python版）の表と、数が同じになる。ただし、張り付いた
 
 ### 日本語
 
-- [PID制御の基本理論と設計法：幅広く使われるPID制御 - 制御工学ブログ](https://blog.control-theory.com/entry/pid-control)（行き過ぎ量・整定時間などの応答の指標）
+- [PID制御の基本理論と設計法：幅広く使われるPID制御 - 制御工学ブログ](https://blog.control-theory.com/entry/pid-control)（伝達関数・一次遅れ系の考え方）
 
 > 記事は個人による非公式の解説で、版によって異なる場合がある。公式ドキュメントと食い違う場合は公式を優先する。
 
