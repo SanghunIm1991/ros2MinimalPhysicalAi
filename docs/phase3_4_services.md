@@ -150,7 +150,6 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 
 ### 4-1. 主なAPI（rclpy）
 
-
 | やりたいこと | API |
 |---|---|
 | サーバの作成 | `self.create_service(型, 'サービス名', コールバック)`。コールバックは `(request, response)` を受け、`response` を**返す** |
@@ -386,7 +385,6 @@ source install/setup.bash
 `ws/src/learn_cpp/src/` に、①足し算の `add_server.cpp`・`add_client.cpp` と、②カウンタのリセットの `counter_node.cpp` を作る。
 
 ### 5-1. 主なAPI（rclcpp）
-
 
 | やりたいこと | API |
 |---|---|
