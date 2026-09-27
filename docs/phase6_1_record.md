@@ -7,9 +7,9 @@
 - 所要目安: 1〜2コマ
 - 言語: Python（launchもPython形式）
 
-> **進め方**: 2節で、手で記録して再生する流れをひととおり試す。3節で、再生した値を `rqt_plot` で見直す。4節で、記録を決めた時間で終わらせる仕組みを作り、5節で5-4の一式も同じ方法で記録する。6節で、2つの記録を重ねて比べる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時に、使い捨ての環境でビルドし、記録・再生を実行して確かめた（Gazeboは画面なしで起動したので、画面の見え方と、`rqt_plot` のグラフは未確認）。出力が違う場合は、実機の表示を優先する。
+> **進め方**: 2節で、手で記録して再生する流れをひととおり試す。3節で、再生した値を `rqt_plot` で見直す。4節で、記録を決めた時間で終わらせる仕組みを作り、条件を変えた記録も取る（4-6節。フェーズ6-3で使う）。5節で5-4の一式も同じ方法で記録する。6節で、2つの記録を重ねて比べる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時に、使い捨ての環境でビルドし、記録・再生を実行して確かめた（Gazeboは画面なしで起動したので、画面の見え方と、`rqt_plot` のグラフは未確認）。出力が違う場合は、実機の表示を優先する。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。`ros2 bag record`・`ros2 bag info`・`ros2 bag play` の表示、2-3節の `ros2 topic echo` の表示、4-5節のビルドと `--show-args` の表示、4-5節と5節のlaunchのログ（5節はGazeboを画面なしで起動）、6節の `ros2 node list`（`rqt_plot` は画面なしで起動）は、使い捨ての環境で実際に実行した表示で、時刻・パス・メッセージの数は実行ごとに異なる（ログは抜粋）。3節と6節の `rqt_plot` の画面の様子は、`rqt_plot` のソースと、記録から読み出した数値から筆者が想定したもの。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。`ros2 bag record`・`ros2 bag info`・`ros2 bag play` の表示、2-3節の `ros2 topic echo` の表示、4-5節のビルドと `--show-args` の表示、4-5節・4-6節と5節のlaunchのログ（5節はGazeboを画面なしで起動）、6節の `ros2 node list`（`rqt_plot` は画面なしで起動）は、使い捨ての環境で実際に実行した表示で、時刻・パス・メッセージの数は実行ごとに異なる（ログは抜粋）。3節と6節の `rqt_plot` の画面の様子は、`rqt_plot` のソースと、記録から読み出した数値から筆者が想定したもの。
 
 ## 0. 学習目標と完了条件
 
@@ -144,7 +144,7 @@ Service information:
 | `Duration` | 最初のメッセージから最後のメッセージまでの時間 |
 | `Count` | トピックごとのメッセージの数。約93秒の記録で、`/plant/velocity` は約9千（`vehicle_plant` が100 Hzで送る）、`/plant/pedal` は約4千6百（`pi_controller` が50 Hz）、`/target_velocity` は約9百（`target_generator` が10 Hz）で、各ノードの周期とおおよそ合う |
 
-> **記録の時刻は、PCの現在時刻**: `ros2 bag record` は、メッセージが届いた時刻を、PCの時計（現在時刻）で書き込む。フェーズ5-1の9節の表の「ログの時刻が、途中で数秒飛ぶ」のように、記録の途中でPCの時計が時刻合わせで進められると、その分だけ `Duration` が実際の長さより長くなり、再生したときにも同じ長さの「間」があく。上の例の `Duration`（101.3秒）も、実際に記録した時間（約93秒）より長い。形を見比べるには困らないが、フェーズ6-3で時間を使う指標（整定時間など）を計算するときには、この点に気をつける。
+> **記録の時刻は、PCの現在時刻**: `ros2 bag record` は、メッセージが届いた時刻を、PCの時計（現在時刻）で書き込む。PCによっては（WSL2など）、動いている途中で時計が時刻合わせで数秒ずつ進められることがある（フェーズ5-1の9節の表の「ログの時刻が、途中で数秒飛ぶ」）。記録の途中でPCの時計が進められると、その分だけ `Duration` が実際の長さより長くなり、再生したときにも同じ長さの「間」があく。上の例の `Duration`（101.3秒）も、実際に記録した時間（約93秒）より長い。形を見比べるには困らないが、フェーズ6-3で時間を使う指標（整定時間など）を計算するときには、この点に気をつける。時計が飛ばない環境では、`Duration` は実際に記録した時間とほぼ同じになり、フェーズ6でこの注記に触れる箇所は、気にしなくてよい。
 
 ### 2-3. 再生する（`ros2 bag play`）
 
@@ -179,7 +179,7 @@ ros2 bag play manual
 [INFO] [1790434713.002710515] [rosbag2_player]: Playback until timestamp: -1
 ```
 
-- T1には、記録したときと同じように、`0.0` と区切りの `---` が並んだ後、約10秒後から `10.0`、約50秒後から `5.0` が流れる。ノードは1つも動いていないのに、トピックに値が流れている。
+- T1には、記録したときと同じように、`0.0` と区切りの `---` が並んだ後、`10.0`、`5.0` の順に値が流れる。`10.0` が流れ始めるのは、T1のlaunchを起動してから10秒の時点にあたる位置で、2-1節で記録を始めるまでにかかった時間の分だけ、再生を始めてから10秒より早い。ノードは1つも動いていないのに、トピックに値が流れている。
 - 最後まで再生すると、T2は何も表示せずにプロンプトへ戻る。途中で止めるときは `Ctrl+C`。
 - 再生中にT2でスペースキーを押すと一時停止・再開、上下の矢印キーで再生の速さを10%ずつ変えられる。
 
@@ -192,7 +192,7 @@ ros2 bag play manual
 | `-l` | 最後まで再生したら、先頭から繰り返す（`--loop`） |
 | `-p` | 一時停止の状態で始める（`--start-paused`。スペースキーで再生を始める） |
 
-> 課題1: `ros2 bag play manual -r 5 --start-offset 45` で再生し、T1の `5.0` が、目標を5 m/sに下げた直後から流れ始めることと、再生が約1/5の時間で終わることを確かめる（記録の中の時刻は、記録を始めた時点の遅れと、PCの時計の飛び（2-2節の注記）の分だけずれるので、`5.0` が流れ始める位置には数秒の幅がある）。
+> 課題1: `ros2 bag play manual -r 5 --start-offset 45` で再生し、T1の `5.0` が、目標を5 m/sに下げた直後から流れ始めることと、再生が約1/5の時間で終わることを確かめる（記録を始めるのが遅れた分だけ、`5.0` が流れ始める位置は前後する）。
 
 ## 3. `rqt_plot` で見直す
 
@@ -455,11 +455,10 @@ def generate_launch_description():
 |---|---|
 | `[scenario, '.launch.py']` | 置換（`LaunchConfiguration`）と文字列を並べたリストは、つながって1つの文字列になる（フェーズ5-4の6-2節の `gz_args` と同じ）。`scenario:=gazebo_plant` なら `gazebo_plant.launch.py` と `gazebo_plant_record.yaml` になる。ファイル名の付け方をそろえておくと、引数1つで両方を切り替えられる |
 | `DeclareLaunchArgument('bag', ...)` | 既定値の無い引数。起動するときに `bag:=...` を必ず指定する（指定しないとエラーで止まる）。記録のフォルダの名前を、毎回自分で決めるため |
-| `DeclareLaunchArgument('params_file', ...)` | 既定は記録用のYAML。条件を変えた記録を取るときは、別のYAMLに差し替える（この節の末尾の課題3） |
+| `DeclareLaunchArgument('params_file', ...)` | 既定は記録用のYAML。条件を変えた記録を取るときは、別のYAMLに差し替える（4-6節） |
 | `launch_arguments={... 'gazebo': 'false'}` | 取り込む側の引数を渡す。`gazebo` は `vehicle_sim.launch.py` の引数で、記録では表示用のGazeboを外す。`gazebo_plant.launch.py` にはこの引数が無いが、使われない値を渡しても問題はない |
 | `ExecuteProcess(cmd=['ros2', 'bag', 'record', ...])` | ROS2のノードではないコマンドを、launchから起動する。`ros2 bag record` も、ほかのプロセスと同じく、`Shutdown` で割り込みを受けて止まる |
 
-> 課題3（フェーズ6-3への準備）: `vehicle_sim_record.yaml` を `ws/config/` に `slow_brake_record.yaml` という名前で写し、`vehicle_plant` の `tau_brake` を1.0にする（フェーズ5-3の4-5節の `slow_brake.yaml` と同じ条件・同じ置き場所）。4-5節のビルドを済ませた後、`ros2 launch learn_bringup record.launch.py params_file:=$HOME/work/ros2MinimalPhysicalAi/ws/config/slow_brake_record.yaml bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/slow_brake` として記録する（`~` ではなく `$HOME` と書く理由は、フェーズ5-3の4-5節）。YAMLを絶対パスで渡すので、このYAMLのためにビルドし直す必要は無い。この記録は、フェーズ6-3で比べるのに使うので、飛ばさずに取っておく。
 
 ### 4-5. ビルドして、記録する
 
@@ -531,9 +530,40 @@ ros2 launch learn_bringup record.launch.py bag:=$HOME/work/ros2MinimalPhysicalAi
 - `ros2 bag record` は、`ros2-4` という名前のプロセスとして起動する（`ros2` コマンドとして起動したため）。
 - 100秒たつと、`target_generator` が `end_time reached` を出して終わり（`finished cleanly`）、launchが `was required: shutting down launched system`（止めることになっていたプロセスが終わったので、全体を止める）と出して、残りのプロセスに割り込みを送る。記録は `Recording stopped` で閉じられ、launchもプロンプトに戻る。
 - 手で `Ctrl+C` を押したときと違い、Pythonのノードに `Traceback` は出ず、すべて `finished cleanly` で終わる。フェーズ5-3の4-4節で見た `Traceback` は、端末とlaunchから割り込みが2回届いたためだった。ここでは割り込みがlaunchから1回だけ届くので、後片付けが中断されない。
-- ログの時刻は、途中で数秒飛ぶことがある（2-2節の注記）。この例でも、`10.1 s` の行から `50.0 s` の行までのログの時刻は約43秒進んでいる。`target_generator` の経過時間（行の先頭の秒数）は単調増加する時計で測っているので、飛ばない。
+- 行の先頭の秒数（`target_generator` の経過時間）は、単調増加する時計で測っているので、PCの時計が飛ぶ環境でも飛ばない（ログの時刻のほうは飛ぶことがある。2-2節の注記）。
 
 終わったら、2-2節と同じく `ros2 bag info` で中身を確かめられる。何度記録しても、目標の切り替えと記録の長さがそろう。
+
+### 4-6. 条件を変えた記録も取る
+
+フェーズ6-3では、条件の違う記録を比べる。そのために、ブレーキの遅れ `tau_brake` を1.0秒にした記録（フェーズ5-3の4-5節と同じ条件）を、もう1つ取っておく。
+
+5-3の4-5節の `slow_brake.yaml` と同じく、`ws/config/` に記録用のYAMLを写して、`vehicle_plant` の `tau_brake: 0.2` を `tau_brake: 1.0` に書き換える。
+
+```bash
+cp ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config/vehicle_sim_record.yaml ~/work/ros2MinimalPhysicalAi/ws/config/slow_brake_record.yaml
+```
+
+書き換えたら、`params_file:=` で渡して記録する（`~` ではなく `$HOME` と書く理由は、フェーズ5-3の4-5節）。YAMLを絶対パスで渡すので、このYAMLのためにビルドし直す必要は無い。
+
+```bash
+ros2 launch learn_bringup record.launch.py params_file:=$HOME/work/ros2MinimalPhysicalAi/ws/config/slow_brake_record.yaml bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/slow_brake
+```
+
+**期待する結果**（抜粋。`target_generator` と記録のログと、止まる部分だけを載せる。時刻・パスは実行ごとに変わる）:
+
+```text
+[target_generator-3] [INFO] [1790468886.168931189] [target_generator]:   0.1 s: target -> 0.00 m/s
+[ros2-4] [INFO] [1790468886.185832768] [rosbag2_recorder]: Starting recording to '.../ws/bags/slow_brake'
+[target_generator-3] [INFO] [1790468896.029664034] [target_generator]:  10.0 s: target -> 10.00 m/s
+[target_generator-3] [INFO] [1790468941.929956498] [target_generator]:  50.0 s: target -> 5.00 m/s
+[target_generator-3] [INFO] [1790468974.830161284] [target_generator]:  80.0 s: target -> 0.00 m/s
+[target_generator-3] [INFO] [1790468994.828704275] [target_generator]: 100.0 s: end_time reached, shutting down
+[INFO] [launch]: process[target_generator-3] was required: shutting down launched system
+[ros2-4] [INFO] [1790468994.993920555] [rosbag2_recorder]: Recording stopped
+```
+
+4-5節と同じく、100秒で止まれば記録できている。YAMLの `end_time` と目標の階段は `vehicle_sim_record.yaml` と同じなので、`sim_default` と同じ長さの記録になり、違うのはブレーキの遅れだけである。この記録（`slow_brake`）は、6節の末尾の課題3と、フェーズ6-3で使う。
 
 ## 5. 5-4の一式も記録する
 
@@ -622,7 +652,7 @@ ros2 node list
 - T2とT3を手で続けて始めるので、2つの記録には1秒ほどの時間のずれが残る。形を見比べるには十分で、正確に比べるのは、フェーズ6-3で数にしてから行う。
 - 5節の注記のとおり、5-4の記録は、PCの負荷によって車両の動きが少しゆっくりになっていることがある。目標の切り替えは現実の時間で行っているので、切り替えの位置はずれず、切り替えた後の速度の変わり方が、5-3の線よりゆっくりに見える。切り替えの位置が左右にずれる原因は、手で再生を始めるずれ（すぐ上の項目）と、記録ごとに違うPCの時計の飛び（2-2節の注記）である。
 
-> 課題4: 4-4節の末尾の課題3で記録した `slow_brake` を、`/gz/...` の代わりに `/slow/...` に付け替えて、`sim_default` と重ねる。目標を5 m/sに下げたとき、`tau_brake` 1.0の速度の線だけが4 m/s前後まで下がりすぎる様子（フェーズ5-3の4-5節）を確かめる。
+> 課題3: 4-6節で記録した `slow_brake` を、`/gz/...` の代わりに `/slow/...` に付け替えて、`sim_default` と重ねる。目標を5 m/sに下げたとき、`tau_brake` 1.0の速度の線だけが4 m/s前後まで下がりすぎる様子（フェーズ5-3の4-5節）を確かめる。
 
 ## 7. 本フェーズのまとめ
 
