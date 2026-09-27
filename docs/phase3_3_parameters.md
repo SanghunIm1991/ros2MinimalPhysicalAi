@@ -1,6 +1,6 @@
 # フェーズ3-3 手順書: パラメータ（宣言・実行中の変更・YAML指定）
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-3）に対応する。ノードの設定値を、コードに埋め込まず外から与える方法を学ぶ（Python版は必須、C++版は任意）。フェーズ5のPI制御ノードで、ゲイン（Kp・Ki）を外から調整する土台になる。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-3）に対応する。ノードの設定値を、コードに埋め込まず外から与える方法を学ぶ（Python版は必須、C++版は任意）。フェーズ5のPI制御ノードで、ゲイン（Kp・Ki）を外から調整する土台になる（PI制御は、目標と現在の値の差から指令を自動で決める方法で、ゲインはその差に掛ける係数。詳しくはフェーズ5-2（[`docs/phase5_2_pi.md`](phase5_2_pi.md)）で扱う）。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ3-1、3-2a、3-2b完了
@@ -37,6 +37,8 @@ flowchart LR
 
 </details>
 
+図の `--params-file` は、パラメータの値をYAMLファイルにまとめて渡す起動時の指定（5-4節で使う）。
+
 値が決まる優先順位（後のものが勝つ）: **コードの既定値 < 起動時の指定（`-p` や YAML） < 実行中の `ros2 param set`**。
 
 実行中の変更の流れ:
@@ -65,7 +67,7 @@ sequenceDiagram
 
 </details>
 
-> 注: 上の図は流れの説明用。サンプルコードは簡単のため、コールバック内で状態を書き換えている（同じ要求の別パラメータが後で拒否された場合に、状態が食い違う恐れがある）。Jazzyには、検証後に反映するための `add_post_set_parameters_callback` があるので、発展課題として調べるとよい。
+> 注: 上の図は流れの説明用。サンプルコードでの検証と反映の書き方と、その注意点は、3節の `param_talker.py` の解説（`on_params` の項と「落とし穴」）で扱う。
 
 ## 2. 仕様
 
@@ -88,8 +90,10 @@ sequenceDiagram
 |---|---|
 | 宣言（既定値つき） | `self.declare_parameter('名前', 既定値)`（**既定値の型がそのパラメータの型**になる） |
 | 取得 | `self.get_parameter('名前').value` |
-| 変更の検証・反映 | `self.add_on_set_parameters_callback(コールバック)`、戻り値は `rcl_interfaces.msg.SetParametersResult` |
+| 変更の検証・反映 | `self.add_on_set_parameters_callback(コールバック)`、戻り値は [`rcl_interfaces.msg.SetParametersResult`](https://github.com/ros2/rcl_interfaces/blob/jazzy/rcl_interfaces/msg/SetParametersResult.msg) |
 | タイマーの作り直し | `self.timer.cancel()` してから `self.create_timer(...)` |
+
+`SetParametersResult` が属する `rcl_interfaces` は `rclpy` が依存しているパッケージなので、`package.xml` に依存を足さなくても `import` できる（明示したい場合は `<depend>rcl_interfaces</depend>` を足す）。
 
 #### サンプルコードと解説（Python版）
 
@@ -162,7 +166,7 @@ def main(args=None):
 - **役割と流れ**: フェーズ3-1のtalkerに、2つのパラメータ（`message`、`period`）を足したもの。起動時に値を決め、実行中に `ros2 param set` で変わったら、その都度コールバックが検証して反映する。`main` の部分（`init` → `spin` → 後片付け）は3-1と同じなので省略する。
 - **宣言と取得（`__init__` の前半）**:
   - `declare_parameter('message', 'hello')` は「この名前のパラメータを持つ」と登録し、既定値を与える。**宣言しないと、`-p` や `ros2 param set` で渡しても受け付けられない**（既定の設定では、未宣言のパラメータは設定できない）。
-  - パラメータの型は、既定値の型で決まる。`'hello'` なら文字列、`1.0` なら実数（double）。これが「`period:=2` はエラー」の原因（`2` は整数として扱われ、型が合わない）。
+  - パラメータの型は、既定値の型で決まる。`'hello'` なら文字列、`1.0` なら実数（double）。そのため、例えば起動時に `-p period:=2` と小数点なしで渡すと、`2` は整数として扱われ、型が合わずにエラーになる（5-2節の課題1で確かめる）。
   - `get_parameter('message').value` で現在の値を取り出す。宣言の時点で、起動時の指定（`-p` やYAML）があれば、既定値ではなくそちらの値が入っている。この「上書きされた値」を取り出すのが、この2行の目的。
 - **タイマーとコールバックの登録**: 取得した `self.period` を使ってタイマーを作る。最後に `add_on_set_parameters_callback(self.on_params)` で、「パラメータを変更する要求が来たら `on_params` を呼んでほしい」と登録する。登録の順序は、タイマー等を作ってからにしてある（コールバックの中で `self.timer` を使うため）。
 - **`on_timer`**: `self.message` を送るだけ。パラメータを毎回 `get_parameter` で読み直す書き方もあるが、ここでは属性に保存しておき、変更コールバックで更新する方式にしている。
@@ -175,7 +179,7 @@ def main(args=None):
 - **落とし穴**:
   - コールバックが返す値は必ず `SetParametersResult`。`True` などを返すとエラーになる。
   - `p.value <= 0.0` の比較は、`period` が実数として宣言されているから成り立つ。整数が渡された場合は、そもそもコールバックより前に型の不一致で失敗する。
-  - 1節の図の注記どおり、このサンプルはコールバックの中で反映している。他のパラメータが後から拒否される場合の食い違いは、この手順書では扱わない（発展課題）。
+  - このサンプルは、簡単のため、検証するコールバックの中で反映（属性の書き換え）まで行っている。そのため、同じ要求の中の別のパラメータが、後から別の検証で拒否された場合には、属性とノードのパラメータが食い違う恐れがある。Jazzyには、検証を通った後に反映するための `add_post_set_parameters_callback` があるので、発展課題として調べるとよい（この手順書では扱わない）。
 - **観察ポイント**: 起動して `ros2 topic echo /param_chatter` を見ながら、`ros2 param set /param_talker period 0.2` で間隔が5倍速くなること、`0.0` で拒否されて間隔が変わらないこと、`message` を変えると次の送信から内容が変わること。
 
 > **補足: 値はコピーされるのか、参照されるのか**
@@ -210,8 +214,6 @@ source install/setup.bash
 ```
 
 **期待する結果**: `Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
-
-`rcl_interfaces` は `rclpy` が依存しているため、追加の宣言なしで `import` できる（明示したい場合は `package.xml` に `<depend>rcl_interfaces</depend>` を足す）。
 
 ## 4. C++版（`ws/src/learn_cpp`）
 
