@@ -31,7 +31,7 @@
 | サービス（srv） | `.srv` | サービス | 要求 `---` 応答 | [`std_srvs/srv/Trigger`](https://github.com/ros2/common_interfaces/blob/jazzy/std_srvs/srv/Trigger.srv) |
 | アクション（action） | `.action` | アクション | ゴール `---` 結果 `---` 途中経過 | [`example_interfaces/action/Fibonacci`](https://github.com/ros2/example_interfaces/blob/jazzy/action/Fibonacci.action) |
 
-サービスとアクションの定義は、`---` で区切ったメッセージの組である。フェーズ3-4の1節で扱う [`AddTwoInts`](https://github.com/ros2/example_interfaces/blob/jazzy/srv/AddTwoInts.srv) の定義は、`---` の上が要求、下が応答だった。アクションは区切りが2つで、上から順にゴール・結果・途中経過になる。
+サービスとアクションの定義は、`---` で区切ったメッセージの組である。フェーズ3-4の1節で扱う [`AddTwoInts`](https://github.com/ros2/example_interfaces/blob/jazzy/srv/AddTwoInts.srv) の定義は、`---` の上が要求、下が応答である。アクションは区切りが2つで、上から順にゴール・結果・途中経過になる。
 
 ### 1-2. 名前の読み方
 
