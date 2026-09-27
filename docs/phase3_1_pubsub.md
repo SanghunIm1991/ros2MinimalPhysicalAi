@@ -142,13 +142,13 @@ def main(args=None):
   - `super().__init__('talker')` でノード名を決める。これを呼ばないと以降の `create_*` が使えない。
   - `create_publisher(String, 'chatter', 10)` は「型・トピック名・QoSのdepth」の順。`10` は送信側のキュー（バッファ）の深さで、相手の受信が追いつかないときに最大10件まで溜めておく、という意味（詳しくはフェーズ3-2b）。
   - `create_timer(1.0, self.on_timer)` の第1引数は周期で、単位は**秒**（実数）。第2引数は呼んでほしい関数。`self.on_timer` のように**括弧を付けず**関数そのものを渡す（`self.on_timer()` と書くと、その場で実行した結果を渡してしまう）。
-  - `self.pub` / `self.timer` に代入して保持しているのは、後から使うため、また何を持つノードかがコードから読み取れるようにするため（Pythonではノードが内部でも保持するので、保持しなくても動く。詳しくは4-1節の末尾の「補足: スマートポインタ」を参照）。
+  - `self.pub` / `self.timer` に代入して保持しているのは、後から使うため、また何を持つノードかがコードから読み取れるようにするため（Pythonではノードが内部でも保持するので、保持しなくても動く。詳しくは4-1節の末尾（C++版の4つのサンプルの後）の「補足: スマートポインタ」を参照）。
 - **`on_timer`**: メッセージ型のインスタンスを作り、`data` に文字列を入れて `publish` する。ログ出力の `get_logger().info(...)` は標準出力ではなくROS2のロギング経由で、時刻やノード名が付く。f文字列は `hello {self.count}` のように値を埋め込む書き方。
 - **`main`**:
   - `rclpy.init(args=args)` でROS2の通信基盤を初期化する。ノードを作る前に必ず呼ぶ。
   - `rclpy.spin(node)` は、シャットダウンされるまで戻ってこない。中で「タイマー満了」「メッセージ到着」を待ち、該当するコールバックを呼び出している（1節の図）。`spin` を呼ばないと、コールバックが一度も呼ばれずプログラムが終わる。
   - `try / except / finally`: Ctrl+Cで `KeyboardInterrupt`（環境によっては `ExternalShutdownException`）が出る。これを受け止めて黙って抜け、`finally` で `destroy_node()` と `rclpy.try_shutdown()` を実行する。`try_shutdown` は「すでにシャットダウン済みなら何もしない」版なので、二重に呼んでもエラーにならない。
-- **つまずきやすい点**: `main` の関数名は `setup.py` の `'talker = learn_py.talker:main'` と一致させる。`create_timer` の周期に整数の `1` を渡しても動くが、ミリ秒と勘違いして `1000` を渡すと約17分周期になる。
+- **つまずきやすい点**: `main` の関数名は、3-2節で `setup.py` に足す登録の行（`'talker = learn_py.talker:main'`。末尾の `main` が呼び出す関数の名前）と一致させる。`create_timer` の周期に整数の `1` を渡しても動くが、ミリ秒と勘違いして `1000` を渡すと約17分周期になる。
 - **観察ポイント**: `ros2 run learn_py talker` で1秒ごとに `publish: hello N` が出て、Nが1ずつ増えること。別ターミナルで `ros2 topic echo /chatter` すると、`data: hello N` が同じ順序で見える。
 
 **listener.py**
@@ -485,12 +485,12 @@ int main(int argc, char ** argv)
 - **`create_publisher<std_msgs::msg::String>("chatter", 10)`**: 型は `< >` のテンプレート引数、引数は「トピック名・QoS」。数値の `10` はQoSのdepthを簡易指定したもので、Pythonと同じ意味。戻り値は `SharedPtr`（`std::shared_ptr` の別名）なので、`pub_` メンバに保存し、送るときは `pub_->publish(msg)` と矢印で呼ぶ。
 - **`create_wall_timer(1s, [this]() { on_timer(); })`**: `wall` は「壁掛け時計」の意味で、実時間（シミュレーション時間ではない）で数える。周期は `std::chrono` の型で渡す。コールバックには**ラムダ式**を使っている。`[this]` は「このオブジェクト（`this`）をラムダの中で使えるように取り込む」という指定で、これがないと `on_timer()` を呼べない。同じことは `std::bind(&Talker::on_timer, this)` でも書けるが、ラムダのほうが読みやすいので今回はこちらを使う。
 - **`on_timer`**: `count_++` は「今の値を使ってから1増やす」後置インクリメント。`std::to_string` で数値を文字列に変える。ログの `RCLCPP_INFO(get_logger(), "publish: %s", msg.data.c_str())` は `printf` 形式で、`%s` に渡すのは `std::string` ではなく `c_str()` で得るC文字列。`std::string` をそのまま渡すと、コンパイルは通っても実行時に文字化けや異常終了になりうる。
-- **メンバ変数（`pub_`, `timer_`）**: ローカル変数にすると、コンストラクタを抜けた時点で解放されて、タイマーが止まる。理由と、Python版との考え方の違いは、この節（4-1）の末尾の「補足: スマートポインタ」で説明する。
+- **メンバ変数（`pub_`, `timer_`）**: ローカル変数にすると、コンストラクタを抜けた時点で解放されて、タイマーが止まる。`create_publisher` や `create_wall_timer` が返す `SharedPtr` は、持ち主の数を数えて、0になったら自動で片付けるポインタである。`rclcpp::Node` の側は作ったものを持ち続けないので、メンバ変数に入れてノードを持ち主にしておかないと、持ち主が0になって片付けられる。仕組みの詳しい説明と、Python版との考え方の違いは、この節（4-1）の末尾（C++版の4つのサンプルの後）の「補足: スマートポインタ」にある。
 - **`main`**:
   - `rclcpp::init(argc, argv)` は、Pythonの `rclpy.init` に相当する初期化（ROS引数もここで解釈される）。
   - `std::make_shared<Talker>()` でノードを `shared_ptr` として作り、`rclcpp::spin` に渡す。`spin` は Ctrl+C までブロックする。ノードのオブジェクトは、`spin` を抜けるまで `shared_ptr` により生存している。
   - `rclcpp::shutdown()` で後片付け。Python版のような `try/except` は要らない（Ctrl+Cで `spin` が普通に戻る）。
-- **つまずきやすい点**: `int count_ = 0;` のようにメンバを初期化し忘れると、値が不定になる。`private:` の宣言順は初期化順と関係する。`ament_target_dependencies` に `std_msgs` を書き忘れると、include で失敗する（8節）。
+- **つまずきやすい点**: `int count_ = 0;` のようにメンバを初期化し忘れると、値が不定になる。`private:` の宣言順は初期化順と関係する。4-2節で `CMakeLists.txt` に足す `ament_target_dependencies`（実行ファイルが使うパッケージを結び付ける行）に `std_msgs` を書き忘れると、include で失敗する（8節）。
 - **観察ポイント**: Python版と出力が同じ形（`publish: hello N`）になること。ビルドに時間がかかるだけで、動きは同じ。
 
 **listener.cpp**
@@ -707,6 +707,7 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME})
 ```
 
+- 1つの実行ファイルにつき、3種類の行を書く。`add_executable(名前 ソース)` はソースから実行ファイルを作る指定、`ament_target_dependencies(名前 依存…)` はその実行ファイルが使うパッケージ（ここでは `rclcpp` と `std_msgs`）のヘッダとライブラリを結び付ける指定、`install(TARGETS …)` は `ros2 run` が探す場所へ置く指定である。`ament_target_dependencies` に書くパッケージは、雛形の `find_package(… REQUIRED)` で探してあるもの（フェーズ2で `--dependencies rclcpp std_msgs` を指定したので、既に入っている）。各行の詳しい意味は、Tips集（[`docs/tips.md`](tips.md)）の2節（`CMakeLists.txt` の読み方）にある。
 - 雛形にある `install(TARGETS hello DESTINATION lib/${PROJECT_NAME})` は、上の `install(TARGETS ...)` に**置き換える**（重複させない）。
 - `ament_package()` は必ずファイルの**最後**に置く。
 
