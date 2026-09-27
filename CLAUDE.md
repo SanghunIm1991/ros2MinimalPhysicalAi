@@ -36,7 +36,7 @@
 
 このプロジェクトは WSL2 の Ubuntu 24.04（ROS2 Jazzy）内で作業する。グローバル `~/.claude/CLAUDE.md` は Windows 用に書かれた共有設定のため、**次の点はこのプロジェクトではグローバルの記述より優先する**（グローバル側は Windows 環境の運用を優先して変更しない）。
 
-- **シェル**: PowerShell ツールはなく、Bash を使う。グローバルの「PowerShellツール利用時の技術的な罠」「Windows開発者モード」「Mermaid拡張」等の Windows 固有の記述は適用しない。
+- **シェル**: PowerShell ツールはなく、Bash を使う。グローバルの「PowerShellツール利用時の技術的な罠」「Windows開発者モード」等の Windows 固有の記述は適用しない（Markdown・mermaidの表示の罠は、WSLでも使う汎用スキル `markdown-mermaid` にある）。
 - **Python**: `py` ランチャー（`py -3.11` 等）は使えない。`python3`（3.12系）を使う。ROS2 の Python パッケージは apt 由来のシステム Python に依存するため、`pip install` でシステム側へ入れない。パッケージ導入が必要な場合は venv を使い、導入前にユーザーへ確認する（グローバルの「共有環境への無断インストール禁止」の趣旨は維持）。
 - **ROS2**: `source /opt/ros/jazzy/setup.bash` は `~/.bashrc` で読み込み済み。ノードを自動実行する場合はユーザーの承認を得たうえで `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` を付け、ログは `stdbuf -oL -eL` で行バッファ化する（`timeout` 終了時の出力欠けを防ぐ）。
 - **セキュリティ**: グローバルのセキュリティのルール（機微情報の扱い、外部送信の確認、著作権・個人情報への配慮）は環境を問わず有効。WSL から `/mnt/c` 配下の Windows 側の資格情報・ブラウザプロファイルへアクセスしない（`~/.claude/settings.json` の `permissions.deny` で拒否登録済み。このファイルは Git 管理外で WSL 専用）。
