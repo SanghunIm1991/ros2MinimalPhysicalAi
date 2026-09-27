@@ -600,7 +600,7 @@ ros2 launch learn_bringup record.launch.py scenario:=gazebo_plant bag:=$HOME/wor
 
 > **5-4の記録の時刻**: 5-4の一式は、シミュレーション時刻で動いている（フェーズ5-4の5節）。一方、`target_generator` は現実の時間で目標を切り替え、`ros2 bag record` も現実の時刻で記録する。Gazeboの計算がPCの負荷で現実より遅れている（RTFが100%を下回る）と、記録の中の車両の動きは、現実の時間で見て少しゆっくりになる。この手順書では、記録を現実の時刻のまま扱う（`ros2 bag record` には、シミュレーション時刻で記録する `--use-sim-time` もある）。
 
-記録が終わったら、Gazeboの本体が残っていないかを確かめ、残っていれば止める。`pgrep -af` は、コマンドの行に `gz sim` を含むプロセスを、番号（pid）とコマンドの行の全体で一覧にする。`pkill -INT -f` は、同じ条件に合うプロセスに、`Ctrl+C` と同じ割り込み（SIGINT）を送って止める。
+記録が終わったら、Gazeboの本体が残っていないかを確かめ、残っていれば止める。`pgrep -af` は、コマンドの行に `gz sim` を含むプロセスを、番号（pid）とコマンドの行の全体で一覧にする。`pkill -INT -f` は、同じ条件に合うプロセスに、`Ctrl+C` と同じ割り込み（SIGINT）を送って止める。条件に合うプロセスはすべて止まるので、`pkill` の前に、1回目の `pgrep` に出た行がGazeboのもの（`gz sim` の行）だけであることを確かめる。
 
 ```bash
 pgrep -af "gz sim"
