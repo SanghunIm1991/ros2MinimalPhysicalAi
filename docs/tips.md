@@ -24,6 +24,8 @@
 
 ## 1. シミュレーション時刻（`use_sim_time`）
 
+> **読める時期**: フェーズ1（[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)）やフェーズ3-1（[`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md)）の時点では、1-1節の最初の段落（2つの時計）、1-4節（切り替え方）の例、1-5節（気をつける点）だけを読めばよい。1-1節の2つ目の段落・1-2節・1-3節は、Gazebo（フェーズ5-0）やPI制御（フェーズ5-2）を前提にしているので、フェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)）を済ませた後に読むと分かりやすい。
+
 ### 1-1. 時計が2つある
 
 フェーズ1の `ros2 param list` や、フェーズ3-3の `ros2 param list` には、自分で宣言していない `use_sim_time` というパラメータが並んでいた。これは「ノードの時計を、現実の時刻にするか、シミュレーションの時刻にするか」を切り替えるスイッチで、すべてのノードが自動で持っている（`Node` が作られるときに用意される。参考資料 [`docs/reference_node_class.md`](reference_node_class.md) の2節）。
@@ -57,7 +59,7 @@ Gazeboの場合、時刻はまずGazeboの側の `/clock` に出る（フェー�
 
 実行時に、ほかのパラメータと同じ書き方で渡す（フェーズ3-3の5-2節の `-p`）。launchファイルでは、ノードに渡すパラメータに `{'use_sim_time': True}` を加える（フェーズ4のパラメータの渡し方と同じ）。
 
-次の例は、フェーズ3-1の `talker` をシミュレーションの時刻で動かし、別のターミナルで設定を確かめるものである。シミュレータは動かしていないので、`/clock` はどこからも届かない。
+次の例は、フェーズ3-1の `talker` をシミュレーションの時刻で動かし、別のターミナルで設定を確かめるものである。`--ros-args -p 名前:=値` は、起動するときにパラメータの値を指定する書き方で、ここでは `use_sim_time` を `true` にして起動する（詳しくはフェーズ3-3（[`docs/phase3_3_parameters.md`](phase3_3_parameters.md)）の5-2節（起動時に指定する）で扱う）。シミュレータは動かしていないので、`/clock` はどこからも届かない。
 
 ```bash
 # T1
@@ -112,7 +114,7 @@ CMakeは、C++のビルドの手順を書くための道具である。長く使
 | `install(TARGETS hello DESTINATION lib/${PROJECT_NAME})` | ビルドした `hello` を、`install/learn_cpp/lib/learn_cpp/` へ置く。`ros2 run` はこの場所から実行ファイルを探す（フェーズ2の2-6節） |
 | `ament_package()` | ROS2のパッケージとして必要な情報（索引への登録など）を書き出す。**ファイルの最後**に置く決まり |
 
-C++のサンプルを足すたびに書いた `add_executable`・`ament_target_dependencies`・`install(TARGETS ...)` の3点セットは、この表の同じ行の繰り返しである。
+フェーズ3-1以降でC++のサンプルを足すたびに書く `add_executable`・`ament_target_dependencies`・`install(TARGETS ...)` の3点セットは、この表の同じ行の繰り返しである。
 
 ### 2-3. `PUBLIC` / `PRIVATE` と `$<...>`
 
@@ -131,7 +133,7 @@ C++のサンプルを足すたびに書いた `add_executable`・`ament_target_d
 ### 2-4. 読むときのコツ
 
 - **ターゲット名を追う。** `add_executable(名前 ...)` で生まれた名前が、`target_...(名前 ...)`・`ament_target_dependencies(名前 ...)`・`install(TARGETS 名前 ...)` に何度も出てくる。同じ名前の行を拾えば、1つの成果物に必要な設定がそろう。
-- **依存は3か所。** C++では、`package.xml` の `<depend>`、`find_package`、`ament_target_dependencies` の3か所に依存を書く（フェーズ3-2aの「Python版とC++版の違いのまとめ」）。`find_package` は「探して使える状態にする」、`ament_target_dependencies` は「どのターゲットがそれを使うか」で、役割が違う。
+- **依存は3か所。** C++では、`package.xml` の `<depend>`、`find_package`、`ament_target_dependencies` の3か所に依存を書く（フェーズ3-2aの「Python版とC++版の違いのまとめ」でも整理する）。`find_package` は「探して使える状態にする」、`ament_target_dependencies` は「どのターゲットがそれを使うか」で、役割が違う。
 - **`ament_` で始まるものはROS2の追加分。** CMakeの標準の命令と見分けがつけば、CMakeの一般的な解説と、ROS2の解説のどちらを調べればよいかが分かる。
 
 ## 3. ビルド中の `SetuptoolsDeprecationWarning` の意味
@@ -305,7 +307,7 @@ Set parameter successful
 
 ### 5-4. 起動しなくても分かるようにする
 
-利用者が起動する前に知りたい情報は、次のような形で知らせる。
+利用者が起動する前に知りたい情報は、次のような形で知らせる。最初の項目はlaunchファイル（複数のノードをまとめて起動する設定のファイル）を使うので、フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）の後に読むと分かりやすい。
 
 - **launchの引数として見せる**: 利用者に変えてほしい値を、launchファイルの `DeclareLaunchArgument` に説明と既定値を付けて宣言する。`ros2 launch パッケージ ファイル --show-args` で、起動せずに名前・説明・既定値の一覧を表示できる（フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）の4-1節）。配布するときは、ノードを直接 `ros2 run` してもらうのではなく、launchファイルを入口にするのが一般的な形である。
 - **既定値のYAMLファイルを同梱する**: すべてのパラメータと既定値を並べたYAMLを、パッケージの `config/` に置き、コメントで説明や範囲を書いておく。利用者は、これを写して書き換える（YAMLでの指定のしかたは、フェーズ3-3の5-4節）。インストールしておけば、`ros2 pkg prefix パッケージ` で示される場所の `share/パッケージ/config/` で見つけられる。
@@ -371,7 +373,7 @@ ROS1の最後の版（Noetic）のサポートは2025年5月に終了してお�
 
 **コマンドから触るとき。** `ros2 topic echo`・`ros2 param get` などは、完全な名前で指定する（`ros2 param get /demo/talker use_sim_time` のように）。`ros2 topic pub chatter ...` のように相対名で書くと、コマンドの側は名前空間の外（`/`）にいるので `/chatter` に送ってしまい、`/demo/chatter` を待つノードには届かない。`ros2 topic list` で完全な名前を確かめてから指定するとよい。
 
-**パラメータのYAMLファイルを渡すとき。** YAMLの先頭に書くノード名は、名前空間を含めた完全な名前と照らし合わされる。`talker:` と書いたファイルは、名前空間の無い `/talker` にしか効かない。名前空間を付けて起動したノードには、`/demo/talker:` のように名前空間まで書くか、すべてのノードに当てはまる `/**:` を使う。この違いはエラーにならず、値が黙って既定値のままになるので気づきにくい。
+**パラメータのYAMLファイルを渡すとき。** この段落と8-4節は、パラメータをYAMLファイルで渡す方法（フェーズ3-3（[`docs/phase3_3_parameters.md`](phase3_3_parameters.md)）の5-4節）を読んだ後のほうが分かりやすい。YAMLの先頭に書くノード名は、名前空間を含めた完全な名前と照らし合わされる。`talker:` と書いたファイルは、名前空間の無い `/talker` にしか効かない。名前空間を付けて起動したノードには、`/demo/talker:` のように名前空間まで書くか、すべてのノードに当てはまる `/**:` を使う。この違いはエラーにならず、値が黙って既定値のままになるので気づきにくい。
 
 ### 8-4. 確かめる: YAMLのノード名と名前空間
 
