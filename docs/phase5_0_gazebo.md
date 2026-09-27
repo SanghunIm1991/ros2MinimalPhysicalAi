@@ -222,7 +222,7 @@ ros2 topic list
 2. `parameter_bridge`（2節の図のブリッジ。青と緑の2台分、cmd_velとodometryの計4本）
 3. RViz2（ROS2の可視化ツール。引数 `rviz` で起動するかを切り替える）
 
-起動する前に、引数と展開結果を確かめる（ノードは起動しない）。
+起動する前に、引数と展開結果を確かめる（ノードは起動しない）。launchファイルは、起動の設定を変えるための引数を受け付けることがあり、`ros2 launch パッケージ ファイル 名前:=値` の形で値を渡す。`--show-args` を付けると、受け付ける引数の名前・説明・既定値を一覧にして終わる。
 
 ```bash
 ros2 launch ros_gz_sim_demos diff_drive.launch.py --show-args
@@ -714,7 +714,7 @@ ros2 topic pub --once /model/vehicle_green/cmd_vel geometry_msgs/msg/Twist "{}"
 |---|---|---|
 | 入力 | ペダルの指令（`/plant/pedal`、[`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg)、−1〜1） | `Twist` の `linear.x`（`/model/vehicle_green/cmd_vel`） |
 | 出力 | 現在速度（`/plant/velocity`、`Float64`、m/s） | `Odometry` の `twist.twist.linear.x`（`/model/vehicle_green/odometry`） |
-| 動きの決まり方 | 自分で書いた式（1D質点＋一次遅れ＋オイラー積分） | Gazeboの物理エンジンと、DiffDriveの設定（最高速度・加速度の上限） |
+| 動きの決まり方 | 自分で書いた運動の式（1D質点＋一次遅れ＋オイラー積分。中身は[フェーズ5-1](phase5_1_plant.md)の2節で扱う） | Gazeboの物理エンジンと、DiffDriveの設定（最高速度・加速度の上限） |
 | 中身を変えられるか | 式もパラメータも自由に変えられる | ワールドファイルの設定の範囲で変えられる |
 
 ただし、この車両はDiffDriveが速度指令をほぼそのまま実現してしまう（加速度の上限の範囲で指令の速度へ直線的に近づく）ため、制御の効き方を観察する題材には向かない。そこで、フェーズ5ではGazeboの車両を次の2段階で使う。
