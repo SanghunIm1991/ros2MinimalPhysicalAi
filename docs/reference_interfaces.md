@@ -1,6 +1,6 @@
 # 参考資料: ROS2の標準のデータ型とインターフェース（自作する方法も）
 
-フェーズ3以降、トピックには `std_msgs/msg/Float64` や `geometry_msgs/msg/Twist`、サービスには `std_srvs/srv/Trigger`、アクションには `example_interfaces/action/Fibonacci` を使ってきた。これらはどれも、ROS2が標準で用意している「インターフェース」（ノードどうしがやり取りするデータの型）である。この資料では、インターフェースの定義の読み方、よく使う標準の型、型を調べるコマンドをまとめ、最後に、インターフェースを自分で定義する方法を扱う。
+この教材では、トピックに [`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg) や [`geometry_msgs/msg/Twist`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Twist.msg)、サービスに [`std_srvs/srv/Trigger`](https://github.com/ros2/common_interfaces/blob/jazzy/std_srvs/srv/Trigger.srv)、アクションに [`example_interfaces/action/Fibonacci`](https://github.com/ros2/example_interfaces/blob/jazzy/action/Fibonacci.action) などを使う。これらはどれも、ROS2が標準で用意している「インターフェース」（ノードどうしがやり取りするデータの型）である。この資料では、インターフェースの定義の読み方、よく使う標準の型、型を調べるコマンドをまとめ、最後に、インターフェースを自分で定義する方法を扱う。
 
 - 対象: ROS2 Jazzy（この資料の作成時に `/opt/ros/jazzy` に入っていたもの）
 - 前提: フェーズ3-1（トピック）を読み終えていること。サービス（フェーズ3-4）とアクション（フェーズ3-5）の節は、読んでいなくても型の説明は読める
@@ -10,7 +10,7 @@
 
 > **出どころ**: 型の定義・文法・生成されるPythonとC++の型は、`/opt/ros/jazzy` にある定義ファイルと生成済みのコード、定義ファイルを読み込む部品（`rosidl_adapter`）で確かめた。文法の細部は公式ドキュメントの「Interfaces」（8節）とも照らし合わせた。文章は自分の言葉で書いており、公式ドキュメントの転載ではない。図（SVG）は生成スクリプトで作り、文字と線の重なりは計算で点検したが、画像にして目で確かめてはいない。表示が崩れている場合は、図の下にある同じ内容のmermaid版（折りたたみ）を参照する。
 
-> **実行環境が無くても読めるように**: コマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示はすべて、この資料の作成時に使い捨ての環境で実際に実行したものである（`ros2 interface`・`colcon build`・`python3 -c` だけで、ノードは起動していない）。ビルドの秒数は環境によって変わる。
+> **実行環境が無くても読めるように**: コマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示はすべて、この資料の作成時に使い捨ての環境で実際に実行したものである（`ros2 interface`・`ros2 pkg create`・`colcon build`・`python3 -c` だけで、ノードは起動していない）。ビルドの秒数は環境によって変わる。`ros2 pkg create` の表示の作成先のパスは、練習環境の場所（`~/work/ros2MinimalPhysicalAi/ws/src`）に直して載せた。
 
 ## 0. この資料で分かること
 
@@ -31,7 +31,7 @@
 | サービス（srv） | `.srv` | サービス | 要求 `---` 応答 | [`std_srvs/srv/Trigger`](https://github.com/ros2/common_interfaces/blob/jazzy/std_srvs/srv/Trigger.srv) |
 | アクション（action） | `.action` | アクション | ゴール `---` 結果 `---` 途中経過 | [`example_interfaces/action/Fibonacci`](https://github.com/ros2/example_interfaces/blob/jazzy/action/Fibonacci.action) |
 
-サービスとアクションの定義は、`---` で区切ったメッセージの組である。フェーズ3-4の1節で読んだ `AddTwoInts` の定義は、`---` の上が要求、下が応答だった。アクションは区切りが2つで、上から順にゴール・結果・途中経過になる。
+サービスとアクションの定義は、`---` で区切ったメッセージの組である。フェーズ3-4の1節で扱う [`AddTwoInts`](https://github.com/ros2/example_interfaces/blob/jazzy/srv/AddTwoInts.srv) の定義は、`---` の上が要求、下が応答だった。アクションは区切りが2つで、上から順にゴール・結果・途中経過になる。
 
 ### 1-2. 名前の読み方
 
@@ -66,6 +66,7 @@ flowchart LR
     DEF --> GEN
     GEN --> PY
     GEN --> CPP
+    PY -. "同じ定義から作るので<br/>言語が違ってもつながる" .- CPP
 ```
 
 </details>
@@ -99,9 +100,9 @@ float64 z
 | `uint8`・`uint16`・`uint32`・`uint64` | 符号なし整数 | `int` | `uint8_t`〜`uint64_t` |
 | `float32`・`float64` | 浮動小数点数 | `float` | `float`・`double` |
 | `string` | 文字列 | `str` | `std::string` |
-| `wstring` | 文字列（ASCII以外を1文字ずつ扱う版） | `str` | `std::u16string` |
+| `wstring` | UTF-16で表した文字列（ASCII以外の文字を扱う版） | `str` | `std::u16string` |
 
-- 教材の速度やペダルに使った `float64` は、C++の `double`、Pythonの `float` である。
+- 教材で速度やペダルに使う `float64` は、C++の `double`、Pythonの `float` である。
 - Pythonの `int` には範囲が無いが、定義ファイルの `int32` は32ビットに収まる値しか送れない。**Jazzyの既定では、Pythonで範囲外の値や違う型の値を代入しても、その場ではエラーにならない**（生成されたクラスは、環境変数 `ROS_PYTHON_CHECK_FIELDS` が `1` のときだけ代入を検査する）。値の範囲は、送る側で気をつける。
 
 ### 2-3. 配列
@@ -131,7 +132,7 @@ Pythonの `list` を渡しても、中では `array.array`（同じ型の数値�
 
 ### 2-4. 別のメッセージを項目にする（入れ子）
 
-項目の型には、基本の型のほかに、別のメッセージの型も書ける。フェーズ5-0・5-4で受け取ったオドメトリ（`nav_msgs/msg/Odometry`）は、入れ子の深い例である。`ros2 interface show` は、入れ子の型の中身も字下げで表示する。ここでは `--no-comments` を付けて、コメントを省いた。
+項目の型には、基本の型のほかに、別のメッセージの型も書ける。フェーズ5-0・5-4で使うオドメトリ（`nav_msgs/msg/Odometry`）は、入れ子の深い例である。`ros2 interface show` は、入れ子の型の中身も字下げで表示する。ここでは `--no-comments` を付けて、コメントを省いた。
 
 ```bash
 ros2 interface show nav_msgs/msg/Odometry --no-comments
@@ -171,8 +172,8 @@ geometry_msgs/TwistWithCovariance twist
 	float64[36] covariance
 ```
 
-- 字下げが1段深い行は、その上の行の型の中身である。たとえば `pose` の中に `pose`（`Pose`）があり、その中に `position`（`Point`）と `orientation`（`Quaternion`）がある。フェーズ6-2の `goal_monitor` で書いた `msg.pose.pose.position` は、この段をたどった名前である。
-- 別のパッケージの型は `std_msgs/Header` のように「パッケージ名/型名」で書き、同じパッケージの型は `Pose` のように型名だけで書ける（`PoseWithCovariance` は `geometry_msgs` の型なので、中の `Pose` は `geometry_msgs` の `Pose` になる）。定義ファイルの中では、間の `msg` を書かない。
+- 字下げが1段深い行は、その上の行の型の中身である。たとえば `pose` の中に `pose`（[`Pose`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Pose.msg)）があり、その中に `position`（`Point`）と `orientation`（[`Quaternion`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Quaternion.msg)）がある。Pythonでは、この段を `msg.pose.pose.position.x` のように `.` でたどる（フェーズ6-2で書く見張りのノード `goal_monitor` も、この書き方でオドメトリの位置を読む）。
+- 別のパッケージの型は [`std_msgs/Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg) のように「パッケージ名/型名」で書き、同じパッケージの型は `Pose` のように型名だけで書ける（[`PoseWithCovariance`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/PoseWithCovariance.msg) は `geometry_msgs` の型なので、中の `Pose` は `geometry_msgs` の `Pose` になる）。定義ファイルの中では、間の `msg` を書かない。
 - `Quaternion` の `float64 w 1` の最後の `1` は既定値である（2-5節）。
 - `covariance` は、値がどれくらい不確かかを表す表（共分散行列）で、この資料では立ち入らない。
 
@@ -227,14 +228,14 @@ string msg
 
 | パッケージ | 中身 | 代表的な型 |
 |---|---|---|
-| `std_msgs` | 基本の型を1つだけ包んだ型と、時刻付きの見出し | `Float64`・`String`・`Int32`・`Bool`・[`Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg)・`Float64MultiArray` |
+| `std_msgs` | 基本の型を1つだけ包んだ型と、時刻付きの見出し | `Float64`・[`String`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/String.msg)・[`Int32`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Int32.msg)・[`Bool`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Bool.msg)・[`Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg)・`Float64MultiArray` |
 | `builtin_interfaces` | 時刻と時間の長さ | [`Time`](https://github.com/ros2/rcl_interfaces/blob/jazzy/builtin_interfaces/msg/Time.msg)・[`Duration`](https://github.com/ros2/rcl_interfaces/blob/jazzy/builtin_interfaces/msg/Duration.msg) |
 | `geometry_msgs` | 位置・向き・速度・力などの幾何 | `Point`・[`Vector3`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Vector3.msg)・[`Quaternion`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Quaternion.msg)・[`Pose`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Pose.msg)・[`Twist`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Twist.msg)・[`TwistStamped`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/TwistStamped.msg) |
-| `nav_msgs` | 移動ロボットの位置と地図 | `Odometry`・`Path`・`OccupancyGrid` |
-| `sensor_msgs` | センサの値 | [`Imu`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/Imu.msg)・[`LaserScan`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/LaserScan.msg)・[`JointState`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/JointState.msg)・`Image` |
+| `nav_msgs` | 移動ロボットの位置と地図 | `Odometry`・[`Path`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Path.msg)・[`OccupancyGrid`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/OccupancyGrid.msg) |
+| `sensor_msgs` | センサの値 | [`Imu`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/Imu.msg)・[`LaserScan`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/LaserScan.msg)・[`JointState`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/JointState.msg)・[`Image`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/Image.msg) |
 | `std_srvs` | 中身の少ない汎用のサービス | [`Empty`](https://github.com/ros2/common_interfaces/blob/jazzy/std_srvs/srv/Empty.srv)・`Trigger`・[`SetBool`](https://github.com/ros2/common_interfaces/blob/jazzy/std_srvs/srv/SetBool.srv) |
 | `example_interfaces` | チュートリアル用の例 | [`AddTwoInts`](https://github.com/ros2/example_interfaces/blob/jazzy/srv/AddTwoInts.srv)・`Fibonacci` |
-| `rcl_interfaces`・`rosgraph_msgs` | ROS2自身が使う型（ログ・パラメータ・時計） | `Log`・`ParameterEvent`・[`Clock`](https://github.com/ros2/rcl_interfaces/blob/jazzy/rosgraph_msgs/msg/Clock.msg) |
+| `rcl_interfaces`・`rosgraph_msgs` | ROS2自身が使う型（ログ・パラメータ・時計） | `Log`・[`ParameterEvent`](https://github.com/ros2/rcl_interfaces/blob/jazzy/rcl_interfaces/msg/ParameterEvent.msg)・[`Clock`](https://github.com/ros2/rcl_interfaces/blob/jazzy/rosgraph_msgs/msg/Clock.msg) |
 
 `ros2 interface packages` で、今のPCに入っているインターフェースのパッケージを一覧できる（4節）。ROS2のDesktop Installだけでも数十個あり、フェーズ5-0で入れたGazeboの連携のような追加のパッケージを入れると増える。
 
@@ -242,7 +243,9 @@ string msg
 
 [`std_msgs/msg/Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg) は、「いつの値か」（`stamp`）と「どの座標系で測った値か」（`frame_id`）を持つ、小さなメッセージである。`TwistStamped` のように名前に `Stamped` が付く型は、元の型（`Twist`）に `Header` を足したものである。
 
-時刻を持つ型と持たない型では、受け取る側の扱いが変わる。フェーズ6-1の3-1節では、`rqt_plot` が、時刻の欄を持たない `Float64` の値を、届いた時刻で横軸に並べることを見た。時刻を持つ型なら、送った側が付けた時刻で扱える。フェーズ6-1の2-2節の注記の「PCの時計が飛ぶと記録の間隔がずれる」問題も、値が自分の時刻を持っていれば、解析する側で直せる。
+時刻を持つ型と持たない型では、受け取る側の扱いが変わる。たとえば `rqt_plot` は、時刻の欄を持たない `Float64` の値を、届いた時刻で横軸に並べる（フェーズ6-1の3-1節）。時刻を持つ型なら、送った側が付けた時刻で扱える。
+
+ただし、付ける時刻がPCの時計（現在時刻）なら、PCの時計が時刻合わせで飛んだとき（フェーズ6-1の2-2節の注記）、付ける時刻も同じだけ飛ぶ。時刻を付けておけば時計の飛びを後から直せる、というわけではない。直せるのは、シミュレーション時刻（フェーズ5-4の5節）のように、PCの時計とは別に進む時刻を付けた場合である。
 
 ### 3-3. 単位と向きの決まり
 
@@ -389,7 +392,7 @@ float64 traveled        # ここまでに走った距離 [m]
 - ファイル名は型名と同じにする（2-6節の決まり）。置くフォルダは、種類ごとに `msg/`・`srv/`・`action/` にする。
 - `VehicleState` は、`std_msgs/Header` で時刻を持たせ（3-2節）、単位をコメントに書いた（3-3節）。ペダルの範囲は定数にしたので、使う側は `1.0` と書く代わりに `PEDAL_MAX` と書ける。
 - `SetGains` の応答は、`std_srvs/srv/Trigger` と同じ `success`・`message` の組にした。受け付けなかった理由（負のゲインなど）を `message` で返せる。
-- `DriveDistance` は、フェーズ6-2の「決めた距離まで走ったら終わる」を、アクションの形にしたものである。途中経過で走った距離を返せば、呼んだ側は `goal_monitor` のログのように進み具合を見られる。
+- `DriveDistance` は、フェーズ6-2で扱う「決めた距離まで走ったら終わる」を、アクションの形にしたものである。途中経過で走った距離を返せば、呼んだ側は、6-2の見張りのノード `goal_monitor` のログのように、進み具合を見られる。
 
 ### 6-3. `CMakeLists.txt` と `package.xml` に書き足す
 

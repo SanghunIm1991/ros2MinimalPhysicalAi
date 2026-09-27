@@ -3,7 +3,6 @@
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
 <rect x="0" y="0" width="880" height="300" fill="#ffffff"/>
 <g fill="#1a1a1a">
-<rect x="460" y="100" width="230" height="270" rx="10" fill="#f6fbf4" stroke="#9cc49a" stroke-dasharray="6 4"/>
 <rect x="20" y="30" width="300" height="250" rx="10" fill="#f6fbf4" stroke="#9cc49a" stroke-dasharray="6 4"/>
 <path d="M300,155 L340,155" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
 <path d="M590,135 L615,135 L615,85 L640,85" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
@@ -12,7 +11,6 @@
 <rect x="340" y="110" width="250" height="90" rx="8" fill="#fff4ec" stroke="#c47a3a"/>
 <rect x="640" y="40" width="220" height="90" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
 <rect x="640" y="180" width="220" height="90" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
-<text x="476" y="124" font-weight="bold">解析のノード</text>
 <text x="36" y="54" font-weight="bold">インターフェースのパッケージ</text>
 <text x="170.0" y="130.0" text-anchor="middle">msg/VehicleState.msg</text>
 <text x="170.0" y="150.0" text-anchor="middle">srv/SetGains.srv</text>
