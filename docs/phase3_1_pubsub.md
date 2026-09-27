@@ -882,7 +882,6 @@ C++の方が記述量・手数は増えるが、コールバック配線の間�
 ### 日本語
 
 - [実習ROS 2 Pub&Sub通信 #ROS2 - Qiita](https://qiita.com/s-kitajima/items/5a4d7f06413120010e6b)
-- [ROS2で単純なPublisher＆Subscriberのノード間通信をPythonで作成・実行してみた](https://taku-info.com/simplepubsubtutorial-python/)（公式チュートリアルの和訳ベース）
 
 > 記事は個人による非公式の解説で、版によって異なる場合がある。公式ドキュメントと食い違う場合は公式を優先する。
 

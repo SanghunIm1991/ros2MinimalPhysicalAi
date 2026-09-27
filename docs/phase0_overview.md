@@ -286,7 +286,7 @@ flowchart TB
 
 - [colcon documentation](https://colcon.readthedocs.io/)
 - [ros2_control documentation — Jazzy](https://control.ros.org/jazzy/index.html)
-- [Nav2 documentation](https://navigation.ros.org/)
+- [Nav2 documentation](https://docs.nav2.org/)
 - [MoveIt 2 Documentation](https://moveit.picknik.ai/)
 - [micro-ROS](https://micro.ros.org/)
 - [ros2/sros2（GitHub）](https://github.com/ros2/sros2)
@@ -314,3 +314,5 @@ flowchart TB
 - [Toyota: Advancing the Integration of Robots and AI（HSRの研究コミュニティ）](https://global.toyota/en/mobility/frontier-research/42394425.html)
 
 > 各ツールは版によって対応状況が変わりうる。本プロジェクトで実際に導入・使用する際は、その時点の公式ページを改めて確認する。
+
+> 出典: ROS2・DDS・周辺OSS・業界の活用例の事実関係は、9節に挙げた公式ページと記事に基づく（ROS 2の公式ドキュメントはCC BY 4.0）。文章と構成は自分の言葉でまとめたもので、逐語の転載ではない。

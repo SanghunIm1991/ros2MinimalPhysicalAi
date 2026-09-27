@@ -795,4 +795,4 @@ std_srvs.srv.Trigger_Response(success=True, message='counter reset (was 8)')
 
 > 公式ドキュメントと食い違う場合は、公式を優先する。
 
-> 出典: 各サンプルのAPIの使い方は、上記の公式チュートリアルを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。
+> 出典: 各サンプルのAPIの使い方は、上記の公式チュートリアルを参考にした（ROS 2ドキュメントはCC BY 4.0）。ノード名・仕様・コード・文章は独自に書いたもので、逐語の転載ではない。期待する結果に載せた `ros2 interface show` の表示は、型の定義（`example_interfaces`・`common_interfaces`、Apache License 2.0）である。

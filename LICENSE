@@ -66,6 +66,10 @@ the author (SanghunIm1991) and the license are credited.
        ROS 2 の common_interfaces・rcl_interfaces・example_interfaces,
        Apache License 2.0
      - docs/phase1_cli_turtlesim.md の turtlesim の型: turtlesim, BSD License
+   - docs/phase5_4_gazebo_plant.md で改造の元にする `diff_drive.sdf`（Gazebo Sim に
+     付属。Open Source Robotics Foundation, Apache License 2.0）: このリポジトリには
+     含めず、読者が各自の環境にインストールされたファイルを写して改造する。手順書には
+     改造した部分の説明と、元のファイルの出典を書いている
    - 「期待する結果」等に載せたコマンドの出力: 各ツールの表示
 
    このリポジトリは、ROS2・Gazebo・turtlesim等のソフトウェアを同梱していない。
