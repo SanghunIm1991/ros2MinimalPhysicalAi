@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" width="900" height="380" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: 記録を一時停止の状態で再生し始め、解析のノード（Python版とC++版）がつながってから再生を進める。解析のノードは指標の計算を metrics.py に任せ、再生が終わったら表を出す">
+<title>図: 記録を一時停止の状態で再生し始め、解析のノード（Python版とC++版）がつながってから再生を進める。解析のノードは指標の計算を metrics.py に任せ、再生が終わったら表を出す</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="900" height="380" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="460" y="100" width="230" height="270" rx="10" fill="#f6fbf4" stroke="#9cc49a" stroke-dasharray="6 4"/>
+<path d="M190,235 L225,235" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M425,215 L450,215 L450,170 L480,170" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M425,255 L450,255 L450,290 L480,290" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M575,140 L575,80" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M200,50 L480,50" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M670,170 L700,170 L700,225 L720,225" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M670,290 L700,290 L700,265 L720,265" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="20" y="20" width="180" height="60" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
+<rect x="480" y="20" width="190" height="60" rx="8" fill="#fff4ec" stroke="#c47a3a"/>
+<rect x="20" y="200" width="170" height="70" rx="8" fill="#fff7e6" stroke="#c9a24a"/>
+<rect x="225" y="190" width="200" height="90" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
+<rect x="480" y="140" width="190" height="60" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
+<rect x="480" y="260" width="190" height="60" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
+<rect x="720" y="205" width="165" height="80" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
+<text x="476" y="124" font-weight="bold">解析のノード</text>
+<text x="110.0" y="45.0" text-anchor="middle">closed_loop_sim.py</text>
+<text x="110.0" y="65.0" text-anchor="middle">（5-2の計算）</text>
+<text x="575.0" y="45.0" text-anchor="middle">metrics.py</text>
+<text x="575.0" y="65.0" text-anchor="middle">指標の計算（ROS2なし）</text>
+<text x="105.0" y="230.0" text-anchor="middle">6-1の記録</text>
+<text x="105.0" y="250.0" text-anchor="middle">sim_default など</text>
+<text x="325.0" y="220.0" text-anchor="middle">ros2 bag play -r 5 -p</text>
+<text x="325.0" y="240.0" text-anchor="middle">（つながってから</text>
+<text x="325.0" y="260.0" text-anchor="middle">スペースキーで再生）</text>
+<text x="575.0" y="165.0" text-anchor="middle">metrics（Python版）</text>
+<text x="575.0" y="185.0" text-anchor="middle">metrics_node.py</text>
+<text x="575.0" y="285.0" text-anchor="middle">metrics_cpp（C++版）</text>
+<text x="575.0" y="305.0" text-anchor="middle">metrics_node.cpp</text>
+<text x="802.5" y="240.0" text-anchor="middle">段ごとの指標と</text>
+<text x="802.5" y="260.0" text-anchor="middle">全体のRMSの表</text>
+<text x="325" y="180" text-anchor="middle" font-size="13">目標・速度・ペダルの3つのトピック</text>
+<text x="585" y="118" font-size="13">計算を任せる</text>
+<text x="340" y="42" text-anchor="middle" font-size="13">答え合わせ（4節）</text>
+</g>
+</svg>
