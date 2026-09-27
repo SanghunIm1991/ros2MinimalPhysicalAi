@@ -4,26 +4,28 @@
 <rect x="0" y="0" width="900" height="400" fill="#ffffff"/>
 <g fill="#1a1a1a">
 <rect x="10" y="10" width="880" height="380" rx="10" fill="#fbfbfd" stroke="#9aa3b2" stroke-dasharray="6 4"/>
-<rect x="30" y="50" width="470" height="320" rx="10" fill="#f6fbf4" stroke="#9cc49a" stroke-dasharray="6 4"/>
-<path d="M350,125 L600,125" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M350,165 L600,165" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="30" y="50" width="340" height="320" rx="10" fill="#f6fbf4" stroke="#9cc49a" stroke-dasharray="6 4"/>
+<path d="M350,120 L630,120" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M350,175 L630,175" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
 <path d="M200,190 L200,270" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M735,190 L735,300 L350,300" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<path d="M755,190 L755,300 L350,300" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
 <rect x="50" y="100" width="300" height="90" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
 <rect x="50" y="270" width="300" height="60" rx="8" fill="#eef3fb" stroke="#5b7db8"/>
-<rect x="600" y="100" width="270" height="90" rx="8" fill="#fff4ec" stroke="#c47a3a"/>
+<rect x="630" y="100" width="250" height="90" rx="8" fill="#fff4ec" stroke="#c47a3a"/>
 <text x="26" y="34" font-weight="bold">record_goal.launch.py</text>
 <text x="46" y="74" font-weight="bold">6-1の record.launch.py（include）</text>
 <text x="200.0" y="130.0" text-anchor="middle">5-3 または 5-4 の一式</text>
 <text x="200.0" y="150.0" text-anchor="middle">target_generator は</text>
 <text x="200.0" y="170.0" text-anchor="middle">end_time で終わる（時間切れ）</text>
 <text x="200.0" y="305.0" text-anchor="middle">ros2 bag record</text>
-<text x="735.0" y="130.0" text-anchor="middle">goal_monitor</text>
-<text x="735.0" y="150.0" text-anchor="middle">走った距離が goal_distance に</text>
-<text x="735.0" y="170.0" text-anchor="middle">達したら終わる（ゴール）</text>
-<text x="475" y="117" text-anchor="middle" font-size="13">/plant/velocity（案A）</text>
-<text x="475" y="157" text-anchor="middle" font-size="13">オドメトリ（案B: 5-4だけ）</text>
-<text x="690" y="322" text-anchor="middle" font-size="13">終わると Shutdown で全体が止まる</text>
-<text x="690" y="342" text-anchor="middle" font-size="13">（target_generator が先なら、そちらで止まる）</text>
+<text x="755.0" y="130.0" text-anchor="middle">goal_monitor</text>
+<text x="755.0" y="150.0" text-anchor="middle">走った距離が goal_distance に</text>
+<text x="755.0" y="170.0" text-anchor="middle">達したら終わる（ゴール）</text>
+<text x="500" y="96" text-anchor="middle" font-size="13">/plant/velocity</text>
+<text x="500" y="112" text-anchor="middle" font-size="13">（案A: 速度 × 時間を積み上げる）</text>
+<text x="500" y="151" text-anchor="middle" font-size="13">/model/vehicle_green/odometry</text>
+<text x="500" y="167" text-anchor="middle" font-size="13">（案B: 5-4だけ。位置から求める）</text>
+<text x="620" y="322" text-anchor="middle" font-size="13">終わると Shutdown で全体が止まる</text>
+<text x="620" y="342" text-anchor="middle" font-size="13">（target_generator が先なら、そちらで止まる）</text>
 </g>
 </svg>
