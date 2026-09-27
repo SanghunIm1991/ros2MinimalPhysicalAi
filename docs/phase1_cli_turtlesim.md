@@ -47,6 +47,8 @@ sudo apt install -y ros-jazzy-turtlesim ros-jazzy-rqt ros-jazzy-rqt-graph ros-ja
 ros2 pkg executables turtlesim
 ```
 
+`ros2 pkg executables <パッケージ名>` は、そのパッケージに入っている実行ファイル（`ros2 run` で起動できるプログラム）の名前を並べるコマンドである。
+
 **期待する結果**: turtlesimパッケージの実行ファイルが4つ並べば、導入できている。
 
 ```text
@@ -88,6 +90,8 @@ PulseServer  PulseAudioRDPSink  runtime-dir  stderr.log  versions.txt  weston.lo
 ```bash
 ros2 run turtlesim turtlesim_node
 ```
+
+書式は `ros2 run <パッケージ名> <実行ファイル名>`。ここでは、`turtlesim` パッケージの `turtlesim_node`（亀を表示するシミュレータのノード）を起動する。
 
 **期待する結果**: 水色（青系）の背景に亀が1匹いるウィンドウがWindows側に出る。ターミナルには次のようなログが出る（時刻の数字は実行ごとに変わる）。亀の初期位置は画面の中央（x, yとも約5.54）で、向き（theta）は0＝右向き。
 
@@ -210,7 +214,7 @@ flowchart LR
 
 </details>
 
-> **車両シミュレーションとの対応**（フェーズ5への伏線）: `Twist` は「制御ノード → プラント」の指令、`Pose` は「プラント → 制御ノード」の状態に相当する。turtlesimは、私たちが後で作るプラントノードの見本になる。
+> **車両シミュレーションとの対応**（フェーズ5への伏線）: フェーズ5では、車両を「制御ノード」（目標に近づくように指令を出す側）と「プラント」（制御される対象。指令を受けて動き、今の状態を返す側）のノードに分けて作る。`Twist` は「制御ノード → プラント」の指令、`Pose` は「プラント → 制御ノード」の状態に相当する。turtlesimは、私たちが後で作るプラントノードの見本になる。
 
 ## 3. 手順
 
@@ -220,7 +224,7 @@ flowchart LR
 ros2 run turtlesim turtlesim_node
 ```
 
-**期待する結果**: 青い背景に亀のウィンドウが出る（ターミナルのログは1-2の手順Bと同じ）。書式は `ros2 run <パッケージ名> <実行ファイル名>`。
+**期待する結果**: 青い背景に亀のウィンドウが出る（ターミナルのログは1-2の手順Bと同じ）。
 
 ### 3-2. キーボードで動かす（T2）
 
@@ -298,6 +302,8 @@ ros2 run turtlesim turtlesim_node --ros-args --remap __node:=my_turtle
 # T3
 ros2 node list
 ```
+
+`--ros-args` より後ろは、プログラムではなくROS2に向けた指定である。`--remap __node:=my_turtle` は「ノード名（`__node`）を `my_turtle` に付け替える」という意味になる。
 
 **期待する結果**: ノード一覧の `/turtlesim` が `/my_turtle` に置き換わる。起動ログも `Starting turtlesim with node name /my_turtle` になる。動作（亀のウィンドウ）は何も変わらない。
 
@@ -498,7 +504,7 @@ Set parameter successful
 - `param list` は、動いているノードごとにパラメータ名を並べる。
 - 背景色の初期値はR=69, G=86, B=255（青）。`background_r` を150に上げると、背景が紫がかった色に変わる。
 
-`param dump` の出力はYAML形式で、フェーズ3（1-3）で「起動時にYAMLでパラメータを与える」際の書式の見本になる。
+`param dump` の出力はYAML形式で、フェーズ3-3（[`docs/phase3_3_parameters.md`](phase3_3_parameters.md)）の5-4節（YAMLファイルで指定する）で「起動時にYAMLでパラメータを与える」際の書式の見本になる。
 
 **期待する結果**（`ros2 param dump /turtlesim` の分。`background_r` を150に変えた後）:
 
