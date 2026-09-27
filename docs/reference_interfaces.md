@@ -116,7 +116,7 @@ float64 z
 | `float64[<=10]` | 長さが10以下の配列 | 上と同じ | `rosidl_runtime_cpp::BoundedVector`（長さの上限付きの `vector`） |
 | `string<=16` | 16文字以下の文字列 | `str` | `std::string` |
 
-長さが決まっている配列の例は、[`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg) の中の `float64[36] covariance`（6×6の誤差の大きさの表。2-4節）である。長さが自由の配列の例は、[`std_msgs/msg/Float64MultiArray`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64MultiArray.msg) の `float64[] data` で、Pythonでは次のようになる。
+長さが決まっている配列の例は、[`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg)（移動ロボットの位置と速度を送る型。2-4節）の中の `float64[36] covariance`（6×6の誤差の大きさの表。2-4節）である。長さが自由の配列の例は、[`std_msgs/msg/Float64MultiArray`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64MultiArray.msg) の `float64[] data` で、Pythonでは次のようになる。
 
 ```bash
 python3 -c "from std_msgs.msg import Float64MultiArray; print(Float64MultiArray(data=[1.0, 2.0]).data)"

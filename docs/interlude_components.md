@@ -510,7 +510,7 @@ ros2 run learn_py listener
 >
 > 課題2: 7-1の手順で、`-r chatter:=chatter2` を付けて `Listener` を読み込み、`talker` のメッセージが届かなくなることを確認する。フェーズ4の4-6節で見たremapが、コンテナへの読み込みでも同じように使えることを確認する。
 >
-> 課題3（発展）: `component_container` の代わりに `component_container_mt`（複数スレッドで回すコンテナ）がある。`ros2 pkg executables rclcpp_components` で種類を確認し、どんなときに使い分けるか調べる。手がかり: ふつうの `spin`（単一スレッド）は、コールバックを1つずつ順に処理するので、長い処理のコールバックが1つあると、その間は同じプロセスの他のコールバックが待たされる。複数スレッドなら、別のコールバックを並行して動かせる（任意の[フェーズ3-5](phase3_5_actions.md)を読んだ場合は、4節のPython版のアクションサーバで `MultiThreadedExecutor` を使った理由と同じ）。
+> 課題3（発展）: `component_container` の代わりに `component_container_mt`（複数スレッドで回すコンテナ）がある。`ros2 pkg executables rclcpp_components` で種類を確認し、どんなときに使い分けるか調べる。手がかり: ふつうの `spin`（単一スレッド）は、コールバックを1つずつ順に処理するので、長い処理のコールバックが1つあると、その間は同じプロセスの他のコールバックが待たされる。複数スレッドなら、別のノード（部品）のコールバックどうしを並行して動かせる（同じノードの中のコールバックまで並行させるには、コールバックグループの指定も要る。任意の[フェーズ3-5](phase3_5_actions.md)を読んだ場合は、4節のPython版のアクションサーバで `MultiThreadedExecutor` と `ReentrantCallbackGroup` を使った理由がこれにあたる）。
 >
 > 課題4（発展）: プロセス内通信では、`publish` に `std::unique_ptr` でメッセージを渡すと、コピーせずに所有権ごと相手へ渡せる（ゼロコピー）。公式ドキュメントの intra-process の説明を調べ、`talker_component.cpp` をその形に書き換えてみる。
 

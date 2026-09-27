@@ -24,7 +24,7 @@
 
 ## 1. シミュレーション時刻（`use_sim_time`）
 
-> **読める時期**: フェーズ1（[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)）やフェーズ3-1（[`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md)）の時点では、1-1節の最初の段落（2つの時計）、1-4節（切り替え方）の例、1-5節（気をつける点）だけを読めばよい。1-1節の2つ目の段落・1-2節・1-3節は、Gazebo（フェーズ5-0）やPI制御（フェーズ5-2）を前提にしているので、フェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)）を済ませた後に読むと分かりやすい。
+> **読める時期**: フェーズ1（[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)）やフェーズ3-1（[`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md)）の時点では、1-1節の最初の段落（2つの時計）、1-4節（切り替え方）、1-5節（気をつける点）だけを読めばよい（1-4節の例はフェーズ3-1の `talker` を使うので、試すのはフェーズ3-1の後）。1-1節の2つ目の段落・1-2節・1-3節は、Gazebo（フェーズ5-0）やPI制御（フェーズ5-2）を前提にしているので、フェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)）を済ませた後に読むと分かりやすい。
 
 ### 1-1. 時計が2つある
 

@@ -63,7 +63,7 @@ flowchart LR
 
 ### 1-3. 2種類のパッケージの違い
 
-次の表は、2節で作る2種類のパッケージの違いを先に並べたものである。表に出てくるファイルや設定は、2-2節〜2-7節で実物を見ながら確かめるので、ここでは名前を眺める程度でよい。
+この節の表は、2節で作る2種類のパッケージの違いを先に並べたものである。表に出てくるファイルや設定は、2-2節〜2-7節で実物を見ながら確かめるので、ここでは名前を眺める程度でよい。表の前に、表に出てくる用語を短く説明しておく。
 
 - `setup.py`・`setup.cfg`: Pythonのパッケージのビルドとインストールの設定（`setup.cfg` は、インストール先などの細かな設定を分けて書いたもの）。`install_requires` は、`setup.py` に書く「動かすのに要るPythonのパッケージ」の一覧。
 - `package.xml`: パッケージの名前・メンテナ・依存（`<depend>`）などを書く、ROS2のパッケージの設定ファイル（2-2節）。
@@ -174,7 +174,7 @@ creating ./learn_py/learn_py/hello.py
 `maintainer` の行がダミーの値になっていること、`dependencies` の行に `rclpy` と `std_msgs` が入っていることを、ここで確認できる。
 
 - `--dependencies`: `package.xml` に `<depend>` として書かれる（後の手順で `std_msgs` を使うため今のうちに入れる）。
-- `--node-name hello`: 動作確認用の最小ノード `hello` の雛形が作られる。
+- `--node-name hello`: 動作確認用の最小の実行ファイル `hello` の雛形が作られる（文字を表示するだけで、ROS2の機能はまだ使わない）。
 - **メンテナ名・メールは必ず明示する**。省略すると、コマンドがGitの設定などから自動で補う場合があり、実メールアドレスがファイルに入る恐れがある。本リポジトリはPublic化を前提にしているため、`learner` / `noreply@example.com` のようなダミーを使う。
 
 作られたものを確認する:
@@ -238,7 +238,7 @@ learn_cpp/src/hello.cpp
 - `package.xml` には `<buildtool_depend>ament_cmake</buildtool_depend>` と、`<depend>rclcpp</depend>`・`<depend>std_msgs</depend>` が入る。
 - `CMakeLists.txt` には、`find_package(rclcpp REQUIRED)` などの依存の読み込みと、`add_executable(hello src/hello.cpp)`・`install(TARGETS hello ...)` という実行ファイルの登録が入る。
 
-> 補足: `--node-name` は生成する実行ファイルの**名前**を指定するだけのオプション（`ros2 pkg create --help` でも `name of the empty executable` としか説明されておらず、選べる「種類」の列挙はない）。ノードの言語・雛形の中身を決めているのは `--build-type` の方（`ament_python` → `rclpy`のPython最小ノード、`ament_cmake`/`cmake` → `rclcpp`のC++最小ノード、`ament_cargo` → Rust）。2-2と2-3で同じ `--node-name hello` を指定しているのは、両方とも「動作確認用の最小ノード」という同じ役割を、`--build-type` 違いのテンプレートで作っているため。
+> 補足: `--node-name` は生成する実行ファイルの**名前**を指定するだけのオプション（`ros2 pkg create --help` でも `name of the empty executable` としか説明されておらず、選べる「種類」の列挙はない）。ノードの言語・雛形の中身を決めているのは `--build-type` の方（`ament_python` → Pythonの雛形、`ament_cmake`/`cmake` → C++の雛形、`ament_cargo` → Rust）。2-2と2-3で同じ `--node-name hello` を指定しているのは、両方とも「動作確認用の最小の実行ファイル」という同じ役割を、`--build-type` 違いのテンプレートで作っているため。
 
 > 課題1: 2つのパッケージの `package.xml` を見比べる。`<buildtool_depend>` の違い（`ament_python` / `ament_cmake`）と、`<export><build_type>` の違いを確認する。
 

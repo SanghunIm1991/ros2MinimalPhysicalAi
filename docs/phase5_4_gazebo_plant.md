@@ -84,11 +84,11 @@ mkdir -p ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/worlds
 cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/worlds/vehicle_force.sdf
 ```
 
-ワールドファイルは、**SDF**（Simulation Description Format）という、Gazeboのためのデータの書き方で書かれたXMLのファイルである。要素は次のように入れ子になっている（書き換えるときに探す要素だけを挙げる）。
+ワールドファイルは、**SDF**（Simulation Description Format）という、Gazeboのためのデータの書き方で書かれたXMLのファイルである。要素は次のように入れ子になっている（書き換えるときと、3-2節の計算のときに探す要素だけを挙げる）。
 
 - `<world>`: ワールド全体。中に、地面や車両の `<model>` が並ぶ。
 - `<model>`: 1台の車両など、ひとまとまりの物体。緑の車両は `<model name='vehicle_green'>`。中に、次の3種類の要素を持つ。
-  - `<link>`: 形と質量を持つ部品（緑の車両では、車体・左右の車輪・補助輪の4つ）。質量と慣性モーメントは、その中の `<inertial>` に、車輪の半径は形の記述の中の `<radius>` に書かれている（3-2節で使う）。
+  - `<link>`: 形と質量を持つ部品（緑の車両では、車体・左右の車輪・補助輪の4つ）。質量と慣性モーメント（回転のしにくさ。3-2節で使う）は、その中の `<inertial>` に、車輪の半径は形の記述の中の `<radius>` に書かれている（3-2節で使う）。
   - `<joint>`: 部品どうしのつなぎ目（関節）。車体と車輪をつなぐ `left_wheel_joint`・`right_wheel_joint` が、車輪の軸にあたる。
   - `<plugin>`: 物体に機能を足す部品。DiffDriveもこれで付いている。
 
@@ -579,7 +579,7 @@ ros2 launch learn_bringup gazebo_plant.launch.py --print
 └── ExecuteProcess(cmd=[ExecInPkg(pkg='learn_py', exec='target_generator'), '--ros-args', '-r', LocalVar('node name')], cwd=None, env=None, shell=False)
 ```
 
-`ExecuteProcess` の2行目（ブリッジ）に、5節の `/clock` と、2-1節の表のトピック3本（左右の車輪のトルクとオドメトリ）の、計4本が、向き（`[`・`]`）付きで並んでいることを確かめる。
+最初の `ExecuteProcess`（ブリッジ）に、5節の `/clock` と、2-1節の表のトピック（左右の車輪のトルクの2本とオドメトリの1本）の、計4本が、向き（`[`・`]`）付きで並んでいることを確かめる。
 
 中身を確かめたら、起動する。
 

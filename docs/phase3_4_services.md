@@ -277,7 +277,7 @@ def main(args=None):
 
 > なぜ「非同期」か: `call_async` は応答を待たずにすぐ戻るので、「結果をいつ取りに行くか」は自分で決める必要がある。このコードは `main` の中で `spin_until_future_complete` を使って待つ。ノードのコールバックの中から別のサービスを呼びたい場合は、この待ち方は使えないので、futureの完了時に呼ばれるコールバックで結果を受ける、などの別の方法になる（このフェーズでは扱わない）。
 
-> **重要**: `spin_until_future_complete` は、**コールバックの中では呼ばない**。`main` の中で使う。コールバックは `spin` に呼ばれて動いているので、その中でさらにノードを回して応答を待とうとすると、応答を受け取る処理が順番待ちのまま動けず、固まる。
+> **重要**: `spin_until_future_complete` は、**コールバックの中では呼ばない**。`main` の中で使う。コールバックは `spin` に呼ばれて動いているので、そのノードは既に回っている。その中でさらにノードを回そうとすると、Pythonでは `RuntimeError: Executor is already spinning`、C++では「ノードが既にexecutorに登録されている（`... has already been added to an executor`）」という例外で止まる。
 
 落とし穴:
 
@@ -516,7 +516,7 @@ Python版と同じ流れ（待つ → 要求を作る → 非同期に送る →
 - **`async_send_request(request)`**: Pythonの `call_async` に相当し、`future`（`shared_future`）を返す。
 - **`spin_until_future_complete(node, future)`**: 戻り値は `FutureReturnCode`。`SUCCESS` のときだけ `future.get()` で応答（`shared_ptr`）を取り出し、`->sum` を読む。それ以外（`TIMEOUT` や `INTERRUPTED`）は失敗として扱う。Pythonの `result() is not None` の判定に当たる。
 
-落とし穴: `future.get()` は、結果が入っていない状態で呼ぶと待たされるか例外になる。**先に戻り値が `SUCCESS` であることを確認してから**呼ぶ、という順序を守る。また、`spin_until_future_complete` を**サービスのコールバックの中で呼ぶ**と固まる（4-3節の `add_client.py` の解説の末尾にある「重要」と同じ理由）。
+落とし穴: `future.get()` は、結果が入っていない状態で呼ぶと待たされるか例外になる。**先に戻り値が `SUCCESS` であることを確認してから**呼ぶ、という順序を守る。また、`spin_until_future_complete` を**サービスのコールバックの中で呼ぶ**と例外で止まる（4-3節の `add_client.py` の解説の末尾にある「重要」と同じ理由）。
 
 動作確認: Python版と同様に、`ros2 run learn_cpp add_client` と `--ros-args -p a:=10 -p b:=20` を、サーバありとなしの両方で試す。サーバなしのときは約5秒後にエラーログが出て、`echo $?` で終了コード1が見える（表示は6-1節の「期待する結果」を参照）。
 
