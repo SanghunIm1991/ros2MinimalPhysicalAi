@@ -10,7 +10,7 @@
 
 > **このフェーズの位置づけ（概要を掴む程度でよい）**: サービスは、フェーズ5の車両シミュレーションでは使わない（ノード同士はトピックでつなぎ、ゲインはパラメータで変える）。ここでは「サービスは1回の要求に1回の応答を返す通信で、トピックとはこう使い分ける」という概念と、CLIからサービスを呼ぶ方法を掴めば十分である。なお、フェーズ3-3の `ros2 param set` も、裏ではノードが自動で持つパラメータ用のサービスを呼んでいる。
 >
-> 必須の範囲は、Python版の `add_server` を書いて、`ros2 service call` で呼ぶところまで（4節の `add_server.py` → 6-1節の「CLIからも呼べる」）。クライアントの非同期呼び出し（`add_client`）、`counter_node`（Trigger）、C++版（5節）は任意の発展とする。作らないノードがある場合は、`setup.py` の `entry_points` にもその行を書かない。
+> 必須の範囲は、Python版の `add_server` を書いて、`ros2 service call` で呼ぶところまで（4-2節の `add_server.py` → 6-1節の「CLIからも呼べる」）。クライアントの非同期呼び出し（`add_client`）、`counter_node`（Trigger）、C++版（5節）は任意の発展とする。作らないノードがある場合は、`setup.py` の `entry_points` にもその行を書かない。
 >
 > **進め方**（サンプルまで書いて動かす場合）: 仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でサービス関連のAPI（サーバ・クライアントの作成、非同期呼び出し）を把握し、サンプルコードと解説を読んで理解する。読んで分かったら、フィールドや計算内容を変える、待ち時間を変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、ノードの実行結果は未確認（出力が違う場合は、実機の表示を優先する）。
 
@@ -32,6 +32,17 @@
 
 ## 1. 全体像
 
+この手順書のサンプルは、目的の違う2組に分かれている。
+
+| 組 | ノード | 使うサービスの型 | 見どころ | 範囲 |
+|---|---|---|---|---|
+| ① 足し算 | `add_server`・`add_client` | `AddTwoInts` | サービスの基本（サーバが要求を受けて応答を返す。クライアントが呼んで結果を待つ） | `add_server` は必須、`add_client` は任意 |
+| ② カウンタのリセット | `counter_node` | `Trigger` | 1つのノードに、トピックの配信とサービスのサーバを同居させる | 任意 |
+
+2つの組は、互いに呼び合わない。以降の節（2節の仕様、4節のPython版、5節のC++版、6節の実験）も、この①・②の順に分けて書く。
+
+①足し算の流れ（`add_client` が呼ぶ場合）:
+
 ![add_clientが要求を送り、add_serverが足し算して応答を返す](img/phase3_4_add_seq.svg)
 
 <details>
@@ -50,7 +61,7 @@ sequenceDiagram
 
 </details>
 
-リセット用サービス（`Trigger`）の使い方:
+②カウンタのリセットの流れ（`Trigger`）:
 
 ![ros2 service callがreset_counterでcounter_nodeを呼び、counter_nodeは/counterを1秒ごとに出す](img/phase3_4_reset_flow.svg)
 
@@ -93,14 +104,14 @@ string message # informational, e.g. for error messages
 
 ## 2. 仕様
 
-### 2-1. `add_server` / `add_client`
+### 2-1. ①足し算: `add_server` / `add_client`
 
 | ノード | 役割 | サービス（型） | 動作 |
 |---|---|---|---|
 | `add_server` | サーバ | `add_two_ints`（`example_interfaces/srv/AddTwoInts`） | 要求の `a` と `b` を足した `sum` を返し、ログに出す |
 | `add_client` | クライアント | `add_two_ints` | ROSパラメータ `a`、`b`（整数、既定 1 と 2）を要求に入れて1回呼び、結果をログに出して終了。サーバがいなければ5秒待って諦める |
 
-### 2-2. `counter_node`（Trigger）
+### 2-2. ②カウンタのリセット: `counter_node`（Trigger）
 
 | 項目 | 内容 |
 |---|---|
@@ -135,9 +146,10 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 
 ## 4. Python版（`ws/src/learn_py`）
 
-`ws/src/learn_py/learn_py/` に `add_server.py`, `add_client.py`, `counter_node.py` を作る。
+`ws/src/learn_py/learn_py/` に、①足し算の `add_server.py`・`add_client.py` と、②カウンタのリセットの `counter_node.py` を作る（作るのは、進める範囲の分だけでよい）。
 
-主なAPI（rclpy）:
+### 4-1. 主なAPI（rclpy）
+
 
 | やりたいこと | API |
 |---|---|
@@ -149,7 +161,7 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 
 > **重要**: `spin_until_future_complete` は、**コールバックの中では呼ばない**（自分自身を止めて固まる）。`main` の中で使う。
 
-### サンプルコードと解説（Python版）
+### 4-2. ①足し算: サーバ（`add_server.py`。必須）
 
 ファイル: `ws/src/learn_py/learn_py/add_server.py`
 
@@ -204,6 +216,10 @@ def main(args=None):
 `main` は、フェーズ3-1のノードと同じ定型である。`rclpy.spin(node)` の中で、要求が来るとコールバックが呼ばれる。`except (KeyboardInterrupt, ExternalShutdownException)` は `Ctrl+C` での終了を静かに扱うため、`finally` は後片付け（ノードの破棄とシャットダウン）のため。
 
 観察ポイント: サーバだけを起動しても何も起きず、ログも出ない（要求が来て初めて動く）。`ros2 service list -t` で `/add_two_ints [example_interfaces/srv/AddTwoInts]` が見えること、`ros2 service call` で呼んだときにサーバ側のログが出ることを確認する。
+
+### 4-3. ①足し算: クライアント（`add_client.py`。任意）
+
+4-2節のサーバを呼ぶ側である。
 
 ファイル: `ws/src/learn_py/learn_py/add_client.py`
 
@@ -260,7 +276,7 @@ def main(args=None):
 - **`call_async(request)`**: 要求を送って、すぐ `future`（あとで結果が入る箱）を返す。ここでは結果はまだ無い。
 - **`rclpy.spin_until_future_complete(node, future)`**: `future` に結果が入るまでノードを回す（この間に応答を受け取る処理が動く）。これが終わってから `future.result()` で `Response` を取り出す。`result()` が `None` のときは呼び出しが失敗しており、`future.exception()` で原因が見られる。
 
-> なぜ「非同期」か: `call_async` は応答を待たずにすぐ戻るので、「結果をいつ取りに行くか」は自分で決める必要がある。このコードは `main` の中で `spin_until_future_complete` を使って待つ。ノードのコールバックの中から別のサービスを呼びたい場合は、この待ち方は使えない（上の「重要」の注意）ので、futureの完了時に呼ばれるコールバックで結果を受ける、などの別の方法になる（このフェーズでは扱わない）。
+> なぜ「非同期」か: `call_async` は応答を待たずにすぐ戻るので、「結果をいつ取りに行くか」は自分で決める必要がある。このコードは `main` の中で `spin_until_future_complete` を使って待つ。ノードのコールバックの中から別のサービスを呼びたい場合は、この待ち方は使えない（4-1節の「重要」の注意）ので、futureの完了時に呼ばれるコールバックで結果を受ける、などの別の方法になる（このフェーズでは扱わない）。
 
 落とし穴:
 
@@ -268,6 +284,10 @@ def main(args=None):
 - `-p a:=3.0` のように実数を渡すと、宣言した型（整数）と合わず、パラメータの設定でエラーになる。整数で渡す。
 
 動作確認: サーバを起動した状態で `ros2 run learn_py add_client`（既定なら `1 + 2 = 3`）と、`ros2 run learn_py add_client --ros-args -p a:=10 -p b:=20` を実行する。サーバを止めた状態で実行すると、約5秒後にエラーログが出て終わることも確認する（表示は6-1の「期待する結果」を参照）。
+
+### 4-4. ②カウンタのリセット（`counter_node.py`。任意）
+
+ここからは、①足し算とは別の組である。`add_server`・`add_client` とは関係なく、このノード1つで動く。
 
 ファイル: `ws/src/learn_py/learn_py/counter_node.py`
 
@@ -338,9 +358,9 @@ def main(args=None):
 
 観察ポイント: `ros2 topic echo /counter` を見ながら `ros2 service call /reset_counter std_srvs/srv/Trigger` を実行し、値が0に戻ること、応答の `message` に直前の値が入っていることを確認する（6-2節）。
 
-### 登録とビルド
+### 4-5. 登録とビルド（①・②共通）
 
-`setup.py` の `entry_points` に3行を足し、再ビルドする。
+`setup.py` の `entry_points` に、作ったノードの行を足し、再ビルドする。下の3行のうち、1行目が①の `add_server`、2行目が①の `add_client`、3行目が②の `counter_node` である（作らなかったノードの行は書かない）。
 
 <!-- snippet: py_entry_points_service -->
 ```python
@@ -361,11 +381,12 @@ source install/setup.bash
 
 ## 5. C++版（`ws/src/learn_cpp`）
 
-> **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、節末の「Python版とC++版の違いのまとめ」を読めば概要が掴める。C++版を作らない場合は、C++向けの依存の追加（`package.xml` と `CMakeLists.txt`）も不要。
+> **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、8節の「Python版とC++版の違いのまとめ」を読めば概要が掴める。C++版を作らない場合は、C++向けの依存の追加（`package.xml` と `CMakeLists.txt`）も不要。
 
-`ws/src/learn_cpp/src/` に `add_server.cpp`, `add_client.cpp`, `counter_node.cpp` を作る。
+`ws/src/learn_cpp/src/` に、①足し算の `add_server.cpp`・`add_client.cpp` と、②カウンタのリセットの `counter_node.cpp` を作る。
 
-主なAPI（rclcpp）:
+### 5-1. 主なAPI（rclcpp）
+
 
 | やりたいこと | API |
 |---|---|
@@ -377,7 +398,7 @@ source install/setup.bash
 
 Pythonとの違いの見どころ: 応答を「返す」のか「書き込む」のか、型名が `Request`/`Response` のネストした型になること。
 
-### サンプルコードと解説（C++版）
+### 5-2. ①足し算: サーバ（`add_server.cpp`）
 
 ファイル: `ws/src/learn_cpp/src/add_server.cpp`
 
@@ -436,6 +457,8 @@ Python版と同じ「要求を受けて `a + b` を返す」サーバ。差分�
 
 観察ポイント: Python版のサーバと**入れ替えても、同じクライアントから同じ結果が返る**こと（サービス名と型が同じなら、実装言語は関係ない）。
 
+### 5-3. ①足し算: クライアント（`add_client.cpp`）
+
 ファイル: `ws/src/learn_cpp/src/add_client.cpp`
 
 <!-- file: ws/src/learn_cpp/src/add_client.cpp -->
@@ -493,9 +516,13 @@ Python版と同じ流れ（待つ → 要求を作る → 非同期に送る →
 - **`async_send_request(request)`**: Pythonの `call_async` に相当し、`future`（`shared_future`）を返す。
 - **`spin_until_future_complete(node, future)`**: 戻り値は `FutureReturnCode`。`SUCCESS` のときだけ `future.get()` で応答（`shared_ptr`）を取り出し、`->sum` を読む。それ以外（`TIMEOUT` や `INTERRUPTED`）は失敗として扱う。Pythonの `result() is not None` の判定に当たる。
 
-落とし穴: `future.get()` は、結果が入っていない状態で呼ぶと待たされるか例外になる。**先に戻り値が `SUCCESS` であることを確認してから**呼ぶ、という順序を守る。また、`spin_until_future_complete` を**サービスのコールバックの中で呼ぶ**と固まる（4節の「重要」と同じ理由）。
+落とし穴: `future.get()` は、結果が入っていない状態で呼ぶと待たされるか例外になる。**先に戻り値が `SUCCESS` であることを確認してから**呼ぶ、という順序を守る。また、`spin_until_future_complete` を**サービスのコールバックの中で呼ぶ**と固まる（4-1節の「重要」と同じ理由）。
 
 動作確認: Python版と同様に、`ros2 run learn_cpp add_client` と `--ros-args -p a:=10 -p b:=20` を、サーバありとなしの両方で試す。サーバなしのときは約5秒後にエラーログが出て、`echo $?` で終了コード1が見える（表示は6-1節の「期待する結果」を参照）。
+
+### 5-4. ②カウンタのリセット（`counter_node.cpp`）
+
+ここからは、①足し算とは別の組である（4-4節のPython版と同じ仕様）。
 
 ファイル: `ws/src/learn_cpp/src/counter_node.cpp`
 
@@ -570,9 +597,9 @@ Python版と同じく、タイマーによる配信と `reset_counter` サービ
 
 観察ポイント: Python版と同じ実験（6-2節）で、値が0に戻ること、`message` にリセット前の値が入ることを確認する。Python版とC++版で結果が同じになるかも見比べる。
 
-### 登録とビルド
+### 5-5. 登録とビルド（①・②共通）
 
-`CMakeLists.txt` に追記し、`install(TARGETS ...)` に名前を足す（これまでの分は残す。前のフェーズでC++版を作らなかったノードの名前は書かない。書くと、存在しないターゲットとしてビルドがエラーになる）。
+`CMakeLists.txt` に追記し、`install(TARGETS ...)` に名前を足す（これまでの分は残す。前のフェーズでC++版を作らなかったノードの名前は書かない。書くと、存在しないターゲットとしてビルドがエラーになる）。`add_executable` の3組のうち、最初の2組が①足し算、3組目が②カウンタのリセットである。
 
 <!-- snippet: cmake_service -->
 ```cmake
@@ -613,7 +640,7 @@ source install/setup.bash
 
 ## 6. 実験
 
-### 6-1. AddTwoInts
+### 6-1. ①足し算（`add_server`・`add_client`）
 
 必須の範囲だけを進めている場合は、T1でサーバを起動したら、T2のクライアントの代わりに、この後の「CLIからも呼べる」の `ros2 service call` を使う。
 
@@ -673,8 +700,10 @@ T1のサーバには `10 + 20 = 30` のログが出る。サーバから見る�
 > 課題2（`add_client` を作った場合）: クライアントを先に起動し、5秒以内にサーバを起動して、呼び出しが成功することを確認する（`wait_for_service` の効果）。
 >
 > 課題3: `ros2 service list -t`、`ros2 service type /add_two_ints`、`ros2 node info /add_server` で、サービスがどう見えるか確認する。
+>
+> 課題4: サーバ（`add_server`）の `on_request` の中で `time.sleep(3)`（C++は `std::this_thread::sleep_for`）を入れて、クライアントの呼び出しが3秒ブロックされることを確認する。その3秒の間に、別のターミナルから `ros2 service call` でもう1回呼ぶとどうなるかも考える（1スレッドの `spin` なので、1つ目の処理が終わるまで2つ目は待たされる）。
 
-### 6-2. Trigger（カウンタのリセット）（任意）
+### 6-2. ②カウンタのリセット（`counter_node`）（任意）
 
 ```bash
 # T1
@@ -715,8 +744,6 @@ std_srvs.srv.Trigger_Response(success=True, message='counter reset (was 8)')
 
 `echo` の値が0に戻り、サービスの応答に `success=True` と `message`（リセット前の値）が入っていることを確認する。C++版を作った場合は、C++版でも同様に確認する。
 
-> 課題4: サーバ（`add_server`）の中で `time.sleep(3)`（C++は `std::this_thread::sleep_for`）を入れて、クライアントの呼び出しが3秒ブロックされることを確認する。その間、サーバの他のコールバック（タイマー等）はどうなるか考える（現状は1スレッドの `spin` なので止まる）。
->
 > 課題5（発展）: `Trigger` のクライアントを自分で書き、`counter_node` をリセットするだけのノードを作る（AddTwoIntsのクライアントとの違いは、要求に中身がない点だけ）。
 
 ## 7. トピックとサービスの使い分け
