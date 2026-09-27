@@ -236,6 +236,7 @@ WSLg バージョン: 1.0.xx
 ### 5. 動作確認（Ubuntu内）
 
 1. `printenv ROS_DISTRO` が `jazzy` を返す。
+   - 次の2つの手順の `ros2 run` は、`ros2 run <パッケージ名> <実行ファイル名>` の形で、パッケージに入っているプログラムを起動するコマンドである。ここでは、ROS2に付属するデモ（C++版の送信側 `talker` と、Python版の受信側 `listener`）を起動する。
 2. T1（1つ目のターミナル）: `ros2 run demo_nodes_cpp talker`
 3. T2（2つ目のターミナル）: `ros2 run demo_nodes_py listener`
 4. T2にメッセージが表示されることを確認し、T1・T2とも Ctrl+C で終了する。
