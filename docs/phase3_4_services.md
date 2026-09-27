@@ -158,7 +158,7 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 | 非同期の呼び出し | `future = client.call_async(request)` |
 | 結果の待ち方 | `rclpy.spin_until_future_complete(node, future)` の後に `future.result()` |
 
-> **重要**: `spin_until_future_complete` は、**コールバックの中では呼ばない**（自分自身を止めて固まる）。`main` の中で使う。
+非同期の呼び出しと結果の待ち方（`future` の意味と、待ち方の注意）は、クライアントを書く4-3節で説明する。
 
 ### 4-2. ①足し算: サーバ（`add_server.py`。必須）
 
@@ -275,7 +275,9 @@ def main(args=None):
 - **`call_async(request)`**: 要求を送って、すぐ `future`（あとで結果が入る箱）を返す。ここでは結果はまだ無い。
 - **`rclpy.spin_until_future_complete(node, future)`**: `future` に結果が入るまでノードを回す（この間に応答を受け取る処理が動く）。これが終わってから `future.result()` で `Response` を取り出す。`result()` が `None` のときは呼び出しが失敗しており、`future.exception()` で原因が見られる。
 
-> なぜ「非同期」か: `call_async` は応答を待たずにすぐ戻るので、「結果をいつ取りに行くか」は自分で決める必要がある。このコードは `main` の中で `spin_until_future_complete` を使って待つ。ノードのコールバックの中から別のサービスを呼びたい場合は、この待ち方は使えない（4-1節の「重要」の注意）ので、futureの完了時に呼ばれるコールバックで結果を受ける、などの別の方法になる（このフェーズでは扱わない）。
+> なぜ「非同期」か: `call_async` は応答を待たずにすぐ戻るので、「結果をいつ取りに行くか」は自分で決める必要がある。このコードは `main` の中で `spin_until_future_complete` を使って待つ。ノードのコールバックの中から別のサービスを呼びたい場合は、この待ち方は使えないので、futureの完了時に呼ばれるコールバックで結果を受ける、などの別の方法になる（このフェーズでは扱わない）。
+
+> **重要**: `spin_until_future_complete` は、**コールバックの中では呼ばない**。`main` の中で使う。コールバックは `spin` に呼ばれて動いているので、その中でさらにノードを回して応答を待とうとすると、応答を受け取る処理が順番待ちのまま動けず、固まる。
 
 落とし穴:
 
@@ -514,7 +516,7 @@ Python版と同じ流れ（待つ → 要求を作る → 非同期に送る →
 - **`async_send_request(request)`**: Pythonの `call_async` に相当し、`future`（`shared_future`）を返す。
 - **`spin_until_future_complete(node, future)`**: 戻り値は `FutureReturnCode`。`SUCCESS` のときだけ `future.get()` で応答（`shared_ptr`）を取り出し、`->sum` を読む。それ以外（`TIMEOUT` や `INTERRUPTED`）は失敗として扱う。Pythonの `result() is not None` の判定に当たる。
 
-落とし穴: `future.get()` は、結果が入っていない状態で呼ぶと待たされるか例外になる。**先に戻り値が `SUCCESS` であることを確認してから**呼ぶ、という順序を守る。また、`spin_until_future_complete` を**サービスのコールバックの中で呼ぶ**と固まる（4-1節の「重要」と同じ理由）。
+落とし穴: `future.get()` は、結果が入っていない状態で呼ぶと待たされるか例外になる。**先に戻り値が `SUCCESS` であることを確認してから**呼ぶ、という順序を守る。また、`spin_until_future_complete` を**サービスのコールバックの中で呼ぶ**と固まる（4-3節の `add_client.py` の解説の末尾にある「重要」と同じ理由）。
 
 動作確認: Python版と同様に、`ros2 run learn_cpp add_client` と `--ros-args -p a:=10 -p b:=20` を、サーバありとなしの両方で試す。サーバなしのときは約5秒後にエラーログが出て、`echo $?` で終了コード1が見える（表示は6-1節の「期待する結果」を参照）。
 
@@ -699,7 +701,7 @@ T1のサーバには `10 + 20 = 30` のログが出る。サーバから見る�
 >
 > 課題3: `ros2 service list -t`、`ros2 service type /add_two_ints`、`ros2 node info /add_server` で、サービスがどう見えるか確認する。
 >
-> 課題4: サーバ（`add_server`）の `on_request` の中で `time.sleep(3)`（C++は `std::this_thread::sleep_for`）を入れて、クライアントの呼び出しが3秒ブロックされることを確認する。その3秒の間に、別のターミナルから `ros2 service call` でもう1回呼ぶとどうなるかも考える（1スレッドの `spin` なので、1つ目の処理が終わるまで2つ目は待たされる）。
+> 課題4: サーバ（`add_server`）の `on_request` の中で `time.sleep(3)`（C++は `std::this_thread::sleep_for`）を入れて、クライアントの呼び出しが3秒ブロックされることを確認する。その3秒の間に、別のターミナルから `ros2 service call` でもう1回呼ぶとどうなるかも考える（既定の `spin` は1つのスレッドでコールバックを1つずつ順に処理するので、1つ目の処理が終わるまで2つ目は待たされる）。
 
 ### 6-2. ②カウンタのリセット（`counter_node`）（任意）
 
