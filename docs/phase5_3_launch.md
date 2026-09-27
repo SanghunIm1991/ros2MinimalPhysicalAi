@@ -9,7 +9,7 @@
 
 > **進め方**: 2節で目標速度を送るノードを、3節でlaunchファイルとパラメータのYAMLを書く。4節で起動し、ログ・Gazebo・グラフで動きを見る。5節で、目標0で止まりきらない現象を、制御の式から読み解く。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時に、使い捨ての環境でビルドし、launchを起動して確かめた（Gazeboは画面なしで別に起動したので、画面の見え方と、`rqt_plot` のグラフは未確認）。出力が違う場合は、実機の表示を優先する。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。ビルドの表示と、launchの `--show-args`・`--print` の表示は、使い捨ての環境で確かめたもの。4-1節のlaunchのログ、4-2節のオドメトリの値、4-4節の `Ctrl+C` の後の表示、3-2節のエラーの表示は、使い捨ての環境で実際に実行した表示で、時刻・pid・パスは実行ごとに異なる（ログは抜粋）。4-2節の画面の様子と、4-3節のグラフの見え方は、ログの数値から筆者が想定したもの。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示の出どころは次のとおり。ビルドの表示と、launchの `--show-args`・`--print` の表示は、使い捨ての環境で確かめたもの。4-1節のlaunchのログ、4-2節のオドメトリの値、4-4節の `Ctrl+C` の後の表示、3-4節の末尾のエラーの表示は、使い捨ての環境で実際に実行した表示で、時刻・pid・パスは実行ごとに異なる（ログは抜粋）。4-2節の画面の様子と、4-3節のグラフの見え方は、ログの数値から筆者が想定したもの。
 
 ## 0. 学習目標と完了条件
 
@@ -217,30 +217,7 @@ gz_display:
 
 - 1つのファイルに、4つのノードのパラメータを並べている。最上位のキー（`vehicle_plant:` など）がノード名で、launchの `Node(name=...)` と一致したノードにだけ、その下の値が渡される（フェーズ4の4-4節）。各ノードには同じファイルを渡し、自分の名前の部分だけが使われる。
 - 書いていないパラメータ（`vehicle_plant` の `mass` など）は、コードの既定値のまま。ここには、よく変えて試すものだけを書いた。既定値と同じ値でも書いておくと、どの値で動かしたかがファイルを見れば分かる。
-- 配列は `[10.0, 50.0, 80.0]` のように書く。**小数点を付ける**。`[10, 50, 80]` と書くと整数の配列になり、2-2節の型（実数の配列）と合わずに起動が失敗する（7節の表と、この節の末尾の期待する結果）。
-
-`step_times` を整数で書いたときと、2つの配列の長さがそろっていないときのエラーは、次のように確かめられる（3-4節のビルドの後）。
-
-```bash
-ros2 run learn_py target_generator --ros-args -p "step_times:=[10, 50]" -p "step_values:=[10.0, 0.0]"
-
-ros2 run learn_py target_generator --ros-args -p "step_times:=[10.0, 50.0]" -p "step_values:=[10.0]"
-```
-
-**期待する結果**（最後の数行の抜粋。パスは環境によって異なる）:
-
-```text
-$ ros2 run learn_py target_generator --ros-args -p "step_times:=[10, 50]" -p "step_values:=[10.0, 0.0]"
-...
-rclpy.exceptions.InvalidParameterTypeException: Trying to set parameter 'step_times' to '[10, 50]' of type 'INTEGER_ARRAY', expecting type 'DOUBLE_ARRAY': step_times
-[ros2run]: Process exited with failure 1
-$ ros2 run learn_py target_generator --ros-args -p "step_times:=[10.0, 50.0]" -p "step_values:=[10.0]"
-...
-ValueError: step_times and step_values must have the same, non-zero length
-[ros2run]: Process exited with failure 1
-```
-
-1つめは、宣言した型（実数の配列）と違う型（整数の配列）が渡されたので、`declare_parameter` の時点でrclpyが止めている。2つめは、型は合っているが、2-2節の `check_steps` が長さの食い違いを見つけて止めている。どちらも、その前に `Traceback` から始まる数行が出る。
+- 配列は `[10.0, 50.0, 80.0]` のように書く。**小数点を付ける**。`[10, 50, 80]` と書くと整数の配列になり、2-2節の型（実数の配列）と合わずに起動が失敗する（7節の表と、3-4節の末尾の、型のエラーを確かめる手順の期待する結果）。
 
 ### 3-3. launchファイル（`launch/vehicle_sim.launch.py`）
 
@@ -371,6 +348,29 @@ ros2 launch learn_bringup vehicle_sim.launch.py --print
 - `IncludeLaunchDescription` は1行の `Action` として表示され、中身（Gazeboとブリッジ）までは展開されない。
 - `gz_display` の行は、`gazebo:=false` を付けて `--print` しても表示される。5-0の3-1節と同じく、`--print` は起動の条件を評価せずに一覧を出すためで、実際に起動したときは条件どおりになる。
 
+`step_times` を整数で書いたときと、2つの配列の長さがそろっていないときのエラーは、ビルドが済んだここで、次のように確かめられる（3-2節の3つめの項目の「小数点を付ける」と、2-2節の `check_steps` の確認）。
+
+```bash
+ros2 run learn_py target_generator --ros-args -p "step_times:=[10, 50]" -p "step_values:=[10.0, 0.0]"
+
+ros2 run learn_py target_generator --ros-args -p "step_times:=[10.0, 50.0]" -p "step_values:=[10.0]"
+```
+
+**期待する結果**（最後の数行の抜粋。パスは環境によって異なる）:
+
+```text
+$ ros2 run learn_py target_generator --ros-args -p "step_times:=[10, 50]" -p "step_values:=[10.0, 0.0]"
+...
+rclpy.exceptions.InvalidParameterTypeException: Trying to set parameter 'step_times' to '[10, 50]' of type 'INTEGER_ARRAY', expecting type 'DOUBLE_ARRAY': step_times
+[ros2run]: Process exited with failure 1
+$ ros2 run learn_py target_generator --ros-args -p "step_times:=[10.0, 50.0]" -p "step_values:=[10.0]"
+...
+ValueError: step_times and step_values must have the same, non-zero length
+[ros2run]: Process exited with failure 1
+```
+
+1つめは、宣言した型（実数の配列）と違う型（整数の配列）が渡されたので、`declare_parameter` の時点でrclpyが止めている。2つめは、型は合っているが、2-2節の `check_steps` が長さの食い違いを見つけて止めている。どちらも、その前に `Traceback` から始まる数行が出る。
+
 ## 4. 動かす
 
 ### 4-1. Gazeboなしで起動する
@@ -461,9 +461,13 @@ launchを起動した直後に、別のターミナルで `rqt_plot` を開き�
 ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/pedal/data
 ```
 
-**期待する結果**: `rqt_plot` のウィンドウが開き、3本の線が時間とともに右へ伸びていく。ペダルは−1〜1、速度と目標は0〜10なので、ペダルの線は下のほうで小さく動いて見える。ウィンドウの上部にある拡大の機能で縦軸を広げると読みやすい。
+引数には、描きたい値を `/トピック名/フィールド名` の形で並べる。`std_msgs/msg/Float64` の値は `data` というフィールドに入っているので、`/target_velocity/data` のように書く。
 
-グラフの読み方（4-1節のログの数値から想定した形）:
+**期待する結果**: `rqt_plot` のウィンドウが開き、3本の線が時間とともに右へ伸びていく。ペダルは−1〜1、速度と目標は0〜10なので、ペダルの線は下のほうで小さく動いて見える。グラフの近くに並ぶボタンのうち、虫眼鏡のボタン（Zoom）でドラッグして囲んだ範囲を拡大できる。折れ線グラフの形のボタン（Figure options）では、縦軸の範囲を数で指定できる（たとえば−1.2〜11にすると、ペダルと速度の線を両方読みやすい）。ボタンの並びは、`rqt_plot` が描画に使う部品によって違うことがある（フェーズ6-1の3-2節の表と注記）。
+
+横軸は、`rqt_plot` を開いてからの秒数である。下の表の区間の時刻は、launchを起動してからの秒数なので、グラフの目盛りとは、launchを起動してから `rqt_plot` を開くまでの時間の分だけずれる。
+
+グラフの読み方（4-1節のログの数値から想定した形。時刻はlaunchを起動してからの秒数）:
 
 | 区間 | 目標 | 速度の線 | ペダルの線 |
 |---|---|---|---|
