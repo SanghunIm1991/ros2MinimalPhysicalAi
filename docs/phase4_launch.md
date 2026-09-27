@@ -54,7 +54,7 @@ flowchart LR
 
 </details>
 
-launchファイルの合成（`IncludeLaunchDescription`）:
+launchファイルの合成（`IncludeLaunchDescription`）。4-6節で作る、書いたlaunchファイルを部品として組み合わせる例で、図の `IncludeLaunchDescription`（別のlaunchファイルを呼び出す）・`GroupAction`（中の指定をまとめて効かせる）・namespace（ノード名やトピック名の前に `demo` を付けて住み分ける）の使い方は4-6節で扱う。ここでは「launchファイルは組み合わせられる」ことだけ掴めばよい:
 
 ![compose.launch.pyが、GroupActionでnamespaceをdemoにしてpubsub.launch.pyをincludeし、param.launch.pyもincludeする](img/phase4_compose.svg)
 
@@ -403,7 +403,7 @@ YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序�
 |---|---|---|---|
 | 行数（`pubsub.launch.*`。概要のコメント行を除く） | 25行 | 7行 | 19行 |
 | 引数の埋め込み | `LaunchConfiguration('引数名')`（Pythonのオブジェクトとして扱う） | `$(var 引数名)` | `$(var 引数名)`（XMLと共通の記法） |
-| 条件分岐・計算 | 可能（`IfCondition`・`PythonExpression`や、素のPythonの関数・分岐がそのまま使える） | 不可（宣言的な起動の一覧のみ） | 不可（同左） |
+| 条件分岐・計算 | 可能（条件で起動するかを切り替える `IfCondition`・Pythonの式を評価する `PythonExpression` や、素のPythonの関数・分岐がそのまま使える） | 不可（宣言的な起動の一覧のみ） | 不可（同左） |
 
 行数だけならXMLが圧倒的に短いが、これは「talker/listenerを1つずつ書くだけ」という単純な内容だから。4-4・4-6のようにパスの組み立てや条件分岐が絡むと、Python形式でないと書けない処理が増える（この節の末尾の課題4で、3形式を実際に動かして確かめる）。
 
@@ -747,7 +747,7 @@ source install/setup.bash
 | `namespace`と`remap`の効き方 | 名前空間は**相対名**（先頭が`/`でない名前）にだけ効く。絶対名（`/chatter`等）で書かれたノードには効かない（4-6節）。remapは送信側・受信側の**両方**に同じ指定が要る（片方だけだとつながらなくなる） |
 | Python／XML／YAMLの使い分け | 単純な起動の並びはXML/YAMLが短く書ける（`pubsub.launch.*`で7行・19行・25行）。条件分岐・計算・パスの組み立てが要る場合（4-4・4-6）はPython形式でないと書けない（4-3節） |
 
-フェーズ3-1〜3-5・フェーズ2の各「Python版とC++版の違いのまとめ」節と合わせて読み返すと、**1-7の振り返り**（コード量・型の扱い・ビルド手順・つまずきの傾向）の材料になる。フェーズ5の言語方針（Python中心）は既に決定済みだが、この振り返りは今後C++で書く場合の勘所の再確認として使える。
+フェーズ3-1〜3-5・フェーズ2の各「Python版とC++版の違いのまとめ」節と合わせて読み返すと、**1-7の振り返り**（[学習計画](learning_plan.md)でフェーズ3・4の後に置いた、PythonとC++を比べる振り返り。コード量・型の扱い・ビルド手順・つまずきの傾向）の材料になる。フェーズ5の言語方針（Python中心）は既に決定済みだが、この振り返りは今後C++で書く場合の勘所の再確認として使える。
 
 ## 7. つまずきやすい点
 
