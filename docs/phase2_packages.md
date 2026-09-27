@@ -63,6 +63,13 @@ flowchart LR
 
 ### 1-3. 2種類のパッケージの違い
 
+次の表は、2節で作る2種類のパッケージの違いを先に並べたものである。表に出てくるファイルや設定は、2-2節〜2-7節で実物を見ながら確かめるので、ここでは名前を眺める程度でよい。
+
+- `setup.py`・`setup.cfg`: Pythonのパッケージのビルドとインストールの設定（`setup.cfg` は、インストール先などの細かな設定を分けて書いたもの）。`install_requires` は、`setup.py` に書く「動かすのに要るPythonのパッケージ」の一覧。
+- `package.xml`: パッケージの名前・メンテナ・依存（`<depend>`）などを書く、ROS2のパッケージの設定ファイル（2-2節）。
+- `entry_points` の `console_scripts`（Python）と `add_executable`・`install(TARGETS ...)`（C++）: `ros2 run` で起動できる実行ファイルとして登録する書き方（1-4節、2-6節）。`find_package` は、C++で使う外部のパッケージを探して使えるようにする命令。
+- `--symlink-install`: `colcon build` に付けるオプション。ソースを `install/` へ写す代わりに、リンク（参照）でつなぐ。Pythonなら、ソースを書き換えるだけで、ビルドし直さずに反映される（2-6節の課題3、2-7節）。
+
 | 観点 | `ament_python` | `ament_cmake`（C++） |
 |---|---|---|
 | ビルド設定 | `setup.py` と `setup.cfg` | `CMakeLists.txt` |
@@ -110,10 +117,10 @@ Ubuntu 24.04では、`g++` の実体は `g++-13`（GCC 13系）になる。`g++ 
 | 概念 | 何の単位か | どこで見える・使うか |
 |---|---|---|
 | 実行ファイル | ビルド・パッケージングの単位（プロセスとして起動できるもの） | `ros2 pkg executables`、`ros2 run <pkg> <実行ファイル>` |
-| ノード | 実行時（ランタイム）の単位。`rclpy.Node` / `rclcpp::Node` のインスタンス | `ros2 node list`、トピック/サービス/パラメータの持ち主 |
+| ノード | 実行時（ランタイム）の単位。コードの上では、ROS2のライブラリ（Pythonは `rclpy`、C++は `rclcpp`）が用意する `Node` クラスのインスタンス（フェーズ3-1で書く） | `ros2 node list`、トピック/サービス/パラメータの持ち主 |
 | launchファイル | 複数の実行ファイル（＝複数のノード）をまとめて起動する設定の単位 | `ros2 launch <pkg> <ファイル>`（フェーズ4で扱う） |
 
-この手順書のように「1つの実行ファイルの `main()` が1つのノードを作ってspinする」のが最小構成では最も単純で典型的な形だが、**実行ファイルとノードは厳密には1対1ではない**。1つの実行ファイル（1プロセス）が複数のノードを作って同時にspinすることもできるし、逆にノード単体を `ros2 run` で直接起動する方法はない（必ず「それを起動する実行ファイル」を経由する）。launchファイルはさらに1段上の層で、`ros2 pkg executables` には出てこず、`ros2 run` の対象にもならない（`ros2 launch` 専用のファイル）。フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）で、launchファイルが複数の実行ファイル＝ノードをまとめて起動する様子を実際に書いて確認する。
+この手順書で作る雛形の `hello` は、文字を表示するだけで、まだノードを作らない。フェーズ3-1（[`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md)）以降のサンプルのように「1つの実行ファイルの `main()` が1つのノードを作ってspinする」（spinは、届いたメッセージやタイマーに応じてコールバックを呼びながら、ノードを動かし続ける処理。フェーズ3-1の1節）のが、最小構成では最も単純で典型的な形だが、**実行ファイルとノードは厳密には1対1ではない**。1つの実行ファイル（1プロセス）が複数のノードを作って同時にspinすることもできるし、逆にノード単体を `ros2 run` で直接起動する方法はない（必ず「それを起動する実行ファイル」を経由する）。launchファイルはさらに1段上の層で、`ros2 pkg executables` には出てこず、`ros2 run` の対象にもならない（`ros2 launch` 専用のファイル）。フェーズ4（[`docs/phase4_launch.md`](phase4_launch.md)）で、launchファイルが複数の実行ファイル＝ノードをまとめて起動する様子を実際に書いて確認する。
 
 ## 2. 手順
 
@@ -377,6 +384,8 @@ install/learn_cpp/lib/learn_cpp/hello: ELF 64-bit LSB pie executable, x86-64, ..
 > 課題3: `--symlink-install` を付けた場合に、Pythonのソースがどうつながっているかを `ls -l build/learn_py/` で確認する。`learn_py -> .../ws/src/learn_py/learn_py` というシンボリックリンクがあり、`build/` 側から `src/` のコードを直接指していることが分かる。`install/learn_py/lib/python3.12/site-packages/` には `learn-py.egg-link` という小さなファイルがあり、中身（`cat` で読める）は `build/learn_py` の場所を示している。つまり「`install/` → `build/` → `src/`」とたどって、編集中のソースがそのまま使われる。
 
 ### 2-7. 修正の反映を体験する（`--symlink-install` の効果）
+
+ここで初めて、練習環境のファイルを書き換える。ファイルを開いて書き換える方法（`nano` を使う方法と、VS Codeを使う方法）は、[`docs/howto_place_code.md`](howto_place_code.md) にまとめている。既にあるファイルを開いて書き換える手順は、その4節（`nano setup.py` で開く、VS Codeのエクスプローラーから開く等）を、`hello.py` に読み替えればよい。
 
 **Python（再ビルド不要）**: `learn_py/learn_py/hello.py` の `print` の文言を書き換え、**ビルドせずに**実行する。
 
