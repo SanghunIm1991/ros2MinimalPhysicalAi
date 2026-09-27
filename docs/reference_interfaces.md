@@ -132,7 +132,7 @@ Pythonの `list` を渡しても、中では `array.array`（同じ型の数値�
 
 ### 2-4. 別のメッセージを項目にする（入れ子）
 
-項目の型には、基本の型のほかに、別のメッセージの型も書ける。フェーズ5-0・5-4で使うオドメトリ（`nav_msgs/msg/Odometry`）は、入れ子の深い例である。`ros2 interface show` は、入れ子の型の中身も字下げで表示する。ここでは `--no-comments` を付けて、コメントを省いた。
+項目の型には、基本の型のほかに、別のメッセージの型も書ける。フェーズ5-0・5-4で使うオドメトリ（`nav_msgs/msg/Odometry`。車輪の回転などから推定した、移動ロボットの位置と速度）は、入れ子の深い例である。`ros2 interface show` は、入れ子の型の中身も字下げで表示する。ここでは `--no-comments` を付けて、コメントを省いた。
 
 ```bash
 ros2 interface show nav_msgs/msg/Odometry --no-comments
@@ -172,7 +172,7 @@ geometry_msgs/TwistWithCovariance twist
 	float64[36] covariance
 ```
 
-- 字下げが1段深い行は、その上の行の型の中身である。たとえば `pose` の中に `pose`（[`Pose`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Pose.msg)）があり、その中に `position`（`Point`）と `orientation`（[`Quaternion`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Quaternion.msg)）がある。Pythonでは、この段を `msg.pose.pose.position.x` のように `.` でたどる（フェーズ6-2で書く見張りのノード `goal_monitor` も、この書き方でオドメトリの位置を読む）。
+- 字下げが1段深い行は、その上の行の型の中身である。たとえば `pose` の中に `pose`（[`Pose`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Pose.msg)）があり、その中に `position`（`Point`。位置）と `orientation`（[`Quaternion`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Quaternion.msg)。クォータニオンという、4つの数で3次元の向きを表す形式）がある。Pythonでは、この段を `msg.pose.pose.position.x` のように `.` でたどる（フェーズ6-2で書く見張りのノード `goal_monitor` も、この書き方でオドメトリの位置を読む）。
 - 別のパッケージの型は [`std_msgs/Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg) のように「パッケージ名/型名」で書き、同じパッケージの型は `Pose` のように型名だけで書ける（[`PoseWithCovariance`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/PoseWithCovariance.msg) は `geometry_msgs` の型なので、中の `Pose` は `geometry_msgs` の `Pose` になる）。定義ファイルの中では、間の `msg` を書かない。
 - `Quaternion` の `float64 w 1` の最後の `1` は既定値である（2-5節）。
 - `covariance` は、値がどれくらい不確かかを表す表（共分散行列）で、この資料では立ち入らない。
@@ -245,7 +245,7 @@ string msg
 
 時刻を持つ型と持たない型では、受け取る側の扱いが変わる。たとえば `rqt_plot` は、時刻の欄を持たない `Float64` の値を、届いた時刻で横軸に並べる（フェーズ6-1の3-1節）。時刻を持つ型なら、送った側が付けた時刻で扱える。
 
-ただし、付ける時刻がPCの時計（現在時刻）なら、PCの時計が時刻合わせで飛んだとき（フェーズ6-1の2-2節の注記）、付ける時刻も同じだけ飛ぶ。時刻を付けておけば時計の飛びを後から直せる、というわけではない。直せるのは、シミュレーション時刻（フェーズ5-4の5節）のように、PCの時計とは別に進む時刻を付けた場合である。
+ただし、付ける時刻がPCの時計（現在時刻）なら、PCの時計が時刻合わせで飛んだとき（フェーズ6-1の2-2節の注記）、付ける時刻も同じだけ飛ぶ。時刻を付けておけば時計の飛びを後から直せる、というわけではない。直せるのは、シミュレーション時刻（シミュレータが自分の計算に合わせて進める時刻。フェーズ5-4の5節）のように、PCの時計とは別に進む時刻を付けた場合である。
 
 ### 3-3. 単位と向きの決まり
 
@@ -301,7 +301,7 @@ angular:
 
 ## 6. 自作する
 
-ここでは、フェーズ5の車両の値を題材に、メッセージ・サービス・アクションを1つずつ定義する。作るのは次の3つである（どれも手順書のノードでは使わない、練習用の型）。
+ここでは、フェーズ5の車両の値を題材に、メッセージ・サービス・アクションを1つずつ定義する。フェーズ5では、前後にだけ動く車両の速度を、目標速度に合わせて制御する。ペダルはアクセルとブレーキの踏み込みを1つの数（−1〜1。正がアクセル、負がブレーキ）で表した値、PI制御のゲインは、目標との差からペダルを決めるときの強さを表す係数（ $K_p$・ $K_i$ の2つ）である。作るのは次の3つである（どれも手順書のノードでは使わない、練習用の型）。
 
 | 種類 | 型 | 中身 |
 |---|---|---|
@@ -511,7 +511,7 @@ learn_interfaces.msg.VehicleState(header=std_msgs.msg.Header(stamp=builtin_inter
 
 指定しなかった項目（`header`・`target_velocity`）は、既定の0や空の値で作られている（2-5節）。定数 `PEDAL_MAX` は、作ったメッセージではなく、型（クラス）から読める。サービスとアクションは、`from learn_interfaces.srv import SetGains`・`from learn_interfaces.action import DriveDistance` で読み込み、`SetGains.Request(kp=0.5, ki=0.1)`・`DriveDistance.Goal(distance=450.0)` のように要求やゴールを作る（フェーズ3-4・3-5の `AddTwoInts.Request()`・`Fibonacci.Goal()` と同じ形）。
 
-**C++**: `CMakeLists.txt` で `find_package(learn_interfaces REQUIRED)` とし、`ament_target_dependencies` に `learn_interfaces` を足す（フェーズ3-4の5-5節の `example_interfaces` と同じ形）。コードでは、ヘッダを `#include` して、型名で使う。
+**C++**: `CMakeLists.txt` で `find_package(learn_interfaces REQUIRED)` とし、`ament_target_dependencies` に `learn_interfaces` を足す（フェーズ3-1の4-2節で `talker` に `std_msgs` を足したのと同じ形）。コードでは、ヘッダを `#include` して、型名で使う。
 
 ```cpp
 #include "learn_interfaces/msg/vehicle_state.hpp"
