@@ -3,14 +3,14 @@
 [`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-5）に対応する。時間のかかる処理に対し、ゴールの送信・途中経過（フィードバック）・最終結果・中断を扱う通信を扱う（概要を掴む程度でよい。サンプルはPython版・C++版の両方を載せる）。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ3-1〜3-3完了。フェーズ3-4（サービス）は概要を掴んでいれば十分
-- 所要目安: 概要を掴むだけなら0.5コマ（1・2・6-1・7節を読む）。サンプルまで書いて動かす場合は2コマ（コード量が多い）
+- 前提: フェーズ3-1〜3-3完了（フェーズ3-4（サービス）は任意で、済ませていなくてよい。サービスは、フェーズ1の3-5節でCLIから使った「要求→応答」の通信のこと）
+- 所要目安: 概要を掴むだけなら0.5コマ（1・2・6-1節を読む）。サンプルまで書いて動かす場合は2コマ（コード量が多い）
 - 言語: サンプルはPython・C++の両方（実装する場合も、C++版は任意）
 - 使う標準インターフェース: [`example_interfaces/action/Fibonacci`](https://github.com/ros2/example_interfaces/blob/jazzy/action/Fibonacci.action)（WSLの `/opt/ros/jazzy/share/example_interfaces/action/Fibonacci.action` で内容を確認済み）
 
 > **このフェーズの位置づけ（概要を掴む程度で構わない）**: アクションは、このプロジェクトのゴールであるフェーズ5の車両シミュレーション（プラント・PI制御・目標速度の3ノードをトピックでつなぎ、ゲインをパラメータで調整する）では使わない。ここで身に着けたいのは、「アクションは、時間のかかる処理にゴール・途中経過（feedback）・結果（result）・中断（cancel）を付けた通信で、サービスとはこう使い分ける」という**概念まで**である。ナビゲーション（Nav2）やアームの軌道実行など、将来アクションを使うOSSに触れたときに、何をしているかが分かれば十分。
 >
-> 概要だけを掴む場合は、1節（全体像）→ 2節（仕様）→ 6-1節（CLIから使う。「期待する結果」を読む）→ 7節（Python版とC++版の違いのまとめ）の順に読めばよい。3〜5節のサンプルコード（特にC++版）と、中断を受け付けるための実行の仕組み（マルチスレッドexecutor・別スレッド）は、余力があるときの発展として扱ってよい。フェーズ1の3-7節で、turtlesimのアクション（`rotate_absolute`）をCLIから一度使っているので、その体験と結び付けて読むと分かりやすい。
+> 概要だけを掴む場合は、1節（全体像）→ 2節（仕様）→ 6-1節（CLIから使う。「期待する結果」を読む）の順に読めばよい（サービスとの使い分けは、1節の「サービスとの違い」の表にある。7節の「Python版とC++版の違いのまとめ」は、4・5節のサンプルを読んだ人向け）。3〜5節のサンプルコード（特にC++版）と、中断を受け付けるための実行の仕組み（マルチスレッドexecutor・別スレッド）は、余力があるときの発展として扱ってよい。フェーズ1の3-7節で、turtlesimのアクション（`rotate_absolute`）をCLIから一度使っているので、その体験と結び付けて読むと分かりやすい。
 
 > **進め方**（サンプルまで書いて動かす場合）: 今までより長いので、まず**Pythonを完成**させ、動作を理解してからC++に進む。仕様（2節）は「何を作るか」の定義で、APIの使い方までは書いていない。まず「主なAPI」表でアクション関連のAPI（サーバ・クライアントの作成、goal_handleのプロパティ・メソッド）を把握し、サンプルコードと解説を読んで理解する。読んで分かったら、フィボナッチ数列の代わりに別の計算にする、フィードバックの頻度を変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時にビルド確認済みで、手順は実機で実行して確認済み（2026-09-27）。出力が細部で違う場合は、実機の表示を優先する。
 
@@ -112,13 +112,13 @@ int32[] sequence
 
 ## 3. 準備: 依存の追加
 
-**Python（`ws/src/learn_py/package.xml`）**: 次の行を足す（`example_interfaces` は3-4で追加済み）。
+**Python（`ws/src/learn_py/package.xml`）**: 次の行を足す。`action_msgs` は、クライアントが結果の状態（成功・中断など）を表す型 [`action_msgs/msg/GoalStatus`](https://github.com/ros2/rcl_interfaces/blob/jazzy/action_msgs/msg/GoalStatus.msg) を使うために要る。
 
 ```xml
 <depend>action_msgs</depend>
 ```
 
-**C++（`ws/src/learn_cpp/package.xml`）**: 次の行を足す。
+**C++（`ws/src/learn_cpp/package.xml`）**: 次の行を足す。`rclcpp_action` は、C++でアクションのサーバ・クライアントを作るためのライブラリ。
 
 ```xml
 <depend>rclcpp_action</depend>
@@ -130,6 +130,20 @@ C++の `CMakeLists.txt` にも足す（既存の `find_package(...)` の並び�
 ```cmake
 find_package(rclcpp_action REQUIRED)
 ```
+
+**`example_interfaces` の依存（フェーズ3-4を飛ばした場合だけ）**: 使うアクションの型 `Fibonacci` は、`example_interfaces` パッケージのもの。フェーズ3-4（[`docs/phase3_4_services.md`](phase3_4_services.md)）の3節を済ませていれば、依存は足してあるので、ここは読み飛ばしてよい。3-4を飛ばした場合は、`package.xml`（Python版は `learn_py`、C++版を作る場合は `learn_cpp` にも）に次の行を足す。
+
+```xml
+<depend>example_interfaces</depend>
+```
+
+C++版を作る場合は、`ws/src/learn_cpp/CMakeLists.txt` にも足す（既存の `find_package(...)` の並びへ）。これが無いと、5節の `ament_target_dependencies(... example_interfaces)` でビルドがエラーになる。
+
+```cmake
+find_package(example_interfaces REQUIRED)
+```
+
+`example_interfaces` は Desktop Install に含まれる。`ros2 interface show example_interfaces/action/Fibonacci`（1節）で定義が表示されれば、導入済み。
 
 ## 4. Python版（`ws/src/learn_py`）
 
@@ -148,6 +162,8 @@ find_package(rclcpp_action REQUIRED)
 | ゴール送信 | `client.send_goal_async(goal, feedback_callback=...)`（Futureを返す） |
 | 結果の取得 | `goal_handle.get_result_async()`（Futureを返す）。`add_done_callback` で受ける |
 | 中断要求 | `goal_handle.cancel_goal_async()` |
+
+表の `Future` は「後で結果が入る入れ物」で、送信した関数はすぐ戻り、返事が届くとこの入れ物に結果が入る。`add_done_callback` は「結果が入ったら、この関数を呼んでほしい」という登録（使い方は `fibonacci_client.py` の解説）。
 
 > **重要（中断の仕組み）**: サーバの実行処理が `time.sleep` で待っている間、通常の単一スレッドのexecutorでは、他のコールバック（中断要求の受付）が動けない。そこで、`MultiThreadedExecutor` と `ReentrantCallbackGroup` を使い、実行処理と並行して中断要求を処理できるようにする。C++版では代わりに、実行処理を**別スレッド**で行う。
 
@@ -846,9 +862,9 @@ ros2 run learn_py fibonacci_client --ros-args -p order:=10 -p cancel_after:=3.0
 
 | 観点 | Python | C++ |
 |---|---|---|
-| サーバの構成 | `ActionServer(...)`に`execute_callback`／`goal_callback`／`cancel_callback`の3つを**キーワード引数**で渡す | `create_server<Fibonacci>(...)`に3つの処理を**位置引数のラムダ**として順番に渡す（対応は4節の表） |
-| 実行処理の動かし方 | `MultiThreadedExecutor` + `ReentrantCallbackGroup`で、executorのスレッドを複数化して中断要求と実行処理を並行させる | `cancel_callback`側で`std::thread(...).detach()`し、実行(`execute`)を明示的に別スレッドへ逃がす（学習用の簡易策。終了時にスレッドが残りうる点は8節の注意） |
-| クライアントの結果の受け方 | `send_goal_async` → `Future`に`add_done_callback`で応答（受理/拒否）、`get_result_async()`にも`add_done_callback`で最終結果、という**Futureの連鎖** | `send_goal_options`に`goal_response_callback`／`feedback_callback`／`result_callback`を設定し、`async_send_goal(goal, options)`で送る（対応は6節の表） |
+| サーバの構成 | `ActionServer(...)`に`execute_callback`／`goal_callback`／`cancel_callback`の3つを**キーワード引数**で渡す | `create_server<Fibonacci>(...)`に3つの処理を**位置引数のラムダ**として順番に渡す（対応は5節の `fibonacci_server.cpp` の解説の表） |
+| 実行処理の動かし方 | `MultiThreadedExecutor` + `ReentrantCallbackGroup`で、executorのスレッドを複数化して中断要求と実行処理を並行させる | 受理後に呼ばれる3つ目のラムダ（accepted処理）の中で`std::thread(...).detach()`し、実行(`execute`)を明示的に別スレッドへ逃がす（学習用の簡易策。終了時にスレッドが残りうる点は8節の注意） |
+| クライアントの結果の受け方 | `send_goal_async` → `Future`に`add_done_callback`で応答（受理/拒否）、`get_result_async()`にも`add_done_callback`で最終結果、という**Futureの連鎖** | `SendGoalOptions`（変数`options`）に`goal_response_callback`／`feedback_callback`／`result_callback`を設定し、`async_send_goal(goal, options)`で送る（対応は5節の `fibonacci_client.cpp` の解説の表） |
 | コード行数（サーバ＋クライアント。概要のコメント行を除く） | 136行（63＋73） | 175行（74＋101） |
 
 実行モデルの違い（Pythonは「executorとコールバックグループ」、C++は「明示的なスレッド生成」）が、アクションで初めて表面化するPython/C++の一番大きな差。どちらも「長時間処理の間もサーバが他の要求に応答できるようにする」という同じ目的のための工夫だが、手段が異なる。
