@@ -61,6 +61,9 @@ the author (SanghunIm1991) and the license are credited.
    - docs/tips.md で引用した `CMakeLists.txt` の各行:
      `ros2 pkg create` の雛形（ros2pkg）, Apache License 2.0
    - docs/tips.md で引用した警告の文面: setuptools, MIT License
+   - docs/reference_interfaces.md 等に `ros2 interface show` の表示として載せた
+     標準の型の定義: ROS 2 の common_interfaces・rcl_interfaces,
+     Apache License 2.0
    - 「期待する結果」等に載せたコマンドの出力: 各ツールの表示
 
    このリポジトリは、ROS2・Gazebo・turtlesim等のソフトウェアを同梱していない。

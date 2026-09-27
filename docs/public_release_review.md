@@ -76,9 +76,9 @@ git ls-files | grep -E '^(notes|ws)/|\.(env|pem|key|tar|vhdx)$'
 | 観点 | 具体例 | 主な置き場所 |
 |---|---|---|
 | 公式ドキュメントの抜粋 | 抜粋した箇所に、帰属表示（出典・ライセンス（CC BY 4.0）へのリンク・改変の有無）が残っているか | [`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) の手順4 |
-| 各冊の出典注記 | 公式チュートリアルと同等のコマンド・API利用パターンを含む冊に、出典（元にしたものとそのライセンス。公式ドキュメントならCC BY 4.0）と「逐語の転載でない」旨の注記があるか | `docs/phase*.md`、[`docs/interlude_components.md`](interlude_components.md)、[`docs/tips.md`](tips.md)、[`docs/reference_node_class.md`](reference_node_class.md) |
+| 各冊の出典注記 | 公式チュートリアルと同等のコマンド・API利用パターンを含む冊に、出典（元にしたものとそのライセンス。公式ドキュメントならCC BY 4.0）と「逐語の転載でない」旨の注記があるか | `docs/phase*.md`、[`docs/interlude_components.md`](interlude_components.md)、[`docs/tips.md`](tips.md)、[`docs/reference_node_class.md`](reference_node_class.md)、[`docs/reference_interfaces.md`](reference_interfaces.md) |
 | 同等の値の明記 | コマンド例の値が公式の例と同等である旨の記述が残っているか | [`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md) |
-| 引用の範囲 | 雛形の `CMakeLists.txt`（Apache 2.0）の各行や、setuptoolsの警告文の引用が、説明に必要な範囲に留まり、出典があるか | [`docs/tips.md`](tips.md) |
+| 引用の範囲 | 雛形の `CMakeLists.txt`（Apache 2.0）の各行や、setuptoolsの警告文の引用や、標準の型の定義（`ros2 interface show` の表示）が、説明に必要な範囲に留まり、出典があるか | [`docs/tips.md`](tips.md)、[`docs/reference_interfaces.md`](reference_interfaces.md) |
 | ソースの解説 | `rclpy`・`rclcpp` のソースを、丸ごと写さず自分の言葉で解説しているか | [`docs/reference_node_class.md`](reference_node_class.md) |
 | 図 | `docs/img/` のSVGが自作のもので、第三者の図・ロゴ・埋め込み画像が混ざっていないか | `docs/img/` |
 | サンプルコード | 公式チュートリアルや他のリポジトリのコードを、丸ごと転載していないか | 各手順書のコードブロック |
@@ -102,7 +102,7 @@ git grep -nE '<image|href="https?:' -- 'docs/img/*.svg'
 出典・出どころの注記が無い文書を一覧する。
 
 ```bash
-grep -LE '出典|出どころ|CC BY' docs/phase*.md docs/interlude_components.md docs/tips.md docs/reference_node_class.md docs/setup_wsl2_ros2.md
+grep -LE '出典|出どころ|CC BY' docs/phase*.md docs/interlude_components.md docs/tips.md docs/reference_*.md docs/setup_wsl2_ros2.md
 ```
 
 **見方**: 1つ目と2つ目は、何も表示されなければ問題ない。3つ目で表示された文書は、公式ドキュメント・ソース・記事に由来する内容を含まないかを確かめ、含むなら注記を足す。元にしたものによってライセンスが違う（ROS2の公式ドキュメントはCC BY 4.0、ROS2のソースや雛形はApache 2.0など）ので、注記の有無だけでなく、文面（元にしたもの・ライセンス・逐語の転載でない旨）が合っているかは2-3節で目視する。
