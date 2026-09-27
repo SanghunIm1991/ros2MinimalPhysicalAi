@@ -459,7 +459,7 @@ def generate_launch_description():
 | `launch_arguments={... 'gazebo': 'false'}` | 取り込む側の引数を渡す。`gazebo` は `vehicle_sim.launch.py` の引数で、記録では表示用のGazeboを外す。`gazebo_plant.launch.py` にはこの引数が無いが、使われない値を渡しても問題はない |
 | `ExecuteProcess(cmd=['ros2', 'bag', 'record', ...])` | ROS2のノードではないコマンドを、launchから起動する。`ros2 bag record` も、ほかのプロセスと同じく、`Shutdown` で割り込みを受けて止まる |
 
-> 課題3（フェーズ6-3への準備）: `vehicle_sim_record.yaml` を写して `slow_brake_record.yaml` を作り、`vehicle_plant` の `tau_brake` を1.0にする（フェーズ5-3の4-5節と同じ条件）。この手順書の4-5節の `record.launch.py` の起動のコマンドを、`ros2 launch learn_bringup record.launch.py params_file:=$HOME/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config/slow_brake_record.yaml bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/slow_brake` として記録する（`~` ではなく `$HOME` と書く理由は、フェーズ5-3の4-5節）。新しいYAMLなので、記録の前にビルドし直す。この記録は、フェーズ6-3で比べるのに使う。
+> 課題3（フェーズ6-3への準備）: `vehicle_sim_record.yaml` を `ws/config/` に `slow_brake_record.yaml` という名前で写し、`vehicle_plant` の `tau_brake` を1.0にする（フェーズ5-3の4-5節の `slow_brake.yaml` と同じ条件・同じ置き場所）。4-5節のビルドを済ませた後、`ros2 launch learn_bringup record.launch.py params_file:=$HOME/work/ros2MinimalPhysicalAi/ws/config/slow_brake_record.yaml bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/slow_brake` として記録する（`~` ではなく `$HOME` と書く理由は、フェーズ5-3の4-5節）。YAMLを絶対パスで渡すので、このYAMLのためにビルドし直す必要は無い。この記録は、フェーズ6-3で比べるのに使うので、飛ばさずに取っておく。
 
 ### 4-5. ビルドして、記録する
 
