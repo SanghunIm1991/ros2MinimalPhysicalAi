@@ -150,9 +150,9 @@
 | 3-2a | [`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-26）。作成時にビルド・import確認済み。2026-09-24に旧3-2（Twist・QoS）から分割 |
 | 3-2b | [`docs/phase3_2b_qos.md`](phase3_2b_qos.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-26）。作成時にビルド・import確認済み。2026-09-24に旧3-2から分割 |
 | 3-3 | [`docs/phase3_3_parameters.md`](phase3_3_parameters.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-26）。作成時にビルド・import確認済み。5-3節・5-4節の `ros2 param` の表示（Python版）は実機の表示に合わせて修正済み |
-| 3-4 | [`docs/phase3_4_services.md`](phase3_4_services.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断） |
-| 3-5 | [`docs/phase3_5_actions.md`](phase3_5_actions.md) | Python（C++版は任意。サンプルは両方） | 作成済み（ビルド・import確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断） |
-| 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 作成済み（ビルド・launchの`--print`確認済み。ノード実行は未確認）。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断。フェーズ5-1はlaunchを書かないので4より先でもよい。launch化するフェーズ5-3までに終える） |
+| 3-4 | [`docs/phase3_4_services.md`](phase3_4_services.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-27）。作成時にビルド・import確認済み。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断） |
+| 3-5 | [`docs/phase3_5_actions.md`](phase3_5_actions.md) | Python（C++版は任意。サンプルは両方） | 学習完了（ユーザーが実機で確認済み、2026-09-27）。作成時にビルド・import確認済み。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断） |
+| 4 | [`docs/phase4_launch.md`](phase4_launch.md) | launch（Python/XML/YAML）＋ノードはPython・C++ | 学習完了（ユーザーが実機で確認済み、2026-09-27）。作成時にビルド・launchの`--print`確認済み。学習はフェーズ5-0の後に回した（2026-09-26、ユーザー判断。フェーズ5-1はlaunchを書かないので4より先でもよい。launch化するフェーズ5-3までに終える） |
 | 間章 | [`docs/interlude_components.md`](interlude_components.md) | C++のみ（launchはPython） | 作成済み（ビルド・`ros2 component types`・launchの`--print`確認済み。ノード実行は未確認） |
 | 参考資料 | [`docs/reference_node_class.md`](reference_node_class.md) | Python・C++（読み物） | 作成済み（2026-09-24。`Node` クラスの構造をクラス図（`docs/img/reference_node_rclpy.svg`・`reference_node_rclcpp.svg`）で解析。ローカルのソースで確認。図の見た目は画像にして確認していない） |
 | 参考資料 | [`docs/reference_interfaces.md`](reference_interfaces.md) | 定義ファイル・Python・C++（読み物。自作の節は任意で手を動かす） | 作成済み（2026-09-27。標準の型の読み方・よく使う型・調べるコマンドと、インターフェースの自作。使い捨ての環境で `ros2 interface` の表示と、自作の型のビルド・Pythonでの読み込み・C++でのビルドを確認。ノードは起動していない。図（`docs/img/reference_interfaces_generate.svg`）の見た目は画像にして確認していない） |
