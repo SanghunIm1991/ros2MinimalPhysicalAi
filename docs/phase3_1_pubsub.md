@@ -64,6 +64,7 @@ sequenceDiagram
 | `sine_pub` | Publisher | `sine`（[`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg)） | 10 Hz（0.1秒周期）で、時刻 t に対して `sin(2π × 0.5 × t)` の値を送る（周期2秒の正弦波） |
 | `sine_sub` | Subscriber | `sine`（`std_msgs/msg/Float64`） | 受信した値をログに出す |
 
+- 表の4つのノードは、2組に分かれる。①`talker`・`listener`（文字列を1秒ごとにやり取りする、トピック通信の基本）と、②`sine_pub`・`sine_sub`（数値の型 `Float64` を10 Hzで送る、①の応用）である。①と②はトピック名が違うので、互いにつながらない。3節・4節のサンプルも、この①・②の順に分けて載せる。
 - キューの深さ（QoSの `depth`）は10とする（QoSはフェーズ3-2bで扱う）。
 - 実行ファイル名は上表のノード名と同じにする（`ros2 run learn_py talker` のように起動できる）。
 
@@ -71,7 +72,7 @@ sequenceDiagram
 
 ### 3-1. 書くもの
 
-`ws/src/learn_py/learn_py/` の下に4ファイルを作る: `talker.py`, `listener.py`, `sine_pub.py`, `sine_sub.py`。
+`ws/src/learn_py/learn_py/` の下に4ファイルを作る: ①文字列の `talker.py`・`listener.py` と、②正弦波の `sine_pub.py`・`sine_sub.py`（2節）。
 
 主なAPI（rclpy）:
 
@@ -85,11 +86,11 @@ sequenceDiagram
 | 送信 | `publisher.publish(メッセージ)` |
 | 起動と終了 | `rclpy.init()` → `rclpy.spin(node)` → `rclpy.try_shutdown()` |
 
-#### サンプルコードと解説（Python版）
+> サンプルコードをファイルに置く方法（`touch` と `nano` で貼り付ける、VS Codeで貼り付ける）は、[`docs/howto_place_code.md`](howto_place_code.md) にまとめている。
+
+#### サンプルコードと解説（Python版）①文字列: `talker.py`・`listener.py`
 
 **talker.py**
-
-> サンプルコードをファイルに置く方法（`touch` と `nano` で貼り付ける、VS Codeで貼り付ける）は、[`docs/howto_place_code.md`](howto_place_code.md) にまとめている。
 
 ファイル: `ws/src/learn_py/learn_py/talker.py`
 
@@ -195,6 +196,10 @@ def main(args=None):
 - **`on_message(self, msg)`**: 引数 `msg` は受信したメッセージ（`String` のインスタンス）で、`msg.data` で中身を取り出す。コールバックは `spin` の中から呼ばれるので、自分で呼び出すコードは書かない。
 - **つまずきやすい点**: トピック名や型が送信側と1文字でも違うと、エラーも出ずに何も受信しない（`ros2 topic list -t` で名前と型を確認する）。また、コールバックの中で長い処理（`time.sleep` など）を書くと、その間は他のコールバックも呼ばれない。
 - **観察ポイント**: talkerより先にlistenerを起動しても構わない。listenerを後から起動した場合、それまでに送られた `hello 0`, ... は受け取れず、起動後に送られたものから表示される（既定のQoSでは過去分は保存されない）。
+
+#### サンプルコードと解説（Python版）②正弦波: `sine_pub.py`・`sine_sub.py`
+
+ここからは、①とは別の組である。トピック `sine` で数値（`Float64`）を10 Hzで送る。ノードの骨組みは①と同じなので、①との違いを中心に読む。
 
 **sine_pub.py**
 
@@ -372,7 +377,15 @@ ros2 run learn_py listener
 - 番号は0から1ずつ増える。listenerを後から起動した場合は、起動前に送られた分（上の例では `hello 0`）は表示されず、途中の番号から始まる（3-1節のlistenerの解説を参照）。
 - Ctrl+Cで止めると、プロンプトに戻る。止めたときに例外のトレースバック（`Traceback ...`）が出なければ、`try/except/finally` が効いている。
 
-`sine_pub` / `sine_sub` も同様に動かす。
+②の `sine_pub` / `sine_sub` も、同じようにターミナルを2つ使って動かす（①を止めてからでも、①と並べて動かしてもよい。トピックが違うので混ざらない）。
+
+```bash
+# T1
+ros2 run learn_py sine_pub
+
+# T2
+ros2 run learn_py sine_sub
+```
 
 **期待する結果**: `sine_pub` はログを出さないので、T1には何も表示されない（動いていないわけではない）。`sine_sub` 側には1秒に10行、小数点以下3桁の値が出る。値は0.1秒ごとに少しずつ変わり、約2秒で-1〜1を1往復する。
 
@@ -392,7 +405,7 @@ ros2 run learn_py listener
 
 ### 4-1. 書くもの
 
-`ws/src/learn_cpp/src/` の下に4ファイルを作る: `talker.cpp`, `listener.cpp`, `sine_pub.cpp`, `sine_sub.cpp`。
+`ws/src/learn_cpp/src/` の下に4ファイルを作る: ①文字列の `talker.cpp`・`listener.cpp` と、②正弦波の `sine_pub.cpp`・`sine_sub.cpp`（2節）。
 
 主なAPI（rclcpp）:
 
@@ -412,7 +425,7 @@ Pythonとの違いの見どころ:
 - ポインタ（`SharedPtr`）で持つ。Publisherは `->publish()`。
 - メンバ変数（`pub_`, `timer_`）を保持しないと、コンストラクタを抜けた時点で解放され動かなくなる。
 
-#### サンプルコードと解説（C++版）
+#### サンプルコードと解説（C++版）①文字列: `talker.cpp`・`listener.cpp`
 
 **talker.cpp**
 
@@ -527,6 +540,10 @@ int main(int argc, char ** argv)
 - **`sub_` メンバ**: 保持しないと購読が終わってしまう点はPublisherと同じ。型は `rclcpp::Subscription<...>::SharedPtr`。
 - **つまずきやすい点**: コールバックの引数の型を、メッセージ型と食い違わせるとテンプレートのエラーが長大に出る。最初の `error:` 行を読むと、原因（型の不一致）が書かれている。
 - **観察ポイント**: PythonのtalkerとC++のlistenerを組み合わせても、同じ表示になること（6節）。
+
+#### サンプルコードと解説（C++版）②正弦波: `sine_pub.cpp`・`sine_sub.cpp`
+
+ここからは、①とは別の組である（Python版の②と同じ仕様）。
 
 **sine_pub.cpp**
 
@@ -720,7 +737,7 @@ ros2 run learn_cpp listener
 [INFO] [1790232101.224012345] [listener]: received: hello 1
 ```
 
-ログの見た目だけでは、PythonのノードかC++のノードかは区別できない。これは、同じトピック名・型なら言語を気にせずつながる（6節）ことの裏返しでもある。`sine_pub` / `sine_sub` も同様に動かすと、3-3と同じ表示になる。
+ログの見た目だけでは、PythonのノードかC++のノードかは区別できない。これは、同じトピック名・型なら言語を気にせずつながる（6節）ことの裏返しでもある。②の `sine_pub` / `sine_sub` も、`ros2 run learn_cpp sine_pub` と `ros2 run learn_cpp sine_sub` で同じように動かすと、3-3と同じ表示になる。
 
 > C++のビルドは時間がかかる。エラーが出たら**最初の `error:` の行**から読む（後続のエラーは連鎖であることが多い）。
 
