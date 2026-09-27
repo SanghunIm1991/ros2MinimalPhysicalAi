@@ -90,9 +90,9 @@ classDiagram
 | `__node` | `_rclpy.Node` | **ノードの本体**。C言語で書かれた拡張モジュール（`_rclpy`）のオブジェクトで、その先はROS2の共通のC言語の層（rcl）につながる。Pythonの `Node` は、この本体を包む「使いやすい外側」である |
 | `_publishers` などのリスト | `Publisher` などのリスト | `create_*` で作ったものを、ノード自身が覚えておくリスト |
 | `_parameters` | 辞書 | 宣言したパラメータの名前と値 |
-| `_default_callback_group` | `MutuallyExclusiveCallbackGroup` | コールバックグループを指定しなかったときに使われるグループ。「同じグループのコールバックは同時に動かさない」種類で、フェーズ3-4の `counter_node` が安全に動く理由（コールバックが1つずつ順に処理される）の一部 |
+| `_default_callback_group` | `MutuallyExclusiveCallbackGroup` | コールバックグループを指定しなかったときに使われるグループ。「同じグループのコールバックは同時に動かさない」種類。既定のままなら、1つのノードのタイマーや受信のコールバックは1つずつ順に処理されるので、複数のコールバックが同じ変数を触っても食い違わない理由の一部になる（例: フェーズ3-4の `counter_node`） |
 
-このほか `__init__` では、`ParameterService`（`ros2 param` の要求に答えるサービス群）、`ROSClock`（`get_clock()` が返す時計）、`TimeSource`（`use_sim_time` を扱う）なども作られる。フェーズ3-3で、自分で作っていないのに `ros2 param list` に `use_sim_time` や `start_type_description_service` が出ていたのは、`Node` の `__init__` がこれらを自動で用意しているからである。
+このほか `__init__` では、`ParameterService`（`ros2 param` の要求に答えるサービス群）、`ROSClock`（`get_clock()` が返す時計）、`TimeSource`（`use_sim_time` を扱う）なども作られる。自作のノードに `ros2 param list` を実行すると（フェーズ3-3の5-3節）、自分で宣言していない `use_sim_time` や `start_type_description_service` も並ぶ。これは、`Node` の `__init__` がこれらを自動で用意しているからである。
 
 ### 2-2. メソッドの分類
 
