@@ -99,9 +99,9 @@ ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durabilit
 
 必須は①と④の2つ。残りは任意。
 
-## 3. Python版（`ws/src/learn_py`）
+## 3. Python版（`ros2_ws/src/learn_py`）
 
-`ws/src/learn_py/learn_py/` に `qos_util.py`, `qos_talker.py`, `qos_listener.py` の3つを作る。`qos_util.py` はノードではなく、talkerとlistenerが共通で使う関数 `make_qos` を置く部品である。使うメッセージ型は `std_msgs` のもので、依存はフェーズ3-1で `package.xml` に足してあるので、新たに足す依存は無い。
+`ros2_ws/src/learn_py/learn_py/` に `qos_util.py`, `qos_talker.py`, `qos_listener.py` の3つを作る。`qos_util.py` はノードではなく、talkerとlistenerが共通で使う関数 `make_qos` を置く部品である。使うメッセージ型は `std_msgs` のもので、依存はフェーズ3-1で `package.xml` に足してあるので、新たに足す依存は無い。
 
 主なAPI（rclpy）:
 
@@ -113,9 +113,9 @@ ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durabilit
 
 ### サンプルコードと解説
 
-ファイル: `ws/src/learn_py/learn_py/qos_util.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/qos_util.py`
 
-<!-- file: ws/src/learn_py/learn_py/qos_util.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/qos_util.py -->
 ```python
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 
@@ -146,7 +146,7 @@ def make_qos(reliability_str, durability_str):
   - `reliability`: `RELIABLE` は届くまで再送を試みる。`BEST_EFFORT` は再送せず、取りこぼしを許す（その代わり軽い）。
   - `durability`: `VOLATILE` は「送った時点でつながっている相手にだけ届く」。`TRANSIENT_LOCAL` は「Publisherが直近の `depth` 件を覚えておき、あとから接続した購読側にも渡す」。
 - **1か所にまとめる理由**: この実験では、talkerとlistenerが「同じ文字列を同じQoSに変換する」ことが前提になっている。同じ関数を2つのファイルに書き写すと、片方だけ直したとき（受け付ける文字列を増やす、`depth` を変える等）に食い違いが起き、「QoSが合わないからつながらない」のか「変換の規則がずれている」のかが区別できなくなる。1か所に置けば、直す場所も1つで済む。
-- **置き場所と読み込み方**: `ws/src/learn_py/learn_py/` に置いた `.py` ファイルは、パッケージ `learn_py` の一部としてインストールされる。そのため、同じパッケージの別のファイルから `from learn_py.qos_util import make_qos`（`パッケージ名.モジュール名`）で読み込める。ファイル名の `.py` は付けない。
+- **置き場所と読み込み方**: `ros2_ws/src/learn_py/learn_py/` に置いた `.py` ファイルは、パッケージ `learn_py` の一部としてインストールされる。そのため、同じパッケージの別のファイルから `from learn_py.qos_util import make_qos`（`パッケージ名.モジュール名`）で読み込める。ファイル名の `.py` は付けない。
 
 > **補足: 変数名とパラメータ名を分けている理由**
 >
@@ -166,9 +166,9 @@ def make_qos(reliability_str, durability_str):
 >
 > **実務での目安**: 値を別の型や意味に変換する前と後で名前を分ける書き方（`_str`・`_name` を付ける、変換後を `reliability_policy` とする等）は、ROS2に限らずよく使われる。どちらの書き方にするかは、チームのコーディング規約があればそれに従う。
 
-ファイル: `ws/src/learn_py/learn_py/qos_talker.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/qos_talker.py`
 
-<!-- file: ws/src/learn_py/learn_py/qos_talker.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/qos_talker.py -->
 ```python
 from learn_py.qos_util import make_qos
 import rclpy
@@ -236,9 +236,9 @@ def main(args=None):
 
 つまずき: ノードのコンストラクタで例外が出ると、`spin` に入る前にプロセスごと落ちる。`ValueError: invalid reliability` は、パラメータの綴りか大文字小文字を疑う。
 
-ファイル: `ws/src/learn_py/learn_py/qos_listener.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/qos_listener.py`
 
-<!-- file: ws/src/learn_py/learn_py/qos_listener.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/qos_listener.py -->
 ```python
 from learn_py.qos_util import make_qos
 import rclpy
@@ -304,7 +304,7 @@ def main(args=None):
 `'実行ファイル名 = パッケージ.モジュール:関数'` の形式で、`ros2 run learn_py qos_talker` の `qos_talker` が左辺、呼ばれる関数が右辺の `main`。`entry_points` を変えたときは `--symlink-install` でも再ビルドが必要。カンマの付け忘れや、リストの外へ書いてしまうミスに注意する。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -313,11 +313,11 @@ source install/setup.bash
 
 **期待する結果**: フェーズ3-1と同じく、`Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功。`ros2 pkg executables learn_py` を実行すると、今回足した `learn_py qos_listener`・`learn_py qos_talker` の2行が、既存の実行ファイルと一緒に並ぶ。
 
-## 4. C++版（`ws/src/learn_cpp`）
+## 4. C++版（`ros2_ws/src/learn_cpp`）
 
 > **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、下の各ファイルの解説（特に `qos_util.hpp` の解説にある対応表）を読めば概要が掴める。
 
-`ws/src/learn_cpp/include/learn_cpp/` に共通のヘッダ `qos_util.hpp` を、`ws/src/learn_cpp/src/` に `qos_talker.cpp`, `qos_listener.cpp` を作る。Python版の `qos_util.py` と同じく、`make_qos` をヘッダの1か所に置き、2つのノードから使う。`include/learn_cpp/` は、フェーズ2の `ros2 pkg create` が空のフォルダとして作ってある。`std_msgs` の依存はフェーズ3-1で足してあるので、`package.xml` と `find_package` の追加は要らない。
+`ros2_ws/src/learn_cpp/include/learn_cpp/` に共通のヘッダ `qos_util.hpp` を、`ros2_ws/src/learn_cpp/src/` に `qos_talker.cpp`, `qos_listener.cpp` を作る。Python版の `qos_util.py` と同じく、`make_qos` をヘッダの1か所に置き、2つのノードから使う。`include/learn_cpp/` は、フェーズ2の `ros2 pkg create` が空のフォルダとして作ってある。`std_msgs` の依存はフェーズ3-1で足してあるので、`package.xml` と `find_package` の追加は要らない。
 
 主なAPI（rclcpp）:
 
@@ -329,9 +329,9 @@ source install/setup.bash
 
 ### サンプルコードと解説
 
-ファイル: `ws/src/learn_cpp/include/learn_cpp/qos_util.hpp`
+ファイル: `ros2_ws/src/learn_cpp/include/learn_cpp/qos_util.hpp`
 
-<!-- file: ws/src/learn_cpp/include/learn_cpp/qos_util.hpp -->
+<!-- file: ros2_ws/src/learn_cpp/include/learn_cpp/qos_util.hpp -->
 ```cpp
 #ifndef LEARN_CPP__QOS_UTIL_HPP_
 #define LEARN_CPP__QOS_UTIL_HPP_
@@ -389,9 +389,9 @@ Python版の `qos_util.py` にあたる、talkerとlistenerの共通部品。1�
 - `throw std::invalid_argument(...)`: Pythonの `ValueError` に相当。コンストラクタで例外が出るとノードは作られず、プロセスが例外で終了する。
 - `#include <stdexcept>`（`std::invalid_argument`）と `#include <string>` は、このヘッダ自身が使うものなので、ヘッダの中で読み込む。ヘッダを読み込む側の `.cpp` に頼らないことで、どの `.cpp` から読み込んでもそのままビルドできる。
 
-ファイル: `ws/src/learn_cpp/src/qos_talker.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/qos_talker.cpp`
 
-<!-- file: ws/src/learn_cpp/src/qos_talker.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/qos_talker.cpp -->
 ```cpp
 #include <chrono>
 #include <memory>
@@ -459,9 +459,9 @@ Python版 `qos_talker.py` と同じ仕様（QoSをパラメータで切り替え
 
 観察ポイントと落とし穴は Python版と同じ。Python版とC++版でQoSの扱いは変わらないので、5-3節の課題3（Python版とC++版を組み合わせ、④・⑦が同じ結果になるか確かめる）で確認する。
 
-ファイル: `ws/src/learn_cpp/src/qos_listener.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/qos_listener.cpp`
 
-<!-- file: ws/src/learn_cpp/src/qos_listener.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/qos_listener.cpp -->
 ```cpp
 #include <memory>
 #include <string>
@@ -545,7 +545,7 @@ install(TARGETS
 - `install(TARGETS ...)` の `turtle_circle` は、フェーズ3-2aでC++版の `turtle_circle` を作った場合だけ書く。作っていないのに名前を書くと、存在しないターゲットを指定したことになり、CMakeの段階でビルドがエラーになる。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
@@ -723,8 +723,8 @@ ros2 run learn_py qos_listener --ros-args -p durability:=transient_local
 | 症状 | 確認すること |
 |---|---|
 | `ValueError: invalid reliability` | パラメータの綴り。`reliable` か `best_effort`（小文字） |
-| Python版の起動時に `ModuleNotFoundError: No module named 'learn_py.qos_util'` | `qos_util.py` を `ws/src/learn_py/learn_py/`（`setup.py` のある階層の、1つ下の `learn_py/`）に置いたか。ファイル名の綴り。`--symlink-install` を付けずにビルドしている場合は、ファイルを足した後に再ビルドが要る |
-| C++版のビルドで `fatal error: learn_cpp/qos_util.hpp: No such file or directory` | ヘッダを `ws/src/learn_cpp/include/learn_cpp/` に置いたか。`CMakeLists.txt` の、エラーが出たターゲット（`qos_talker` など）に `target_include_directories(... PRIVATE include)` を書いたか |
+| Python版の起動時に `ModuleNotFoundError: No module named 'learn_py.qos_util'` | `qos_util.py` を `ros2_ws/src/learn_py/learn_py/`（`setup.py` のある階層の、1つ下の `learn_py/`）に置いたか。ファイル名の綴り。`--symlink-install` を付けずにビルドしている場合は、ファイルを足した後に再ビルドが要る |
+| C++版のビルドで `fatal error: learn_cpp/qos_util.hpp: No such file or directory` | ヘッダを `ros2_ws/src/learn_cpp/include/learn_cpp/` に置いたか。`CMakeLists.txt` の、エラーが出たターゲット（`qos_talker` など）に `target_include_directories(... PRIVATE include)` を書いたか |
 | 2-2節の⑤（両方 `transient_local`）で過去分が届かない | talkerが `transient_local` か、listener側も `transient_local` か。talkerを先に起動して待ったか |
 | 非互換の警告が出ない | 警告はノードのログ（ターミナル）に出る。`rqt_console` でも確認できる |
 | C++版のビルドで `install TARGETS given target "turtle_circle" which does not exist` のようなエラー | `install(TARGETS ...)` に、作っていないノード（フェーズ3-2aでC++版を作らなかった場合の `turtle_circle` など）の名前を書いていないか |

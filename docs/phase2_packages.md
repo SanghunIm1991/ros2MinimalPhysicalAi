@@ -13,7 +13,7 @@
 
 ## 0. 学習目標と完了条件
 
-1. ワークスペース（`ws/`）を作り、`ament_python` と `ament_cmake` のパッケージを1つずつ作れる。
+1. ワークスペース（`ros2_ws/`）を作り、`ament_python` と `ament_cmake` のパッケージを1つずつ作れる。
 2. `colcon build` → `source install/setup.bash` → `ros2 run` の流れを説明できる。
 3. 2種類のパッケージで「必要なファイル」と「実行ファイルが登録される仕組み」の違いを説明できる。
 4. `--symlink-install` の有無で、Pythonの修正が再ビルドなしで反映されるかどうかが変わることを体験する。
@@ -29,7 +29,7 @@
 
 ```mermaid
 flowchart TB
-    WS["ws/ （ワークスペース）"]
+    WS["ros2_ws/ （ワークスペース）"]
     WS --> SRC["src/ ← 自分で書くもの（Git管理）"]
     WS --> BLD["build/ ← 中間生成物（Git管理外）"]
     WS --> INS["install/ ← 実行に使う成果物（Git管理外）"]
@@ -40,7 +40,7 @@ flowchart TB
 
 </details>
 
-一般に、ROS2のワークスペースでGitの管理対象にするのは `src/` だけで、`build/`・`install/`・`log/` の生成物は含めない（この教材のリポジトリでも、直下の `.gitignore` に登録してある）。なお、練習用のワークスペース `ws/` は、教材のリポジトリとは別の場所（ホームディレクトリの下の `~/ws`。2-1節）に作るので、教材のリポジトリをcloneした場合も、練習コードが混ざることはない。練習コードもGitで管理したい場合の方法は、2-8節（練習コードをGitで管理する）で扱う。
+一般に、ROS2のワークスペースでGitの管理対象にするのは `src/` だけで、`build/`・`install/`・`log/` の生成物は含めない（この教材のリポジトリでも、直下の `.gitignore` に登録してある）。なお、練習用のワークスペース `ros2_ws/` は、教材のリポジトリとは別の場所（ホームディレクトリの下の `~/ros2_ws`。2-1節）に作るので、教材のリポジトリをcloneした場合も、練習コードが混ざることはない。練習コードもGitで管理したい場合の方法は、2-8節（練習コードをGitで管理する）で扱う。
 
 ### 1-2. ビルドと実行の流れ
 
@@ -124,19 +124,19 @@ Ubuntu 24.04では、`g++` の実体は `g++-13`（GCC 13系）になる。`g++ 
 
 ## 2. 手順
 
-練習用のワークスペースは、ホームディレクトリの下に `~/ws` として作る（環境構築の6節）。以降の手順書で `ws/` と書いたときは、このフォルダを指す。別の場所に作る場合は読み替える。
+練習用のワークスペースは、ホームディレクトリの下に `~/ros2_ws` として作る（環境構築の6節）。名前は、ROS2の公式チュートリアルがワークスペースに使っている慣習に合わせた（名前そのものに決まりは無く、`colcon build` を実行した場所がワークスペースになる）。以降の手順書で `ros2_ws/` と書いたときは、このフォルダを指す。別の場所に作る場合は読み替える。
 
 ### 2-1. ワークスペースを作る
 
 ```bash
-mkdir -p ~/ws/src
+mkdir -p ~/ros2_ws/src
 
-cd ~/ws/src
+cd ~/ros2_ws/src
 ```
 
-**期待する結果**: これらのコマンドは成功すると何も表示しない（プロンプトが戻るだけ）。`pwd` を実行すると `/home/<ユーザー名>/ws/src` と表示される。
+**期待する結果**: これらのコマンドは成功すると何も表示しない（プロンプトが戻るだけ）。`pwd` を実行すると `/home/<ユーザー名>/ros2_ws/src` と表示される。
 
-`ws/src` に置いたものがパッケージとして扱われる。
+`ros2_ws/src` に置いたものがパッケージとして扱われる。
 
 ### 2-2. Pythonパッケージを作る
 
@@ -154,7 +154,7 @@ ros2 pkg create --build-type ament_python \
 ```text
 going to create a new package
 package name: learn_py
-destination directory: /home/<ユーザー名>/ws/src
+destination directory: /home/<ユーザー名>/ros2_ws/src
 package format: 3
 version: 0.0.0
 description: TODO: Package description
@@ -243,12 +243,12 @@ learn_cpp/src/hello.cpp
 ### 2-4. ビルドする
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install
 ```
 
-- **必ずワークスペースの直下（`ws/`）で実行する**。`src/` の中で実行すると `build/` などが意図しない場所にできる。
+- **必ずワークスペースの直下（`ros2_ws/`）で実行する**。`src/` の中で実行すると `build/` などが意図しない場所にできる。
 - 初回のビルド時間は環境による（この手順書の検証環境では約10秒だった）。応答が遅い・止まる場合のみ、メモリ不足を疑って `colcon build --symlink-install --parallel-workers 2` のように並列数を絞る（検証環境ではこの絞り込みは不要だった。WSLのメモリは [`setup_wsl2_ros2.md`](setup_wsl2_ros2.md) の1節を参照）。
 - Pythonパッケージのビルド中に `SetuptoolsDeprecationWarning`（非推奨の警告）が出ることがある。ビルドが成功していれば、この段階では無視してよい（警告の意味と、無視してよい理由は [`docs/tips.md`](tips.md) の3節）。
 
@@ -316,7 +316,7 @@ learn_cpp
 learn_py
 
 $ ros2 pkg prefix learn_py
-/home/<ユーザー名>/ws/install/learn_py
+/home/<ユーザー名>/ros2_ws/install/learn_py
 
 $ ros2 pkg executables learn_py
 learn_py hello
@@ -363,7 +363,7 @@ $ ls -l install/learn_py/lib/learn_py/
 -rwxr-xr-x 1 <ユーザー名> <ユーザー名> 936 Sep 24 11:41 hello
 
 $ ls -l install/learn_cpp/lib/learn_cpp/
-lrwxrwxrwx 1 <ユーザー名> <ユーザー名> 33 Sep 24 11:41 hello -> /home/<ユーザー名>/ws/build/learn_cpp/hello
+lrwxrwxrwx 1 <ユーザー名> <ユーザー名> 38 Sep 24 11:41 hello -> /home/<ユーザー名>/ros2_ws/build/learn_cpp/hello
 
 $ cat install/learn_py/lib/learn_py/hello | head -20
 #!/usr/bin/python3
@@ -379,7 +379,7 @@ install/learn_cpp/lib/learn_cpp/hello: ELF 64-bit LSB pie executable, x86-64, ..
 - Python版の `hello` は、Pythonの `main` を呼び出すだけの**短いスクリプト**（`setup.py` の `entry_points` から生成される）。1行目の `#!/usr/bin/python3` は「このファイルをPythonで実行する」という指定。
 - C++版の `hello` は**コンパイル済みのバイナリ**。`--symlink-install` を付けているので、`install/` にあるのは `build/learn_cpp/hello` へのシンボリックリンク（`ls -l` の行頭が `l`、末尾に `-> リンク先` が付く）になる。`file` にリンクの先を調べさせる `-L` を付けると、実体が `ELF ... executable`（Linuxの実行形式）だと分かる。`-L` を付けないと `symbolic link to ...` とだけ表示される。
 
-> 課題3: `--symlink-install` を付けた場合に、Pythonのソースがどうつながっているかを `ls -l build/learn_py/` で確認する。`learn_py -> .../ws/src/learn_py/learn_py` というシンボリックリンクがあり、`build/` 側から `src/` のコードを直接指していることが分かる。`install/learn_py/lib/python3.12/site-packages/` には `learn-py.egg-link` という小さなファイルがあり、中身（`cat` で読める）は `build/learn_py` の場所を示している。つまり「`install/` → `build/` → `src/`」とたどって、編集中のソースがそのまま使われる。
+> 課題3: `--symlink-install` を付けた場合に、Pythonのソースがどうつながっているかを `ls -l build/learn_py/` で確認する。`learn_py -> .../ros2_ws/src/learn_py/learn_py` というシンボリックリンクがあり、`build/` 側から `src/` のコードを直接指していることが分かる。`install/learn_py/lib/python3.12/site-packages/` には `learn-py.egg-link` という小さなファイルがあり、中身（`cat` で読める）は `build/learn_py` の場所を示している。つまり「`install/` → `build/` → `src/`」とたどって、編集中のソースがそのまま使われる。
 
 ### 2-7. 修正の反映を体験する（`--symlink-install` の効果）
 
@@ -403,7 +403,7 @@ Hello, edited!
 ```bash
 ros2 run learn_cpp hello    # ビルドする前に実行する
 
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
@@ -421,16 +421,16 @@ ros2 run learn_cpp hello    # ビルドした後に実行する
 >
 > それでも付ける理由は、**ワークスペース全体のインストール方式を一貫させるため**。`--packages-select` で対象を絞っている間は他パッケージに影響しないが、`--packages-select` を付け忘れて`colcon build`（対象なし＝ワークスペース全体）を実行すると、既にシンボリックリンク化されていた `learn_py` 側が実体コピーに巻き戻り、「Pythonは編集がビルド無しで反映される」状態が静かに壊れる（実機での検証で確認済み）。毎回同じ形のコマンドを使い回すことで、この事故を防いでいる。なお、C++パッケージでも `package.xml` やCMake生成物（`install/learn_cpp/share/learn_cpp/` 配下の一部）はシンボリックリンクになるため、実行ファイル以外では`--symlink-install`に意味がある。
 
-> 課題4: `--symlink-install` を付けずに `colcon build` して、Pythonのソースを書き換えても反映されないことを確認する。確認後は `rm -rf build install log` で消して、`--symlink-install` 付きでビルドし直す（`ws/` の中だけを消すこと）。
+> 課題4: `--symlink-install` を付けずに `colcon build` して、Pythonのソースを書き換えても反映されないことを確認する。確認後は `rm -rf build install log` で消して、`--symlink-install` 付きでビルドし直す（`ros2_ws/` の中だけを消すこと）。
 
 ### 2-8. 練習コードをGitで管理する（任意）
 
-> この節は任意。練習コードの変更履歴を残したい場合だけ行う。2-1節で作った `~/ws` は、作っただけではGitの管理下にないただのフォルダである。
+> この節は任意。練習コードの変更履歴を残したい場合だけ行う。2-1節で作った `~/ros2_ws` は、作っただけではGitの管理下にないただのフォルダである。
 
-練習コードをGitで管理するには、ワークスペース `ws/` をそのままGitのリポジトリにする。1-1節のとおり、管理するのは `src/` だけで、生成物の `build/`・`install/`・`log/` は `.gitignore` で除外する。
+練習コードをGitで管理するには、ワークスペース `ros2_ws/` をそのままGitのリポジトリにする。1-1節のとおり、管理するのは `src/` だけで、生成物の `build/`・`install/`・`log/` は `.gitignore` で除外する。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 git init -b main
 
@@ -443,19 +443,19 @@ git status --short
 
 ```text
 $ git init -b main
-Initialized empty Git repository in /home/<ユーザー名>/ws/.git/
+Initialized empty Git repository in /home/<ユーザー名>/ros2_ws/.git/
 $ git status --short
 ?? .gitignore
 ?? src/
 ```
 
-- `git init -b main` は、`ws/` をGitのリポジトリにして、最初のブランチの名前を `main` にする（`-b main` を付けないと、ブランチ名についての長いヒントが表示される）。
+- `git init -b main` は、`ros2_ws/` をGitのリポジトリにして、最初のブランチの名前を `main` にする（`-b main` を付けないと、ブランチ名についての長いヒントが表示される）。
 - `printf` の行は、`build/`・`install/`・`log/` の3行を書いた `.gitignore` を作る。
 - `git status --short` の `??` は「まだ管理していないファイル」の印。`src/` と `.gitignore` だけが出て、`build/`・`install/`・`log/` が出なければ、除外が効いている。`src/` の中身が1行にまとまっているのは、まだ1つもコミットしていないディレクトリを、Gitが中身を展開せずに表示するため（`git status --short -uall` にすると、`src/learn_py/package.xml` のようにファイルごとに出る）。フェーズ3-3〜4の途中では、一時的に `?? config/` も出る（フェーズ4で `learn_bringup/config/` へ移すので、コミットしなくてよい）。
 
-> **教材のリポジトリをcloneした場合**: `~/ws` は教材のフォルダの外にあるので、影響しない。
+> **教材のリポジトリをcloneした場合**: `~/ros2_ws` は教材のフォルダの外にあるので、影響しない。
 
-練習コードをGitで管理し、いつか公開する可能性があるなら、コミットの前に、雛形に書いた連絡先を確かめる（`ws/` で実行する）。
+練習コードをGitで管理し、いつか公開する可能性があるなら、コミットの前に、雛形に書いた連絡先を確かめる（`ros2_ws/` で実行する）。
 
 ```bash
 grep -n 'maintainer' src/learn_py/package.xml src/learn_cpp/package.xml
@@ -493,7 +493,7 @@ $ grep -n 'maintainer' src/learn_py/setup.py
 
 | 症状 | 確認すること |
 |---|---|
-| `Package 'learn_py' not found` | `source install/setup.bash` をしたか。別ターミナルで `ws/` の `install` を読んだか |
+| `Package 'learn_py' not found` | `source install/setup.bash` をしたか。別ターミナルで `ros2_ws/` の `install` を読んだか |
 | `colcon: command not found` | `sudo apt install python3-colcon-common-extensions` で導入する。`colcon --help` で確認 |
 | ビルド中に応答が遅い・止まる | メモリ不足の可能性。`--parallel-workers 1` か `2` に絞る |
 | `No executable found`（`ros2 run`） | `entry_points` / `install(TARGETS ...)` の記述、ビルド後の `source` |

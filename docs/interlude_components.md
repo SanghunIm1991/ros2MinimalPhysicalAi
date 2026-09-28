@@ -65,7 +65,7 @@ flowchart LR
 ## 3. パッケージを作る
 
 ```bash
-cd ~/ws/src
+cd ~/ros2_ws/src
 
 ros2 pkg create --build-type ament_cmake \
   --dependencies rclcpp rclcpp_components std_msgs \
@@ -114,9 +114,9 @@ creating ./learn_components/CMakeLists.txt
 | 登録 | なし | ファイル末尾に `RCLCPP_COMPONENTS_REGISTER_NODE(learn_components::Talker)` |
 | 名前空間 | なし | `namespace learn_components` で囲む |
 
-ファイル: `ws/src/learn_components/src/talker_component.cpp`
+ファイル: `ros2_ws/src/learn_components/src/talker_component.cpp`
 
-<!-- file: ws/src/learn_components/src/talker_component.cpp -->
+<!-- file: ros2_ws/src/learn_components/src/talker_component.cpp -->
 ```cpp
 #include <chrono>
 #include <memory>
@@ -173,9 +173,9 @@ RCLCPP_COMPONENTS_REGISTER_NODE(learn_components::Talker)
 - **`namespace learn_components`**: コンテナは、クラスを「`learn_components::Talker`」という完全な名前で探す。多くのパッケージのクラスが同じコンテナに入りうるので、名前空間で衝突を避ける。
 - **`RCLCPP_COMPONENTS_REGISTER_NODE(...)`**: このクラスを「名前で探して作れる部品」として登録するマクロ。中では、クラス名とクラスを作る関数の対応表（class_loaderというプラグインの仕組み）に登録している。名前空間の**外**、ファイルの末尾に書く。
 
-ファイル: `ws/src/learn_components/src/listener_component.cpp`
+ファイル: `ros2_ws/src/learn_components/src/listener_component.cpp`
 
-<!-- file: ws/src/learn_components/src/listener_component.cpp -->
+<!-- file: ros2_ws/src/learn_components/src/listener_component.cpp -->
 ```cpp
 #include <memory>
 
@@ -223,7 +223,7 @@ RCLCPP_COMPONENTS_REGISTER_NODE(learn_components::Listener)
 | コンポーネントとして登録し、単独の実行ファイルも作る | `rclcpp_components_register_node(ライブラリ名 PLUGIN "クラス名" EXECUTABLE 実行ファイル名)` |
 | ライブラリをインストールする | `install(TARGETS ライブラリ名 ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)` |
 
-`ws/src/learn_components/CMakeLists.txt` の、`find_package(...)` の並びの後、`if(BUILD_TESTING)` の前に足す。
+`ros2_ws/src/learn_components/CMakeLists.txt` の、`find_package(...)` の並びの後、`if(BUILD_TESTING)` の前に足す。
 
 <!-- snippet: cmake_components -->
 ```cmake
@@ -253,7 +253,7 @@ install(TARGETS pubsub_components
 ## 6. ビルドして登録を確かめる
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_components
 
@@ -334,7 +334,7 @@ $ ros2 component unload /ComponentManager 1
 Unloaded component 1 from '/ComponentManager' container node
 
 # T1（コンテナ。Talker を読み込んだところから）
-[INFO] [1790292000.100000000] [ComponentManager]: Load Library: /home/<ユーザー名>/ws/install/learn_components/lib/libpubsub_components.so
+[INFO] [1790292000.100000000] [ComponentManager]: Load Library: /home/<ユーザー名>/ros2_ws/install/learn_components/lib/libpubsub_components.so
 [INFO] [1790292000.110000000] [ComponentManager]: Found class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [INFO] [1790292000.110000000] [ComponentManager]: Instantiate class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [INFO] [1790292001.110000000] [talker]: publish: hello 0
@@ -384,16 +384,16 @@ ros2 run learn_components listener_node
 | 入れるコンポーネントを1つ書く | `ComposableNode(package=..., plugin='名前空間::クラス名', name=..., extra_arguments=[...])`（`launch_ros.descriptions`） |
 | プロセス内通信を使う | `extra_arguments=[{'use_intra_process_comms': True}]` |
 
-まず `ws/src/learn_bringup/package.xml` の `<exec_depend>` の並びに2行足す。
+まず `ros2_ws/src/learn_bringup/package.xml` の `<exec_depend>` の並びに2行足す。
 
 ```xml
 <exec_depend>learn_components</exec_depend>
 <exec_depend>rclcpp_components</exec_depend>
 ```
 
-ファイル: `ws/src/learn_bringup/launch/components.launch.py`
+ファイル: `ros2_ws/src/learn_bringup/launch/components.launch.py`
 
-<!-- file: ws/src/learn_bringup/launch/components.launch.py -->
+<!-- file: ros2_ws/src/learn_bringup/launch/components.launch.py -->
 ```python
 from launch import LaunchDescription
 from launch_ros.actions import ComposableNodeContainer
@@ -440,7 +440,7 @@ def generate_launch_description():
 launchファイルを**追加した**ので、`learn_bringup` を再ビルドしてから起動する。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_bringup
 
@@ -464,7 +464,7 @@ ros2 launch learn_bringup components.launch.py
 
 ```text
 [INFO] [component_container-1]: process started with pid [13000]
-[component_container-1] [INFO] [1790292200.100000000] [pubsub_container]: Load Library: /home/<ユーザー名>/ws/install/learn_components/lib/libpubsub_components.so
+[component_container-1] [INFO] [1790292200.100000000] [pubsub_container]: Load Library: /home/<ユーザー名>/ros2_ws/install/learn_components/lib/libpubsub_components.so
 [component_container-1] [INFO] [1790292200.110000000] [pubsub_container]: Found class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [component_container-1] [INFO] [1790292200.110000000] [pubsub_container]: Instantiate class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [INFO] [launch_ros.actions.load_composable_nodes]: Loaded node '/talker' in container '/pubsub_container'

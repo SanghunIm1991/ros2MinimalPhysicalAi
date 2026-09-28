@@ -128,7 +128,7 @@ string message # informational, e.g. for error messages
 <depend>std_srvs</depend>
 ```
 
-C++版を作る場合は、`ws/src/learn_cpp/CMakeLists.txt` に `find_package` も足す（既存の `find_package(...)` の並びへ）。
+C++版を作る場合は、`ros2_ws/src/learn_cpp/CMakeLists.txt` に `find_package` も足す（既存の `find_package(...)` の並びへ）。
 
 <!-- snippet: cmake_find_services -->
 ```cmake
@@ -144,9 +144,9 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 
 **期待する結果**: 1節と同じく `int64 a` から始まる定義が表示されれば、導入済み。導入されていない場合は `Unknown package 'example_interfaces'` のようなエラーになる。
 
-## 4. Python版（`ws/src/learn_py`）
+## 4. Python版（`ros2_ws/src/learn_py`）
 
-`ws/src/learn_py/learn_py/` に、①足し算の `add_server.py`・`add_client.py` と、②カウンタのリセットの `counter_node.py` を作る（作るのは、進める範囲の分だけでよい）。
+`ros2_ws/src/learn_py/learn_py/` に、①足し算の `add_server.py`・`add_client.py` と、②カウンタのリセットの `counter_node.py` を作る（作るのは、進める範囲の分だけでよい）。
 
 ### 4-1. 主なAPI（rclpy）
 
@@ -162,9 +162,9 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 
 ### 4-2. ①足し算: サーバ（`add_server.py`。必須）
 
-ファイル: `ws/src/learn_py/learn_py/add_server.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/add_server.py`
 
-<!-- file: ws/src/learn_py/learn_py/add_server.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/add_server.py -->
 ```python
 import rclpy
 from example_interfaces.srv import AddTwoInts
@@ -220,9 +220,9 @@ def main(args=None):
 
 4-2節のサーバを呼ぶ側である。
 
-ファイル: `ws/src/learn_py/learn_py/add_client.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/add_client.py`
 
-<!-- file: ws/src/learn_py/learn_py/add_client.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/add_client.py -->
 ```python
 import rclpy
 from example_interfaces.srv import AddTwoInts
@@ -290,9 +290,9 @@ def main(args=None):
 
 ここからは、①足し算とは別の組である。`add_server`・`add_client` とは関係なく、このノード1つで動く。
 
-ファイル: `ws/src/learn_py/learn_py/counter_node.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/counter_node.py`
 
-<!-- file: ws/src/learn_py/learn_py/counter_node.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/counter_node.py -->
 ```python
 import rclpy
 from rclpy.executors import ExternalShutdownException
@@ -371,7 +371,7 @@ def main(args=None):
 ```
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -380,11 +380,11 @@ source install/setup.bash
 
 **期待する結果**: `Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
 
-## 5. C++版（`ws/src/learn_cpp`）
+## 5. C++版（`ros2_ws/src/learn_cpp`）
 
 > **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、8節の「Python版とC++版の違いのまとめ」を読めば概要が掴める。C++版を作らない場合は、C++向けの依存の追加（`package.xml` と `CMakeLists.txt`）も不要。
 
-`ws/src/learn_cpp/src/` に、①足し算の `add_server.cpp`・`add_client.cpp` と、②カウンタのリセットの `counter_node.cpp` を作る。
+`ros2_ws/src/learn_cpp/src/` に、①足し算の `add_server.cpp`・`add_client.cpp` と、②カウンタのリセットの `counter_node.cpp` を作る。
 
 ### 5-1. 主なAPI（rclcpp）
 
@@ -400,9 +400,9 @@ Pythonとの違いの見どころ: 応答を「返す」のか「書き込む」
 
 ### 5-2. ①足し算: サーバ（`add_server.cpp`）
 
-ファイル: `ws/src/learn_cpp/src/add_server.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/add_server.cpp`
 
-<!-- file: ws/src/learn_cpp/src/add_server.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/add_server.cpp -->
 ```cpp
 #include <memory>
 
@@ -459,9 +459,9 @@ Python版と同じ「要求を受けて `a + b` を返す」サーバ。差分�
 
 ### 5-3. ①足し算: クライアント（`add_client.cpp`）
 
-ファイル: `ws/src/learn_cpp/src/add_client.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/add_client.cpp`
 
-<!-- file: ws/src/learn_cpp/src/add_client.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/add_client.cpp -->
 ```cpp
 #include <chrono>
 #include <cstdint>
@@ -524,9 +524,9 @@ Python版と同じ流れ（待つ → 要求を作る → 非同期に送る →
 
 ここからは、①足し算とは別の組である（4-4節のPython版と同じ仕様）。
 
-ファイル: `ws/src/learn_cpp/src/counter_node.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/counter_node.cpp`
 
-<!-- file: ws/src/learn_cpp/src/counter_node.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/counter_node.cpp -->
 ```cpp
 #include <chrono>
 #include <memory>
@@ -629,7 +629,7 @@ install(TARGETS
 ```
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_cpp
 

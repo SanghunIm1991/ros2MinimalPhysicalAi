@@ -3,7 +3,7 @@
 [`docs/learning_plan.md`](learning_plan.md) フェーズ6の6-3（idea_origin.md ステップ4）に対応する。フェーズ6-1で取った記録を再生しながら、解析のノードで追従の指標（行き過ぎ量・立ち上がり時間・整定時間・定常偏差・ペダルが張り付いた時間・追従誤差の二乗平均）を計算し、条件ごとに比べる。グラフで見た違いを、数で言えるようにするのが、この手順書の目的である。解析のノードはPythonで書き、同じ仕様のC++版も動かして、結果が一致することを確かめる。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ6-1（[`docs/phase6_1_record.md`](phase6_1_record.md)。4-5節の `sim_default`、5節の `gz_default`、4-6節の `slow_brake` の3つの記録がある）。C++版を動かすには、フェーズ3-1の `ws/src/learn_cpp` が要る
+- 前提: フェーズ6-1（[`docs/phase6_1_record.md`](phase6_1_record.md)。4-5節の `sim_default`、5節の `gz_default`、4-6節の `slow_brake` の3つの記録がある）。C++版を動かすには、フェーズ3-1の `ros2_ws/src/learn_cpp` が要る
 - 所要目安: 2コマ（8節のC++版を除けば1〜2コマ）
 - 言語: Python（C++版は任意で、サンプルを動かす程度）
 
@@ -108,9 +108,9 @@ flowchart LR
 
 ## 4. 指標の計算をROS2なしで確かめる（`metrics.py`）
 
-ファイル: `ws/src/learn_py/learn_py/metrics.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/metrics.py`
 
-<!-- file: ws/src/learn_py/learn_py/metrics.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/metrics.py -->
 ```python
 from dataclasses import dataclass
 
@@ -217,7 +217,7 @@ if __name__ == '__main__':
   - 2つの条件の違いは、`simulate` に渡す引数だけなので、条件ごとの引数を辞書（`{}` と `dict(params=...)`）で用意し、`**kwargs` で名前付きの引数として展開して渡している（5-2の4-2節の `main` の `simulate(**kwargs)` と同じ書き方）。`simulate(kp=0.5, ki=0.1, **{'params': p})` は、`simulate(kp=0.5, ki=0.1, params=p)` と同じ意味になる。`closed_loop_sim.py` と同じく、ビルドして `source` した後に `python3 -m` で動かす（フェーズ5-2の4-2節の解説）。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -261,9 +261,9 @@ PI, tau_brake=1.0
 
 ### 5-2. サンプルコードと解説
 
-ファイル: `ws/src/learn_py/learn_py/metrics_node.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/metrics_node.py`
 
-<!-- file: ws/src/learn_py/learn_py/metrics_node.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/metrics_node.py -->
 ```python
 import rclpy
 from rclpy.clock import Clock, ClockType
@@ -350,7 +350,7 @@ def main(args=None):
 
 ### 5-3. 実行ファイルとして登録し、ビルドする
 
-`ws/src/learn_py/setup.py` の `entry_points` に1行足す（既存の行は残す。フェーズ6-2の3-3節で足した `goal_monitor` の行の後に続ける）。
+`ros2_ws/src/learn_py/setup.py` の `entry_points` に1行足す（既存の行は残す。フェーズ6-2の3-3節で足した `goal_monitor` の行の後に続ける）。
 
 <!-- snippet: py_entry_points_metrics -->
 ```python
@@ -360,7 +360,7 @@ def main(args=None):
 `metrics.py` は、ノードから `import` される部品なので、登録しない（フェーズ5-1の `vehicle_model.py` と同じ）。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -379,12 +379,12 @@ source install/setup.bash
 
 ```bash
 # T1
-cd ~/ws/bags
+cd ~/ros2_ws/bags
 
 ros2 bag play sim_default -r 5 -p
 
 # T2
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 
@@ -434,7 +434,7 @@ Subscription count: 1
 
 ### 7-1. 残りの2つの記録を解析する
 
-この手順書の6-1節と同じ手順で、`slow_brake` と `gz_default` を解析する。T1・T2・T3は、6-1節で使ったターミナルをそのまま使う（T1は `ws/bags` に、T2は `source` 済みの `ws` にいる）。**5-4の記録（`gz_default`）では `sample_period` を0.02にする**（3節。速度が50 Hzで送られているため）。
+この手順書の6-1節と同じ手順で、`slow_brake` と `gz_default` を解析する。T1・T2・T3は、6-1節で使ったターミナルをそのまま使う（T1は `ros2_ws/bags` に、T2は `source` 済みの `ros2_ws` にいる）。**5-4の記録（`gz_default`）では `sample_period` を0.02にする**（3節。速度が50 Hzで送られているため）。
 
 ```bash
 # T1
@@ -512,9 +512,9 @@ ros2 run learn_py metrics --ros-args -p sample_period:=0.02
 
 ### 8-1. サンプルコード
 
-ファイル: `ws/src/learn_cpp/src/metrics_node.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/metrics_node.cpp`
 
-<!-- file: ws/src/learn_cpp/src/metrics_node.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/metrics_node.cpp -->
 ```cpp
 #include <algorithm>
 #include <chrono>
@@ -693,7 +693,7 @@ Python版との主な違いだけを挙げる。
 
 ### 8-2. ビルドの設定と、ビルド
 
-`ws/src/learn_cpp/CMakeLists.txt` に追記し、`install(TARGETS ...)` に `metrics` を足す（これまでの分は残す。フェーズ3-1の4-2節と同じ形）。
+`ros2_ws/src/learn_cpp/CMakeLists.txt` に追記し、`install(TARGETS ...)` に `metrics` を足す（これまでの分は残す。フェーズ3-1の4-2節と同じ形）。
 
 <!-- snippet: cmake_cpp_metrics -->
 ```cmake
@@ -704,7 +704,7 @@ ament_target_dependencies(metrics rclcpp std_msgs)
 `package.xml` の依存（`rclcpp`・`std_msgs`）は、フェーズ3-1で足してあるので、変えなくてよい。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
@@ -719,19 +719,19 @@ source install/setup.bash
 
 ```bash
 # T1
-cd ~/ws/bags
+cd ~/ros2_ws/bags
 
 ros2 bag play sim_default -r 5 -p
 
 # T2
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 
 ros2 run learn_py metrics
 
 # T3
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 

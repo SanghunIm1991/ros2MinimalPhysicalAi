@@ -59,7 +59,7 @@ flowchart LR
 
 </details>
 
-記録の置き場所は、この手順書では `~/ws/bags/` とする（記録1回ごとに、この下にフォルダが1つできる）。
+記録の置き場所は、この手順書では `~/ros2_ws/bags/` とする（記録1回ごとに、この下にフォルダが1つできる）。
 
 ## 2. 手で記録して、再生する
 
@@ -72,9 +72,9 @@ flowchart LR
 ros2 launch learn_bringup vehicle_sim.launch.py gazebo:=false
 
 # T2
-mkdir -p ~/ws/bags
+mkdir -p ~/ros2_ws/bags
 
-cd ~/ws/bags
+cd ~/ros2_ws/bags
 
 ros2 bag record -o manual --topics /target_velocity /plant/velocity /plant/pedal
 ```
@@ -244,9 +244,9 @@ ros2 bag play manual
 
 フェーズ5-3の2-2節の `target_node.py` を、次のように書き換える（変わるのは、`end_time` の宣言と検証、`on_timer` の最初の4行、`on_params` の拒否するパラメータの名前、コメント）。
 
-ファイル: `ws/src/learn_py/learn_py/target_node.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/target_node.py`
 
-<!-- file: ws/src/learn_py/learn_py/target_node.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/target_node.py -->
 ```python
 import rclpy
 from rcl_interfaces.msg import SetParametersResult
@@ -370,7 +370,7 @@ from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, Shut
 5-3・5-4のYAMLを写して、`target_generator` に `end_time` を足した、記録用のYAMLを作る。
 
 ```bash
-cd ~/ws/src/learn_bringup/config
+cd ~/ros2_ws/src/learn_bringup/config
 
 cp vehicle_sim.yaml vehicle_sim_record.yaml
 
@@ -405,9 +405,9 @@ target_generator:
 
 ### 4-4. 記録用のlaunch（`launch/record.launch.py`）
 
-ファイル: `ws/src/learn_bringup/launch/record.launch.py`
+ファイル: `ros2_ws/src/learn_bringup/launch/record.launch.py`
 
-<!-- file: ws/src/learn_bringup/launch/record.launch.py -->
+<!-- file: ros2_ws/src/learn_bringup/launch/record.launch.py -->
 ```python
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
@@ -465,7 +465,7 @@ def generate_launch_description():
 `learn_bringup` の `CMakeLists.txt` は変えなくてよい（`launch/`・`config/` の中の新しいファイルも、フェーズ4の3-3節の `install(DIRECTORY ...)` でインストールされる。新しいファイルなので、ビルドは要る）。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py learn_bringup
 
@@ -497,7 +497,7 @@ Arguments (pass arguments as '<name>:=<value>'):
 記録する。
 
 ```bash
-ros2 launch learn_bringup record.launch.py bag:=$HOME/ws/bags/sim_default
+ros2 launch learn_bringup record.launch.py bag:=$HOME/ros2_ws/bags/sim_default
 ```
 
 **期待する結果**（抜粋。`vehicle_plant`・`pi_controller` のログは省いた。時刻・pid・パスは実行ごとに変わる。長い行は途中で切っている）:
@@ -507,7 +507,7 @@ ros2 launch learn_bringup record.launch.py bag:=$HOME/ws/bags/sim_default
 [INFO] [pi_controller-2]: process started with pid [7339]
 [INFO] [target_generator-3]: process started with pid [7340]
 [INFO] [ros2-4]: process started with pid [7341]
-[ros2-4] [INFO] [1790434767.753588853] [rosbag2_recorder]: Starting recording to '.../ws/bags/sim_default'
+[ros2-4] [INFO] [1790434767.753588853] [rosbag2_recorder]: Starting recording to '.../ros2_ws/bags/sim_default'
 [target_generator-3] [INFO] [1790434767.834303074] [target_generator]:   0.1 s: target -> 0.00 m/s
 ...
 [ros2-4] [INFO] [1790434767.908987699] [rosbag2_recorder]: All requested topics are subscribed. Stopping discovery...
@@ -538,23 +538,23 @@ ros2 launch learn_bringup record.launch.py bag:=$HOME/ws/bags/sim_default
 
 フェーズ6-3では、条件の違う記録を比べる。そのために、ブレーキの遅れ `tau_brake` を1.0秒にした記録（フェーズ5-3の4-5節と同じ条件）を、もう1つ取っておく。
 
-5-3の4-5節の `slow_brake.yaml` と同じく、`ws/config/` に記録用のYAMLを写して、`vehicle_plant` の `tau_brake: 0.2` を `tau_brake: 1.0` に書き換える。
+5-3の4-5節の `slow_brake.yaml` と同じく、`ros2_ws/config/` に記録用のYAMLを写して、`vehicle_plant` の `tau_brake: 0.2` を `tau_brake: 1.0` に書き換える。
 
 ```bash
-cp ~/ws/src/learn_bringup/config/vehicle_sim_record.yaml ~/ws/config/slow_brake_record.yaml
+cp ~/ros2_ws/src/learn_bringup/config/vehicle_sim_record.yaml ~/ros2_ws/config/slow_brake_record.yaml
 ```
 
 書き換えたら、`params_file:=` で渡して記録する（`~` ではなく `$HOME` と書く理由は、フェーズ5-3の4-5節）。YAMLを絶対パスで渡すので、このYAMLのためにビルドし直す必要は無い。
 
 ```bash
-ros2 launch learn_bringup record.launch.py params_file:=$HOME/ws/config/slow_brake_record.yaml bag:=$HOME/ws/bags/slow_brake
+ros2 launch learn_bringup record.launch.py params_file:=$HOME/ros2_ws/config/slow_brake_record.yaml bag:=$HOME/ros2_ws/bags/slow_brake
 ```
 
 **期待する結果**（抜粋。`target_generator` と記録のログと、止まる部分だけを載せる。時刻・パスは実行ごとに変わる）:
 
 ```text
 [target_generator-3] [INFO] [1790468886.168931189] [target_generator]:   0.1 s: target -> 0.00 m/s
-[ros2-4] [INFO] [1790468886.185832768] [rosbag2_recorder]: Starting recording to '.../ws/bags/slow_brake'
+[ros2-4] [INFO] [1790468886.185832768] [rosbag2_recorder]: Starting recording to '.../ros2_ws/bags/slow_brake'
 [target_generator-3] [INFO] [1790468896.029664034] [target_generator]:  10.0 s: target -> 10.00 m/s
 [target_generator-3] [INFO] [1790468941.929956498] [target_generator]:  50.0 s: target -> 5.00 m/s
 [target_generator-3] [INFO] [1790468974.830161284] [target_generator]:  80.0 s: target -> 0.00 m/s
@@ -570,7 +570,7 @@ ros2 launch learn_bringup record.launch.py params_file:=$HOME/ws/config/slow_bra
 同じlaunchで、`scenario:=gazebo_plant` を指定する。Gazeboのウィンドウが開く。
 
 ```bash
-ros2 launch learn_bringup record.launch.py scenario:=gazebo_plant bag:=$HOME/ws/bags/gz_default
+ros2 launch learn_bringup record.launch.py scenario:=gazebo_plant bag:=$HOME/ros2_ws/bags/gz_default
 ```
 
 **期待する結果**（抜粋。止まる部分だけを載せる）:
@@ -638,12 +638,12 @@ $ pgrep -af "gz sim"
 ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /gz/plant/velocity/data /plant/pedal/data /gz/plant/pedal/data
 
 # T2
-cd ~/ws/bags
+cd ~/ros2_ws/bags
 
 ros2 bag play sim_default
 
 # T3
-cd ~/ws/bags
+cd ~/ros2_ws/bags
 
 ros2 bag play gz_default --start-offset 5 --remap /target_velocity:=/gz/target_velocity /plant/velocity:=/gz/plant/velocity /plant/pedal:=/gz/plant/pedal __node:=player_gz
 ```

@@ -112,13 +112,13 @@ int32[] sequence
 
 ## 3. 準備: 依存の追加
 
-**Python（`ws/src/learn_py/package.xml`）**: 次の行を足す。`action_msgs` は、クライアントが結果の状態（成功・中断など）を表す型 [`action_msgs/msg/GoalStatus`](https://github.com/ros2/rcl_interfaces/blob/jazzy/action_msgs/msg/GoalStatus.msg) を使うために要る。
+**Python（`ros2_ws/src/learn_py/package.xml`）**: 次の行を足す。`action_msgs` は、クライアントが結果の状態（成功・中断など）を表す型 [`action_msgs/msg/GoalStatus`](https://github.com/ros2/rcl_interfaces/blob/jazzy/action_msgs/msg/GoalStatus.msg) を使うために要る。
 
 ```xml
 <depend>action_msgs</depend>
 ```
 
-**C++（`ws/src/learn_cpp/package.xml`）**: 次の行を足す。`rclcpp_action` は、C++でアクションのサーバ・クライアントを作るためのライブラリ。
+**C++（`ros2_ws/src/learn_cpp/package.xml`）**: 次の行を足す。`rclcpp_action` は、C++でアクションのサーバ・クライアントを作るためのライブラリ。
 
 ```xml
 <depend>rclcpp_action</depend>
@@ -137,7 +137,7 @@ find_package(rclcpp_action REQUIRED)
 <depend>example_interfaces</depend>
 ```
 
-C++版を作る場合は、`ws/src/learn_cpp/CMakeLists.txt` にも足す（既存の `find_package(...)` の並びへ）。これが無いと、5節の `ament_target_dependencies(... example_interfaces)` でビルドがエラーになる。
+C++版を作る場合は、`ros2_ws/src/learn_cpp/CMakeLists.txt` にも足す（既存の `find_package(...)` の並びへ）。これが無いと、5節の `ament_target_dependencies(... example_interfaces)` でビルドがエラーになる。
 
 ```cmake
 find_package(example_interfaces REQUIRED)
@@ -145,9 +145,9 @@ find_package(example_interfaces REQUIRED)
 
 `example_interfaces` は Desktop Install に含まれる。`ros2 interface show example_interfaces/action/Fibonacci`（1節）で定義が表示されれば、導入済み。
 
-## 4. Python版（`ws/src/learn_py`）
+## 4. Python版（`ros2_ws/src/learn_py`）
 
-`ws/src/learn_py/learn_py/` に `fibonacci_server.py`, `fibonacci_client.py` を作る。
+`ros2_ws/src/learn_py/learn_py/` に `fibonacci_server.py`, `fibonacci_client.py` を作る。
 
 主なAPI（rclpy）:
 
@@ -169,9 +169,9 @@ find_package(example_interfaces REQUIRED)
 
 ### サンプルコードと解説（Python）
 
-ファイル: `ws/src/learn_py/learn_py/fibonacci_server.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/fibonacci_server.py`
 
-<!-- file: ws/src/learn_py/learn_py/fibonacci_server.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/fibonacci_server.py -->
 ```python
 import time
 
@@ -267,9 +267,9 @@ def main(args=None):
 - 最後の周回の `sleep` 中に中断要求が届いた場合、ループを抜けたあとに確認がないので、そのまま `succeed()` に進む。学習用のコードでは許容しているが、厳密には `succeed()` の前にも `is_cancel_requested` を確認した方がよい（発展課題）。
 - `feedback.sequence = sequence` は同じリストを指しているだけで、コピーではない。この例では毎回送信のたびにシリアライズされるので問題ないが、別スレッドで書き換えるコードを書く場合は注意する。
 
-ファイル: `ws/src/learn_py/learn_py/fibonacci_client.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/fibonacci_client.py`
 
-<!-- file: ws/src/learn_py/learn_py/fibonacci_client.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/fibonacci_client.py -->
 ```python
 import rclpy
 from action_msgs.msg import GoalStatus
@@ -386,7 +386,7 @@ def main(args=None):
 ```
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -395,9 +395,9 @@ source install/setup.bash
 
 **期待する結果**: `Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
 
-## 5. C++版（`ws/src/learn_cpp`）
+## 5. C++版（`ros2_ws/src/learn_cpp`）
 
-`ws/src/learn_cpp/src/` に `fibonacci_server.cpp`, `fibonacci_client.cpp` を作る。
+`ros2_ws/src/learn_cpp/src/` に `fibonacci_server.cpp`, `fibonacci_client.cpp` を作る。
 
 主なAPI（rclcpp_action。`#include "rclcpp_action/rclcpp_action.hpp"`）:
 
@@ -416,9 +416,9 @@ Pythonとの違いの見どころ: Pythonは `Future` の完了コールバッ�
 
 ### サンプルコードと解説（C++）
 
-ファイル: `ws/src/learn_cpp/src/fibonacci_server.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/fibonacci_server.cpp`
 
-<!-- file: ws/src/learn_cpp/src/fibonacci_server.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/fibonacci_server.cpp -->
 ```cpp
 #include <memory>
 #include <thread>
@@ -537,9 +537,9 @@ Python版と同じ仕事をする。対応関係は次のとおり。
 
 観察ポイント: Python版サーバと比べて、feedback の間隔や cancel 時の反応（`cancel requested` から `goal canceled` まで）がほぼ同じになることを確認する。同じ結果が出るなら、片方の言語で書いたクライアントからもう片方のサーバを使える（6節の組み合わせ表）。
 
-ファイル: `ws/src/learn_cpp/src/fibonacci_client.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/fibonacci_client.cpp`
 
-<!-- file: ws/src/learn_cpp/src/fibonacci_client.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/fibonacci_client.cpp -->
 ```cpp
 #include <chrono>
 #include <cstdint>
@@ -708,7 +708,7 @@ install(TARGETS
 ```
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_cpp
 

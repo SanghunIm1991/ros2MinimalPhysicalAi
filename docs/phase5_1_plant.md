@@ -3,7 +3,7 @@
 [`docs/learning_plan.md`](learning_plan.md) フェーズ5の5-1（idea_origin.md ステップ2）に対応する。1次元（前後の動きだけ）の車両の「疑似プラント」、つまり、制御の対象になる車両の動きを数式で計算するノードを自作する。数式の中身（数理モデル）を作ることが、この手順書の中心である。計算した速度は、フェーズ5-0で動かしたGazeboの緑の車両に送って、目で見える形にする。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ3-1（Publisher・Subscriber）、フェーズ3-3（パラメータの宣言と、変更を検証するコールバック）、フェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)。Gazeboのデモを起動できる。`ws/src/learn_py` の `package.xml` に `geometry_msgs` がある）。launch（フェーズ4）は、この手順書ではまだ使わない（フェーズ5-3で使う）
+- 前提: フェーズ3-1（Publisher・Subscriber）、フェーズ3-3（パラメータの宣言と、変更を検証するコールバック）、フェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)。Gazeboのデモを起動できる。`ros2_ws/src/learn_py` の `package.xml` に `geometry_msgs` がある）。launch（フェーズ4）は、この手順書ではまだ使わない（フェーズ5-3で使う）
 - 所要目安: 2コマ
 - 言語: Python
 
@@ -194,9 +194,9 @@ $\Delta t = 0.01$ 秒なら、時定数が0.01秒より長い限り、なめら�
 
 まず、2節の式だけを書いたファイルを作り、ROS2を使わずに計算結果を確かめる。
 
-ファイル: `ws/src/learn_py/learn_py/vehicle_model.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/vehicle_model.py`
 
-<!-- file: ws/src/learn_py/learn_py/vehicle_model.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/vehicle_model.py -->
 ```python
 from dataclasses import dataclass
 
@@ -282,7 +282,7 @@ if __name__ == '__main__':
 ファイルを保存したら、ビルドせずにそのまま実行できる（ROS2を使わないので、`source` も要らない）。
 
 ```bash
-python3 ~/ws/src/learn_py/learn_py/vehicle_model.py
+python3 ~/ros2_ws/src/learn_py/learn_py/vehicle_model.py
 ```
 
 **期待する結果**:
@@ -322,9 +322,9 @@ python3 ~/ws/src/learn_py/learn_py/vehicle_model.py
 
 ### 5-1. 疑似プラントのノード（`plant_node.py`）
 
-ファイル: `ws/src/learn_py/learn_py/plant_node.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/plant_node.py`
 
-<!-- file: ws/src/learn_py/learn_py/plant_node.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/plant_node.py -->
 ```python
 import dataclasses
 
@@ -433,9 +433,9 @@ def main(args=None):
 
 ### 5-2. 表示用のノード（`gz_display.py`）
 
-ファイル: `ws/src/learn_py/learn_py/gz_display.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/gz_display.py`
 
-<!-- file: ws/src/learn_py/learn_py/gz_display.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/gz_display.py -->
 ```python
 import rclpy
 from geometry_msgs.msg import Twist
@@ -518,7 +518,7 @@ def main(args=None):
 
 依存の追加は要らない。`Float64` の `std_msgs` はフェーズ3-1で、`Twist` の `geometry_msgs` はフェーズ5-0で `package.xml` に足してあり、`rcl_interfaces` は `rclpy` を通じて使える（フェーズ3-3と同じ）。
 
-`ws/src/learn_py/setup.py` の `entry_points` に2行足す（既存の行はすべて残す）。必須の冊（フェーズ3-1〜3-3と5-0）まで進めた状態なら、次のようになる。
+`ros2_ws/src/learn_py/setup.py` の `entry_points` に2行足す（既存の行はすべて残す）。必須の冊（フェーズ3-1〜3-3と5-0）まで進めた状態なら、次のようになる。
 
 <!-- snippet: py_entry_points_plant -->
 ```python
@@ -543,7 +543,7 @@ def main(args=None):
 並び順や、任意の冊（フェーズ3-4・3-5など）で足した行の有無は、進め方によって違ってよい。既存の行は残して、最後の2行を足す。`vehicle_model.py` は実行ファイルではない（ノードから `import` される部品）ので、登録しない。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -575,14 +575,14 @@ learn_py vehicle_plant
 
 ```bash
 # T1
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 
 ros2 run learn_py vehicle_plant
 
 # T2
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 
@@ -635,7 +635,7 @@ T1の `vehicle_plant` は動かしたまま、ターミナルを2つ足す。T3�
 ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false
 
 # T4
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 
@@ -794,7 +794,7 @@ Gazeboを表示していれば、緑の車両の動き出しが、既定値の�
 |---|---|
 | `python3 .../vehicle_model.py` で `ModuleNotFoundError` | `vehicle_model.py` の中で `rclpy` などを `import` していないか。このファイルはPythonの標準の機能だけで書く |
 | `ros2 run learn_py vehicle_plant` で `No executable found` | `setup.py` の `entry_points` に足したか。足した後に `colcon build` と `source install/setup.bash` をしたか（5-3節） |
-| `vehicle_plant` の起動時に `ModuleNotFoundError: No module named 'learn_py.vehicle_model'` | `vehicle_model.py` を `ws/src/learn_py/learn_py/` に置いたか（`setup.py` と同じ階層ではなく、その下の `learn_py/` の中） |
+| `vehicle_plant` の起動時に `ModuleNotFoundError: No module named 'learn_py.vehicle_model'` | `vehicle_model.py` を `ros2_ws/src/learn_py/learn_py/` に置いたか（`setup.py` と同じ階層ではなく、その下の `learn_py/` の中） |
 | ペダルを送っても速度が変わらない | トピック名（`/plant/pedal`）と型（`std_msgs/msg/Float64`）の綴り。ペダルが0.074未満だと、転がり抵抗に負けて動かない（2-3節） |
 | `ros2 param set ... tau_accel 1` が失敗する | 整数を渡している。`1.0` と書く（フェーズ3-3の5-3節） |
 | `vehicle_plant` が起動直後に `ZeroDivisionError: float division by zero` で止まる | 起動時に `-p` やYAMLで、時定数（`tau_accel`・`tau_brake`）や質量に0.0を渡した（整数の `0` と書いた場合は、型が合わず、宣言の時点で別のエラー（`InvalidParameterTypeException`）になる）。起動時の値は検証していない（5-1節の「補足: 起動時の値を検証していない理由」）。0より大きい値にして起動し直す |

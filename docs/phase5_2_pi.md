@@ -156,9 +156,9 @@ $K_p = 0.5$ なら $T_c = 10.7 / (21.4 \times 0.5) \approx 1.0$ 秒、 $K_i = 0.
 
 ### 4-1. PI制御器のクラス（`pi_control.py`）
 
-ファイル: `ws/src/learn_py/learn_py/pi_control.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/pi_control.py`
 
-<!-- file: ws/src/learn_py/learn_py/pi_control.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/pi_control.py -->
 ```python
 # PI制御器。目標と現在値の差（偏差）から、ペダルの指令を計算する（ROS2を使わない）。
 class PIController:
@@ -195,9 +195,9 @@ class PIController:
 
 ### 4-2. 閉ループのシミュレーション（`closed_loop_sim.py`）
 
-ファイル: `ws/src/learn_py/learn_py/closed_loop_sim.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/closed_loop_sim.py`
 
-<!-- file: ws/src/learn_py/learn_py/closed_loop_sim.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/closed_loop_sim.py -->
 ```python
 from learn_py.pi_control import PIController
 from learn_py.vehicle_model import VehicleModel, VehicleParams
@@ -267,7 +267,7 @@ if __name__ == '__main__':
 `python3 -m` で動かすだけなら、`setup.py` に登録しなくてよい。4-1節と4-2節のファイルを置いて、ここでビルドすれば動く（ノードの実行ファイルとしての登録は、5-3節で行う）。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -329,9 +329,9 @@ PI (kp=5.0, ki=2.0)        10.04   10.00         4.12    5.00
 
 ### 5-1. PI制御のノード（`pi_node.py`）
 
-ファイル: `ws/src/learn_py/learn_py/pi_node.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/pi_node.py`
 
-<!-- file: ws/src/learn_py/learn_py/pi_node.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/pi_node.py -->
 ```python
 import rclpy
 from rcl_interfaces.msg import SetParametersResult
@@ -441,7 +441,7 @@ def main(args=None):
 
 ### 5-3. 実行ファイルとして登録し、ビルドする
 
-`ws/src/learn_py/setup.py` の `entry_points` に1行足す（既存の行はすべて残す）。フェーズ5-1まで進めた状態なら、次のようになる（並び順や、任意の冊で足した行の有無は、進め方によって違ってよい）。
+`ros2_ws/src/learn_py/setup.py` の `entry_points` に1行足す（既存の行はすべて残す）。フェーズ5-1まで進めた状態なら、次のようになる（並び順や、任意の冊で足した行の有無は、進め方によって違ってよい）。
 
 <!-- snippet: py_entry_points_pi -->
 ```python
@@ -467,7 +467,7 @@ def main(args=None):
 `pi_control.py` と `closed_loop_sim.py` は実行ファイルとして登録しない（前者はノードから `import` される部品、後者は `python3 -m` で動かす）。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -498,21 +498,21 @@ learn_py pi_controller
 
 ```bash
 # T1
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 
 ros2 run learn_py vehicle_plant
 
 # T2
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 
 ros2 run learn_py pi_controller
 
 # T3
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 
@@ -660,7 +660,7 @@ ros2 run learn_py pi_controller --ros-args -p anti_windup:=false
 
 ### 6-3. YAMLでゲインを渡し、調整した結果を残す
 
-ゲインの組み合わせは、フェーズ3-3の5-4節のとおり、YAMLのファイルにまとめておくと、何度でも同じ条件で試せる。`ws/config/pi_controller.yaml` を作る（`ws/config/` はフェーズ3-3で作ったフォルダ。フェーズ4の3-1節で空になって消した場合は、`mkdir -p ~/ws/config` で作り直す。フェーズ4を済ませていれば、`learn_bringup/config/` に置いてもよい。フェーズ5-3ではそちらを使う）。
+ゲインの組み合わせは、フェーズ3-3の5-4節のとおり、YAMLのファイルにまとめておくと、何度でも同じ条件で試せる。`ros2_ws/config/pi_controller.yaml` を作る（`ros2_ws/config/` はフェーズ3-3で作ったフォルダ。フェーズ4の3-1節で空になって消した場合は、`mkdir -p ~/ros2_ws/config` で作り直す。フェーズ4を済ませていれば、`learn_bringup/config/` に置いてもよい。フェーズ5-3ではそちらを使う）。
 
 ```yaml
 pi_controller:
@@ -673,7 +673,7 @@ T2の `pi_controller` を止めて、YAMLを渡して起動し直す。
 
 ```bash
 # T2
-ros2 run learn_py pi_controller --ros-args --params-file ~/ws/config/pi_controller.yaml
+ros2 run learn_py pi_controller --ros-args --params-file ~/ros2_ws/config/pi_controller.yaml
 
 # T3
 ros2 param get /pi_controller kp
@@ -709,7 +709,7 @@ YAMLに書いた `kp`・`ki` が効いていて、書かなかった `anti_windu
 ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false
 
 # T5
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 

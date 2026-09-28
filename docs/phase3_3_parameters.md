@@ -80,9 +80,9 @@ sequenceDiagram
 | 動作 | `period` 秒ごとに `message` の内容を送り、ログにも出す |
 | 実行中の変更 | `message` は次の送信から反映する。`period` は**タイマーを作り直して**反映する。`period <= 0` は**拒否**する（変更前の値のまま） |
 
-## 3. Python版（`ws/src/learn_py`）
+## 3. Python版（`ros2_ws/src/learn_py`）
 
-`ws/src/learn_py/learn_py/param_talker.py` を作る。
+`ros2_ws/src/learn_py/learn_py/param_talker.py` を作る。
 
 主なAPI（rclpy）:
 
@@ -97,9 +97,9 @@ sequenceDiagram
 
 #### サンプルコードと解説（Python版）
 
-ファイル: `ws/src/learn_py/learn_py/param_talker.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/param_talker.py`
 
-<!-- file: ws/src/learn_py/learn_py/param_talker.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/param_talker.py -->
 ```python
 import rclpy
 from rcl_interfaces.msg import SetParametersResult
@@ -206,7 +206,7 @@ def main(args=None):
 ```
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -215,11 +215,11 @@ source install/setup.bash
 
 **期待する結果**: `Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功（表示の形は、[フェーズ3-1](phase3_1_pubsub.md)の3-3節と同じ）。`source` は、成功しても何も表示しない。
 
-## 4. C++版（`ws/src/learn_cpp`）
+## 4. C++版（`ros2_ws/src/learn_cpp`）
 
 > **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、節末の「Python版とC++版の違いのまとめ」を読めば概要が掴める。C++版を作らない場合は、`CMakeLists.txt` への登録も不要。
 
-`ws/src/learn_cpp/src/param_talker.cpp` を作る。
+`ros2_ws/src/learn_cpp/src/param_talker.cpp` を作る。
 
 主なAPI（rclcpp）:
 
@@ -233,9 +233,9 @@ source install/setup.bash
 
 #### サンプルコードと解説（C++版）
 
-ファイル: `ws/src/learn_cpp/src/param_talker.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/param_talker.cpp`
 
-<!-- file: ws/src/learn_cpp/src/param_talker.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/param_talker.cpp -->
 ```cpp
 #include <chrono>
 #include <memory>
@@ -357,7 +357,7 @@ install(TARGETS
 ```
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
@@ -484,7 +484,7 @@ Double value is: 0.2
 
 ### 5-4. YAMLファイルで指定する
 
-`ws/config/param_talker.yaml` を作る（`ws/config/` はパッケージではない普通のフォルダで、フェーズ4で `learn_bringup/config/` へ移す。`ws/` は、フェーズ2の2-8節の方法でGitの管理下にしない限り、`git status` とは関係しない。2-8節の方法で練習コードをGitで管理している場合は、`git status` に未追跡として出るが、フェーズ4で移すまで**コミットしない**）。
+`ros2_ws/config/param_talker.yaml` を作る（`ros2_ws/config/` はパッケージではない普通のフォルダで、フェーズ4で `learn_bringup/config/` へ移す。`ros2_ws/` は、フェーズ2の2-8節の方法でGitの管理下にしない限り、`git status` とは関係しない。2-8節の方法で練習コードをGitで管理している場合は、`git status` に未追跡として出るが、フェーズ4で移すまで**コミットしない**）。
 
 ```yaml
 param_talker:
@@ -497,7 +497,7 @@ param_talker:
 - `ros__parameters`（アンダースコア2つ）は固定のキー。
 
 ```bash
-ros2 run learn_py param_talker --ros-args --params-file ~/ws/config/param_talker.yaml
+ros2 run learn_py param_talker --ros-args --params-file ~/ros2_ws/config/param_talker.yaml
 ```
 
 **期待する結果**: YAMLに書いた値で動く（5-2で `-p` を使ったときと同じ振る舞い）。
@@ -514,7 +514,7 @@ YAMLの1行目のノード名を間違えていると、エラーにはならず
 ```bash
 ros2 param dump /param_talker
 
-ros2 param load /param_talker ~/ws/config/param_talker.yaml
+ros2 param load /param_talker ~/ros2_ws/config/param_talker.yaml
 ```
 
 **期待する結果**（Python版の `param_talker` で、`ros2 param set` で `message` を `changed`、`period` を `0.2` にした後の例）:
@@ -528,7 +528,7 @@ $ ros2 param dump /param_talker
     start_type_description_service: true
     use_sim_time: false
 
-$ ros2 param load /param_talker ~/ws/config/param_talker.yaml
+$ ros2 param load /param_talker ~/ros2_ws/config/param_talker.yaml
 Set parameter message successful
 Set parameter period successful
 ```
@@ -542,7 +542,7 @@ Set parameter period successful
 - **コードを変えずに、設定だけを変えられる**: 既定値を変えたいとき、コードを書き換えると、ビルドし直しが必要になることがある（C++版は必ず要る）。また、「プログラムの修正」と「設定の変更」が同じ差分に混ざってしまう。YAMLなら、ファイルを直してノードを起動し直すだけで済む。コードは「どう動くか」、YAMLは「どの値で動かすか」と、役割を分けられる。
 - **数が増えても、まとめて読み書きできる**: `-p` はパラメータ1つにつき1つ書くので、数が増えるとコマンドが長くなり、打ち間違えやすい。YAMLなら1か所に並べて書け、`#` から行末までのコメントで、単位や「なぜこの値にしたか」も残せる。
 - **調整した結果を保存して、再現できる**: 実行中に `ros2 param set` で値を探り、良い値が見つかったら `ros2 param dump /param_talker > tuned.yaml` のように、`dump` の出力をファイルに保存する（`dump` は画面にYAMLの形で表示するだけなので、`>` でファイルへ書き出す）。次回はそのファイルを `--params-file` で渡せば、同じ設定から始められる。フェーズ5でPI制御のゲイン（`kp`・`ki`）を調整するときの、基本の流れになる。ただし、`dump` の出力には、自分で書いたコメントは残らない。コメントを付けたファイルに `>` で上書きすると、コメントが消える。別の名前で書き出してから、必要な値を写すとよい。
-- **設定を記録して、他の人と共有できる**: YAMLはテキストファイルなので、Gitで履歴を管理できる（この教材の練習用の `ws/` は、既定ではGitの管理外。管理したい場合はフェーズ2の2-8節）。「いつ、どの値を、どう変えたか」が差分で追えるうえ、同じファイルを渡せば、他の人も同じ条件で動かせる。
+- **設定を記録して、他の人と共有できる**: YAMLはテキストファイルなので、Gitで履歴を管理できる（この教材の練習用の `ros2_ws/` は、既定ではGitの管理外。管理したい場合はフェーズ2の2-8節）。「いつ、どの値を、どう変えたか」が差分で追えるうえ、同じファイルを渡せば、他の人も同じ条件で動かせる。
 - **用途ごとに設定を切り替えられる**: 「動作確認用」と「本番の実験用」のように、ファイルを複数用意しておけば、起動時に渡すファイルを変えるだけで設定を切り替えられる。コードは1つのまま使える。
 - **複数のノードの設定を、1つのファイルにまとめられる**: 1行目のノード名を変えて並べれば、1つのファイルに複数のノードの設定を書ける（全ノードに共通の値は `/**:` の下に書く）。フェーズ4では、launchファイルからこのYAMLを読み込んで、起動するノードにパラメータを渡す。
 

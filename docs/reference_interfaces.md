@@ -10,7 +10,7 @@
 
 > **出どころ**: 型の定義・文法・生成されるPythonとC++の型は、`/opt/ros/jazzy` にある定義ファイルと生成済みのコード、定義ファイルを読み込む部品（`rosidl_adapter`）で確かめた。文法の細部は公式ドキュメントの「Interfaces」（8節）とも照らし合わせた。文章は自分の言葉で書いており、公式ドキュメントの転載ではない。図（SVG）は生成スクリプトで作り、文字と線の重なりは計算で点検したが、画像にして目で確かめてはいない。表示が崩れている場合は、図の下にある同じ内容のmermaid版（折りたたみ）を参照する。
 
-> **実行環境が無くても読めるように**: コマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示はすべて、この資料の作成時に使い捨ての環境で実際に実行したものである（`ros2 interface`・`ros2 pkg create`・`colcon build`・`python3 -c` だけで、ノードは起動していない）。ビルドの秒数は環境によって変わる。`ros2 pkg create` の表示の作成先のパスは、練習環境の場所（`~/ws/src`）に直して載せた。
+> **実行環境が無くても読めるように**: コマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示はすべて、この資料の作成時に使い捨ての環境で実際に実行したものである（`ros2 interface`・`ros2 pkg create`・`colcon build`・`python3 -c` だけで、ノードは起動していない）。ビルドの秒数は環境によって変わる。`ros2 pkg create` の表示の作成先のパスは、練習環境の場所（`~/ros2_ws/src`）に直して載せた。
 
 ## 0. この資料で分かること
 
@@ -314,7 +314,7 @@ angular:
 インターフェースは、**`ament_cmake` のパッケージ**で定義する。コードを生成する仕組みがCMakeで動くためで、Pythonだけで書くノードの型でも、`ament_python` のパッケージ（`learn_py`）には置けない。ノードのパッケージとは分けて、インターフェースだけのパッケージを作るのが一般的である（名前は `〜_interfaces` か `〜_msgs` にすることが多い）。
 
 ```bash
-cd ~/ws/src
+cd ~/ros2_ws/src
 
 ros2 pkg create --build-type ament_cmake \
   --license Apache-2.0 \
@@ -329,7 +329,7 @@ mkdir -p learn_interfaces/msg learn_interfaces/srv learn_interfaces/action
 ```text
 going to create a new package
 package name: learn_interfaces
-destination directory: /home/<ユーザー名>/ws/src
+destination directory: /home/<ユーザー名>/ros2_ws/src
 package format: 3
 version: 0.0.0
 description: TODO: Package description
@@ -349,9 +349,9 @@ creating ./learn_interfaces/CMakeLists.txt
 
 ### 6-2. 定義ファイルを書く
 
-ファイル: `ws/src/learn_interfaces/msg/VehicleState.msg`
+ファイル: `ros2_ws/src/learn_interfaces/msg/VehicleState.msg`
 
-<!-- file: ws/src/learn_interfaces/msg/VehicleState.msg -->
+<!-- file: ros2_ws/src/learn_interfaces/msg/VehicleState.msg -->
 ```text
 # 車両の状態。フェーズ5の一式の目標速度・速度・ペダルを、時刻付きの1つのメッセージにまとめたもの。
 
@@ -365,9 +365,9 @@ float64 velocity          # 速度 [m/s]
 float64 pedal             # ペダル（PEDAL_MIN〜PEDAL_MAX。正がアクセル、負がブレーキ）
 ```
 
-ファイル: `ws/src/learn_interfaces/srv/SetGains.srv`
+ファイル: `ros2_ws/src/learn_interfaces/srv/SetGains.srv`
 
-<!-- file: ws/src/learn_interfaces/srv/SetGains.srv -->
+<!-- file: ros2_ws/src/learn_interfaces/srv/SetGains.srv -->
 ```text
 # PI制御のゲインを変える。要求にゲインを入れ、応答で受け付けたかを返す。
 float64 kp
@@ -377,9 +377,9 @@ bool success
 string message
 ```
 
-ファイル: `ws/src/learn_interfaces/action/DriveDistance.action`
+ファイル: `ros2_ws/src/learn_interfaces/action/DriveDistance.action`
 
-<!-- file: ws/src/learn_interfaces/action/DriveDistance.action -->
+<!-- file: ros2_ws/src/learn_interfaces/action/DriveDistance.action -->
 ```text
 # 決めた距離を走る。ゴールに距離を、結果にかかった時間を、途中経過に走った距離を入れる。
 float64 distance        # 走る距離 [m]
@@ -396,7 +396,7 @@ float64 traveled        # ここまでに走った距離 [m]
 
 ### 6-3. `CMakeLists.txt` と `package.xml` に書き足す
 
-`ws/src/learn_interfaces/CMakeLists.txt` の `find_package(ament_cmake REQUIRED)` の後ろ（`ament_package()` より前）に、次を足す。
+`ros2_ws/src/learn_interfaces/CMakeLists.txt` の `find_package(ament_cmake REQUIRED)` の後ろ（`ament_package()` より前）に、次を足す。
 
 <!-- snippet: cmake_interfaces -->
 ```cmake
@@ -412,7 +412,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 ament_export_dependencies(rosidl_default_runtime)
 ```
 
-`ws/src/learn_interfaces/package.xml` の `<buildtool_depend>ament_cmake</buildtool_depend>` の次に、次を足す。
+`ros2_ws/src/learn_interfaces/package.xml` の `<buildtool_depend>ament_cmake</buildtool_depend>` の次に、次を足す。
 
 <!-- snippet: package_xml_interfaces -->
 ```xml
@@ -440,7 +440,7 @@ ament_export_dependencies(rosidl_default_runtime)
 ### 6-4. ビルドして確かめる
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_interfaces
 

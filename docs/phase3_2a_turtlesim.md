@@ -57,7 +57,7 @@ flowchart LR
 
 `turtle_circle` は `geometry_msgs` を使うので、まず依存を足す。
 
-**Python版**: 足すのは `ws/src/learn_py/package.xml` の1か所だけ。既存の `<depend>` の並びに1行足す。
+**Python版**: 足すのは `ros2_ws/src/learn_py/package.xml` の1か所だけ。既存の `<depend>` の並びに1行足す。
 
 ```xml
 <depend>geometry_msgs</depend>
@@ -65,13 +65,13 @@ flowchart LR
 
 **C++版**（C++版を作る場合のみ）: 足すのは `package.xml` と `CMakeLists.txt` の2ファイル。
 
-(1) `ws/src/learn_cpp/package.xml` の、既存の `<depend>` の並びに1行足す（Python版と同じ行）。
+(1) `ros2_ws/src/learn_cpp/package.xml` の、既存の `<depend>` の並びに1行足す（Python版と同じ行）。
 
 ```xml
 <depend>geometry_msgs</depend>
 ```
 
-(2) `ws/src/learn_cpp/CMakeLists.txt` の、既存の `find_package(std_msgs REQUIRED)` の隣に1行足す。
+(2) `ros2_ws/src/learn_cpp/CMakeLists.txt` の、既存の `find_package(std_msgs REQUIRED)` の隣に1行足す。
 
 <!-- snippet: cmake_find_geometry -->
 ```cmake
@@ -82,9 +82,9 @@ find_package(geometry_msgs REQUIRED)
 
 `package.xml` の `<depend>` は「このパッケージは `geometry_msgs` に依存する」という宣言で、`colcon` が依存関係からビルド順を決めたり、`rosdep` が不足を検出したりするために使う。`<depend>` はビルド時・実行時の両方の依存をまとめて宣言する書き方。一方 `CMakeLists.txt` の `find_package` は、C++のビルド時にヘッダやライブラリの場所を探す指示。C++では**両方**必要で、片方だけだとビルドエラーになる（8節）。Pythonは `package.xml` だけでよい。
 
-## 4. Python版（`ws/src/learn_py`）
+## 4. Python版（`ros2_ws/src/learn_py`）
 
-`ws/src/learn_py/learn_py/` に `turtle_circle.py` を作る。
+`ros2_ws/src/learn_py/learn_py/` に `turtle_circle.py` を作る。
 
 主なAPI（rclpy）:
 
@@ -94,9 +94,9 @@ find_package(geometry_msgs REQUIRED)
 
 ### サンプルコードと解説
 
-ファイル: `ws/src/learn_py/learn_py/turtle_circle.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/turtle_circle.py`
 
-<!-- file: ws/src/learn_py/learn_py/turtle_circle.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/turtle_circle.py -->
 ```python
 import rclpy
 from geometry_msgs.msg import Twist
@@ -158,7 +158,7 @@ def main(args=None):
 `'実行ファイル名 = パッケージ.モジュール:関数'` の形式で、`ros2 run learn_py turtle_circle` の `turtle_circle` が左辺、呼ばれる関数が右辺の `main`。フェーズ3-1でも触れたとおり、`entry_points` を変えたときは `--symlink-install` でも再ビルドが必要。カンマの付け忘れや、リストの外へ書いてしまうミスに注意する。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -167,11 +167,11 @@ source install/setup.bash
 
 **期待する結果**: フェーズ3-1と同じく、`Finished <<< learn_py` と `Summary: 1 package finished` が出れば成功。`ros2 pkg executables learn_py` を実行すると、今回足した `learn_py turtle_circle` の行が、既存の実行ファイルと一緒に並ぶ。
 
-## 5. C++版（`ws/src/learn_cpp`）
+## 5. C++版（`ros2_ws/src/learn_cpp`）
 
 > **このフェーズのC++版は任意（発展）**。フェーズ5の車両シミュレーションはPythonで実装すると決めているため、ここでC++版を作らなくても先へ進める。Python版との違いは、下の `turtle_circle.cpp` の解説に書いてあるので、読むだけでも概要が掴める。C++版を作らない場合は、C++向けの依存の追加（`package.xml` と `CMakeLists.txt`）も不要。
 
-`ws/src/learn_cpp/src/` に `turtle_circle.cpp` を作る。
+`ros2_ws/src/learn_cpp/src/` に `turtle_circle.cpp` を作る。
 
 主なAPI（rclcpp）:
 
@@ -181,9 +181,9 @@ source install/setup.bash
 
 ### サンプルコードと解説
 
-ファイル: `ws/src/learn_cpp/src/turtle_circle.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/turtle_circle.cpp`
 
-<!-- file: ws/src/learn_cpp/src/turtle_circle.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/turtle_circle.cpp -->
 ```cpp
 #include <chrono>
 #include <memory>
@@ -265,7 +265,7 @@ install(TARGETS
 - `install(TARGETS ... DESTINATION lib/${PROJECT_NAME})`: ビルドした実行ファイルを `install/learn_cpp/lib/learn_cpp/` へ置く。`ros2 run learn_cpp ...` はこの場所を探すので、ここに名前がないと `No executable found` になる。既存の名前（`hello` 〜 `sine_sub`）は消さずに残し、`turtle_circle` を足す。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_cpp
 

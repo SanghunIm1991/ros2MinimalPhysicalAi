@@ -79,9 +79,9 @@ flowchart LR
 フェーズ5-0で使ったワールドファイル（Gazeboに付属の `diff_drive.sdf`）を、`learn_bringup` の中へ写す。
 
 ```bash
-mkdir -p ~/ws/src/learn_bringup/worlds
+mkdir -p ~/ros2_ws/src/learn_bringup/worlds
 
-cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/ws/src/learn_bringup/worlds/vehicle_force.sdf
+cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/ros2_ws/src/learn_bringup/worlds/vehicle_force.sdf
 ```
 
 ワールドファイルは、**SDF**（Simulation Description Format）という、Gazeboのためのデータの書き方で書かれたXMLのファイルである。要素は次のように入れ子になっている（書き換えるときと、3-2節の計算のときに探す要素だけを挙げる）。
@@ -92,7 +92,7 @@ cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/ws/
   - `<joint>`: 部品どうしのつなぎ目（関節）。車体と車輪をつなぐ `left_wheel_joint`・`right_wheel_joint` が、車輪の軸にあたる。
   - `<plugin>`: 物体に機能を足す部品。DiffDriveもこれで付いている。
 
-写した `ws/src/learn_bringup/worlds/vehicle_force.sdf` を、エディタで次の3か所だけ書き換える。青の車両は残しておいてよい（指令を送らなければ止まったまま）。
+写した `ros2_ws/src/learn_bringup/worlds/vehicle_force.sdf` を、エディタで次の3か所だけ書き換える。青の車両は残しておいてよい（指令を送らなければ止まったまま）。
 
 **(1) ファイルの先頭のコメント**（`<!--` から `-->` まで。デモの使い方が書かれている）を、出典と変更点を書いたコメントに置き換える。
 
@@ -138,7 +138,7 @@ cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/ws/
 書き換えたら、ファイルの書き方に誤りがないかを確かめる。
 
 ```bash
-gz sdf -k ~/ws/src/learn_bringup/worlds/vehicle_force.sdf
+gz sdf -k ~/ros2_ws/src/learn_bringup/worlds/vehicle_force.sdf
 ```
 
 **期待する結果**:
@@ -233,9 +233,9 @@ $$
 
 ### 4-2. アクチュエータのモデル（`actuator_model.py`）
 
-ファイル: `ws/src/learn_py/learn_py/actuator_model.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/actuator_model.py`
 
-<!-- file: ws/src/learn_py/learn_py/actuator_model.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/actuator_model.py -->
 ```python
 from dataclasses import dataclass
 
@@ -279,9 +279,9 @@ class ActuatorModel:
 
 ### 4-3. Gazeboをプラントにするノード（`gz_plant_node.py`）
 
-ファイル: `ws/src/learn_py/learn_py/gz_plant_node.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/gz_plant_node.py`
 
-<!-- file: ws/src/learn_py/learn_py/gz_plant_node.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/gz_plant_node.py -->
 ```python
 import dataclasses
 
@@ -420,9 +420,9 @@ Gazeboの中の時間（シミュレーション時刻）は、PCの負荷によ
 
 ### 6-1. パラメータのYAML（`config/gazebo_plant.yaml`）
 
-ファイル: `ws/src/learn_bringup/config/gazebo_plant.yaml`
+ファイル: `ros2_ws/src/learn_bringup/config/gazebo_plant.yaml`
 
-<!-- file: ws/src/learn_bringup/config/gazebo_plant.yaml -->
+<!-- file: ros2_ws/src/learn_bringup/config/gazebo_plant.yaml -->
 ```yaml
 # フェーズ5-4の、Gazeboの物理をプラントにした構成の、ノードごとのパラメータ
 gz_plant:
@@ -448,9 +448,9 @@ target_generator:
 
 ### 6-2. launchファイル（`launch/gazebo_plant.launch.py`）
 
-ファイル: `ws/src/learn_bringup/launch/gazebo_plant.launch.py`
+ファイル: `ros2_ws/src/learn_bringup/launch/gazebo_plant.launch.py`
 
-<!-- file: ws/src/learn_bringup/launch/gazebo_plant.launch.py -->
+<!-- file: ros2_ws/src/learn_bringup/launch/gazebo_plant.launch.py -->
 ```python
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
@@ -534,7 +534,7 @@ def generate_launch_description():
 ```
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py learn_bringup
 

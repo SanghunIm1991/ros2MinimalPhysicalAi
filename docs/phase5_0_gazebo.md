@@ -7,7 +7,7 @@
 この手順書で開くGazeboの画面（2-1節の `gz sim diff_drive.sdf`。▶を押す前の一時停止の状態）。この2台の車両を、Gazeboのコマンドと、ROS2のトピック（5節では自作のノード）で走らせる。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ1（`ros2 topic pub` でTwistを送れる）とフェーズ3-1（Publisherを書ける。`ws/src/learn_py` がある）。launchファイルは起動するだけで、書き方（フェーズ4）は知らなくてよい。1〜3節だけなら、フェーズ1の後に寄り道として試せる（下の「フェーズ1の後に寄り道して試す場合」）
+- 前提: フェーズ1（`ros2 topic pub` でTwistを送れる）とフェーズ3-1（Publisherを書ける。`ros2_ws/src/learn_py` がある）。launchファイルは起動するだけで、書き方（フェーズ4）は知らなくてよい。1〜3節だけなら、フェーズ1の後に寄り道として試せる（下の「フェーズ1の後に寄り道して試す場合」）
 - 所要目安: 1〜2コマ
 - 言語: 導入と観察は言語非依存。自作ノードはPython
 
@@ -550,7 +550,7 @@ Publisherの側もSubscriberの側も、`Node name` はブリッジである（4
 
 ### 5-2. 依存の追加
 
-`Twist` は `geometry_msgs`、`Odometry` は `nav_msgs` パッケージの型なので、`ws/src/learn_py/package.xml` の `<depend>` の並びに2行足す（フェーズ3-2aで `geometry_msgs` をすでに足している場合は、`nav_msgs` の1行だけでよい）。
+`Twist` は `geometry_msgs`、`Odometry` は `nav_msgs` パッケージの型なので、`ros2_ws/src/learn_py/package.xml` の `<depend>` の並びに2行足す（フェーズ3-2aで `geometry_msgs` をすでに足している場合は、`nav_msgs` の1行だけでよい）。
 
 <!-- snippet: py_package_xml_gz -->
 ```xml
@@ -562,9 +562,9 @@ Publisherの側もSubscriberの側も、`Node name` はブリッジである（4
 
 ### 5-3. サンプルコードと解説
 
-ファイル: `ws/src/learn_py/learn_py/gz_drive.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/gz_drive.py`
 
-<!-- file: ws/src/learn_py/learn_py/gz_drive.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/gz_drive.py -->
 ```python
 import rclpy
 from geometry_msgs.msg import Twist
@@ -624,7 +624,7 @@ def main(args=None):
 
 ### 5-4. 実行ファイルとして登録し、ビルドする
 
-`ws/src/learn_py/setup.py` の `entry_points` に1行足す（既存の行はすべて残す）。フェーズ3-1まで進めた状態なら、次のようになる。
+`ros2_ws/src/learn_py/setup.py` の `entry_points` に1行足す（既存の行はすべて残す）。フェーズ3-1まで進めた状態なら、次のようになる。
 
 <!-- snippet: py_entry_points_gz -->
 ```python
@@ -643,7 +643,7 @@ def main(args=None):
 フェーズ3-2a以降の行（`turtle_circle` など）がある場合も、それらは残して `gz_drive` の行を足す。
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -665,7 +665,7 @@ Summary: 1 package finished [1.8s]
 
 ```bash
 # T2
-cd ~/ws
+cd ~/ros2_ws
 
 source install/setup.bash
 

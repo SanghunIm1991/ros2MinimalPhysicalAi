@@ -3,7 +3,7 @@
 [`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-2 ①②）に対応する。同じ仕様のノードをPythonとC++の両方で書き、動作と書き方の違いを比べる。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ2完了（`ws/src/learn_py` と `ws/src/learn_cpp` があり、`colcon build --symlink-install` が通る）
+- 前提: フェーズ2完了（`ros2_ws/src/learn_py` と `ros2_ws/src/learn_cpp` があり、`colcon build --symlink-install` が通る）
 - 所要目安: 1〜2コマ
 - 言語: **Python・C++の両方**（Python → C++の順を推奨）
 
@@ -68,11 +68,11 @@ sequenceDiagram
 - キューの深さ（QoSの `depth`）は10とする（QoSはフェーズ3-2bで扱う）。
 - 実行ファイル名は上表のノード名と同じにする（`ros2 run learn_py talker` のように起動できる）。
 
-## 3. Python版（`ws/src/learn_py`）
+## 3. Python版（`ros2_ws/src/learn_py`）
 
 ### 3-1. 書くもの
 
-`ws/src/learn_py/learn_py/` の下に4ファイルを作る: ①文字列の `talker.py`・`listener.py` と、②正弦波の `sine_pub.py`・`sine_sub.py`（2節）。
+`ros2_ws/src/learn_py/learn_py/` の下に4ファイルを作る: ①文字列の `talker.py`・`listener.py` と、②正弦波の `sine_pub.py`・`sine_sub.py`（2節）。
 
 主なAPI（rclpy）:
 
@@ -92,9 +92,9 @@ sequenceDiagram
 
 **talker.py**
 
-ファイル: `ws/src/learn_py/learn_py/talker.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/talker.py`
 
-<!-- file: ws/src/learn_py/learn_py/talker.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/talker.py -->
 ```python
 import rclpy
 from rclpy.executors import ExternalShutdownException
@@ -153,9 +153,9 @@ def main(args=None):
 
 **listener.py**
 
-ファイル: `ws/src/learn_py/learn_py/listener.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/listener.py`
 
-<!-- file: ws/src/learn_py/learn_py/listener.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/listener.py -->
 ```python
 import rclpy
 from rclpy.executors import ExternalShutdownException
@@ -203,9 +203,9 @@ def main(args=None):
 
 **sine_pub.py**
 
-ファイル: `ws/src/learn_py/learn_py/sine_pub.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/sine_pub.py`
 
-<!-- file: ws/src/learn_py/learn_py/sine_pub.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/sine_pub.py -->
 ```python
 import math
 
@@ -258,9 +258,9 @@ def main(args=None):
 
 **sine_sub.py**
 
-ファイル: `ws/src/learn_py/learn_py/sine_sub.py`
+ファイル: `ros2_ws/src/learn_py/learn_py/sine_sub.py`
 
-<!-- file: ws/src/learn_py/learn_py/sine_sub.py -->
+<!-- file: ros2_ws/src/learn_py/learn_py/sine_sub.py -->
 ```python
 import rclpy
 from rclpy.executors import ExternalShutdownException
@@ -304,7 +304,7 @@ Python版の4ファイルに共通する要点は、「ノードクラスの `__
 
 ### 3-2. 実行ファイルとして登録する
 
-`ws/src/learn_py/setup.py` の `entry_points` に4行を足す（既存の `hello` は残す）。**登録を足したので、この後は再ビルドが必要**（`--symlink-install` でも同じ）。
+`ros2_ws/src/learn_py/setup.py` の `entry_points` に4行を足す（既存の `hello` は残す）。**登録を足したので、この後は再ビルドが必要**（`--symlink-install` でも同じ）。
 
 <!-- snippet: py_entry_points_pubsub -->
 ```python
@@ -322,7 +322,7 @@ Python版の4ファイルに共通する要点は、「ノードクラスの `__
 - **最後の行の末尾のコンマ**（`'sine_sub = learn_py.sine_sub:main',`）は誤りではない。Pythonのリスト・辞書では最後の要素の後ろにもコンマを置いてよく（トレーリングコンマ。`[a, b,]` と `[a, b]` は同じ意味）、`ros2 pkg create` の雛形もこの書き方をしている。付けておくと、次に行を足すときに前の行へコンマを足し忘れる事故が起きず、差分も1行で済む。
 - **インデントはスペースで揃える**。かっこの内側なのでタブが混ざっても動作はするが、`colcon test` で走るスタイルチェック（flake8）で警告になる。
 
-`package.xml` には、`ros2 pkg create` 時に `--dependencies rclpy std_msgs` を指定していれば、依存はすでに入っている（`<depend>rclpy</depend>` と `<depend>std_msgs</depend>`）。`cat ws/src/learn_py/package.xml` で `<test_depend>` の行しか見えない場合は、`--dependencies` の指定が抜けていた。その場合は `<license>` の行の後ろに次の2行を手で足し、再ビルドする。
+`package.xml` には、`ros2 pkg create` 時に `--dependencies rclpy std_msgs` を指定していれば、依存はすでに入っている（`<depend>rclpy</depend>` と `<depend>std_msgs</depend>`）。`cat ros2_ws/src/learn_py/package.xml` で `<test_depend>` の行しか見えない場合は、`--dependencies` の指定が抜けていた。その場合は `<license>` の行の後ろに次の2行を手で足し、再ビルドする。
 
 ```xml
   <depend>rclpy</depend>
@@ -334,7 +334,7 @@ Python版の4ファイルに共通する要点は、「ノードクラスの `__
 ### 3-3. ビルドして動かす
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -401,11 +401,11 @@ ros2 run learn_py sine_sub
 
 最初の値は起動した時刻で決まるため、上の例とは一致しない。見るべき点は、値が滑らかに増減し、±1を超えないこと。
 
-## 4. C++版（`ws/src/learn_cpp`）
+## 4. C++版（`ros2_ws/src/learn_cpp`）
 
 ### 4-1. 書くもの
 
-`ws/src/learn_cpp/src/` の下に4ファイルを作る: ①文字列の `talker.cpp`・`listener.cpp` と、②正弦波の `sine_pub.cpp`・`sine_sub.cpp`（2節）。
+`ros2_ws/src/learn_cpp/src/` の下に4ファイルを作る: ①文字列の `talker.cpp`・`listener.cpp` と、②正弦波の `sine_pub.cpp`・`sine_sub.cpp`（2節）。
 
 主なAPI（rclcpp）:
 
@@ -429,9 +429,9 @@ Pythonとの違いの見どころ:
 
 **talker.cpp**
 
-ファイル: `ws/src/learn_cpp/src/talker.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/talker.cpp`
 
-<!-- file: ws/src/learn_cpp/src/talker.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/talker.cpp -->
 ```cpp
 #include <chrono>
 #include <memory>
@@ -495,9 +495,9 @@ int main(int argc, char ** argv)
 
 **listener.cpp**
 
-ファイル: `ws/src/learn_cpp/src/listener.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/listener.cpp`
 
-<!-- file: ws/src/learn_cpp/src/listener.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/listener.cpp -->
 ```cpp
 #include <memory>
 
@@ -547,9 +547,9 @@ int main(int argc, char ** argv)
 
 **sine_pub.cpp**
 
-ファイル: `ws/src/learn_cpp/src/sine_pub.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/sine_pub.cpp`
 
-<!-- file: ws/src/learn_cpp/src/sine_pub.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/sine_pub.cpp -->
 ```cpp
 #include <chrono>
 #include <cmath>
@@ -608,9 +608,9 @@ int main(int argc, char ** argv)
 
 **sine_sub.cpp**
 
-ファイル: `ws/src/learn_cpp/src/sine_sub.cpp`
+ファイル: `ros2_ws/src/learn_cpp/src/sine_sub.cpp`
 
-<!-- file: ws/src/learn_cpp/src/sine_sub.cpp -->
+<!-- file: ros2_ws/src/learn_cpp/src/sine_sub.cpp -->
 ```cpp
 #include <memory>
 
@@ -682,7 +682,7 @@ C++版のコードには、`SharedPtr`・`std::make_shared`・`->` が何度も�
 
 ### 4-2. `CMakeLists.txt` に登録する
 
-`ws/src/learn_cpp/CMakeLists.txt` に、実行ファイルごとの定義を足し、`install(TARGETS ...)` に名前を並べる。雛形の `hello` の定義は残す。
+`ros2_ws/src/learn_cpp/CMakeLists.txt` に、実行ファイルごとの定義を足し、`install(TARGETS ...)` に名前を並べる。雛形の `hello` の定義は残す。
 
 <!-- snippet: cmake_pubsub -->
 ```cmake
@@ -714,7 +714,7 @@ install(TARGETS
 ### 4-3. ビルドして動かす
 
 ```bash
-cd ~/ws
+cd ~/ros2_ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
