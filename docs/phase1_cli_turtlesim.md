@@ -668,6 +668,8 @@ ros2 run rqt_console rqt_console
 
 フェーズ2（[`docs/phase2_packages.md`](phase2_packages.md)）で、パッケージの作成とビルドを学ぶ。`ament_python` と `ament_cmake` の空パッケージを作る。本フェーズで確認した `ros2 run <パッケージ> <実行ファイル>` の書式が、自作パッケージでも同じように使える。
 
+3D物理シミュレータのGazeboで、車両が動く様子を先に見てみたい場合は、フェーズ2の前に、フェーズ5-0（[`docs/phase5_0_gazebo.md`](phase5_0_gazebo.md)）の1〜3節へ寄り道してもよい。このフェーズで使った `ros2 topic pub` でGazeboの車両を走らせ、`ros2 topic echo` でその様子を見られる。動くものを楽しむのが目的で、仕組みの理解は後で戻ったときでよい（範囲と注意は、フェーズ5-0の冒頭の「フェーズ1の後に寄り道して試す場合」）。
+
 ## 7. 公式ドキュメント・参考資料
 
 確認状況（2026-09-20）: 「Beginner: CLI tools」「Using turtlesim, ros2, and rqt」「Using rqt_console」とQiita 2件は、今回のWeb検索結果で実在を確認した。「Launching nodes」「Introspection with command line tools」「Basic Concepts」は [`idea_origin.md`](idea_origin.md) に掲載済みのURLで、今回は再確認していない。docs.ros.orgは本文取得がボット対策で拒否されたため、内容の照合はできていない。
