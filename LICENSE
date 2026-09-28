@@ -71,6 +71,10 @@ the author (SanghunIm1991) and the license are credited.
      含めず、読者が各自の環境にインストールされたファイルを写して改造する。手順書には
      改造した部分の説明と、元のファイルの出典を書いている
    - 「期待する結果」等に載せたコマンドの出力: 各ツールの表示
+   - docs/img/phase5_0_gazebo.png（docs/phase5_0_gazebo.md の冒頭）に写っている
+     Gazebo Sim の画面と、付属のワールド `diff_drive.sdf` の中身: Open Source
+     Robotics Foundation, Apache License 2.0。スクリーンショットは作者が撮影した
+     もので、写っているソフトウェアの画面はそれぞれのライセンスに従う
 
    このリポジトリは、ROS2・Gazebo・turtlesim等のソフトウェアを同梱していない。
    サンプルコードは、読者が各自で導入したそれらを利用するだけである。それらの

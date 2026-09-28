@@ -22,7 +22,7 @@
 | PC固有の情報 | ユーザー名を含むパス（`/home/<名前>`、`C:\Users\<名前>`）、ドライブ構成、RAM・ディスク容量などの実測スペック（[`README.md`](../README.md) の「確認した環境」は、学習者が見比べるために意図して載せたもので対象外。ただし項目が増えていないかは見る） | `docs/` 全体、特に環境構築とフェーズ0 |
 | PCの利用状況 | PCの具体的な用途など、個人の生活を推測させる記述、スペックの制約、グローバルの安全ルールへの言及 | [`docs/idea_origin.md`](idea_origin.md)、[`CLAUDE.md`](../CLAUDE.md) |
 | 追跡してはいけないもの | 個人メモ（`notes/`）、練習用のワークスペース（`ws/`）、`.env`・鍵ファイル、WSLのエクスポート | `.gitignore` と `git ls-files` |
-| 画像の写り込み | スクリーンショットや写真に、画面上の個人情報・顔・書類が写っていないか（現在、追跡している画像は自作のSVGだけ） | `docs/img/` |
+| 画像の写り込み | スクリーンショットや写真に、画面上の個人情報・顔・書類が写っていないか（現在、追跡している画像は、自作のSVGと、Gazeboのウィンドウだけを撮った `phase5_0_gazebo.png`（2026-09-28に確認済み）の1枚） | `docs/img/` |
 
 ### 1-2. 機械点検
 
@@ -80,7 +80,7 @@ git ls-files | grep -E '^(notes|ws)/|\.(env|pem|key|tar|vhdx)$'
 | 同等の値の明記 | コマンド例の値が公式の例と同等である旨の記述が残っているか | [`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md) |
 | 引用の範囲 | 雛形の `CMakeLists.txt`（Apache 2.0）の各行や、setuptoolsの警告文の引用や、型の定義（`ros2 interface show` の表示）が、説明に必要な範囲に留まり、出典があるか | [`docs/tips.md`](tips.md)、[`docs/reference_interfaces.md`](reference_interfaces.md)、[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)（`turtlesim` の型、BSD）、[`docs/phase3_4_services.md`](phase3_4_services.md)・[`docs/phase3_5_actions.md`](phase3_5_actions.md)（`example_interfaces` の型、Apache-2.0） |
 | ソースの解説 | `rclpy`・`rclcpp` のソースを、丸ごと写さず自分の言葉で解説しているか | [`docs/reference_node_class.md`](reference_node_class.md) |
-| 図 | `docs/img/` のSVGが自作のもので、第三者の図・ロゴ・埋め込み画像が混ざっていないか | `docs/img/` |
+| 図 | `docs/img/` のSVGが自作のもので、第三者の図・ロゴ・埋め込み画像が混ざっていないか。PNGのスクリーンショットは、写っている第三者の画面が `LICENSE` の第三者の一覧に載っているか | `docs/img/` |
 | サンプルコード | 公式チュートリアルや他のリポジトリのコードを、丸ごと転載していないか | 各手順書のコードブロック |
 | 第三者のファイル | データシート・PDF・フォント・画像など、ライセンスが不明なファイルが追跡されていないか | `git ls-files` |
 | リポジトリのライセンス | `LICENSE` の「第三者の著作物」の一覧が最新か（前回以降に、公式ドキュメントの抜粋や、雛形・ツールの出力の引用を足していないか）。サンプルコードが使うパッケージに、コピーレフト（GPL等）のものが加わっていないか | [`LICENSE`](../LICENSE)、`README.md` のライセンスの節 |
@@ -90,7 +90,7 @@ git ls-files | grep -E '^(notes|ws)/|\.(env|pem|key|tar|vhdx)$'
 追跡しているファイルのうち、Markdown・SVG・Gitの設定以外のものを一覧する。
 
 ```bash
-git ls-files | grep -vE '\.(md|svg)$|^\.git(attributes|ignore)$|^LICENSE(-APACHE-2\.0)?$'
+git ls-files | grep -vE '\.(md|svg)$|^\.git(attributes|ignore)$|^LICENSE(-APACHE-2\.0)?$|^docs/img/phase5_0_gazebo\.png$'
 ```
 
 SVGに、外部の画像や外部へのリンクが埋め込まれていないかを見る。
@@ -105,7 +105,7 @@ git grep -nE '<image|href="https?:' -- 'docs/img/*.svg'
 grep -LE '出典|出どころ|CC BY' docs/phase*.md docs/interlude_components.md docs/tips.md docs/reference_*.md docs/setup_wsl2_ros2.md
 ```
 
-**見方**: 1つ目と2つ目は、何も表示されなければ問題ない。3つ目で表示された文書は、公式ドキュメント・ソース・記事に由来する内容を含まないかを確かめ、含むなら注記を足す。元にしたものによってライセンスが違う（ROS2の公式ドキュメントはCC BY 4.0、ROS2のソースや雛形はApache 2.0など）ので、注記の有無だけでなく、文面（元にしたもの・ライセンス・逐語の転載でない旨）が合っているかは2-3節で目視する。
+**見方**: 1つ目と2つ目は、何も表示されなければ問題ない（1つ目は、1-1節の表で確認済みのスクリーンショット `docs/img/phase5_0_gazebo.png` を除いている。新しい画像を足したら、写り込みを確かめてから除外に加える）。3つ目で表示された文書は、公式ドキュメント・ソース・記事に由来する内容を含まないかを確かめ、含むなら注記を足す。元にしたものによってライセンスが違う（ROS2の公式ドキュメントはCC BY 4.0、ROS2のソースや雛形はApache 2.0など）ので、注記の有無だけでなく、文面（元にしたもの・ライセンス・逐語の転載でない旨）が合っているかは2-3節で目視する。
 
 ### 2-3. 目視点検
 
@@ -119,7 +119,7 @@ grep -LE '出典|出どころ|CC BY' docs/phase*.md docs/interlude_components.md
 
 | 観点 | 具体例 |
 |---|---|
-| 文書間のリンク | 相対パスのリンク（`[...](phase2_packages.md)` や画像の `img/...svg`）の先のファイルが実在するか |
+| 文書間のリンク | 相対パスのリンク（`[...](phase2_packages.md)` や画像の `img/...svg`・`img/...png`）の先のファイルが実在するか |
 | 参照の書き方 | 他の文書への参照が、パスを `` ` `` で囲むだけでなくリンクになっているか（GitHubで読む前提のため） |
 | 読む順の案内 | 各冊の終盤の「次へ」のリンクが、[`docs/learning_plan.md`](learning_plan.md) の「手順書一覧」の順と合っているか |
 | 節の参照 | 本文の「N節」「N-M節の④」などの参照が、現在の見出しの番号と中身に合っているか（節の追加・繰り下げの後は特に） |
