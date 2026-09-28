@@ -334,7 +334,7 @@ Python版の4ファイルに共通する要点は、「ノードクラスの `__
 ### 3-3. ビルドして動かす
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -714,7 +714,7 @@ install(TARGETS
 ### 4-3. ビルドして動かす
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_cpp
 

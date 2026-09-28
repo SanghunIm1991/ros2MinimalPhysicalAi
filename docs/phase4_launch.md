@@ -96,7 +96,7 @@ flowchart LR
 ### 3-1. パッケージを作る
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws/src
+cd ~/ws/src
 
 ros2 pkg create --build-type ament_cmake \
   --license Apache-2.0 \
@@ -111,12 +111,12 @@ mkdir -p learn_bringup/launch learn_bringup/config
 フェーズ3-3で `ws/config/` に作ったパラメータYAMLを、このパッケージへ移す。
 
 ```bash
-mv ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config/
+mv ~/ws/config/param_talker.yaml ~/ws/src/learn_bringup/config/
 ```
 
-**期待する結果**: 何も表示されない（`mv` は、成功しても何も表示しない）。`ls ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config/` で `param_talker.yaml` が見えれば、移っている。
+**期待する結果**: 何も表示されない（`mv` は、成功しても何も表示しない）。`ls ~/ws/src/learn_bringup/config/` で `param_talker.yaml` が見えれば、移っている。
 
-（`ws/config/` が空になったら、`rmdir ~/work/ros2MinimalPhysicalAi/ws/config` で消してよい。）
+（`ws/config/` が空になったら、`rmdir ~/ws/config` で消してよい。）
 
 ### 3-2. `package.xml` に依存を足す
 
@@ -222,7 +222,7 @@ def generate_launch_description():
 実行前に、引数の一覧と、展開結果を確認する（**ノードは起動しない**）:
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_bringup
 
@@ -407,7 +407,7 @@ YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序�
 
 行数だけならXMLが圧倒的に短いが、これは「talker/listenerを1つずつ書くだけ」という単純な内容だから。4-4・4-6のようにパスの組み立てや条件分岐が絡むと、Python形式でないと書けない処理が増える（この節の末尾の課題4で、3形式を実際に動かして確かめる）。
 
-> **実行する前に**: 4-2節の `pubsub.launch.xml` と、この節の `pubsub.launch.yaml` を足したので、4-1節と同じく、`ws/`（`cd ~/work/ros2MinimalPhysicalAi/ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
+> **実行する前に**: 4-2節の `pubsub.launch.xml` と、この節の `pubsub.launch.yaml` を足したので、4-1節と同じく、`ws/`（`cd ~/ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
 
 3形式を、それぞれ確認する:
 
@@ -500,7 +500,7 @@ YAMLパラメータファイルの構造（`config/param_talker.yaml`）は、�
 
 観察ポイント: `ros2 param get` で、`message` はYAMLの値、`period` は引数の値（`period:=0.2` なら0.2）になっていること。YAMLが `install/.../share/...` から読まれていること（この節の末尾の課題6）。
 
-> **実行する前に**: `param.launch.py` を足したので、4-1節と同じく、`ws/`（`cd ~/work/ros2MinimalPhysicalAi/ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
+> **実行する前に**: `param.launch.py` を足したので、4-1節と同じく、`ws/`（`cd ~/ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
 
 ```bash
 ros2 launch learn_bringup param.launch.py
@@ -591,7 +591,7 @@ def generate_launch_description():
 
 観察ポイント: 1つのターミナルの `Ctrl+C` で、2つのノードが**まとめて止まる**こと（個別のターミナルで起動していたときとの差）。`ros2 node list` に `/turtlesim` と `/turtle_circle` が並ぶこと。
 
-> **実行する前に**: `turtle.launch.py` を足したので、4-1節と同じく、`ws/`（`cd ~/work/ros2MinimalPhysicalAi/ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
+> **実行する前に**: `turtle.launch.py` を足したので、4-1節と同じく、`ws/`（`cd ~/ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
 
 ```bash
 ros2 launch learn_bringup turtle.launch.py lang:=cpp   # C++版の turtle_circle を作った場合。作っていなければ lang:=py
@@ -679,7 +679,7 @@ def generate_launch_description():
 
 観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、この下の期待する結果の例（`/demo/talker`、`/demo/listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`Ctrl+C` で全ノードが止まること（この節の末尾の課題8）。
 
-> **実行する前に**: `compose.launch.py` を足したので、4-1節と同じく、`ws/`（`cd ~/work/ros2MinimalPhysicalAi/ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
+> **実行する前に**: `compose.launch.py` を足したので、4-1節と同じく、`ws/`（`cd ~/ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
 
 ```bash
 # T1
@@ -727,7 +727,7 @@ $ ros2 topic list
 4節では、launchファイルを足すたびにビルドし直した。ここで、その理由をまとめる。`ros2 launch` は、ソースの `launch/` ではなく、ビルドで `install/learn_bringup/share/learn_bringup/launch/` に入れたファイルを探す（3-3節）。そのため、launchファイルを**追加した**ときは再ビルドが必要:
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_bringup
 

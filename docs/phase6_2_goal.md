@@ -216,7 +216,7 @@ def main(args=None):
 6-1の記録用のYAMLを写して、`goal_monitor` の部分を足す。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config
+cd ~/ws/src/learn_bringup/config
 
 cp vehicle_sim_record.yaml vehicle_sim_goal.yaml
 
@@ -312,7 +312,7 @@ def generate_launch_description():
 `CMakeLists.txt` は変えなくてよい（6-1の4-5節と同じ）。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py learn_bringup
 
@@ -343,7 +343,7 @@ Arguments (pass arguments as '<name>:=<value>'):
 ## 5. 案Aで、5-3の一式を記録する
 
 ```bash
-ros2 launch learn_bringup record_goal.launch.py bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/sim_goal
+ros2 launch learn_bringup record_goal.launch.py bag:=$HOME/ws/bags/sim_goal
 ```
 
 **期待する結果**（抜粋。`vehicle_plant`・`pi_controller` のログと、`ros2 bag record` の途中のログは省いた。時刻・pid・パスは実行ごとに変わる）:
@@ -397,7 +397,7 @@ ros2 launch learn_bringup record_goal.launch.py bag:=$HOME/work/ros2MinimalPhysi
 ## 6. 案Bで、5-4の一式を記録する
 
 ```bash
-ros2 launch learn_bringup record_goal.launch.py scenario:=gazebo_plant bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/gz_goal
+ros2 launch learn_bringup record_goal.launch.py scenario:=gazebo_plant bag:=$HOME/ws/bags/gz_goal
 ```
 
 PCが重い場合は、6-1の5節と同じく、`gz_args` に `-s` を足して、画面なしで記録できる。`record_goal.launch.py` に指定した `gz_args:=...` は、2段の取り込み（`record.launch.py` → `gazebo_plant.launch.py`）を通って、そのまま渡る（この手順書の作成時の確認も、この方法で行った）。
@@ -455,7 +455,7 @@ PCが重い場合は、6-1の5節と同じく、`gz_args` に `-s` を足して�
 > ros2 run learn_py goal_monitor
 >
 > # T2
-> cd ~/work/ros2MinimalPhysicalAi/ws/bags
+> cd ~/ws/bags
 >
 > ros2 bag play sim_goal -r 2
 > ```

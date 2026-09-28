@@ -282,7 +282,7 @@ if __name__ == '__main__':
 ファイルを保存したら、ビルドせずにそのまま実行できる（ROS2を使わないので、`source` も要らない）。
 
 ```bash
-python3 ~/work/ros2MinimalPhysicalAi/ws/src/learn_py/learn_py/vehicle_model.py
+python3 ~/ws/src/learn_py/learn_py/vehicle_model.py
 ```
 
 **期待する結果**:
@@ -543,7 +543,7 @@ def main(args=None):
 並び順や、任意の冊（フェーズ3-4・3-5など）で足した行の有無は、進め方によって違ってよい。既存の行は残して、最後の2行を足す。`vehicle_model.py` は実行ファイルではない（ノードから `import` される部品）ので、登録しない。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -575,14 +575,14 @@ learn_py vehicle_plant
 
 ```bash
 # T1
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
 ros2 run learn_py vehicle_plant
 
 # T2
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
@@ -635,7 +635,7 @@ T1の `vehicle_plant` は動かしたまま、ターミナルを2つ足す。T3�
 ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false
 
 # T4
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 

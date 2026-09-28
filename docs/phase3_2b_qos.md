@@ -304,7 +304,7 @@ def main(args=None):
 `'実行ファイル名 = パッケージ.モジュール:関数'` の形式で、`ros2 run learn_py qos_talker` の `qos_talker` が左辺、呼ばれる関数が右辺の `main`。`entry_points` を変えたときは `--symlink-install` でも再ビルドが必要。カンマの付け忘れや、リストの外へ書いてしまうミスに注意する。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -545,7 +545,7 @@ install(TARGETS
 - `install(TARGETS ...)` の `turtle_circle` は、フェーズ3-2aでC++版の `turtle_circle` を作った場合だけ書く。作っていないのに名前を書くと、存在しないターゲットを指定したことになり、CMakeの段階でビルドがエラーになる。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_cpp
 

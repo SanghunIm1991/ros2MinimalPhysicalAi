@@ -59,7 +59,7 @@ flowchart LR
 
 </details>
 
-記録の置き場所は、この手順書では `~/work/ros2MinimalPhysicalAi/ws/bags/` とする（記録1回ごとに、この下にフォルダが1つできる）。
+記録の置き場所は、この手順書では `~/ws/bags/` とする（記録1回ごとに、この下にフォルダが1つできる）。
 
 ## 2. 手で記録して、再生する
 
@@ -72,9 +72,9 @@ flowchart LR
 ros2 launch learn_bringup vehicle_sim.launch.py gazebo:=false
 
 # T2
-mkdir -p ~/work/ros2MinimalPhysicalAi/ws/bags
+mkdir -p ~/ws/bags
 
-cd ~/work/ros2MinimalPhysicalAi/ws/bags
+cd ~/ws/bags
 
 ros2 bag record -o manual --topics /target_velocity /plant/velocity /plant/pedal
 ```
@@ -370,7 +370,7 @@ from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, Shut
 5-3・5-4のYAMLを写して、`target_generator` に `end_time` を足した、記録用のYAMLを作る。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config
+cd ~/ws/src/learn_bringup/config
 
 cp vehicle_sim.yaml vehicle_sim_record.yaml
 
@@ -465,7 +465,7 @@ def generate_launch_description():
 `learn_bringup` の `CMakeLists.txt` は変えなくてよい（`launch/`・`config/` の中の新しいファイルも、フェーズ4の3-3節の `install(DIRECTORY ...)` でインストールされる。新しいファイルなので、ビルドは要る）。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py learn_bringup
 
@@ -497,7 +497,7 @@ Arguments (pass arguments as '<name>:=<value>'):
 記録する。
 
 ```bash
-ros2 launch learn_bringup record.launch.py bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/sim_default
+ros2 launch learn_bringup record.launch.py bag:=$HOME/ws/bags/sim_default
 ```
 
 **期待する結果**（抜粋。`vehicle_plant`・`pi_controller` のログは省いた。時刻・pid・パスは実行ごとに変わる。長い行は途中で切っている）:
@@ -541,13 +541,13 @@ ros2 launch learn_bringup record.launch.py bag:=$HOME/work/ros2MinimalPhysicalAi
 5-3の4-5節の `slow_brake.yaml` と同じく、`ws/config/` に記録用のYAMLを写して、`vehicle_plant` の `tau_brake: 0.2` を `tau_brake: 1.0` に書き換える。
 
 ```bash
-cp ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config/vehicle_sim_record.yaml ~/work/ros2MinimalPhysicalAi/ws/config/slow_brake_record.yaml
+cp ~/ws/src/learn_bringup/config/vehicle_sim_record.yaml ~/ws/config/slow_brake_record.yaml
 ```
 
 書き換えたら、`params_file:=` で渡して記録する（`~` ではなく `$HOME` と書く理由は、フェーズ5-3の4-5節）。YAMLを絶対パスで渡すので、このYAMLのためにビルドし直す必要は無い。
 
 ```bash
-ros2 launch learn_bringup record.launch.py params_file:=$HOME/work/ros2MinimalPhysicalAi/ws/config/slow_brake_record.yaml bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/slow_brake
+ros2 launch learn_bringup record.launch.py params_file:=$HOME/ws/config/slow_brake_record.yaml bag:=$HOME/ws/bags/slow_brake
 ```
 
 **期待する結果**（抜粋。`target_generator` と記録のログと、止まる部分だけを載せる。時刻・パスは実行ごとに変わる）:
@@ -570,7 +570,7 @@ ros2 launch learn_bringup record.launch.py params_file:=$HOME/work/ros2MinimalPh
 同じlaunchで、`scenario:=gazebo_plant` を指定する。Gazeboのウィンドウが開く。
 
 ```bash
-ros2 launch learn_bringup record.launch.py scenario:=gazebo_plant bag:=$HOME/work/ros2MinimalPhysicalAi/ws/bags/gz_default
+ros2 launch learn_bringup record.launch.py scenario:=gazebo_plant bag:=$HOME/ws/bags/gz_default
 ```
 
 **期待する結果**（抜粋。止まる部分だけを載せる）:
@@ -638,12 +638,12 @@ $ pgrep -af "gz sim"
 ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /gz/plant/velocity/data /plant/pedal/data /gz/plant/pedal/data
 
 # T2
-cd ~/work/ros2MinimalPhysicalAi/ws/bags
+cd ~/ws/bags
 
 ros2 bag play sim_default
 
 # T3
-cd ~/work/ros2MinimalPhysicalAi/ws/bags
+cd ~/ws/bags
 
 ros2 bag play gz_default --start-offset 5 --remap /target_velocity:=/gz/target_velocity /plant/velocity:=/gz/plant/velocity /plant/pedal:=/gz/plant/pedal __node:=player_gz
 ```

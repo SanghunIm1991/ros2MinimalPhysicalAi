@@ -79,9 +79,9 @@ flowchart LR
 フェーズ5-0で使ったワールドファイル（Gazeboに付属の `diff_drive.sdf`）を、`learn_bringup` の中へ写す。
 
 ```bash
-mkdir -p ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/worlds
+mkdir -p ~/ws/src/learn_bringup/worlds
 
-cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/worlds/vehicle_force.sdf
+cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/ws/src/learn_bringup/worlds/vehicle_force.sdf
 ```
 
 ワールドファイルは、**SDF**（Simulation Description Format）という、Gazeboのためのデータの書き方で書かれたXMLのファイルである。要素は次のように入れ子になっている（書き換えるときと、3-2節の計算のときに探す要素だけを挙げる）。
@@ -138,7 +138,7 @@ cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/wor
 書き換えたら、ファイルの書き方に誤りがないかを確かめる。
 
 ```bash
-gz sdf -k ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/worlds/vehicle_force.sdf
+gz sdf -k ~/ws/src/learn_bringup/worlds/vehicle_force.sdf
 ```
 
 **期待する結果**:
@@ -534,7 +534,7 @@ def generate_launch_description():
 ```
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py learn_bringup
 

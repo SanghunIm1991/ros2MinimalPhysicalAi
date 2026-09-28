@@ -267,7 +267,7 @@ if __name__ == '__main__':
 `python3 -m` で動かすだけなら、`setup.py` に登録しなくてよい。4-1節と4-2節のファイルを置いて、ここでビルドすれば動く（ノードの実行ファイルとしての登録は、5-3節で行う）。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -467,7 +467,7 @@ def main(args=None):
 `pi_control.py` と `closed_loop_sim.py` は実行ファイルとして登録しない（前者はノードから `import` される部品、後者は `python3 -m` で動かす）。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -498,21 +498,21 @@ learn_py pi_controller
 
 ```bash
 # T1
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
 ros2 run learn_py vehicle_plant
 
 # T2
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
 ros2 run learn_py pi_controller
 
 # T3
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
@@ -660,7 +660,7 @@ ros2 run learn_py pi_controller --ros-args -p anti_windup:=false
 
 ### 6-3. YAMLでゲインを渡し、調整した結果を残す
 
-ゲインの組み合わせは、フェーズ3-3の5-4節のとおり、YAMLのファイルにまとめておくと、何度でも同じ条件で試せる。`ws/config/pi_controller.yaml` を作る（`ws/config/` はフェーズ3-3で作ったフォルダ。フェーズ4の3-1節で空になって消した場合は、`mkdir -p ~/work/ros2MinimalPhysicalAi/ws/config` で作り直す。フェーズ4を済ませていれば、`learn_bringup/config/` に置いてもよい。フェーズ5-3ではそちらを使う）。
+ゲインの組み合わせは、フェーズ3-3の5-4節のとおり、YAMLのファイルにまとめておくと、何度でも同じ条件で試せる。`ws/config/pi_controller.yaml` を作る（`ws/config/` はフェーズ3-3で作ったフォルダ。フェーズ4の3-1節で空になって消した場合は、`mkdir -p ~/ws/config` で作り直す。フェーズ4を済ませていれば、`learn_bringup/config/` に置いてもよい。フェーズ5-3ではそちらを使う）。
 
 ```yaml
 pi_controller:
@@ -673,7 +673,7 @@ T2の `pi_controller` を止めて、YAMLを渡して起動し直す。
 
 ```bash
 # T2
-ros2 run learn_py pi_controller --ros-args --params-file ~/work/ros2MinimalPhysicalAi/ws/config/pi_controller.yaml
+ros2 run learn_py pi_controller --ros-args --params-file ~/ws/config/pi_controller.yaml
 
 # T3
 ros2 param get /pi_controller kp
@@ -709,7 +709,7 @@ YAMLに書いた `kp`・`ki` が効いていて、書かなかった `anti_windu
 ros2 launch ros_gz_sim_demos diff_drive.launch.py rviz:=false
 
 # T5
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 

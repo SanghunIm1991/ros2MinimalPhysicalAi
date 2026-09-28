@@ -4,7 +4,7 @@ WindowsのPCに、WSL2（Windowsの上でLinuxを動かす仕組み）でUbuntu 
 
 - 想定環境: Windows 11（WSL2が使えるWindows 10でもよい）。CPUの仮想化支援機能が有効であること（1節）
 - 所要目安: 2時間程度（ダウンロードの時間とWindowsの再起動を含む。回線の速さで前後する。任意の2b節・7節は含まない）
-- 必須の範囲: 1〜5節と、6節（作業ディレクトリ）
+- 必須の範囲: 1〜5節と、6節（ワークスペースの場所）
 - 任意の範囲: **2b節（仮想ディスクを別のドライブへ移す）** と、**7節（GitHubの認証・Claude Codeの環境）**
 
 > **この手順書の位置づけ**: 必須の範囲だけで、フェーズ1以降の手順書をすべて進められる。任意の2つの節は、必要な人だけが行えばよい。2b節は、Cドライブの空きが少ないPCで、Ubuntuの保存先を別のドライブへ移す手順である。7節は、非公開のGitHubリポジトリを扱う場合や、Claude Code（AIのコーディング支援ツール）をWSLの中で使う場合の準備で、この教材の作者の運用に合わせたものである。
@@ -21,7 +21,7 @@ WSL2上にUbuntu 24.04とROS2 Jazzy（aptのバイナリパッケージ）を導
 2. Ubuntuの中で `lsb_release -a` が 24.04 を示す（3節）
 3. `printenv ROS_DISTRO` が `jazzy` を返す（5節）
 4. `ros2 run demo_nodes_cpp talker` と `ros2 run demo_nodes_py listener` を別々のターミナルで動かし、メッセージが届く（5節）
-5. 作業ディレクトリが、WSLのLinuxのファイルシステム（`~` の下）にある（`/mnt/c`・`/mnt/d` の下ではない）（6節）
+5. ワークスペースを作るホームディレクトリ（`~`）が、WSLのLinuxのファイルシステム（`/home/<ユーザー名>`）にある（`/mnt/c`・`/mnt/d` の下ではない）（6節）
 
 2b節を行った場合は、あわせて「WSLの仮想ディスク（`ext4.vhdx`）が移動先のドライブにある」ことも確認する。
 
@@ -256,22 +256,20 @@ WSLg バージョン: 1.0.xx
 
 なお `rqt` や `turtlesim` などGUIアプリの表示（WSLg）は、フェーズ1の1-2節で確認する。この手順書の完了条件には含めない。
 
-### 6. 作業ディレクトリを作る（Ubuntu内）
+### 6. 練習用のワークスペースの場所を確かめる（Ubuntu内）
 
-フェーズ1以降の手順書は、`~/work/ros2MinimalPhysicalAi` を作業の起点として書いている（フェーズ2で、この下に `ws/` を作る）。
+フェーズ2以降の手順書は、練習用のワークスペース（自分で書くコードをまとめてビルドするフォルダ）を、ホームディレクトリの下の `~/ws` に作る前提で書いている。フォルダそのものは、フェーズ2の2-1節で作る。ここでは、ホームディレクトリの場所だけを確かめる。
 
 ```bash
-mkdir -p ~/work/ros2MinimalPhysicalAi
-
-cd ~/work/ros2MinimalPhysicalAi
+cd ~
 
 pwd
 ```
 
-**期待する結果**: `pwd` が `/home/<ユーザー名>/work/ros2MinimalPhysicalAi` と表示される。`mkdir` と `cd` は、成功しても何も表示しない。
+**期待する結果**: `pwd` が `/home/<ユーザー名>` と表示される。`cd` は、成功しても何も表示しない。
 
-- `/mnt/c`・`/mnt/d` の下（Windows側のドライブ）は使わない。WindowsとLinuxのファイルシステムをまたぐため、ビルドが大幅に遅くなる。
-- この教材はGitHubで読む前提で、リポジトリをcloneする必要はない。手元に置きたい場合は、フォルダを作る代わりに `~/work` の下へ `git clone` してもよい（フォルダ名が `ros2MinimalPhysicalAi` になるので、以降の手順書のパスはそのまま使える）。
+- `/mnt/c`・`/mnt/d` の下（Windows側のドライブ）にワークスペースを作らない。WindowsとLinuxのファイルシステムをまたぐため、ビルドが大幅に遅くなる。
+- この教材はGitHubで読む前提で、リポジトリをcloneする必要はない。手元に置きたい場合にcloneしてもよいが、ワークスペースは教材のフォルダの中ではなく、上のとおり `~/ws` に作る（練習コードと教材のファイルが混ざらないようにするため）。
 
 ### 7.（任意）GitHubの認証・Claude Codeの環境（Ubuntu内）
 
@@ -311,7 +309,7 @@ pwd
    - 鍵を登録するのはこのWSL専用。不要になったら、GitHubのSSH keysの画面から削除できる。
 2. **リポジトリのclone**（A: SSHの場合はSSH形式、B: `gh` の場合はHTTPS形式）:
    ```bash
-   cd ~/work
+   cd ~
 
    git clone git@github.com:<GitHubのユーザー名>/ros2MinimalPhysicalAi.git      # A: SSH
 
@@ -320,7 +318,7 @@ pwd
    cd ros2MinimalPhysicalAi
    ```
 
-   **期待する結果**: `Cloning into 'ros2MinimalPhysicalAi'...` と表示され、`~/work` の下に同じ名前のフォルダができる。A（SSH）の場合は、途中で鍵のパスフレーズを聞かれる（入力した文字は表示されない）。
+   **期待する結果**: `Cloning into 'ros2MinimalPhysicalAi'...` と表示され、ホームディレクトリの下に同じ名前のフォルダができる。A（SSH）の場合は、途中で鍵のパスフレーズを聞かれる（入力した文字は表示されない）。
 
    - Claude Codeにコミットさせる場合は、Claudeが関与したコミットを区別する規約（メッセージの接頭辞等）を、リポジトリの `CLAUDE.md` に書いておく（この教材のリポジトリの例は `CLAUDE.md` の「Git運用」を参照）。コミットに記録されるメールアドレス（author・committerのどちらにも `user.email` が使われる）には、実際のメールアドレスではなく、GitHubが用意するnoreplyのアドレスを使う（リポジトリ単位の `git config user.email` で設定する）。実際のメールアドレスは、一度コミットに入ると履歴から消すのが難しい。
 3. **Claude Codeの導入**: Anthropic公式のClaude Codeのドキュメントで最新のインストール手順を確認し、その手順で導入する（リンク先は変わりうるため、公式サイトから探す）。出所の分からないスクリプトは使わない。

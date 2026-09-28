@@ -10,7 +10,7 @@
 
 > **出どころ**: 型の定義・文法・生成されるPythonとC++の型は、`/opt/ros/jazzy` にある定義ファイルと生成済みのコード、定義ファイルを読み込む部品（`rosidl_adapter`）で確かめた。文法の細部は公式ドキュメントの「Interfaces」（8節）とも照らし合わせた。文章は自分の言葉で書いており、公式ドキュメントの転載ではない。図（SVG）は生成スクリプトで作り、文字と線の重なりは計算で点検したが、画像にして目で確かめてはいない。表示が崩れている場合は、図の下にある同じ内容のmermaid版（折りたたみ）を参照する。
 
-> **実行環境が無くても読めるように**: コマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示はすべて、この資料の作成時に使い捨ての環境で実際に実行したものである（`ros2 interface`・`ros2 pkg create`・`colcon build`・`python3 -c` だけで、ノードは起動していない）。ビルドの秒数は環境によって変わる。`ros2 pkg create` の表示の作成先のパスは、練習環境の場所（`~/work/ros2MinimalPhysicalAi/ws/src`）に直して載せた。
+> **実行環境が無くても読めるように**: コマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。表示はすべて、この資料の作成時に使い捨ての環境で実際に実行したものである（`ros2 interface`・`ros2 pkg create`・`colcon build`・`python3 -c` だけで、ノードは起動していない）。ビルドの秒数は環境によって変わる。`ros2 pkg create` の表示の作成先のパスは、練習環境の場所（`~/ws/src`）に直して載せた。
 
 ## 0. この資料で分かること
 
@@ -314,7 +314,7 @@ angular:
 インターフェースは、**`ament_cmake` のパッケージ**で定義する。コードを生成する仕組みがCMakeで動くためで、Pythonだけで書くノードの型でも、`ament_python` のパッケージ（`learn_py`）には置けない。ノードのパッケージとは分けて、インターフェースだけのパッケージを作るのが一般的である（名前は `〜_interfaces` か `〜_msgs` にすることが多い）。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws/src
+cd ~/ws/src
 
 ros2 pkg create --build-type ament_cmake \
   --license Apache-2.0 \
@@ -329,7 +329,7 @@ mkdir -p learn_interfaces/msg learn_interfaces/srv learn_interfaces/action
 ```text
 going to create a new package
 package name: learn_interfaces
-destination directory: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/src
+destination directory: /home/<ユーザー名>/ws/src
 package format: 3
 version: 0.0.0
 description: TODO: Package description
@@ -440,7 +440,7 @@ ament_export_dependencies(rosidl_default_runtime)
 ### 6-4. ビルドして確かめる
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_interfaces
 

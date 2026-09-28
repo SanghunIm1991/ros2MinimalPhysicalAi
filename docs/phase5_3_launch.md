@@ -294,7 +294,7 @@ def generate_launch_description():
 ### 3-4. ビルドして、引数と中身を確かめる
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py learn_bringup
 
@@ -434,7 +434,7 @@ ros2 launch learn_bringup vehicle_sim.launch.py
 
 ```bash
 # T2
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
@@ -515,13 +515,13 @@ launchを起動したターミナルで `Ctrl+C` を押すと、起動したノ�
 パラメータを変えて試すときは、インストールされたYAMLを直接書き換えるのではなく、コピーを作って `params_file` で渡す。元のファイルは既定の条件として残しておける。
 
 ```bash
-cp ~/work/ros2MinimalPhysicalAi/ws/src/learn_bringup/config/vehicle_sim.yaml ~/work/ros2MinimalPhysicalAi/ws/config/slow_brake.yaml
+cp ~/ws/src/learn_bringup/config/vehicle_sim.yaml ~/ws/config/slow_brake.yaml
 ```
 
-コピーした `slow_brake.yaml` の `vehicle_plant` の `tau_brake: 0.2` を `tau_brake: 1.0` に書き換えて、渡す（`ws/config/` はフェーズ3-3で作ったフォルダ。フェーズ4の3-1節で空になって消した場合は、`mkdir -p ~/work/ros2MinimalPhysicalAi/ws/config` で作り直す）。
+コピーした `slow_brake.yaml` の `vehicle_plant` の `tau_brake: 0.2` を `tau_brake: 1.0` に書き換えて、渡す（`ws/config/` はフェーズ3-3で作ったフォルダ。フェーズ4の3-1節で空になって消した場合は、`mkdir -p ~/ws/config` で作り直す）。
 
 ```bash
-ros2 launch learn_bringup vehicle_sim.launch.py params_file:=$HOME/work/ros2MinimalPhysicalAi/ws/config/slow_brake.yaml
+ros2 launch learn_bringup vehicle_sim.launch.py params_file:=$HOME/ws/config/slow_brake.yaml
 ```
 
 **期待する結果**: 5-2の6-5節と同じく、50秒ごろに目標が5 m/sへ下がったとき、ブレーキの効きが遅れて4 m/s前後まで下がりすぎ、アクセルを踏み直して5 m/sへ戻る。`rqt_plot` では、ペダルの線が−1と+1のあいだを一度大きく振れる。

@@ -206,7 +206,7 @@ def main(args=None):
 ```
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -357,7 +357,7 @@ install(TARGETS
 ```
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
@@ -484,7 +484,7 @@ Double value is: 0.2
 
 ### 5-4. YAMLファイルで指定する
 
-`ws/config/param_talker.yaml` を作る（`ws/config/` はパッケージではない普通のフォルダで、フェーズ4で `learn_bringup/config/` へ移す。この教材のリポジトリでは `ws/` 全体がGitの管理外なので、`git status` には出ない。フェーズ2の2-8節の方法で練習コードをGitで管理している場合は、`git status` に未追跡として出るが、フェーズ4で移すまで**コミットしない**）。
+`ws/config/param_talker.yaml` を作る（`ws/config/` はパッケージではない普通のフォルダで、フェーズ4で `learn_bringup/config/` へ移す。`ws/` は、フェーズ2の2-8節の方法でGitの管理下にしない限り、`git status` とは関係しない。2-8節の方法で練習コードをGitで管理している場合は、`git status` に未追跡として出るが、フェーズ4で移すまで**コミットしない**）。
 
 ```yaml
 param_talker:
@@ -497,7 +497,7 @@ param_talker:
 - `ros__parameters`（アンダースコア2つ）は固定のキー。
 
 ```bash
-ros2 run learn_py param_talker --ros-args --params-file ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
+ros2 run learn_py param_talker --ros-args --params-file ~/ws/config/param_talker.yaml
 ```
 
 **期待する結果**: YAMLに書いた値で動く（5-2で `-p` を使ったときと同じ振る舞い）。
@@ -514,7 +514,7 @@ YAMLの1行目のノード名を間違えていると、エラーにはならず
 ```bash
 ros2 param dump /param_talker
 
-ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
+ros2 param load /param_talker ~/ws/config/param_talker.yaml
 ```
 
 **期待する結果**（Python版の `param_talker` で、`ros2 param set` で `message` を `changed`、`period` を `0.2` にした後の例）:
@@ -528,7 +528,7 @@ $ ros2 param dump /param_talker
     start_type_description_service: true
     use_sim_time: false
 
-$ ros2 param load /param_talker ~/work/ros2MinimalPhysicalAi/ws/config/param_talker.yaml
+$ ros2 param load /param_talker ~/ws/config/param_talker.yaml
 Set parameter message successful
 Set parameter period successful
 ```

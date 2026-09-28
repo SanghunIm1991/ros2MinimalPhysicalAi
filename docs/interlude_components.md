@@ -65,7 +65,7 @@ flowchart LR
 ## 3. パッケージを作る
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws/src
+cd ~/ws/src
 
 ros2 pkg create --build-type ament_cmake \
   --dependencies rclcpp rclcpp_components std_msgs \
@@ -253,7 +253,7 @@ install(TARGETS pubsub_components
 ## 6. ビルドして登録を確かめる
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_components
 
@@ -334,7 +334,7 @@ $ ros2 component unload /ComponentManager 1
 Unloaded component 1 from '/ComponentManager' container node
 
 # T1（コンテナ。Talker を読み込んだところから）
-[INFO] [1790292000.100000000] [ComponentManager]: Load Library: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/install/learn_components/lib/libpubsub_components.so
+[INFO] [1790292000.100000000] [ComponentManager]: Load Library: /home/<ユーザー名>/ws/install/learn_components/lib/libpubsub_components.so
 [INFO] [1790292000.110000000] [ComponentManager]: Found class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [INFO] [1790292000.110000000] [ComponentManager]: Instantiate class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [INFO] [1790292001.110000000] [talker]: publish: hello 0
@@ -440,7 +440,7 @@ def generate_launch_description():
 launchファイルを**追加した**ので、`learn_bringup` を再ビルドしてから起動する。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_bringup
 
@@ -464,7 +464,7 @@ ros2 launch learn_bringup components.launch.py
 
 ```text
 [INFO] [component_container-1]: process started with pid [13000]
-[component_container-1] [INFO] [1790292200.100000000] [pubsub_container]: Load Library: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/install/learn_components/lib/libpubsub_components.so
+[component_container-1] [INFO] [1790292200.100000000] [pubsub_container]: Load Library: /home/<ユーザー名>/ws/install/learn_components/lib/libpubsub_components.so
 [component_container-1] [INFO] [1790292200.110000000] [pubsub_container]: Found class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [component_container-1] [INFO] [1790292200.110000000] [pubsub_container]: Instantiate class: rclcpp_components::NodeFactoryTemplate<learn_components::Talker>
 [INFO] [launch_ros.actions.load_composable_nodes]: Loaded node '/talker' in container '/pubsub_container'

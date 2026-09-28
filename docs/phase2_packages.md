@@ -40,7 +40,7 @@ flowchart TB
 
 </details>
 
-一般に、ROS2のワークスペースでGitの管理対象にするのは `src/` だけで、`build/`・`install/`・`log/` の生成物は含めない（この教材のリポジトリでも、直下の `.gitignore` に登録してある）。なお、この教材のリポジトリでは、練習用のワークスペース `ws/` を丸ごと `.gitignore` で除外している。教材のリポジトリに、各自の練習コードが混ざらないようにするためである。練習コードもGitで管理したい場合の方法は、2-8節（練習コードをGitで管理する）で扱う。
+一般に、ROS2のワークスペースでGitの管理対象にするのは `src/` だけで、`build/`・`install/`・`log/` の生成物は含めない（この教材のリポジトリでも、直下の `.gitignore` に登録してある）。なお、練習用のワークスペース `ws/` は、教材のリポジトリとは別の場所（ホームディレクトリの下の `~/ws`。2-1節）に作るので、教材のリポジトリをcloneした場合も、練習コードが混ざることはない。練習コードもGitで管理したい場合の方法は、2-8節（練習コードをGitで管理する）で扱う。
 
 ### 1-2. ビルドと実行の流れ
 
@@ -124,19 +124,17 @@ Ubuntu 24.04では、`g++` の実体は `g++-13`（GCC 13系）になる。`g++ 
 
 ## 2. 手順
 
-以降、コマンドは `~/work/ros2MinimalPhysicalAi`（環境構築の6節で作った作業フォルダ）を起点に書く。場所が違う場合は読み替える。
+練習用のワークスペースは、ホームディレクトリの下に `~/ws` として作る（環境構築の6節）。以降の手順書で `ws/` と書いたときは、このフォルダを指す。別の場所に作る場合は読み替える。
 
 ### 2-1. ワークスペースを作る
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi
+mkdir -p ~/ws/src
 
-mkdir -p ws/src
-
-cd ws/src
+cd ~/ws/src
 ```
 
-**期待する結果**: これらのコマンドは成功すると何も表示しない（プロンプトが戻るだけ）。`pwd` を実行すると `.../ros2MinimalPhysicalAi/ws/src` と表示される。
+**期待する結果**: これらのコマンドは成功すると何も表示しない（プロンプトが戻るだけ）。`pwd` を実行すると `/home/<ユーザー名>/ws/src` と表示される。
 
 `ws/src` に置いたものがパッケージとして扱われる。
 
@@ -156,7 +154,7 @@ ros2 pkg create --build-type ament_python \
 ```text
 going to create a new package
 package name: learn_py
-destination directory: /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/src
+destination directory: /home/<ユーザー名>/ws/src
 package format: 3
 version: 0.0.0
 description: TODO: Package description
@@ -245,7 +243,7 @@ learn_cpp/src/hello.cpp
 ### 2-4. ビルドする
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install
 ```
@@ -318,7 +316,7 @@ learn_cpp
 learn_py
 
 $ ros2 pkg prefix learn_py
-/home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/install/learn_py
+/home/<ユーザー名>/ws/install/learn_py
 
 $ ros2 pkg executables learn_py
 learn_py hello
@@ -365,7 +363,7 @@ $ ls -l install/learn_py/lib/learn_py/
 -rwxr-xr-x 1 <ユーザー名> <ユーザー名> 936 Sep 24 11:41 hello
 
 $ ls -l install/learn_cpp/lib/learn_cpp/
-lrwxrwxrwx 1 <ユーザー名> <ユーザー名> 60 Sep 24 11:41 hello -> /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/build/learn_cpp/hello
+lrwxrwxrwx 1 <ユーザー名> <ユーザー名> 33 Sep 24 11:41 hello -> /home/<ユーザー名>/ws/build/learn_cpp/hello
 
 $ cat install/learn_py/lib/learn_py/hello | head -20
 #!/usr/bin/python3
@@ -405,7 +403,7 @@ Hello, edited!
 ```bash
 ros2 run learn_cpp hello    # ビルドする前に実行する
 
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
@@ -427,12 +425,12 @@ ros2 run learn_cpp hello    # ビルドした後に実行する
 
 ### 2-8. 練習コードをGitで管理する（任意）
 
-> この節は任意。練習コードの変更履歴を残したい場合だけ行う。この教材はGitHubで読む前提なので、教材のリポジトリをcloneしていなければ、`~/work/ros2MinimalPhysicalAi` はGitの管理下にないただのフォルダである。
+> この節は任意。練習コードの変更履歴を残したい場合だけ行う。2-1節で作った `~/ws` は、作っただけではGitの管理下にないただのフォルダである。
 
 練習コードをGitで管理するには、ワークスペース `ws/` をそのままGitのリポジトリにする。1-1節のとおり、管理するのは `src/` だけで、生成物の `build/`・`install/`・`log/` は `.gitignore` で除外する。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 git init -b main
 
@@ -445,7 +443,7 @@ git status --short
 
 ```text
 $ git init -b main
-Initialized empty Git repository in /home/<ユーザー名>/work/ros2MinimalPhysicalAi/ws/.git/
+Initialized empty Git repository in /home/<ユーザー名>/ws/.git/
 $ git status --short
 ?? .gitignore
 ?? src/
@@ -455,7 +453,7 @@ $ git status --short
 - `printf` の行は、`build/`・`install/`・`log/` の3行を書いた `.gitignore` を作る。
 - `git status --short` の `??` は「まだ管理していないファイル」の印。`src/` と `.gitignore` だけが出て、`build/`・`install/`・`log/` が出なければ、除外が効いている。`src/` の中身が1行にまとまっているのは、まだ1つもコミットしていないディレクトリを、Gitが中身を展開せずに表示するため（`git status --short -uall` にすると、`src/learn_py/package.xml` のようにファイルごとに出る）。フェーズ3-3〜4の途中では、一時的に `?? config/` も出る（フェーズ4で `learn_bringup/config/` へ移すので、コミットしなくてよい）。
 
-> **教材のリポジトリをcloneした場合**: 教材のリポジトリは、各自の練習コードが混ざらないように、直下の `.gitignore` で `ws/` を丸ごと除外している。そのため、上と同じように `ws/` の中で `git init` すれば、教材のリポジトリとは独立に練習コードを管理できる。
+> **教材のリポジトリをcloneした場合**: `~/ws` は教材のフォルダの外にあるので、影響しない。
 
 練習コードをGitで管理し、いつか公開する可能性があるなら、コミットの前に、雛形に書いた連絡先を確かめる（`ws/` で実行する）。
 

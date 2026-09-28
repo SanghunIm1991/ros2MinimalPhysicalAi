@@ -217,7 +217,7 @@ if __name__ == '__main__':
   - 2つの条件の違いは、`simulate` に渡す引数だけなので、条件ごとの引数を辞書（`{}` と `dict(params=...)`）で用意し、`**kwargs` で名前付きの引数として展開して渡している（5-2の4-2節の `main` の `simulate(**kwargs)` と同じ書き方）。`simulate(kp=0.5, ki=0.1, **{'params': p})` は、`simulate(kp=0.5, ki=0.1, params=p)` と同じ意味になる。`closed_loop_sim.py` と同じく、ビルドして `source` した後に `python3 -m` で動かす（フェーズ5-2の4-2節の解説）。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -360,7 +360,7 @@ def main(args=None):
 `metrics.py` は、ノードから `import` される部品なので、登録しない（フェーズ5-1の `vehicle_model.py` と同じ）。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_py
 
@@ -379,12 +379,12 @@ source install/setup.bash
 
 ```bash
 # T1
-cd ~/work/ros2MinimalPhysicalAi/ws/bags
+cd ~/ws/bags
 
 ros2 bag play sim_default -r 5 -p
 
 # T2
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
@@ -704,7 +704,7 @@ ament_target_dependencies(metrics rclcpp std_msgs)
 `package.xml` の依存（`rclcpp`・`std_msgs`）は、フェーズ3-1で足してあるので、変えなくてよい。
 
 ```bash
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 colcon build --symlink-install --packages-select learn_cpp
 
@@ -719,19 +719,19 @@ source install/setup.bash
 
 ```bash
 # T1
-cd ~/work/ros2MinimalPhysicalAi/ws/bags
+cd ~/ws/bags
 
 ros2 bag play sim_default -r 5 -p
 
 # T2
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
 ros2 run learn_py metrics
 
 # T3
-cd ~/work/ros2MinimalPhysicalAi/ws
+cd ~/ws
 
 source install/setup.bash
 
