@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" width="900" height="380" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: エージェント（方策）が観測から行動を決め、環境が次の観測と報酬を返す。学習のアルゴリズムは報酬を手がかりに方策を更新する。フェーズ5ではPI制御が方策、プラントが環境にあたる">
+<title>図: エージェント（方策）が観測から行動を決め、環境が次の観測と報酬を返す。学習のアルゴリズムは報酬を手がかりに方策を更新する。フェーズ5ではPI制御が方策、プラントが環境にあたる</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="900" height="380" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<path d="M250,95 L640,95" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M640,185 L250,185" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M450,275 L450,245 L150,245 L150,222" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" stroke-dasharray="6 4"/>
+<path d="M615,185 L615,275" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" stroke-dasharray="6 4"/>
+<rect x="30" y="60" width="220" height="162" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="140.0" y="101.0" text-anchor="middle" font-size="15" font-weight="bold">エージェント（方策）</text>
+<text x="140.0" y="119.0" text-anchor="middle">観測 → 行動</text>
+<text x="140.0" y="137.0" text-anchor="middle"></text>
+<text x="140.0" y="155.0" text-anchor="middle" font-size="13">フェーズ5: PI制御</text>
+<text x="140.0" y="173.0" text-anchor="middle" font-size="13">7-0: SACのNN</text>
+<text x="140.0" y="191.0" text-anchor="middle" font-size="13">7-4: 車両のNN（予定）</text>
+<rect x="640" y="60" width="230" height="162" rx="8" fill="#eef1f5" stroke="#6b7a90" stroke-width="1.5"/>
+<text x="755.0" y="101.0" text-anchor="middle" font-size="15" font-weight="bold">環境</text>
+<text x="755.0" y="119.0" text-anchor="middle">行動 → 次の観測・報酬</text>
+<text x="755.0" y="137.0" text-anchor="middle"></text>
+<text x="755.0" y="155.0" text-anchor="middle" font-size="13">フェーズ5: プラント</text>
+<text x="755.0" y="173.0" text-anchor="middle" font-size="13">7-0: 振り子（Pendulum）</text>
+<text x="755.0" y="191.0" text-anchor="middle" font-size="13">7-1: 車両の環境（予定）</text>
+<rect x="340" y="275" width="330" height="80" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
+<text x="505.0" y="302.0" text-anchor="middle" font-weight="bold">学習のアルゴリズム（SB3のSACなど）</text>
+<text x="505.0" y="320.0" text-anchor="middle" font-size="13">報酬の合計が大きくなるよう</text>
+<text x="505.0" y="338.0" text-anchor="middle" font-size="13">方策のパラメータ（NNの重み）を更新</text>
+<text x="445" y="78" text-anchor="middle" font-size="13">行動（例: ペダル・トルク）</text>
+<text x="445" y="205" text-anchor="middle" font-size="13">観測（例: 速度・角度）と報酬（例: −誤差）</text>
+<text x="300" y="238" text-anchor="middle" font-size="12">方策を更新</text>
+<text x="623" y="238" text-anchor="start" font-size="12">経験</text>
+</g>
+</svg>
