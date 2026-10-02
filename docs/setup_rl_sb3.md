@@ -117,6 +117,15 @@ Successfully installed ... torch-2.x.x+cpu ...
 
 ファイル名に `+cpu` と `cp312`（Python 3.12向け）が入っていれば、CPU版が選ばれている。
 
+> **`launch-ros ... requires pyyaml, which is not installed.` と出る場合**: 末尾の `Successfully installed` の直前に、次のような `ERROR` が出ることがある（4節の導入でも出ることがある）。
+>
+> ```text
+> ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+> launch-ros 0.26.12 requires pyyaml, which is not installed.
+> ```
+>
+> これは導入の失敗ではなく、無視してよい。`~/.bashrc` でROS2を読み込んでいると、環境変数 `PYTHONPATH` にROS2のPythonのパッケージの場所（`/opt/ros/jazzy/lib/python3.12/site-packages`）が入り、仮想環境のpipにもROS2の `launch_ros` が見える。`launch_ros` が必要とするpyyamlは、aptでシステムのPythonの側（`python3-yaml`）に入っているが、仮想環境からはシステムの側のパッケージが見えない。そのためpipは「pyyamlが無い」と報告する。仮想環境の中ではROS2のlaunchを使わないので、学習には影響しない。ROS2のコマンドはシステムのPythonで動くので、こちらも影響を受けない。この表示を消すために、仮想環境へpyyamlを入れる必要はない（入れるパッケージは、手順書のものに留める）。版の数字（`0.26.12`）は、ROS2の更新の状況で違うことがある。
+
 入ったことを確かめる。
 
 ```bash
@@ -215,6 +224,7 @@ rm -rf ~/rl_venv
 | `python3 -m venv` で `ensurepip is not available` と出る | 1節の `python3-venv` を入れたか |
 | `pip install` で `externally-managed-environment` と出る | 仮想環境を有効にしたか（プロンプトに `(rl_venv)` があるか）。新しいターミナルでは、有効にし直す |
 | 導入に長い時間がかかり、`nvidia-...` という名前のパッケージが次々にダウンロードされる | 3節より先にSB3を入れて、GPU向けのPyTorchが選ばれている。`Ctrl+C` で止め、6節で消して作り直す |
+| `pip install` の最後に `launch-ros ... requires pyyaml, which is not installed.` という `ERROR` が出る | `Successfully installed` の行が出ていれば、導入は成功している。ROS2を読み込んだターミナルでは出ることがあり、無視してよい（3節の注意書き） |
 | `import gymnasium` で `No module named 'gymnasium'` と出る | 仮想環境を有効にしたか。`which python` が `~/rl_venv/bin/python` を指しているか |
 | ROS2のノードが、ビルドし直した後に動かなくなった | 仮想環境を有効にしたまま `colcon build` しなかったか（5節）。`deactivate` してから、ワークスペースの `build/`・`install/` を消してビルドし直す |
 
