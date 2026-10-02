@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" width="900" height="420" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: エージェントが1秒ごとにゲイン（kp・ki）を選び、車両の環境の中では、PI制御（5-2）が0.02秒ごと、プラント（5-1）が0.01秒ごとに進む。環境は観測4つと報酬を返し、残した記録は6-3の指標の計算に渡せる">
+<title>図: エージェントが1秒ごとにゲイン（kp・ki）を選び、車両の環境の中では、PI制御（5-2）が0.02秒ごと、プラント（5-1）が0.01秒ごとに進む。環境は観測4つと報酬を返し、残した記録は6-3の指標の計算に渡せる</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="900" height="420" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="300" y="20" width="580" height="300" rx="8" fill="#f7f8fa" stroke="#6b7a90" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="590" y="44" text-anchor="middle" font-size="15" font-weight="bold">環境 VehicleGainEnv（vehicle_env.py）</text>
+<path d="M220,105 L300,105" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M300,200 L220,200" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M560,115 L640,115" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M735,160 L735,190" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M690,190 L690,160" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M445,300 L445,345" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" stroke-dasharray="6 4"/>
+<rect x="20" y="60" width="200" height="170" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="120.0" y="114.0" text-anchor="middle" font-size="15" font-weight="bold">エージェント</text>
+<text x="120.0" y="132.0" text-anchor="middle" font-size="14">観測 → 行動</text>
+<text x="120.0" y="150.0" text-anchor="middle" font-size="14"></text>
+<text x="120.0" y="168.0" text-anchor="middle" font-size="13">7-1: ゲインを固定・でたらめ</text>
+<text x="120.0" y="186.0" text-anchor="middle" font-size="13">7-2: SACが学習（予定）</text>
+<rect x="330" y="70" width="230" height="90" rx="8" fill="#ffffff" stroke="#6b7a90" stroke-width="1.5"/>
+<text x="445.0" y="102.0" text-anchor="middle" font-size="14" font-weight="bold">目標速度の階段</text>
+<text x="445.0" y="120.0" text-anchor="middle" font-size="13">0秒: 10 m/s、40秒: 5 m/s</text>
+<text x="445.0" y="138.0" text-anchor="middle" font-size="13">70秒: 0 m/s、90秒で終わり</text>
+<rect x="640" y="65" width="220" height="95" rx="8" fill="#e9f6ee" stroke="#3c8d5a" stroke-width="1.5"/>
+<text x="750.0" y="90.5" text-anchor="middle" font-size="14" font-weight="bold">PI制御（5-2）</text>
+<text x="750.0" y="108.5" text-anchor="middle" font-size="13">pi_control.py</text>
+<text x="750.0" y="126.5" text-anchor="middle" font-size="13">0.02秒ごとにペダルを計算</text>
+<text x="750.0" y="144.5" text-anchor="middle" font-size="13">ゲインは行動で変わる</text>
+<rect x="640" y="190" width="220" height="80" rx="8" fill="#e9f6ee" stroke="#3c8d5a" stroke-width="1.5"/>
+<text x="750.0" y="217.0" text-anchor="middle" font-size="14" font-weight="bold">車両のプラント（5-1）</text>
+<text x="750.0" y="235.0" text-anchor="middle" font-size="13">vehicle_model.py</text>
+<text x="750.0" y="253.0" text-anchor="middle" font-size="13">0.01秒ごとに速度を計算</text>
+<rect x="330" y="190" width="230" height="110" rx="8" fill="#ffffff" stroke="#6b7a90" stroke-width="1.5"/>
+<text x="445.0" y="223.0" text-anchor="middle" font-size="14" font-weight="bold">報酬（1秒ごと）</text>
+<text x="445.0" y="241.0" text-anchor="middle" font-size="13">−（誤差² ＋ 4 × 行き過ぎ²）</text>
+<text x="445.0" y="259.0" text-anchor="middle" font-size="13">の1秒分 ÷ 90</text>
+<text x="445.0" y="277.0" text-anchor="middle" font-size="13">記録 history も残す</text>
+<rect x="330" y="345" width="460" height="55" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
+<text x="560.0" y="368.5" text-anchor="middle" font-size="14" font-weight="bold">6-3の metrics.evaluate（5-1節で使う）</text>
+<text x="560.0" y="386.5" text-anchor="middle" font-size="13">記録から、段ごとの指標とRMSを計算</text>
+<text x="260" y="98" text-anchor="middle" font-size="12">行動: kp・ki</text>
+<text x="260" y="193" text-anchor="middle" font-size="12">観測4つ・報酬</text>
+<text x="745" y="179" text-anchor="start" font-size="12">ペダル</text>
+<text x="680" y="179" text-anchor="end" font-size="12">速度</text>
+<text x="600" y="108" text-anchor="middle" font-size="12">目標</text>
+<text x="455" y="338" text-anchor="start" font-size="12">記録（6-3と同じ形）</text>
+</g>
+</svg>

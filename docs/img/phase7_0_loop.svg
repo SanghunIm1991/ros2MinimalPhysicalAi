@@ -20,7 +20,7 @@
 <text x="755.0" y="137.0" text-anchor="middle"></text>
 <text x="755.0" y="155.0" text-anchor="middle" font-size="13">フェーズ5: プラント</text>
 <text x="755.0" y="173.0" text-anchor="middle" font-size="13">7-0: 振り子（Pendulum）</text>
-<text x="755.0" y="191.0" text-anchor="middle" font-size="13">7-1: 車両の環境（予定）</text>
+<text x="755.0" y="191.0" text-anchor="middle" font-size="13">7-1: 車両の環境</text>
 <rect x="340" y="275" width="330" height="80" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
 <text x="505.0" y="302.0" text-anchor="middle" font-weight="bold">学習のアルゴリズム（SB3のSACなど）</text>
 <text x="505.0" y="320.0" text-anchor="middle" font-size="13">報酬の合計が大きくなるよう</text>

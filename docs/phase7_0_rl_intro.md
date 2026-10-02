@@ -36,7 +36,7 @@
 ```mermaid
 flowchart LR
     AG["エージェント（方策）<br/>観測 → 行動<br/>フェーズ5: PI制御<br/>7-0: SACのNN<br/>7-4: 車両のNN（予定）"]
-    ENV["環境<br/>行動 → 次の観測・報酬<br/>フェーズ5: プラント<br/>7-0: 振り子（Pendulum）<br/>7-1: 車両の環境（予定）"]
+    ENV["環境<br/>行動 → 次の観測・報酬<br/>フェーズ5: プラント<br/>7-0: 振り子（Pendulum）<br/>7-1: 車両の環境"]
     LEARN["学習のアルゴリズム（SB3のSACなど）<br/>報酬の合計が大きくなるよう<br/>方策のパラメータ（NNの重み）を更新"]
     AG -- "行動（例: ペダル・トルク）" --> ENV
     ENV -- "観測（例: 速度・角度）と報酬（例: −誤差）" --> AG
@@ -555,7 +555,7 @@ python watch_pendulum.py
 
 ## 9. 次へ
 
-次の7-1（作成予定）では、フェーズ5-1の車両のプラント（`VehicleModel`）とPI制御を、Gymnasiumの環境として包む。Gymnasiumの公式の「Create a Custom Environment」に倣って、観測・行動・報酬を自分で設計し、SB3の `check_env` で点検する。フェーズ6-3の9節で考えた報酬の案（RMSや段ごとの指標）を、ここで実際に使う。
+次の7-1（[`docs/phase7_1_vehicle_env.md`](phase7_1_vehicle_env.md)）では、フェーズ5-1の車両のプラント（`VehicleModel`）とPI制御を、Gymnasiumの環境として包む。Gymnasiumの公式の「Create a Custom Environment」に倣って、観測・行動・報酬を自分で設計し、SB3の `check_env` で点検する。フェーズ6-3の9節で考えた報酬の案（RMSや段ごとの指標）を、ここで実際に使う。
 
 ## 10. 公式ドキュメント・参考資料
 
