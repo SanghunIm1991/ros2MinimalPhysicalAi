@@ -1,6 +1,6 @@
 # フェーズ3-1 手順書: Publisher / Subscriber（トピック）をPython・C++で書く
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-2 ①②）に対応する。同じ仕様のノードをPythonとC++の両方で書き、動作と書き方の違いを比べる。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ3（[`docs/idea_origin.md`](idea_origin.md) ステップ1の1-2 ①②）に対応する。同じ仕様のノードをPythonとC++の両方で書き、動作と書き方の違いを比べる。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ2完了（`ros2_ws/src/learn_py` と `ros2_ws/src/learn_cpp` があり、`colcon build --symlink-install` が通る）

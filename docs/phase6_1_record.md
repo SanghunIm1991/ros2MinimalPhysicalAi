@@ -1,6 +1,6 @@
 # フェーズ6-1 手順書: 記録して見直す（`ros2 bag` と `rqt_plot`）
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ6の6-1（idea_origin.md ステップ4）に対応する。フェーズ5-3・5-4で動かした車両シミュレーションのトピックを `ros2 bag` で記録し、後から再生して `rqt_plot` で見直す。記録を決めた時間で自動的に終わらせる仕組みをlaunchに足し、最後に、5-3と5-4の記録を同時に再生して、1つのグラフに重ねて比べる。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ6の6-1（[`docs/idea_origin.md`](idea_origin.md) ステップ4）に対応する。フェーズ5-3・5-4で動かした車両シミュレーションのトピックを `ros2 bag` で記録し、後から再生して `rqt_plot` で見直す。記録を決めた時間で自動的に終わらせる仕組みをlaunchに足し、最後に、5-3と5-4の記録を同時に再生して、1つのグラフに重ねて比べる。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ5-3（[`docs/phase5_3_launch.md`](phase5_3_launch.md)。`vehicle_sim.launch.py` と `target_generator` が動く）と、フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)。`gazebo_plant.launch.py` が動く）

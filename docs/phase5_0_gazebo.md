@@ -1,6 +1,6 @@
 # フェーズ5-0 手順書: Gazeboを導入し、用意されたロボットをROS2から動かす
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ5の冒頭（idea_origin.md ステップ5）に対応する。3D物理シミュレータのGazebo（Harmonic）を導入し、公式のデモ集 `ros_gz_sim_demos` に入っている2輪の車両を、ROS2のトピックで走らせる。フェーズ5-1以降で自作する「車両」の速度制御を、物理シミュレータの車両で先に体験しておく位置づけ。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ5の冒頭（[`docs/idea_origin.md`](idea_origin.md) ステップ5）に対応する。3D物理シミュレータのGazebo（Harmonic）を導入し、公式のデモ集 `ros_gz_sim_demos` に入っている2輪の車両を、ROS2のトピックで走らせる。フェーズ5-1以降で自作する「車両」の速度制御を、物理シミュレータの車両で先に体験しておく位置づけ。
 
 ![Gazeboのウィンドウ。灰色の地面の上に、青と緑の2輪の車両が並んでいる。右側には、ワールドの設定と、ワールドに置かれたもの（地面・2台の車両・太陽）の一覧が表示されている](img/phase5_0_gazebo.png)
 

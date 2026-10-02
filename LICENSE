@@ -73,6 +73,8 @@ the author (SanghunIm1991) and the license are credited.
    - docs/setup_rl_sb3.md の4節で抜粋した導入のコマンドと、docs/phase7_0_rl_intro.md
      の4-1節で抜粋したコード（SACの例）: Stable-Baselines3 の公式の文書
      （Copyright (c) 2019 Antonin Raffin）, MIT License
+   - docs/phase7_1_vehicle_env.md の5-1節の課題1で引用した `check_env` の警告の
+     文面: Stable-Baselines3（Copyright (c) 2019 Antonin Raffin）, MIT License
    - docs/phase7_0_rl_intro.md の3-1節で抜粋したコード（Basic Usage の例）:
      Gymnasium の公式の文書（Copyright (c) 2016 OpenAI, Copyright (c) 2022
      Farama Foundation）, MIT License

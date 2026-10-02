@@ -1,6 +1,6 @@
 # フェーズ2 手順書: ワークスペースとパッケージ作成・ビルド
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ2（idea_origin.md ステップ1の1-0）に対応する。`ament_python` と `ament_cmake` の空パッケージを1つずつ作り、ビルドと実行の流れの違いを確認する。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ2（[`docs/idea_origin.md`](idea_origin.md) ステップ1の1-0）に対応する。`ament_python` と `ament_cmake` の空パッケージを1つずつ作り、ビルドと実行の流れの違いを確認する。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（`colcon`、`gcc`/`g++`、`cmake` は、環境構築の `ros-dev-tools` の導入で入っている。1-3節の補足を参照）
 - 所要目安: 1コマ

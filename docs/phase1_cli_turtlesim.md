@@ -1,6 +1,6 @@
 # フェーズ1 手順書: turtlesimとCLIでROS2の通信を観察する
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ1（idea_origin.md ステップ1の1-1）に対応する。コードは書かず、既製のノード（turtlesim）を動かしながら `ros2` コマンドとrqtでROS2の仕組みを観察する。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ1（[`docs/idea_origin.md`](idea_origin.md) ステップ1の1-1）に対応する。コードは書かず、既製のノード（turtlesim）を動かしながら `ros2` コマンドとrqtでROS2の仕組みを観察する。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（[`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) 完了済み）
 - 所要目安: 1〜2コマ
@@ -679,7 +679,7 @@ ros2 run rqt_console rqt_console
 - [Beginner: CLI tools — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools.html)（本フェーズの目次。ノード・トピック・サービス・パラメータ・アクションの各ページはここから辿る）
 - [Using turtlesim, ros2, and rqt — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Introducing-Turtlesim/Introducing-Turtlesim.html)
 - [Using rqt_console to view logs — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Using-Rqt-Console/Using-Rqt-Console.html)
-- [Launching nodes — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Launching-Multiple-Nodes/Launching-Multiple-Nodes.html)（フェーズ4の予習。idea_origin.mdに掲載済み）
+- [Launching nodes — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Launching-Multiple-Nodes/Launching-Multiple-Nodes.html)（フェーズ4の予習。[`docs/idea_origin.md`](idea_origin.md)に掲載済み）
 - [Introspection with command line tools — Jazzy](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Command-Line-Tools.html)
 - [Basic Concepts — Jazzy](https://docs.ros.org/en/jazzy/Concepts/Basic.html)
 

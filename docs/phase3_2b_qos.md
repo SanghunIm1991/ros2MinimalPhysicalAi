@@ -1,6 +1,6 @@
 # フェーズ3-2b 手順書: QoSの相性を体験する
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1のQoS補足）に対応する。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ3（[`docs/idea_origin.md`](idea_origin.md) ステップ1のQoS補足）に対応する。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ3-1完了（`talker` 等が動く）。フェーズ3-2a（Twistでturtlesimを動かす）とは独立したテーマで、3-2aで作ったものは使わない

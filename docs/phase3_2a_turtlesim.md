@@ -1,6 +1,6 @@
 # フェーズ3-2a 手順書: Twistでturtlesimを動かす
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-2 ③）に対応する。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ3（[`docs/idea_origin.md`](idea_origin.md) ステップ1の1-2 ③）に対応する。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（turtlesimはフェーズ1で導入済み）
 - 前提: フェーズ3-1完了（`talker` 等が動く）

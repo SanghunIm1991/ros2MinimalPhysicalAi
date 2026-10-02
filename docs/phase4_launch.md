@@ -1,6 +1,6 @@
 # フェーズ4 手順書: launchファイルで複数ノードを束ねる
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ4（idea_origin.md ステップ1の1-6）に対応する。これまで別々のターミナルで起動していたノードを、1つのlaunchファイルで起動する。**Python版とC++版のノードを引数で切り替える**のが要点。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ4（[`docs/idea_origin.md`](idea_origin.md) ステップ1の1-6）に対応する。これまで別々のターミナルで起動していたノードを、1つのlaunchファイルで起動する。**Python版とC++版のノードを引数で切り替える**のが要点。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ3-1〜3-3完了（`learn_py` と `learn_cpp` に、このフェーズで起動する `talker`・`listener`・`param_talker`・`turtle_circle` がある）。フェーズ3-4・3-5のノードは使わないので、3-4・3-5は概要を掴んだだけでも先へ進める。C++版の `param_talker`・`turtle_circle`（フェーズ3-2a・3-3で任意）が無い場合は、`lang:=cpp` の代わりに `lang:=py` で起動する。`learn_cpp` の `talker`・`listener`（フェーズ3-1）は、言語の切り替え（4-1節）で使うので必要

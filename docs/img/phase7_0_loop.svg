@@ -10,14 +10,12 @@
 <rect x="30" y="60" width="220" height="162" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
 <text x="140.0" y="101.0" text-anchor="middle" font-size="15" font-weight="bold">エージェント（方策）</text>
 <text x="140.0" y="119.0" text-anchor="middle">観測 → 行動</text>
-<text x="140.0" y="137.0" text-anchor="middle"></text>
 <text x="140.0" y="155.0" text-anchor="middle" font-size="13">フェーズ5: PI制御</text>
 <text x="140.0" y="173.0" text-anchor="middle" font-size="13">7-0: SACのNN</text>
 <text x="140.0" y="191.0" text-anchor="middle" font-size="13">7-4: 車両のNN（予定）</text>
 <rect x="640" y="60" width="230" height="162" rx="8" fill="#eef1f5" stroke="#6b7a90" stroke-width="1.5"/>
 <text x="755.0" y="101.0" text-anchor="middle" font-size="15" font-weight="bold">環境</text>
 <text x="755.0" y="119.0" text-anchor="middle">行動 → 次の観測・報酬</text>
-<text x="755.0" y="137.0" text-anchor="middle"></text>
 <text x="755.0" y="155.0" text-anchor="middle" font-size="13">フェーズ5: プラント</text>
 <text x="755.0" y="173.0" text-anchor="middle" font-size="13">7-0: 振り子（Pendulum）</text>
 <text x="755.0" y="191.0" text-anchor="middle" font-size="13">7-1: 車両の環境</text>

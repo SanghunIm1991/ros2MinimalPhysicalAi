@@ -1,6 +1,6 @@
 # フェーズ3-4 手順書: サービス（要求と応答）
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ3（idea_origin.md ステップ1の1-4）に対応する。「1回の要求に1回の応答を返す」通信を扱う（概要を掴む程度でよい。サンプルはPython版・C++版の両方を載せる）。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ3（[`docs/idea_origin.md`](idea_origin.md) ステップ1の1-4）に対応する。「1回の要求に1回の応答を返す」通信を扱う（概要を掴む程度でよい。サンプルはPython版・C++版の両方を載せる）。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
 - 前提: フェーズ3-1〜3-3完了
