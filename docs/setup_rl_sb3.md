@@ -8,7 +8,7 @@
 
 > **この手順書の位置づけ（暫定）**: フェーズ7は作成中で、構成を大きく改める可能性がある。導入するライブラリと版も、フェーズ7の改定に合わせて見直すことがある。
 
-> **実行環境が無くても読めるように**: 確認のコマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。**この版の期待する結果は、ライブラリの公式の文書と仕様から想定したもの**で、筆者の環境ではまだ確かめていない。版の数字・所要時間・ディスクの大きさは、導入した時期と環境によって異なる。
+> **実行環境が無くても読めるように**: 確認のコマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。**期待する結果は、筆者の環境（2026-10-02に導入）で実際に表示されたもの**である。ただし、導入のコマンド（`pip install`）の `Successfully installed` の行は、画面の記録が残っていなかった分（2節のpipの更新と4節）を、導入された版の一覧から書き起こした抜粋にしている。版の数字・所要時間・ディスクの大きさは、導入した時期と環境によって異なる。
 
 ## 目的・ゴール
 
@@ -92,7 +92,7 @@ python -m pip install --upgrade pip
 **期待する結果**（抜粋。版は時期によって違う）:
 
 ```text
-Successfully installed pip-2x.x
+Successfully installed pip-26.2.1
 ```
 
 ### 3. PyTorch（CPU版）を入れる
@@ -110,9 +110,9 @@ pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```text
 Looking in indexes: https://download.pytorch.org/whl/cpu
 Collecting torch
-  Downloading https://download.pytorch.org/whl/cpu/torch-2.x.x%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (... MB)
+  Downloading https://download.pytorch.org/whl/cpu/torch-2.14.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (... MB)
 ...
-Successfully installed ... torch-2.x.x+cpu ...
+Successfully installed MarkupSafe-3.0.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.6.1 setuptools-78.1.0 sympy-1.14.0 torch-2.14.1+cpu typing-extensions-4.16.0
 ```
 
 ファイル名に `+cpu` と `cp312`（Python 3.12向け）が入っていれば、CPU版が選ばれている。
@@ -132,10 +132,10 @@ Successfully installed ... torch-2.x.x+cpu ...
 python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 ```
 
-**期待する結果**:
+**期待する結果**（版は時期によって違う）:
 
 ```text
-2.x.x+cpu False
+2.14.1+cpu False
 ```
 
 版の末尾に `+cpu` が付き、`torch.cuda.is_available()` が `False`（GPUを使わない）になっていれば成功である。
@@ -156,10 +156,10 @@ pip install stable-baselines3
 
 前者は、学習の記録の表示（TensorBoard）・画像の処理（OpenCV）・Atariのゲームの環境（`ale-py`）などの追加の部品もまとめて入れる。この教材ではAtariのゲームを使わないので、後者の最小の形を基本にし、要る部品だけを足す。
 
-- **`gymnasium[classic-control]`**: 振り子（Pendulum）などの古典的な制御の環境を、画面に表示するための部品（`pygame`）を含めて入れる。Gymnasiumの公式の入門（[Basic Usage](https://gymnasium.farama.org/introduction/basic_usage/)）の最初の例も、この形で入れるよう案内している。
+- **`gymnasium[classic-control]`**: 振り子（Pendulum）などの古典的な制御の環境を、画面に表示するための部品（`pygame-ce`。ゲームを作るライブラリpygameの、コミュニティによる派生版）を含めて入れる。Gymnasiumの公式の入門（[Basic Usage](https://gymnasium.farama.org/introduction/basic_usage/)）の最初の例も、この形で入れるよう案内している。
 - **`sb3-contrib`**: 記憶を持つポリシー（`RecurrentPPO`）など、SB3の追加のアルゴリズム。フェーズ7の後半で使う予定。
 
-この手順書を作った時点の最新版に固定して入れる（この版は、導入して確かめた後にこの注記を直す。版を固定すると、手順書と同じ結果を再現しやすい。新しい版を使う場合は、`==` 以降を外す）。
+この手順書を作った時点（2026-09-29）の最新版に固定して入れる（2026-10-02に、この版で導入して確かめた。版を固定すると、手順書と同じ結果を再現しやすい。新しい版を使う場合は、`==` 以降を外す）。
 
 ```bash
 pip install stable-baselines3==2.9.0 sb3-contrib==2.9.0 "gymnasium[classic-control]==1.3.0"
@@ -168,7 +168,7 @@ pip install stable-baselines3==2.9.0 sb3-contrib==2.9.0 "gymnasium[classic-contr
 **期待する結果**（抜粋。依存するライブラリの版は時期によって違う）:
 
 ```text
-Successfully installed ... gymnasium-1.3.0 ... numpy-2.x.x ... pygame-2.x.x ... sb3-contrib-2.9.0 stable-baselines3-2.9.0 ...
+Successfully installed cloudpickle-3.1.2 ... gymnasium-1.3.0 numpy-2.5.3 pygame-ce-2.5.8 sb3-contrib-2.9.0 stable-baselines3-2.9.0
 ```
 
 末尾の `Successfully installed` の行に、`stable-baselines3-2.9.0`・`sb3-contrib-2.9.0`・`gymnasium-1.3.0` があれば成功である。**`torch` がもう一度ダウンロードされていないこと**も確かめる（3節で入れたCPU版がそのまま使われる）。
@@ -183,7 +183,7 @@ python -c "import gymnasium as gym; env = gym.make('Pendulum-v1'); print(env.obs
 du -sh ~/rl_venv
 ```
 
-**期待する結果**（`du` の大きさは想定の目安）:
+**期待する結果**（版と `du` の大きさは時期によって違う）:
 
 ```text
 $ python -c "import stable_baselines3, ..."
@@ -192,7 +192,7 @@ $ python -c "import gymnasium as gym; ..."
 Box([-1. -1. -8.], [1. 1. 8.], (3,), float32)
 Box(-2.0, 2.0, (1,), float32)
 $ du -sh ~/rl_venv
-1.2G	/home/<ユーザー名>/rl_venv
+1010M	/home/<ユーザー名>/rl_venv
 ```
 
 - 1行目は、SB3・sb3-contrib・Gymnasiumの版である。

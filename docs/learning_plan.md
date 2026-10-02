@@ -181,7 +181,7 @@
 | 6-1 | [`docs/phase6_1_record.md`](phase6_1_record.md) | Python（launchもPython形式） | 作成済み（2026-09-27。使い捨ての環境で、手での記録・`ros2 bag info`・再生、2つの記録の同時再生、`record.launch.py` で5-3の一式と5-4の一式（画面なしのGazebo）を決めた時間で記録して止まるまでを確認。`rqt_plot` の画面、Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図（`docs/img/phase6_1_record.svg`）の見た目は未確認） |
 | 6-2 | [`docs/phase6_2_goal.md`](phase6_2_goal.md) | Python（launchもPython形式） | 作成済み（2026-09-27。使い捨ての環境で、`record_goal.launch.py` で5-3の一式（案A）と5-4の一式（案B、画面なしのGazebo）をゴールの450 mで記録して止まるまでと、案Aと案Bの距離の比較を確認。Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図（`docs/img/phase6_2_goal.svg`）の見た目は未確認） |
 | 6-3 | [`docs/phase6_3_metrics.md`](phase6_3_metrics.md) | Python（C++版はサンプルを動かす程度） | 作成済み（2026-09-27。使い捨ての環境で、`metrics.py` の閉ループの計算への当てはめ、3つの記録（5-3の既定・`tau_brake` 1.0・5-4の既定。5-4は画面なしのGazebo）の解析、Python版とC++版の結果の一致を確認。ユーザーの実機での実行は未確認。図（`docs/img/phase6_3_metrics.svg`）の見た目は未確認） |
-| 環境構築（強化学習） | [`docs/setup_rl_sb3.md`](setup_rl_sb3.md) | 言語非依存 | 作成中（2026-09-29。仮想環境 `~/rl_venv` にPyTorchのCPU版・SB3・sb3-contrib・Gymnasiumを入れる。期待する結果は公式の文書と仕様から想定したもので、ユーザーが導入した後に実測で直す） |
+| 環境構築（強化学習） | [`docs/setup_rl_sb3.md`](setup_rl_sb3.md) | 言語非依存 | 作成済み（2026-09-29。仮想環境 `~/rl_venv` にPyTorchのCPU版・SB3・sb3-contrib・Gymnasiumを入れる。2026-10-02に筆者の環境で導入し、期待する結果を実測に置き換えた。`Successfully installed` の行の一部は、導入された版の一覧から書き起こした） |
 | 7-0 | [`docs/phase7_0_rl_intro.md`](phase7_0_rl_intro.md) | Python（ROS2は使わない） | 作成中（2026-09-29。GymnasiumとSB3の公式の例の抜粋と、振り子の学習・手書きの制御器との比較。トルク0・でたらめ・手書きの制御器の数は、Gymnasiumのソースの振り子を書き写して計算した値。学習の結果は想定で、導入した後に実測で直す。図（`docs/img/phase7_0_loop.svg`）の見た目は未確認） |
 | 7-1〜7-5 | 着手時に作成 | — | 未作成（構成は暫定。フェーズ7の節） |
 | 8 | 着手時に作成 | — | 保留 |
