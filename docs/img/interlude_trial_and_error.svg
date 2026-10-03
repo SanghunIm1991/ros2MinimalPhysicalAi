@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: フェーズ7-1・7-2の作り直しの流れ。決まった目標速度の階段で環境を作り、7-2で学習が進まない原因を探した。測り方の誤りを直し、終わり方をterminatedに直した後、既定のゲインがほぼ最良で改善の余地が小さいことに気づいた。強化学習を使わない予備の実験でシナリオを選び直し、7-1から作り直した">
+<title>図: フェーズ7-1・7-2の作り直しの流れ。決まった目標速度の階段で環境を作り、7-2で学習が進まない原因を探した。測り方の誤りを直し、終わり方をterminatedに直した後、既定のゲインがほぼ最良で改善の余地が小さいことに気づいた。強化学習を使わない予備の実験でシナリオを選び直し、7-1から作り直した</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="900" height="520" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<path d="M290.0,88 L290.0,110" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M290.0,168 L290.0,190" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M290.0,248 L290.0,270" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M290.0,328 L290.0,350" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M290.0,408 L290.0,430" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M540,139.0 L620,139.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M740.0,177.0 L740.0,219.0 L540,219.0" fill="none" stroke="#333333" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<rect x="40" y="30" width="500" height="58" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="290.0" y="55.0" text-anchor="middle" font-size="14" font-weight="bold">【1】旧7-1</text>
+<text x="290.0" y="73.0" text-anchor="middle" font-size="13">決まった目標速度の階段で環境を作る</text>
+<rect x="40" y="110" width="500" height="58" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="290.0" y="135.0" text-anchor="middle" font-size="14" font-weight="bold">【2】旧7-2: 学習が進まない</text>
+<text x="290.0" y="153.0" text-anchor="middle" font-size="13">更新の回数と報酬の形を見直す（2節）</text>
+<rect x="40" y="190" width="500" height="58" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="290.0" y="215.0" text-anchor="middle" font-size="14" font-weight="bold">【3】終わり方を直す</text>
+<text x="290.0" y="233.0" text-anchor="middle" font-size="13">truncated から terminated へ（4節）</text>
+<rect x="40" y="270" width="500" height="58" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
+<text x="290.0" y="295.0" text-anchor="middle" font-size="14" font-weight="bold">【4】既定のゲインがほぼ最良と気づく</text>
+<text x="290.0" y="313.0" text-anchor="middle" font-size="13">改善の余地が小さい（5節）</text>
+<rect x="40" y="350" width="500" height="58" rx="8" fill="#e9f6ee" stroke="#3c8d5a" stroke-width="1.5"/>
+<text x="290.0" y="375.0" text-anchor="middle" font-size="14" font-weight="bold">【5】強化学習なしの予備の実験</text>
+<text x="290.0" y="393.0" text-anchor="middle" font-size="13">シナリオと難しさを選び直す（6節）</text>
+<rect x="40" y="430" width="500" height="58" rx="8" fill="#e9f6ee" stroke="#3c8d5a" stroke-width="1.5"/>
+<text x="290.0" y="455.0" text-anchor="middle" font-size="14" font-weight="bold">【6】7-1を作り直す</text>
+<text x="290.0" y="473.0" text-anchor="middle" font-size="13">旧版は没案として退避</text>
+<rect x="620" y="101.0" width="240" height="76" rx="8" fill="#fdecec" stroke="#b84a4a" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="740.0" y="126.0" text-anchor="middle" font-size="14" font-weight="bold">測り方の誤り（3節）</text>
+<text x="740.0" y="144.0" text-anchor="middle" font-size="13">学習と評価で</text>
+<text x="740.0" y="162.0" text-anchor="middle" font-size="13">環境を共有していた</text>
+<text x="580.0" y="131.0" text-anchor="middle" font-size="12">途中で気づく</text>
+</g>
+</svg>
