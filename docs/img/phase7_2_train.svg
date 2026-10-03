@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" width="900" height="400" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: SACがゲインを1組選び、車両の環境が90秒分を1ステップで計算して報酬を返す。行き過ぎの重みは①②が20、③が0。学習の途中で、評価用の環境の20通りのシナリオで収益を測り、格子の探索の結果と、2つの重みの収益と6-3の指標で比べる">
-<title>図: SACがゲインを1組選び、車両の環境が90秒分を1ステップで計算して報酬を返す。行き過ぎの重みは①②が20、③が0。学習の途中で、評価用の環境の20通りのシナリオで収益を測り、格子の探索の結果と、2つの重みの収益と6-3の指標で比べる</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" width="900" height="400" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: SACがゲインを1組選び、車両の環境が90秒分を1ステップで計算して報酬を返す。行き過ぎの重みは①②が20、③が0。学習の途中で、評価用の環境の20通りのシナリオで収益を測る。学習したモデルを保存し、格子の探索の結果と、2つの重みの収益と6-3の指標で比べる">
+<title>図: SACがゲインを1組選び、車両の環境が90秒分を1ステップで計算して報酬を返す。行き過ぎの重みは①②が20、③が0。学習の途中で、評価用の環境の20通りのシナリオで収益を測る。学習したモデルを保存し、格子の探索の結果と、2つの重みの収益と6-3の指標で比べる</title>
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
 <rect x="0" y="0" width="900" height="400" fill="#ffffff"/>
 <g fill="#1a1a1a">
@@ -21,9 +21,9 @@
 <text x="600.0" y="139.0" text-anchor="middle" font-size="13">ブレーキの遅いプラント（tau_brake 1.0）</text>
 <text x="600.0" y="157.0" text-anchor="middle" font-size="13">毎回ランダムなシナリオ。報酬＝収益</text>
 <rect x="20" y="250" width="220" height="90" rx="8" fill="#ffffff" stroke="#6b7a90" stroke-width="1.5"/>
-<text x="130.0" y="282.0" text-anchor="middle" font-size="14" font-weight="bold">評価用の環境</text>
-<text x="130.0" y="300.0" text-anchor="middle" font-size="13">250ステップごとに</text>
-<text x="130.0" y="318.0" text-anchor="middle" font-size="13">20通りのシナリオで測る</text>
+<text x="130.0" y="282.0" text-anchor="middle" font-size="14" font-weight="bold">評価と保存</text>
+<text x="130.0" y="300.0" text-anchor="middle" font-size="13">250ステップごとに20通りで測り</text>
+<text x="130.0" y="318.0" text-anchor="middle" font-size="13">学習したモデルを保存</text>
 <rect x="330" y="250" width="290" height="90" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
 <text x="475.0" y="282.0" text-anchor="middle" font-size="14" font-weight="bold">比べる（compare_gains.py）</text>
 <text x="475.0" y="300.0" text-anchor="middle" font-size="13">2つの重みの収益と6-3の指標</text>
@@ -35,5 +35,6 @@
 <text x="285" y="78" text-anchor="middle" font-size="12">kp・ki</text>
 <text x="285" y="163" text-anchor="middle" font-size="12">報酬</text>
 <text x="140" y="222" text-anchor="start" font-size="12">学習した方策</text>
+<text x="285" y="287" text-anchor="middle" font-size="12">保存したモデル</text>
 </g>
 </svg>
