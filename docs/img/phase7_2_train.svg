@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" width="900" height="400" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: SACがゲインを1組選び、車両の環境が90秒分を1ステップで計算して報酬を返す。行き過ぎの重みは①②が20、③が0。学習の途中で、評価用の環境の20通りのシナリオで収益を測り、格子の探索の結果と、2つの重みの収益と6-3の指標で比べる">
+<title>図: SACがゲインを1組選び、車両の環境が90秒分を1ステップで計算して報酬を返す。行き過ぎの重みは①②が20、③が0。学習の途中で、評価用の環境の20通りのシナリオで収益を測り、格子の探索の結果と、2つの重みの収益と6-3の指標で比べる</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="900" height="400" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<path d="M240,85 L330,85" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M330,145 L240,145" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M130,180 L130,250" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M240,295 L330,295" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M700,295 L620,295" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="20" y="50" width="220" height="130" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="130.0" y="93.0" text-anchor="middle" font-size="15" font-weight="bold">SAC（エージェント）</text>
+<text x="130.0" y="111.0" text-anchor="middle" font-size="13">train_gain.py</text>
+<text x="130.0" y="129.0" text-anchor="middle" font-size="13">①既定 ②更新20回</text>
+<text x="130.0" y="147.0" text-anchor="middle" font-size="13">③重み0で②</text>
+<rect x="330" y="30" width="540" height="170" rx="8" fill="#f7f8fa" stroke="#6b7a90" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="600" y="52" text-anchor="middle" font-size="14" font-weight="bold">重みを変えて学習（①②は20、③は0）</text>
+<rect x="370" y="70" width="460" height="110" rx="8" fill="#e9f6ee" stroke="#3c8d5a" stroke-width="1.5"/>
+<text x="600.0" y="103.0" text-anchor="middle" font-size="14" font-weight="bold">車両の環境 VehicleGainEnv（7-1）</text>
+<text x="600.0" y="121.0" text-anchor="middle" font-size="13">decision_interval=90：1ステップ＝1エピソード</text>
+<text x="600.0" y="139.0" text-anchor="middle" font-size="13">ブレーキの遅いプラント（tau_brake 1.0）</text>
+<text x="600.0" y="157.0" text-anchor="middle" font-size="13">毎回ランダムなシナリオ。報酬＝収益</text>
+<rect x="20" y="250" width="220" height="90" rx="8" fill="#ffffff" stroke="#6b7a90" stroke-width="1.5"/>
+<text x="130.0" y="282.0" text-anchor="middle" font-size="14" font-weight="bold">評価用の環境</text>
+<text x="130.0" y="300.0" text-anchor="middle" font-size="13">250ステップごとに</text>
+<text x="130.0" y="318.0" text-anchor="middle" font-size="13">20通りのシナリオで測る</text>
+<rect x="330" y="250" width="290" height="90" rx="8" fill="#fff6e5" stroke="#c98a14" stroke-width="1.5"/>
+<text x="475.0" y="282.0" text-anchor="middle" font-size="14" font-weight="bold">比べる（compare_gains.py）</text>
+<text x="475.0" y="300.0" text-anchor="middle" font-size="13">2つの重みの収益と6-3の指標</text>
+<text x="475.0" y="318.0" text-anchor="middle" font-size="13">既定・格子の最良・SAC</text>
+<rect x="700" y="250" width="180" height="90" rx="8" fill="#ffffff" stroke="#6b7a90" stroke-width="1.5"/>
+<text x="790.0" y="282.0" text-anchor="middle" font-size="14" font-weight="bold">格子の探索</text>
+<text x="790.0" y="300.0" text-anchor="middle" font-size="13">grid_search.py</text>
+<text x="790.0" y="318.0" text-anchor="middle" font-size="13">255組×20シナリオ</text>
+<text x="285" y="78" text-anchor="middle" font-size="12">kp・ki</text>
+<text x="285" y="163" text-anchor="middle" font-size="12">報酬</text>
+<text x="140" y="222" text-anchor="start" font-size="12">学習した方策</text>
+</g>
+</svg>
