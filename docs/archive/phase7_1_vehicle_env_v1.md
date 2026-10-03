@@ -1,9 +1,11 @@
-# フェーズ7-1 手順書: 車両の環境を作る（PI制御のゲインを選ぶ環境）
+# フェーズ7-1 手順書: 車両の環境を作る（PI制御のゲインを選ぶ環境）（没案・旧版）
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ7の7-1（[`docs/idea_origin.md`](idea_origin.md) ステップ6）に対応する。フェーズ5-1の車両のプラントと、フェーズ5-2のPI制御を、Gymnasiumの環境として包む。エージェントは、決めた間隔ごとにPI制御のゲイン（`kp`・`ki`）を選び、環境は追従の良し悪しを報酬として返す。この冊では、環境を作ってSB3の `check_env` で点検し、ゲインを固定した方策やでたらめな方策で動かして、報酬の性質を確かめるところまでを扱う。強化学習でゲインを学ばせるのは、次の7-2である。
+> **没案（2026-10-03）**: この冊は、フェーズ7の最初の版である。目標速度の階段が1通りに決まっていたため、既定のゲインがほぼ最良になり、強化学習でゲインを調整する意味が収益に表れにくかった。そこで、目標速度をランダムに変えるシナリオで、フェーズ7-1から作り直すことにした（経緯は [`docs/qa_log.md`](../qa_log.md) の2026-10-03の行）。記録として残しているもので、読む順番には含まない。リンク先の他の冊は、この冊を作った時点から変わっていることがある。
+
+[`docs/learning_plan.md`](../learning_plan.md) フェーズ7の7-1（[`docs/idea_origin.md`](../idea_origin.md) ステップ6）に対応する。フェーズ5-1の車両のプラントと、フェーズ5-2のPI制御を、Gymnasiumの環境として包む。エージェントは、決めた間隔ごとにPI制御のゲイン（`kp`・`ki`）を選び、環境は追従の良し悪しを報酬として返す。この冊では、環境を作ってSB3の `check_env` で点検し、ゲインを固定した方策やでたらめな方策で動かして、報酬の性質を確かめるところまでを扱う。強化学習でゲインを学ばせるのは、次の7-2である。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（学習はROS2を使わず、ワークスペースのコードだけを借りる）
-- 前提: フェーズ7-0（[`docs/phase7_0_rl_intro.md`](phase7_0_rl_intro.md)）。フェーズ6-3（[`docs/phase6_3_metrics.md`](phase6_3_metrics.md)）までを終え、`~/ros2_ws` の `learn_py` に、5-1の `vehicle_model.py`・5-2の `pi_control.py`・6-3の `metrics.py` があり、ビルドしてあること
+- 前提: フェーズ7-0（[`docs/phase7_0_rl_intro.md`](../phase7_0_rl_intro.md)）。フェーズ6-3（[`docs/phase6_3_metrics.md`](../phase6_3_metrics.md)）までを終え、`~/ros2_ws` の `learn_py` に、5-1の `vehicle_model.py`・5-2の `pi_control.py`・6-3の `metrics.py` があり、ビルドしてあること
 - 所要目安: 2コマ
 - 言語: Python（ROS2のノードは書かない）
 
@@ -11,7 +13,7 @@
 
 > **進め方**: 1節で全体像を見て、2節で環境の設計（何を観測し、何を選ばせ、何を報酬にするか）を決める。3節で、ワークスペースのコードを仮想環境から読み込めるようにする。4節で環境のクラスを書き、5節で点検して動かす。サンプルは学習の手がかりとして最小限に書いたもので、公式の文書の転載ではない。Gymnasiumの環境の決まりごとは、公式の文書（Create a Custom Environment）を自分の言葉でまとめた。
 
-> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。**期待する結果は、筆者の環境（2026-10-02。SB3 2.9.0・Gymnasium 1.3.0。導入は [`docs/setup_rl_sb3.md`](setup_rl_sb3.md)）で、各スクリプトを実際に実行した表示**である。作成時は、ワークスペースをビルドする代わりに、5-1・5-2・6-3の手順書のコードと同じ3つのファイルを置いたフォルダを、環境変数 `PYTHONPATH` に加えて読み込んだ（3節の `source` が行うのと同じ仕組み）。報酬と指標の値は、同じ版なら何度実行しても同じになる。この冊の5-3節の学習の途中経過の表は、PCとライブラリの版によって変わることがあり、同じPCと同じ版なら `rollout/`・`train/` の値は同じになるが、`time/` の行（かかった時間）は実行ごとに変わる。
+> **実行環境が無くても読めるように**: 実行する手順の直後には「期待する結果」として、表示される内容の例とその読み方を載せている。**期待する結果は、筆者の環境（2026-10-02。SB3 2.9.0・Gymnasium 1.3.0。導入は [`docs/setup_rl_sb3.md`](../setup_rl_sb3.md)）で、各スクリプトを実際に実行した表示**である。作成時は、ワークスペースをビルドする代わりに、5-1・5-2・6-3の手順書のコードと同じ3つのファイルを置いたフォルダを、環境変数 `PYTHONPATH` に加えて読み込んだ（3節の `source` が行うのと同じ仕組み）。報酬と指標の値は、同じ版なら何度実行しても同じになる。この冊の5-3節の学習の途中経過の表は、PCとライブラリの版によって変わることがあり、同じPCと同じ版なら `rollout/`・`train/` の値は同じになるが、`time/` の行（かかった時間）は実行ごとに変わる。
 
 ## 0. 学習目標と完了条件
 
@@ -28,7 +30,7 @@
 
 エージェントに試行錯誤させるには、まず「試す場所」が要る。フェーズ7-0の振り子では、Gymnasiumが環境を用意してくれていた。車両では、自分で環境を作る。と言っても、中身を一から書くわけではない。プラントの計算（5-1の `VehicleModel`）も、PI制御の計算（5-2の `PIController`）も、ROS2を使わないクラスとしてすでにある。この冊では、それらを「エージェントが行動を選び、環境が観測と報酬を返す」という強化学習の形に包む。
 
-![エージェントが1秒ごとにゲイン（kp・ki）を選び、車両の環境の中では、PI制御（5-2）が0.02秒ごと、プラント（5-1）が0.01秒ごとに進む。環境は観測4つと報酬を返し、残した記録は6-3の指標の計算に渡せる](img/phase7_1_env.svg)
+![エージェントが1秒ごとにゲイン（kp・ki）を選び、車両の環境の中では、PI制御（5-2）が0.02秒ごと、プラント（5-1）が0.01秒ごとに進む。環境は観測4つと報酬を返し、残した記録は6-3の指標の計算に渡せる](img/phase7_1_env_v1.svg)
 
 <details>
 <summary>同じ図（mermaid版）</summary>
@@ -152,7 +154,7 @@ $$
 
 環境は、5-1の `vehicle_model.py`、5-2の `pi_control.py`、6-3の `metrics.py` を、`learn_py` パッケージから読み込む。この3つは `rclpy` を使わないので、ROS2のノードを起動しなくても、Pythonの普通のモジュールとして読み込める。ROS2の一式（5-3・5-4）と同じファイルを使うので、7-2以降で学んだゲインをROS2の一式で確かめるときに、計算の食い違いが起きない。
 
-`learn_py` を読み込めるようにするのは、ワークスペースの `install/setup.bash` である。`source` すると、環境変数 `PYTHONPATH`（Pythonがモジュールを探す場所の一覧）に、ワークスペースのPythonのパッケージの場所が加わる。仮想環境を有効にしても `PYTHONPATH` は残るので、仮想環境のPythonからも `learn_py` が見える（[強化学習の環境構築の5節](setup_rl_sb3.md)）。
+`learn_py` を読み込めるようにするのは、ワークスペースの `install/setup.bash` である。`source` すると、環境変数 `PYTHONPATH`（Pythonがモジュールを探す場所の一覧）に、ワークスペースのPythonのパッケージの場所が加わる。仮想環境を有効にしても `PYTHONPATH` は残るので、仮想環境のPythonからも `learn_py` が見える（[強化学習の環境構築の5節](../setup_rl_sb3.md)）。
 
 ビルドは、これまでどおり、仮想環境を有効に**していない**ターミナルで行う（環境構築の5節）。5-1・5-2・6-3のファイルをビルド済みなら、ビルドし直す必要はない。強化学習のスクリプトを動かすターミナルでは、次のように準備する。
 
@@ -176,7 +178,7 @@ learn_py: OK
 
 ## 4. 環境のクラス（`vehicle_env.py`）
 
-ファイル: `~/rl_practice/vehicle_env.py`（ファイルの置き方は [サンプルコードを練習環境に置く方法](howto_place_code.md)）
+ファイル: `~/rl_practice/vehicle_env.py`（ファイルの置き方は [サンプルコードを練習環境に置く方法](../howto_place_code.md)）
 
 ```python
 # 5-1の車両のプラントと5-2のPI制御を、Gymnasiumの環境として包む（ROS2を使わない）。
@@ -551,11 +553,11 @@ Wrapping the env in a DummyVecEnv.
 | `No module named 'vehicle_env'` | `~/rl_practice` で実行しているか（`pwd`）。`vehicle_env.py` が同じフォルダにあるか |
 | `check_env` が、観測が空間に含まれないという誤りを出す | `_observation` で `dtype=np.float32` にしているか、`np.clip` で−5〜5に収めているか |
 | 収益がこの冊の5-1節の期待する結果と違う | `TARGET_STEPS`・`EPISODE_LENGTH`・`overshoot_weight` の値を変えていないか。5-1・5-2の `vehicle_model.py`・`pi_control.py` を、手順書から変えていないか（課題で変えたままになっていないか） |
-| ROS2のノードが、ビルドし直した後に動かなくなった | 仮想環境を有効にしたまま `colcon build` しなかったか（[強化学習の環境構築の5節](setup_rl_sb3.md)） |
+| ROS2のノードが、ビルドし直した後に動かなくなった | 仮想環境を有効にしたまま `colcon build` しなかったか（[強化学習の環境構築の5節](../setup_rl_sb3.md)） |
 
 ## 8. 次へ
 
-次の7-2（[`docs/phase7_2_gain_tuning.md`](phase7_2_gain_tuning.md)）では、この環境でSACにゲインを選ばせて学習させる。エピソードの始めに1組を選ぶ形（`decision_interval=90.0`）で学習させ、強化学習を使わない格子の探索（この冊の5-2節の表を細かくしたもの）の結果や、手で決めた既定のゲインと、収益とフェーズ6-3の指標で比べる。
+次の7-2（[`docs/archive/phase7_2_gain_tuning_v1.md`](phase7_2_gain_tuning_v1.md)）では、この環境でSACにゲインを選ばせて学習させる。エピソードの始めに1組を選ぶ形（`decision_interval=90.0`）で学習させ、強化学習を使わない格子の探索（この冊の5-2節の表を細かくしたもの）の結果や、手で決めた既定のゲインと、収益とフェーズ6-3の指標で比べる。
 
 ## 9. 公式ドキュメント・参考資料
 
@@ -568,4 +570,4 @@ Wrapping the env in a DummyVecEnv.
 - [Stable-Baselines3 — Env Checker](https://stable-baselines3.readthedocs.io/en/master/common/env_checker.html)（`check_env` の引数）
 - [Stable-Baselines3 — Reinforcement Learning Tips and Tricks](https://stable-baselines3.readthedocs.io/en/master/guide/rl_tips.html)（自作の環境の注意。観測と行動の正規化、報酬の設計）
 
-> 出典: 2-1節のGymnasiumの環境の決まりごとと、2-5節の末尾のGymnasiumの時間の扱い、2-2節・2-3節のSB3の勧めは、それぞれの公式の文書を自分の言葉で要約・再構成したもので、逐語の転載ではない。この冊の5-1節の課題1の警告の文面は、SB3（Copyright (c) 2019 Antonin Raffin, MIT License）の `check_env` の表示である（MIT Licenseの全文は [`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)）。この冊のサンプルコード（`vehicle_env.py`・`check_vehicle_env.py`・`gain_landscape.py`・`smoke_sac.py`）は独自に書いたもので、フェーズ5-1・5-2・6-3のサンプルを読み込んで使う。
+> 出典: 2-1節のGymnasiumの環境の決まりごとと、2-5節の末尾のGymnasiumの時間の扱い、2-2節・2-3節のSB3の勧めは、それぞれの公式の文書を自分の言葉で要約・再構成したもので、逐語の転載ではない。この冊の5-1節の課題1の警告の文面は、SB3（Copyright (c) 2019 Antonin Raffin, MIT License）の `check_env` の表示である（MIT Licenseの全文は [`LICENSE-MIT-THIRD-PARTY`](../../LICENSE-MIT-THIRD-PARTY)）。この冊のサンプルコード（`vehicle_env.py`・`check_vehicle_env.py`・`gain_landscape.py`・`smoke_sac.py`）は独自に書いたもので、フェーズ5-1・5-2・6-3のサンプルを読み込んで使う。

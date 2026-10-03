@@ -555,7 +555,7 @@ python watch_pendulum.py
 
 ## 9. 次へ
 
-次の7-1（[`docs/phase7_1_vehicle_env.md`](phase7_1_vehicle_env.md)）では、フェーズ5-1の車両のプラント（`VehicleModel`）とPI制御を、Gymnasiumの環境として包む。Gymnasiumの公式の「Create a Custom Environment」に倣って、観測・行動・報酬を自分で設計し、SB3の `check_env` で点検する。フェーズ6-3の9節で考えた報酬の案（RMSや段ごとの指標）を、ここで実際に使う。
+次の7-1（作り直し中。旧版は没案として [`docs/archive/phase7_1_vehicle_env_v1.md`](archive/phase7_1_vehicle_env_v1.md) に残している）では、フェーズ5-1の車両のプラント（`VehicleModel`）とPI制御を、Gymnasiumの環境として包む。Gymnasiumの公式の「Create a Custom Environment」に倣って、観測・行動・報酬を自分で設計し、SB3の `check_env` で点検する。フェーズ6-3の9節で考えた報酬の案（RMSや段ごとの指標）を、ここで実際に使う。
 
 ## 10. 公式ドキュメント・参考資料
 
