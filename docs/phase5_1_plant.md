@@ -518,7 +518,7 @@ def main(args=None):
 
 依存の追加は要らない。`Float64` の `std_msgs` はフェーズ3-1で、`Twist` の `geometry_msgs` はフェーズ5-0で `package.xml` に足してあり、`rcl_interfaces` は `rclpy` を通じて使える（フェーズ3-3と同じ）。
 
-`ros2_ws/src/learn_py/setup.py` の `entry_points` に2行足す（既存の行はすべて残す）。必須の冊（フェーズ3-1〜3-3と5-0）まで進めた状態なら、次のようになる。
+`ros2_ws/src/learn_py/setup.py` の `entry_points` に2行足す（既存の行はすべて残す）。必須のページ（フェーズ3-1〜3-3と5-0）まで進めた状態なら、次のようになる。
 
 <!-- snippet: py_entry_points_plant -->
 ```python
@@ -540,7 +540,7 @@ def main(args=None):
     },
 ```
 
-並び順や、任意の冊（フェーズ3-4・3-5など）で足した行の有無は、進め方によって違ってよい。既存の行は残して、最後の2行を足す。`vehicle_model.py` は実行ファイルではない（ノードから `import` される部品）ので、登録しない。
+並び順や、任意のページ（フェーズ3-4・3-5など）で足した行の有無は、進め方によって違ってよい。既存の行は残して、最後の2行を足す。`vehicle_model.py` は実行ファイルではない（ノードから `import` される部品）ので、登録しない。
 
 ```bash
 cd ~/ros2_ws

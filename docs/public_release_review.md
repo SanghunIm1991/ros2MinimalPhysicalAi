@@ -3,7 +3,7 @@
 このリポジトリを公開（Public化）する前と、更新が続く間の定期的な点検で使う観点をまとめた。学習者向けの手順書ではなく、リポジトリを保守するための文書である。
 
 - 対象: リポジトリが追跡しているすべてのファイル（`git ls-files`）と、全履歴（すべてのブランチ・コミット）
-- 実施の目安: 手順書を数冊更新したとき、GitHubへpushする前、Public化の直前（直前は全履歴を対象にする）
+- 実施の目安: 手順書をいくつか更新したとき、GitHubへpushする前、Public化の直前（直前は全履歴を対象にする）
 - 観点は3つ: 1節「機密情報の流出」、2節「権利侵害」、3節「リンク先が意図どおりか」
 - 各節は、コマンドで機械的に拾う「機械点検」と、読んで判断する「目視点検」に分けている。機械点検で何も出なくても、目視点検は省かない
 - 結果は、末尾の4節「実施記録」に1行ずつ追記する。指摘と対応の判断は [`docs/qa_log.md`](qa_log.md) にも記録する
@@ -76,7 +76,7 @@ git ls-files | grep -E '^(notes|ws|ros2_ws)/|\.(env|pem|key|tar|vhdx)$'
 | 観点 | 具体例 | 主な置き場所 |
 |---|---|---|
 | 公式ドキュメントの抜粋 | 抜粋した箇所に、帰属表示（出典・ライセンス（CC BY 4.0）へのリンク・改変の有無）が残っているか。MIT Licenseの抜粋には、著作権の表示と全文（`LICENSE-MIT-THIRD-PARTY`）への案内が残っているか。抜粋が必要な範囲に留まり、丸ごとの転載になっていないか | [`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) の手順4、[`docs/setup_rl_sb3.md`](setup_rl_sb3.md) の4節（Stable-Baselines3、MIT）、[`docs/phase7_0_rl_intro.md`](phase7_0_rl_intro.md) の3-1節（Gymnasium、MIT）・4-1節（Stable-Baselines3、MIT） |
-| 各冊の出典注記 | 公式チュートリアルと同等のコマンド・API利用パターンを含む冊に、出典（元にしたものとそのライセンス。公式ドキュメントならCC BY 4.0）と「逐語の転載でない」旨の注記があるか | `docs/phase*.md`、[`docs/interlude_components.md`](interlude_components.md)、[`docs/tips.md`](tips.md)、[`docs/reference_node_class.md`](reference_node_class.md)、[`docs/reference_interfaces.md`](reference_interfaces.md) |
+| 各ページの出典注記 | 公式チュートリアルと同等のコマンド・API利用パターンを含むページに、出典（元にしたものとそのライセンス。公式ドキュメントならCC BY 4.0）と「逐語の転載でない」旨の注記があるか | `docs/phase*.md`、[`docs/interlude_components.md`](interlude_components.md)、[`docs/tips.md`](tips.md)、[`docs/reference_node_class.md`](reference_node_class.md)、[`docs/reference_interfaces.md`](reference_interfaces.md) |
 | 同等の値の明記 | コマンド例の値が公式の例と同等である旨の記述が残っているか | [`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md) |
 | 引用の範囲 | 雛形の `CMakeLists.txt`（Apache 2.0）の各行や、setuptoolsとStable-Baselines3（MIT）の警告文の引用や、型の定義（`ros2 interface show` の表示）が、説明に必要な範囲に留まり、出典があるか | [`docs/tips.md`](tips.md)、[`docs/phase7_1_vehicle_env.md`](phase7_1_vehicle_env.md)・[`docs/archive/phase7_1_vehicle_env_v1.md`](archive/phase7_1_vehicle_env_v1.md)（没案）の5-1節の課題1、[`docs/reference_interfaces.md`](reference_interfaces.md)、[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)（`turtlesim` の型、BSD）、[`docs/phase3_4_services.md`](phase3_4_services.md)・[`docs/phase3_5_actions.md`](phase3_5_actions.md)（`example_interfaces` の型、Apache-2.0） |
 | ソースの解説 | `rclpy`・`rclcpp` のソースを、丸ごと写さず自分の言葉で解説しているか | [`docs/reference_node_class.md`](reference_node_class.md) |
@@ -121,7 +121,7 @@ grep -LE '出典|出どころ|CC BY' docs/phase*.md docs/interlude_components.md
 |---|---|
 | 文書間のリンク | 相対パスのリンク（`[...](phase2_packages.md)` や画像の `img/...svg`・`img/...png`）の先のファイルが実在するか |
 | 参照の書き方 | 他の文書への参照が、パスを `` ` `` で囲むだけでなくリンクになっているか（GitHubで読む前提のため） |
-| 読む順の案内 | 各冊の終盤の「次へ」のリンクが、[`docs/learning_plan.md`](learning_plan.md) の「手順書一覧」の順と合っているか |
+| 読む順の案内 | 各ページの終盤の「次へ」のリンクが、[`docs/learning_plan.md`](learning_plan.md) の「手順書一覧」の順と合っているか |
 | 節の参照 | 本文の「N節」「N-M節の④」などの参照が、現在の見出しの番号と中身に合っているか（節の追加・繰り下げの後は特に） |
 | 外部リンクの実在 | 外部のURLがリンク切れになっていないか |
 | 外部リンクの中身 | リンク先がJazzy版に固定されているか、リンクの文言と中身が合っているか |

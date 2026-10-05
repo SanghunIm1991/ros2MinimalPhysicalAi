@@ -441,7 +441,7 @@ def main(args=None):
 
 ### 5-3. 実行ファイルとして登録し、ビルドする
 
-`ros2_ws/src/learn_py/setup.py` の `entry_points` に1行足す（既存の行はすべて残す）。フェーズ5-1まで進めた状態なら、次のようになる（並び順や、任意の冊で足した行の有無は、進め方によって違ってよい）。
+`ros2_ws/src/learn_py/setup.py` の `entry_points` に1行足す（既存の行はすべて残す）。フェーズ5-1まで進めた状態なら、次のようになる（並び順や、任意のページで足した行の有無は、進め方によって違ってよい）。
 
 <!-- snippet: py_entry_points_pi -->
 ```python

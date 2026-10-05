@@ -716,7 +716,7 @@ ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/ped
 
 フェーズ5-0〜5-4で、次のものを作り、つないだ。
 
-| 冊 | 作ったもの | 役割 |
+| ページ | 作ったもの | 役割 |
 |---|---|---|
 | 5-0 | `gz_drive` | Gazeboの車両をROS2から動かす入口 |
 | 5-1 | `VehicleModel`、`vehicle_plant`、`gz_display` | 車両の数理モデルと、その速度をGazeboで見せる表示器 |
@@ -726,7 +726,7 @@ ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/ped
 
 学習計画のフェーズ5の完了条件のうち、「ステップ入力の目標速度に追従する」はフェーズ5-3の4-1節のログで、「アクセル/ブレーキの非対称性の影響をグラフで説明する」は同じく4-3節のグラフの読み方で、「同じゲインで、自作のプラントとGazeboの物理の追従の違いを説明する」はこの手順書の7節で確かめた。
 
-冊をまたいで通っている考え方は、次の3つである。
+ページをまたいで通っている考え方は、次の3つである。
 
 - **式をROS2から分ける**: 車両のモデル（5-1）、PI制御（5-2）、アクチュエータ（5-4）は、どれもROS2を使わないクラスにして、ノードはそれを包むだけにした。式はROS2なしで確かめられ、閉ループの計算（`closed_loop_sim.py`）にもそのまま使える。
 - **トピックの名前・型・単位で部品をつなぐ**: `/plant/pedal`（−1〜1）と `/plant/velocity`（実車のm/s）をそろえたので、プラントを `vehicle_plant` から `gz_plant` とGazeboに差し替えても、`pi_controller` は変えずに済んだ。
