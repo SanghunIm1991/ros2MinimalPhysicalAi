@@ -61,7 +61,7 @@ flowchart LR
 `/plant/velocity` が届くたびに、「前に届いてから今回までの時間 $\Delta t$」×「今回の速度 $v$」を足していく。
 
 $$
-d \leftarrow d + v \, \Delta t
+d \leftarrow d + v \Delta t
 $$
 
 $\leftarrow$ は、「右辺を計算して、左辺の $d$ に入れ直す」という意味である（フェーズ5-1の2-4節の $x_{k+1} = x_k + \dots$ と同じことを、1つの変数を上書きしていく形で書いた）。
