@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 390" width="1060" height="390" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: 強化学習の環境（GazeboPedalEnv）が、中に持つROS2のノードから、車輪のトルクのトピックとワールドの操作のサービスをブリッジ経由でGazeboへ送り、オドメトリを受け取る。Gazeboは画面なし・一時停止で起動し、サービスで指示された回数だけ物理を進める。環境は0.02秒ずつ進め、オドメトリの時刻で進み終わりを確かめる。5節の点検のスクリプトと7-4のSACは、環境にペダルを渡し、観測と報酬を受け取る">
+<title>図: 強化学習の環境（GazeboPedalEnv）が、中に持つROS2のノードから、車輪のトルクのトピックとワールドの操作のサービスをブリッジ経由でGazeboへ送り、オドメトリを受け取る。Gazeboは画面なし・一時停止で起動し、サービスで指示された回数だけ物理を進める。環境は0.02秒ずつ進め、オドメトリの時刻で進み終わりを確かめる。5節の点検のスクリプトと7-4のSACは、環境にペダルを渡し、観測と報酬を受け取る</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker><marker id="s" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="1060" height="390" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="300" y="45" width="280" height="185" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="810" y="45" width="235" height="325" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="20" y="75" width="170" height="110" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="315" y="105" width="250" height="105" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5"/>
+<rect x="830" y="95" width="200" height="120" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
+<rect x="830" y="265" width="200" height="90" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
+<path d="M190,110 L300,110" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M300,155 L190,155" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M565,125 L830,125" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M565,160 L830,160" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M830,195 L565,195" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M930,215 L930,265" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#s)"/>
+<text x="440.0" y="68.0" text-anchor="middle" font-size="13" font-weight="bold">強化学習の環境 GazeboPedalEnv</text>
+<text x="440.0" y="86.0" text-anchor="middle" font-size="12">（gz_pedal_env.py）</text>
+<text x="927.5" y="68.0" text-anchor="middle" font-size="13" font-weight="bold">gazebo_rl.launch.py</text>
+<text x="927.5" y="86.0" text-anchor="middle" font-size="12">（learn_bringup）</text>
+<text x="105.0" y="108.0" text-anchor="middle" font-size="14" font-weight="bold">点検のスクリプト</text>
+<text x="105.0" y="128.0" text-anchor="middle" font-size="13">（5節）</text>
+<text x="105.0" y="148.0" text-anchor="middle" font-size="12">check_gz_env.py</text>
+<text x="105.0" y="168.0" text-anchor="middle" font-size="13">7-4ではSAC</text>
+<text x="440.0" y="135.0" text-anchor="middle" font-size="13" font-weight="bold">ROS2のノード gz_pedal_env</text>
+<text x="440.0" y="160.0" text-anchor="middle" font-size="13">0.02秒ずつ進め、</text>
+<text x="440.0" y="180.0" text-anchor="middle" font-size="13">オドメトリの時刻で待つ</text>
+<text x="930.0" y="160.0" text-anchor="middle" font-size="14" font-weight="bold">parameter_bridge</text>
+<text x="930.0" y="288.0" text-anchor="middle" font-size="14" font-weight="bold">gz sim</text>
+<text x="930.0" y="306.0" text-anchor="middle" font-size="12">（画面なし・一時停止）</text>
+<text x="930.0" y="325.0" text-anchor="middle" font-size="12">vehicle_rl.sdf</text>
+<text x="930.0" y="344.0" text-anchor="middle" font-size="13">車輪の関節に減衰</text>
+<text x="245.0" y="88.0" text-anchor="middle" font-size="11.5">ペダル</text>
+<text x="245.0" y="102.0" text-anchor="middle" font-size="11.5">（0.1秒ごと）</text>
+<text x="245.0" y="172.0" text-anchor="middle" font-size="11.5">観測・報酬</text>
+<text x="695.0" y="119.0" text-anchor="middle" font-size="11.5">車輪のトルク（Float64）</text>
+<text x="695.0" y="154.0" text-anchor="middle" font-size="11.5">ワールドの操作（ControlWorld）</text>
+<text x="695.0" y="189.0" text-anchor="middle" font-size="11.5">オドメトリ（Odometry）</text>
+</g>
+</svg>

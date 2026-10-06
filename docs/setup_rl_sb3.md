@@ -8,7 +8,7 @@
 
 > **この手順書の位置づけ（暫定）**: フェーズ7は作成中で、構成を大きく改める可能性がある。導入するライブラリと版も、フェーズ7の改定に合わせて見直すことがある。
 
-> **実行環境が無くても読めるように**: 確認のコマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。**期待する結果は、筆者の環境（2026-10-02に導入）で実際に表示されたもの**である。ただし、画面の記録が残っていなかった分（3節のダウンロードの行のファイル名と、2節のpipの更新・4節の導入の `Successfully installed` の行）は、仮想環境に導入されたものから書き起こしている（ダウンロードの行は、導入されたPyTorchの記録にある版と対応する環境の名前から。`Successfully installed` の行は、導入された版の一覧からの抜粋）。版の数字・所要時間・ディスクの大きさは、導入した時期と環境によって異なる。
+> **実行環境が無くても読めるように**: 確認のコマンドの直後には「期待する結果」として、表示される内容の例とその読み方を載せている。**期待する結果は、筆者の環境（2026-10-02に導入）で実際に表示されたもの**である。ただし、画面の記録が残っていなかった分（3節のダウンロードの行のファイル名と、2節のpipの更新・4節の導入の `Successfully installed` の行）は、仮想環境に導入されたものから書き起こしている（ダウンロードの行は、導入されたPyTorchの記録にある版と対応する環境の名前から。`Successfully installed` の行は、導入された版の一覧からの抜粋）。版の数字・所要時間・ディスクの大きさは、導入した時期と環境によって異なる。7節（2026-10-06に追加）の表示の出どころは、次のとおり。`import rclpy` の失敗は、筆者の仮想環境で実際に実行した表示。`pip install pyyaml==6.0.3` の `Successfully installed` の行は、PyTorch等を入れていない使い捨ての仮想環境に入れたときの表示で、その仮想環境の `site-packages` を `PYTHONPATH` に足して、筆者の仮想環境のPythonで `rclpy: OK` と表示されることを確かめた（PyTorchを入れていない仮想環境では、`launch-ros ... requires setuptools` という `ERROR` の行も出たが、3節で入れるPyTorchが `setuptools` を一緒に入れるので、手順書のとおりの仮想環境では出ない見込み）。
 
 ## 目的・ゴール
 
@@ -19,6 +19,7 @@ ROS2のシステムのPython（aptで入ったもの）を汚さずに、強化�
 1. 仮想環境 `~/rl_venv` を有効にすると、プロンプトの先頭に `(rl_venv)` が付く（2節）
 2. PyTorchがCPU版で入り、`torch.cuda.is_available()` が `False` を返す（3節）
 3. SB3・sb3-contrib・Gymnasiumの版が表示され、`Pendulum-v1` の環境を作れる（4節）
+4. （フェーズ7-3の前に）仮想環境から、ROS2の `rclpy` を読み込める（7節）
 
 ## 注意
 
@@ -124,7 +125,7 @@ Successfully installed MarkupSafe-3.0.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3
 > launch-ros 0.26.12 requires pyyaml, which is not installed.
 > ```
 >
-> これは導入の失敗ではなく、無視してよい。`~/.bashrc` でROS2を読み込んでいると、環境変数 `PYTHONPATH` にROS2のPythonのパッケージの場所（`/opt/ros/jazzy/lib/python3.12/site-packages`）が入り、仮想環境のpipにもROS2の `launch_ros` が見える。`launch_ros` が必要とするpyyamlは、aptでシステムのPythonの側（`python3-yaml`）に入っているが、仮想環境からはシステムの側のパッケージが見えない。そのためpipは「pyyamlが無い」と報告する。仮想環境の中ではROS2のlaunchを使わないので、学習には影響しない。ROS2のコマンドはシステムのPythonで動くので、こちらも影響を受けない。この表示を消すために、仮想環境へpyyamlを入れる必要はない（入れるパッケージは、手順書のものに留める）。版の数字（`0.26.12`）は、ROS2の更新の状況で違うことがある。
+> これは導入の失敗ではなく、無視してよい。`~/.bashrc` でROS2を読み込んでいると、環境変数 `PYTHONPATH` にROS2のPythonのパッケージの場所（`/opt/ros/jazzy/lib/python3.12/site-packages`）が入り、仮想環境のpipにもROS2の `launch_ros` が見える。`launch_ros` が必要とするpyyamlは、aptでシステムのPythonの側（`python3-yaml`）に入っているが、仮想環境からはシステムの側のパッケージが見えない。そのためpipは「pyyamlが無い」と報告する。仮想環境の中ではROS2のlaunchを使わないので、学習には影響しない。ROS2のコマンドはシステムのPythonで動くので、こちらも影響を受けない。フェーズ7-0〜7-2では、このまま進めてよい。フェーズ7-3からは、仮想環境の中でROS2の `rclpy` を使うので、7節でpyyamlを入れる（入れた後は、この表示は出なくなる）。版の数字（`0.26.12`）は、ROS2の更新の状況で違うことがある。
 
 入ったことを確かめる。
 
@@ -140,7 +141,7 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 
 版の末尾に `+cpu` が付き、`torch.cuda.is_available()` が `False`（GPUを使わない）になっていれば成功である。
 
-> **GPUのあるPCで使う場合**: NVIDIAのGPUを積んだPCでは、PyTorchの公式の案内で、そのPCのCUDAの版に合う配布元を選んで入れる。フェーズ7の前半（7-0〜7-3の予定）の規模では、CPU版で足りる。GPUが効いてくるのは、二足歩行のような大きな学習（7-4の予定）からである。
+> **GPUのあるPCで使う場合**: NVIDIAのGPUを積んだPCでは、PyTorchの公式の案内で、そのPCのCUDAの版に合う配布元を選んで入れる。フェーズ7の7-0〜7-5（予定を含む）の規模では、CPU版で足りる。GPUが効いてくるのは、二足歩行のような大きな学習（7-6の予定）からである。
 
 ### 4. SB3・sb3-contrib・Gymnasiumを入れる
 
@@ -203,7 +204,7 @@ $ du -sh ~/rl_venv
 
 - **`colcon build` は、仮想環境を無効にしたターミナルで行う。** 仮想環境を有効にしたままビルドすると、ノードの起動用のスクリプトが仮想環境のPythonを指すことがあり、ROS2のノードの動きが環境によって変わる。
 - **学習のスクリプトは、仮想環境を有効にしたターミナルで動かす。** `~/.bashrc` でROS2を読み込んでいても、仮想環境の中から強化学習のライブラリを使える（ROS2のPythonのパッケージのパスには、SB3が使うライブラリと名前がぶつかるものは無い）。ただし、環境変数 `PYTHONPATH` に入っている場所（ROS2の `/opt/ros/jazzy/...` や、`source` したワークスペースの `install/`）は、仮想環境のパッケージより先に探される。ワークスペースで作ったパッケージが、SB3などと同じ名前にならないようにする。
-- 学習した制御器をROS2のノードで動かすとき（フェーズ7-3の後編の予定）は、ノード側で仮想環境を要らなくする方法（学習した重みをnumpyだけで計算する）を扱う予定である。
+- 学習した制御器をROS2のノードで動かすとき（フェーズ7-5）は、ノード側で仮想環境を要らなくする方法（学習した重みをnumpyだけで計算する）を扱う予定である。
 
 ### 6. 作り直すとき・消すとき
 
@@ -217,6 +218,52 @@ rm -rf ~/rl_venv
 
 **期待する結果**: 何も表示されない。`deactivate` はプロンプトの `(rl_venv)` を消す。`rm -rf` は確認なしに消すので、実行する前に消す対象（`~/rl_venv`）を見直す。ROS2やワークスペースには影響しない。
 
+### 7. ROS2のPythonのライブラリを使う準備（フェーズ7-3の前に）
+
+フェーズ7-3からは、学習の環境の中で、ROS2のPythonのライブラリ `rclpy` を使い、Gazeboとトピックやサービスでやりとりする。ROS2を読み込んだターミナル（`source /opt/ros/jazzy/setup.bash` 済み）では、`rclpy` そのものは、環境変数 `PYTHONPATH` に入ったROS2の場所（`/opt/ros/jazzy/lib/python3.12/site-packages`）から見つかる。ところが、`rclpy` が使うライブラリのうち、YAMLの読み書きをする **PyYAML**（`import yaml`）は、aptでシステムのPythonの側に入っていて、仮想環境の中からは見えない（3節の注意書きと同じ理由）。仮想環境の中にあるのは、自分で入れたものだけだからである。
+
+まず、仮想環境を有効にしたターミナルで、`rclpy` を読み込めないことを確かめる。
+
+```bash
+python -c "import rclpy"
+```
+
+**期待する結果**（抜粋。途中の行は省いた）:
+
+```text
+Traceback (most recent call last):
+  ...
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/parameter.py", line 27, in <module>
+    import yaml
+ModuleNotFoundError: No module named 'yaml'
+```
+
+`rclpy` は見つかっているが（`/opt/ros/jazzy/...` のファイルが読まれている）、その中の `import yaml` で止まっている。足りないのは `yaml` だけなので、PyYAMLを仮想環境に入れる。4節と同じく、この手順書を作った時点（2026-10-06）の最新版に固定する。
+
+```bash
+pip install pyyaml==6.0.3
+
+python -c "import rclpy; from nav_msgs.msg import Odometry; print('rclpy: OK')"
+```
+
+**期待する結果**:
+
+```text
+$ pip install pyyaml==6.0.3
+...
+Successfully installed pyyaml-6.0.3
+$ python -c "import rclpy; ..."
+rclpy: OK
+```
+
+`Successfully installed pyyaml-6.0.3` の後、`rclpy: OK` と表示されれば、仮想環境のPythonから、ROS2のライブラリとメッセージの型（ここではオドメトリの [`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg)）を使える。
+
+> **補足: 仮想環境とROS2のライブラリの組み合わせ方**
+>
+> - **一般的な方法**: ROS2の公式の文書（Using Python Packages with ROS 2）は、特別なオプションを付けずに仮想環境を作り、要るパッケージを仮想環境に `pip` で入れる形を示している。注意として挙げているのは、ROS2を作ったのと同じPython（Ubuntu 24.04では、システムの `python3`）で仮想環境を作ることで、2節の作り方はこれを満たしている。
+> - **ほかの方法との違い**: 仮想環境を作るときに `--system-site-packages` を付けると、aptで入ったPythonのパッケージもすべて見えるようになり、PyYAMLを入れなくても `rclpy` を読める。その代わり、仮想環境とシステムのパッケージが混ざり、どちらの版が読み込まれたのかが分かりにくくなる（たとえばnumpyは、仮想環境に入る版とaptの版で、大きく違う）。この教材では、「仮想環境の中にあるのは、自分で入れたものだけ」という形を保つため、足りないものを1つずつ入れる。
+> - **実務の目安**: 仮想環境で使うパッケージを `pip freeze` で書き出しておくと、別のPCやコンテナで同じ環境を作り直せる。仮想環境の中でROS2のlaunchなど、ほかのライブラリも使うようになったら、足りないと言われたものを同じように足す。
+
 ## つまずきやすい点
 
 | 症状 | 確認すること |
@@ -224,7 +271,9 @@ rm -rf ~/rl_venv
 | `python3 -m venv` で `ensurepip is not available` と出る | 1節の `python3-venv` を入れたか |
 | `pip install` で `externally-managed-environment` と出る | 仮想環境を有効にしたか（プロンプトに `(rl_venv)` があるか）。新しいターミナルでは、有効にし直す |
 | 導入に長い時間がかかり、`nvidia-...` という名前のパッケージが次々にダウンロードされる | 3節より先にSB3を入れて、GPU向けのPyTorchが選ばれている。`Ctrl+C` で止め、6節で消して作り直す |
-| `pip install` の最後に `launch-ros ... requires pyyaml, which is not installed.` という `ERROR` が出る | `Successfully installed` の行が出ていれば、導入は成功している。ROS2を読み込んだターミナルでは出ることがあり、無視してよい（3節の注意書き） |
+| `pip install` の最後に `launch-ros ... requires pyyaml, which is not installed.` という `ERROR` が出る | `Successfully installed` の行が出ていれば、導入は成功している。ROS2を読み込んだターミナルで出ることがあり、無視してよい（3節の注意書き）。7節でPyYAMLを入れた後は、出なくなる |
+| `import rclpy` で `No module named 'yaml'` と出る | 7節のPyYAMLを、仮想環境を有効にしたターミナルで入れたか |
+| `import rclpy` で `No module named 'rclpy'` と出る | ROS2を読み込んだターミナルか（`source /opt/ros/jazzy/setup.bash`。`~/.bashrc` で読み込んでいれば不要） |
 | `import gymnasium` で `No module named 'gymnasium'` と出る | 仮想環境を有効にしたか。`which python` が `~/rl_venv/bin/python` を指しているか |
 | ROS2のノードが、ビルドし直した後に動かなくなった | 仮想環境を有効にしたまま `colcon build` しなかったか（5節）。`deactivate` してから、ワークスペースの `build/`・`install/` を消してビルドし直す |
 
@@ -238,6 +287,8 @@ rm -rf ~/rl_venv
 - [Gymnasium Documentation — Basic Usage](https://gymnasium.farama.org/introduction/basic_usage/)（公式・英語）
 - [PyTorch — Get Started](https://pytorch.org/get-started/locally/)（公式・英語）
 - [venv — Creation of virtual environments](https://docs.python.org/3/library/venv.html)（Pythonの公式の文書・英語）
+- [Using Python Packages with ROS 2](https://github.com/ros2/ros2_documentation/blob/jazzy/source/How-To-Guides/Using-Python-Packages.rst)（ROS 2の公式の文書の原稿（jazzy）・英語。7節の補足）
+- [PyYAML（PyPI）](https://pypi.org/project/PyYAML/)（7節で入れるパッケージ。MIT License）
 - PyPI: [stable-baselines3](https://pypi.org/project/stable-baselines3/)・[sb3-contrib](https://pypi.org/project/sb3-contrib/)・[gymnasium](https://pypi.org/project/gymnasium/)
 
 > 出典: 4節の `pip install 'stable-baselines3[extra]'` と `pip install stable-baselines3` は、Stable-Baselines3の公式の文書（Installation）からの抜粋である（Copyright (c) 2019 Antonin Raffin, MIT License）。4節の `gymnasium[classic-control]` を入れる案内は、Gymnasiumの公式の文書（Basic Usage）に基づく（Copyright (c) 2016 OpenAI, Copyright (c) 2022 Farama Foundation, MIT License）。3節のコマンドは、PyTorchの公式の案内と同等の形である。MIT Licenseの全文は [`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)。説明の文章は、公式の文書を参考に自分の言葉で書いたもの。
