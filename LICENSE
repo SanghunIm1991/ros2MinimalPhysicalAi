@@ -2,11 +2,11 @@ ros2MinimalPhysicalAi
 Copyright (c) 2026 SanghunIm1991
 https://github.com/SanghunIm1991/ros2MinimalPhysicalAi
 
-このリポジトリは、2つのライセンスで公開しています。どちらも、商用を含めて自由に
+このリポジトリは、3つのライセンスで公開しています。どれも、商用を含めて自由に
 使い、改変し、再配布できます。条件は、作者（SanghunIm1991）とライセンスを
 表示することです。
 
-This repository is released under two licenses. Both allow free use,
+This repository is released under three licenses. All allow free use,
 modification, and redistribution, including commercial use, provided that
 the author (SanghunIm1991) and the license are credited.
 
@@ -45,8 +45,23 @@ the author (SanghunIm1991) and the license are credited.
    改変した場合は、その旨も書く。 / Indicate if changes were made.
 
 
-3. 第三者の著作物（上の1・2の対象外）
-   Third-party material (not covered by sections 1 and 2)
+3. 学習済みの重み: MIT License
+   Trained weights: MIT License
+
+   対象: `docs/models/` の学習済みのNNの重み（`.npz`。docs/phase7_4_gz_nn_policy.md
+   の手順で、作者が Stable-Baselines3 を使って学習させたもの）。学習に使った
+   Stable-Baselines3 と同じライセンスにした。
+
+   Scope: the trained neural-network weights in `docs/models/` (`.npz`),
+   trained by the author with Stable-Baselines3 following
+   docs/phase7_4_gz_nn_policy.md. Licensed under the same license as
+   Stable-Baselines3.
+
+   全文 / Full text: LICENSE-MIT（このリポジトリの直下）
+
+
+4. 第三者の著作物（上の1〜3の対象外）
+   Third-party material (not covered by sections 1 to 3)
 
    次の部分は、それぞれの権利者のもので、元のライセンスに従う。各文書の該当箇所に
    出典を書いている。

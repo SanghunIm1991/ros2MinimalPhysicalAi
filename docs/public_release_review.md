@@ -23,6 +23,7 @@
 | PCの利用状況 | PCの具体的な用途など、個人の生活を推測させる記述、スペックの制約、グローバルの安全ルールへの言及 | [`docs/idea_origin.md`](idea_origin.md)、[`CLAUDE.md`](../CLAUDE.md) |
 | 追跡してはいけないもの | 個人メモ（`notes/`）、練習用のワークスペース（`ros2_ws/`。作者の練習環境の `ws/` も）、`.env`・鍵ファイル、WSLのエクスポート | `.gitignore` と `git ls-files` |
 | 画像の写り込み | スクリーンショットや写真に、画面上の個人情報・顔・書類が写っていないか（現在、追跡している画像は、自作のSVGと、Gazeboのウィンドウだけを撮った `phase5_0_gazebo.png`（2026-09-28に確認済み）の1枚） | `docs/img/` |
+| 学習済みの重み | `.npz`（zipの形）の中身が、数の配列（`.npy`）だけで、pickle（読み込むときに任意のコードを実行しうる形）を含まないか。`grep` では中身を見られないので、下の機械点検のコマンドで見る（2026-10-08に追加） | `docs/models/` |
 
 ### 1-2. 機械点検
 
@@ -60,7 +61,13 @@ git grep -nIE '/home/[a-z][a-z0-9_-]*/|[A-Za-z]:\\+Users\\+|/mnt/c/Users/'
 git ls-files | grep -E '^(notes|ws|ros2_ws)/|\.(env|pem|key|tar|vhdx)$'
 ```
 
-**見方**: メールアドレスの2つのコマンドと、最後のコマンドは、何も表示されなければ問題ない。認証情報とパスのコマンドは、説明文の中の一般的な語（「パスワードマネージャー」、`/home/<ユーザー名>` のような伏せ字）にも当たるので、1件ずつ読んで、実際の値や実在のユーザー名が書かれていないかを判断する。GitHubのアカウント名は、上の正規表現では拾えないので、アカウント名そのもので `git grep -n` して、出てきた箇所を目視で判断する。`LICENSE`・`README.md`・`CLAUDE.md` の著作権者の表示と、リポジトリのURLの中のアカウント名は、意図して載せているものなので問題ない（[`docs/qa_log.md`](qa_log.md) の過去の行に残っている件は、棚卸しで扱いを決める方針）。
+学習済みの重み（`.npz`）の中の、各配列の名前と、`.npy` のヘッダ（型・形）を一覧する（numpyで読み込まず、zipとして中を見るだけ）。
+
+```bash
+python3 -c "import sys, zipfile; [print(f, n, zipfile.ZipFile(f).read(n)[10:128].split(b'\n')[0].decode().strip()) for f in sys.argv[1:] for n in zipfile.ZipFile(f).namelist()]" docs/models/*.npz
+```
+
+**見方**: メールアドレスの2つのコマンドと、追跡してはいけないもののコマンドは、何も表示されなければ問題ない。重みのコマンドは、各行の名前が `.npy` で終わり、`descr` が `<f4` のような数の型（`|O` はpickleを使う配列なので問題）になっていれば問題ない。認証情報とパスのコマンドは、説明文の中の一般的な語（「パスワードマネージャー」、`/home/<ユーザー名>` のような伏せ字）にも当たるので、1件ずつ読んで、実際の値や実在のユーザー名が書かれていないかを判断する。GitHubのアカウント名は、上の正規表現では拾えないので、アカウント名そのもので `git grep -n` して、出てきた箇所を目視で判断する。`LICENSE`・`README.md`・`CLAUDE.md` の著作権者の表示と、リポジトリのURLの中のアカウント名は、意図して載せているものなので問題ない（[`docs/qa_log.md`](qa_log.md) の過去の行に残っている件は、棚卸しで扱いを決める方針）。
 
 ### 1-3. 目視点検
 
@@ -83,14 +90,14 @@ git ls-files | grep -E '^(notes|ws|ros2_ws)/|\.(env|pem|key|tar|vhdx)$'
 | 図 | `docs/img/` のSVGが自作のもので、第三者の図・ロゴ・埋め込み画像が混ざっていないか。PNGのスクリーンショットは、写っている第三者の画面が `LICENSE` の第三者の一覧に載っているか | `docs/img/` |
 | サンプルコード | 公式チュートリアルや他のリポジトリのコードを、丸ごと転載していないか | 各手順書のコードブロック |
 | 第三者のファイル | データシート・PDF・フォント・画像など、ライセンスが不明なファイルが追跡されていないか | `git ls-files` |
-| リポジトリのライセンス | `LICENSE` の「第三者の著作物」の一覧が最新か（前回以降に、公式ドキュメントの抜粋や、雛形・ツールの出力の引用を足していないか）。サンプルコードが使うパッケージに、コピーレフト（GPL等）のものが加わっていないか | [`LICENSE`](../LICENSE)、[`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)、`README.md` のライセンスの節 |
+| リポジトリのライセンス | `LICENSE` の「第三者の著作物」の一覧が最新か（前回以降に、公式ドキュメントの抜粋や、雛形・ツールの出力の引用を足していないか）。サンプルコードが使うパッケージに、コピーレフト（GPL等）のものが加わっていないか | [`LICENSE`](../LICENSE)、[`LICENSE-MIT`](../LICENSE-MIT)（学習済みの重み）、[`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)、`README.md` のライセンスの節 |
 
 ### 2-2. 機械点検
 
 追跡しているファイルのうち、Markdown・SVG・Gitの設定以外のものを一覧する。
 
 ```bash
-git ls-files | grep -vE '\.(md|svg)$|^\.git(attributes|ignore)$|^LICENSE(-APACHE-2\.0|-MIT-THIRD-PARTY)?$|^docs/img/phase5_0_gazebo\.png$'
+git ls-files | grep -vE '\.(md|svg)$|^\.git(attributes|ignore)$|^LICENSE(-APACHE-2\.0|-MIT(-THIRD-PARTY)?)?$|^docs/img/phase5_0_gazebo\.png$|^docs/models/gz_pedal_w(20|0)\.npz$'
 ```
 
 SVGに、外部の画像や外部へのリンクが埋め込まれていないかを見る。
@@ -105,7 +112,7 @@ git grep -nE '<image|href="https?:' -- 'docs/img/*.svg'
 grep -LE '出典|出どころ|CC BY' docs/phase*.md docs/interlude_*.md docs/tips.md docs/reference_*.md docs/setup_wsl2_ros2.md
 ```
 
-**見方**: 1つ目と2つ目は、何も表示されなければ問題ない（1つ目は、1-1節の表で確認済みのスクリーンショット `docs/img/phase5_0_gazebo.png` を除いている。新しい画像を足したら、写り込みを確かめてから除外に加える）。3つ目で表示された文書は、公式ドキュメント・ソース・記事に由来する内容を含まないかを確かめ、含むなら注記を足す。元にしたものによってライセンスが違う（ROS2の公式ドキュメントはCC BY 4.0、ROS2のソースや雛形はApache 2.0など）ので、注記の有無だけでなく、文面（元にしたもの・ライセンス・逐語の転載でない旨）が合っているかは2-3節で目視する。
+**見方**: 1つ目と2つ目は、何も表示されなければ問題ない（1つ目は、1-1節の表で確認済みのスクリーンショット `docs/img/phase5_0_gazebo.png` と、作者が学習させて1-2節のコマンドで中身を確かめた重み `docs/models/gz_pedal_w20.npz`・`gz_pedal_w0.npz` を除いている。新しい画像や重みを足したら、中身を確かめてから除外に加える）。3つ目で表示された文書は、公式ドキュメント・ソース・記事に由来する内容を含まないかを確かめ、含むなら注記を足す。元にしたものによってライセンスが違う（ROS2の公式ドキュメントはCC BY 4.0、ROS2のソースや雛形はApache 2.0など）ので、注記の有無だけでなく、文面（元にしたもの・ライセンス・逐語の転載でない旨）が合っているかは2-3節で目視する。
 
 ### 2-3. 目視点検
 

@@ -1,23 +1,12 @@
-このファイルは、このリポジトリの手順書に抜粋した、MIT Licenseの第三者の著作物の
-著作権の表示とライセンスの全文である。どの文書のどの部分かは LICENSE の「4. 第三者の
-著作物」に書いている。
-This file contains the copyright notices and the full text of the MIT
-License for third-party material excerpted in the documents of this
-repository. See section 4 of LICENSE for where each excerpt appears.
+ros2MinimalPhysicalAi — trained weights (docs/models/)
+https://github.com/SanghunIm1991/ros2MinimalPhysicalAi
 
-1. Stable-Baselines3（docs/setup_rl_sb3.md・docs/phase7_0_rl_intro.md に抜粋）
-   https://github.com/DLR-RM/stable-baselines3
+このファイルは、docs/models/ の学習済みの重みに適用するライセンスの全文である
+（LICENSE の「3. 学習済みの重み」）。
+This file is the full text of the license for the trained weights in
+docs/models/ (section 3 of LICENSE).
 
-   Copyright (c) 2019 Antonin Raffin
-
-2. Gymnasium（docs/phase7_0_rl_intro.md に抜粋）
-   https://github.com/Farama-Foundation/Gymnasium
-
-   Copyright (c) 2016 OpenAI
-   Copyright (c) 2022 Farama Foundation
-
-上の各著作物に、次のライセンスが適用される。
-The following license applies to each of the works above.
+Copyright (c) 2026 SanghunIm1991
 
 The MIT License
 
