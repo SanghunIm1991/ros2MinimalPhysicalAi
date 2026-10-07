@@ -199,7 +199,8 @@
 | 7-2 | [`docs/phase7_2_gain_tuning.md`](phase7_2_gain_tuning.md) | Python（ROS2は使わず、`learn_py` のコードを読み込む） | 作成中（2026-10-03に作り直した。ブレーキの遅いプラントで、格子の探索（255組×20シナリオ、重み0と20）で改善の余地を確かめ、①既定の設定→②更新の回数を増やす→③重み0で学習、の順に学習させ、2つの重みの収益と6-3の指標で、追従の速さと行き過ぎのトレードオフを比べる。筆者の環境で全スクリプトと課題2つを実行し、期待する結果を確認。`learn_py` は `PYTHONPATH` で読み込んで確認。図（`docs/img/phase7_2_train.svg`。旧版の図の文字を直したもの）の見た目、ユーザーの実機での実行は未確認。旧版は [`docs/archive/phase7_2_gain_tuning_v1.md`](archive/phase7_2_gain_tuning_v1.md)） |
 | 間章（試行錯誤） | [`docs/interlude_trial_and_error.md`](interlude_trial_and_error.md) | なし（読み物） | 作成中（2026-10-03。フェーズ7-1・7-2の作り直しに至った予備の実験と方針の修正、手順書に残らなかった小さな事例を、中級者向けの任意の読み物としてまとめた（ユーザー判断）。図（`docs/img/interlude_trial_and_error.svg`）の見た目は未確認） |
 | 7-3 | [`docs/phase7_3_gazebo_env.md`](phase7_3_gazebo_env.md) | Python（launchもPython形式）＋ワールドファイル | 作成中（2026-10-06。使い捨ての環境で、ワールドの点検とビルド、`ros2 interface show`、画面なしのGazeboでlaunchの起動・サービスでワールドを進めること・環境の点検（`check_env`・ペダル0.5の速度・PI制御の収益と1エピソードの時間）を確かめた。旧版（Pythonの式で学習させる版）は [`docs/archive/phase7_3_pedal_policy_v1.md`](archive/phase7_3_pedal_policy_v1.md)） |
-| 7-4〜7-6 | 着手時に作成 | — | 未作成（構成は暫定。フェーズ7の節） |
+| 7-4 | [`docs/phase7_4_gz_nn_policy.md`](phase7_4_gz_nn_policy.md) | Python | 作成中（2026-10-06。使い捨ての環境で、画面なしのGazeboで②（重み20）を110エピソード学習させ、最後の重みを確かめ用の5つのシナリオでPI制御と比べた。`.npz` の書き出しと、numpyだけの方策がSB3の `predict` と一致することを確認。③（重み0）の学習と5節の比較の表、配布する重みは未作成。図（`docs/img/phase7_4_flow.svg`）の見た目、ユーザーの実機での実行は未確認） |
+| 7-5〜7-6 | 着手時に作成 | — | 未作成（構成は暫定。フェーズ7の節） |
 | 8 | 着手時に作成 | — | 保留 |
 
 - フェーズ3は、トピック（3-1・3-2a・3-2b）、パラメータ、サービス、アクションの6つの手順書に分けた（3-2aのTwistと3-2bのQoSは互いに独立したテーマなので、2026-09-24に1つの手順書から分けた）。各ページはPython・C++を同じ仕様で並べ、比較しやすくしている（言語別ファイルには分けていない）。
