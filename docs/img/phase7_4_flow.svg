@@ -1,54 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 420" width="1060" height="420" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: 3節の学習のスクリプト（SAC）が、7-3の環境（Gazebo）にペダルを渡し、観測と報酬を受け取って学習する。学習したものは、SB3の.zip（学習の続き用。配らない）と、方策の重みだけの.npzに保存する。待てない場合は、4節で作成時の.npzを置く。.npzはnumpyだけで計算する方策（NpzPolicy）で読み込み、5節の比較のスクリプトで、同じ環境でPI制御と比べる。7-5のROS2のノードでも同じ方策を使う">
-<title>図: 3節の学習のスクリプト（SAC）が、7-3の環境（Gazebo）にペダルを渡し、観測と報酬を受け取って学習する。学習したものは、SB3の.zip（学習の続き用。配らない）と、方策の重みだけの.npzに保存する。待てない場合は、4節で作成時の.npzを置く。.npzはnumpyだけで計算する方策（NpzPolicy）で読み込み、5節の比較のスクリプトで、同じ環境でPI制御と比べる。7-5のROS2のノードでも同じ方策を使う</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 440" width="1060" height="440" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="3節の学習のスクリプト（SAC）が、7-3の環境（Gazebo）にペダルを渡し、観測と報酬を受け取って学習する。学習したものは、SB3の.zip（学習の続き用。配らない）と、方策の重みだけの.npzに保存する。待てない場合は、4節で作成時の.npzを置く。.npzはnumpyだけで計算する方策（NpzPolicy）で読み込み、5節の比較のスクリプトで、同じ環境でPI制御と比べる。7-5のROS2のノードでも同じ方策を使う">
+<title>3節の学習のスクリプト（SAC）が、7-3の環境（Gazebo）にペダルを渡し、観測と報酬を受け取って学習する。学習したものは、SB3の.zip（学習の続き用。配らない）と、方策の重みだけの.npzに保存する。待てない場合は、4節で作成時の.npzを置く。.npzはnumpyだけで計算する方策（NpzPolicy）で読み込み、5節の比較のスクリプトで、同じ環境でPI制御と比べる。7-5のROS2のノードでも同じ方策を使う</title>
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
-<rect x="0" y="0" width="1060" height="420" fill="#ffffff"/>
+<rect x="0" y="0" width="1060" height="440" fill="#ffffff"/>
 <g fill="#1a1a1a">
-<rect x="20" y="40" width="230" height="110" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
-<rect x="20" y="250" width="230" height="110" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<rect x="330" y="210" width="250" height="80" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
-<rect x="330" y="320" width="250" height="80" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5"/>
-<rect x="330" y="40" width="250" height="80" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5" stroke-dasharray="6 4"/>
-<rect x="650" y="230" width="180" height="100" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5"/>
-<rect x="880" y="40" width="160" height="110" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
-<rect x="880" y="280" width="160" height="110" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
-<path d="M100,250 L100,150" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M170,150 L170,250" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M250,285 L330,255" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M250,330 L330,355" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M580,80 L615,80" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M615,80 L615,345" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" stroke-dasharray="6 4"/>
-<path d="M615,345 L580,360" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M580,375 L650,315" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M830,250 L880,120" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M830,310 L880,335" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M880,95 L600,160" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<path d="M600,160 L250,110" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
-<text x="135.0" y="72.0" text-anchor="middle" font-size="14" font-weight="bold">7-3の環境</text>
-<text x="135.0" y="94.0" text-anchor="middle" font-size="12">GazeboPedalEnv</text>
-<text x="135.0" y="116.0" text-anchor="middle" font-size="12">（画面なしのGazebo）</text>
-<text x="135.0" y="282.0" text-anchor="middle" font-size="14" font-weight="bold">学習（3節）</text>
-<text x="135.0" y="304.0" text-anchor="middle" font-size="12">train_gz.py</text>
-<text x="135.0" y="326.0" text-anchor="middle" font-size="12">SAC・②重み20 ③重み0</text>
-<text x="455.0" y="240.0" text-anchor="middle" font-size="13" font-weight="bold">gz_pedal_w20.zip</text>
-<text x="455.0" y="262.0" text-anchor="middle" font-size="12">SB3の形。学習の続き用</text>
-<text x="455.0" y="280.0" text-anchor="middle" font-size="12">（配らない）</text>
-<text x="455.0" y="350.0" text-anchor="middle" font-size="13" font-weight="bold">gz_pedal_w20.npz</text>
-<text x="455.0" y="372.0" text-anchor="middle" font-size="12">方策の重みだけ（数の配列6つ）</text>
-<text x="455.0" y="70.0" text-anchor="middle" font-size="14" font-weight="bold">作成時の重み（4節）</text>
-<text x="455.0" y="94.0" text-anchor="middle" font-size="12">docs/models/ の .npz</text>
-<text x="740.0" y="262.0" text-anchor="middle" font-size="14" font-weight="bold">NpzPolicy</text>
-<text x="740.0" y="284.0" text-anchor="middle" font-size="12">npz_policy.py</text>
-<text x="740.0" y="306.0" text-anchor="middle" font-size="12">numpyだけで計算</text>
-<text x="960.0" y="72.0" text-anchor="middle" font-size="14" font-weight="bold">比べる（5節）</text>
-<text x="960.0" y="94.0" text-anchor="middle" font-size="12">compare_gz.py</text>
-<text x="960.0" y="116.0" text-anchor="middle" font-size="12">PI制御とNN</text>
-<text x="960.0" y="312.0" text-anchor="middle" font-size="14" font-weight="bold">7-5</text>
-<text x="960.0" y="334.0" text-anchor="middle" font-size="12">ROS2のノード</text>
-<text x="960.0" y="356.0" text-anchor="middle" font-size="12">（次のページ）</text>
-<text x="62.0" y="196.0" text-anchor="middle" font-size="11.5">ペダル</text>
-<text x="212.0" y="196.0" text-anchor="middle" font-size="11.5">観測・報酬</text>
-<text x="290.0" y="375.0" text-anchor="middle" font-size="11.5">保存</text>
-<text x="640.0" y="210.0" text-anchor="middle" font-size="11.5">置く</text>
-<text x="730.0" y="150.0" text-anchor="middle" font-size="11.5">同じ環境で走らせる</text>
+<rect x="20" y="40" width="220" height="90" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
+<rect x="580" y="40" width="220" height="90" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="20" y="190" width="220" height="90" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="300" y="190" width="220" height="90" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5"/>
+<rect x="580" y="190" width="220" height="90" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5"/>
+<rect x="860" y="190" width="180" height="90" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="20" y="340" width="220" height="80" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="300" y="340" width="220" height="80" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M100,190 L100,130" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M160,130 L160,190" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M240,235 L300,235" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M130.0,280 L130.0,340" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M410.0,340 L410.0,280" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" stroke-dasharray="6 4"/>
+<path d="M520,235 L580,235" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M800,235 L860,235" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M690.0,190 L690.0,130" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M580,85 L240,85" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="130.0" y="72.0" text-anchor="middle" font-size="14" font-weight="bold">7-3の環境</text>
+<text x="130.0" y="94.0" text-anchor="middle" font-size="12">GazeboPedalEnv</text>
+<text x="130.0" y="116.0" text-anchor="middle" font-size="12">（画面なしのGazebo）</text>
+<text x="690.0" y="72.0" text-anchor="middle" font-size="14" font-weight="bold">比べる（5節）</text>
+<text x="690.0" y="94.0" text-anchor="middle" font-size="12">compare_gz.py</text>
+<text x="690.0" y="116.0" text-anchor="middle" font-size="12">PI制御とNN</text>
+<text x="130.0" y="222.0" text-anchor="middle" font-size="14" font-weight="bold">学習（3節）</text>
+<text x="130.0" y="244.0" text-anchor="middle" font-size="12">train_gz.py</text>
+<text x="130.0" y="266.0" text-anchor="middle" font-size="12">SAC・②重み20 ③重み0</text>
+<text x="410.0" y="226.0" text-anchor="middle" font-size="13" font-weight="bold">gz_pedal_w20.npz</text>
+<text x="410.0" y="250.0" text-anchor="middle" font-size="12">方策の重みだけ（数の配列6つ）</text>
+<text x="690.0" y="222.0" text-anchor="middle" font-size="14" font-weight="bold">NpzPolicy</text>
+<text x="690.0" y="244.0" text-anchor="middle" font-size="12">npz_policy.py</text>
+<text x="690.0" y="266.0" text-anchor="middle" font-size="12">numpyだけで計算</text>
+<text x="950.0" y="222.0" text-anchor="middle" font-size="14" font-weight="bold">7-5</text>
+<text x="950.0" y="244.0" text-anchor="middle" font-size="12">ROS2のノード</text>
+<text x="950.0" y="266.0" text-anchor="middle" font-size="12">（次のページ）</text>
+<text x="130.0" y="366.0" text-anchor="middle" font-size="13" font-weight="bold">gz_pedal_w20.zip</text>
+<text x="130.0" y="388.0" text-anchor="middle" font-size="12">SB3の形。学習の続き用</text>
+<text x="130.0" y="408.0" text-anchor="middle" font-size="12">（配らない）</text>
+<text x="410.0" y="372.0" text-anchor="middle" font-size="14" font-weight="bold">作成時の重み（4節）</text>
+<text x="410.0" y="396.0" text-anchor="middle" font-size="12">docs/models/ の .npz</text>
+<text x="62.0" y="165.0" text-anchor="middle" font-size="11.5">ペダル</text>
+<text x="207.0" y="165.0" text-anchor="middle" font-size="11.5">観測・報酬</text>
+<text x="270.0" y="226.0" text-anchor="middle" font-size="11.5">保存</text>
+<text x="155.0" y="315.0" text-anchor="middle" font-size="11.5">保存</text>
+<text x="435.0" y="315.0" text-anchor="middle" font-size="11.5">置く</text>
+<text x="410.0" y="76.0" text-anchor="middle" font-size="11.5">同じ環境で走らせる</text>
 </g>
 </svg>
