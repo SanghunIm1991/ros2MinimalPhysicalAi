@@ -141,7 +141,7 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 
 版の末尾に `+cpu` が付き、`torch.cuda.is_available()` が `False`（GPUを使わない）になっていれば成功である。
 
-> **GPUのあるPCで使う場合**: NVIDIAのGPUを積んだPCでは、PyTorchの公式の案内で、そのPCのCUDAの版に合う配布元を選んで入れる。フェーズ7の7-0〜7-5（予定を含む）の規模では、CPU版で足りる。GPUが効いてくるのは、二足歩行のような大きな学習（7-6の予定）からである。
+> **GPUのあるPCで使う場合**: NVIDIAのGPUを積んだPCでは、PyTorchの公式の案内で、そのPCのCUDAの版に合う配布元を選んで入れる。フェーズ7の7-0〜7-5の規模では、CPU版で足りる。GPUが効いてくるのは、二足歩行のような大きな学習（7-6の予定）からである。
 
 ### 4. SB3・sb3-contrib・Gymnasiumを入れる
 
