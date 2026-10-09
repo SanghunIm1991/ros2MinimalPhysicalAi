@@ -141,7 +141,7 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 
 版の末尾に `+cpu` が付き、`torch.cuda.is_available()` が `False`（GPUを使わない）になっていれば成功である。
 
-> **GPUのあるPCで使う場合**: NVIDIAのGPUを積んだPCでは、PyTorchの公式の案内で、そのPCのCUDAの版に合う配布元を選んで入れる。フェーズ7の7-0〜7-5の規模では、CPU版で足りる。GPUが効いてくるのは、二足歩行のような大きな学習（7-6の予定）からである。
+> **GPUのあるPCで使う場合**: NVIDIAのGPUを積んだPCでは、PyTorchの公式の案内で、そのPCのCUDAの版に合う配布元を選んで入れる。フェーズ7の7-0〜7-6の規模では、CPU版で足りる。GPUが効いてくるのは、二足歩行を本格的に学習させる段階からである（7-6の6節で、その道具と要件を読む）。
 
 ### 4. SB3・sb3-contrib・Gymnasiumを入れる
 
@@ -158,7 +158,7 @@ pip install stable-baselines3
 前者は、学習の記録の表示（TensorBoard）・画像の処理（OpenCV）・Atariのゲームの環境（`ale-py`）などの追加の部品もまとめて入れる。この教材ではAtariのゲームを使わないので、後者の最小の形を基本にし、要る部品だけを足す。
 
 - **`gymnasium[classic-control]`**: 振り子（Pendulum）などの古典的な制御の環境を、画面に表示するための部品（`pygame-ce`。ゲームを作るライブラリpygameの、コミュニティによる派生版）を含めて入れる。Gymnasiumの公式の入門（[Basic Usage](https://gymnasium.farama.org/introduction/basic_usage/)）の最初の例も、この形で入れるよう案内している。
-- **`sb3-contrib`**: 記憶を持つポリシー（`RecurrentPPO`）など、SB3の追加のアルゴリズム。フェーズ7の後半で使う予定。
+- **`sb3-contrib`**: 記憶を持つポリシー（`RecurrentPPO`）など、SB3の追加のアルゴリズム。フェーズ7の本編では使わない。7-4の5-2節の末尾で触れる、NNの方策を改良する手がかり（記憶を持つ方策を使う等）を自分で試すときのために入れておく。
 
 この手順書を作った時点（2026-09-29）の最新版に固定して入れる（2026-10-02に、この版で導入して確かめた。版を固定すると、手順書と同じ結果を再現しやすい。新しい版を使う場合は、`==` 以降を外す）。
 

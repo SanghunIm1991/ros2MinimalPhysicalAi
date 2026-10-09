@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 200" width="1060" height="200" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="車両の題材（7-3〜7-5。観測5・行動1、PI制御とNNを比べ、Gazebo・ROS2のノードで動かした）から、このページで二足を小さく試し（Walker2d、MuJoCo、観測17・行動6、作成に使ったPCのCPUで）、性能の高いPCのGPUで数千の環境を並べて大量に学習し（Isaac Lab・MuJoCo Playground、rsl_rl・skrl）、ROS2でロボットへつなぐ（URDF・tf2・ros2_control、Gazebo・実機）、という流れ">
+<title>車両の題材（7-3〜7-5。観測5・行動1、PI制御とNNを比べ、Gazebo・ROS2のノードで動かした）から、このページで二足を小さく試し（Walker2d、MuJoCo、観測17・行動6、作成に使ったPCのCPUで）、性能の高いPCのGPUで数千の環境を並べて大量に学習し（Isaac Lab・MuJoCo Playground、rsl_rl・skrl）、ROS2でロボットへつなぐ（URDF・tf2・ros2_control、Gazebo・実機）、という流れ</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="1060" height="200" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="20" y="40" width="225" height="120" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="285" y="40" width="225" height="120" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5"/>
+<rect x="550" y="40" width="225" height="120" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="815" y="40" width="225" height="120" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M245,100.0 L285,100.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M510,100.0 L550,100.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M775,100.0 L815,100.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="132.5" y="70.0" text-anchor="middle" font-size="14" font-weight="bold">車両（7-3〜7-5）</text>
+<text x="132.5" y="96.0" text-anchor="middle" font-size="12">観測5・行動1</text>
+<text x="132.5" y="118.0" text-anchor="middle" font-size="12">PI制御とNNを比べる</text>
+<text x="132.5" y="140.0" text-anchor="middle" font-size="12">Gazebo・ROS2のノード</text>
+<text x="397.5" y="70.0" text-anchor="middle" font-size="14" font-weight="bold">二足を試す（7-6）</text>
+<text x="397.5" y="96.0" text-anchor="middle" font-size="12">Walker2d（MuJoCo）</text>
+<text x="397.5" y="118.0" text-anchor="middle" font-size="12">観測17・行動6</text>
+<text x="397.5" y="140.0" text-anchor="middle" font-size="12">作成に使ったPCのCPUで</text>
+<text x="662.5" y="70.0" text-anchor="middle" font-size="14" font-weight="bold">大量に学習</text>
+<text x="662.5" y="96.0" text-anchor="middle" font-size="12">Isaac Lab・MuJoCo Playground</text>
+<text x="662.5" y="118.0" text-anchor="middle" font-size="12">rsl_rl・skrl</text>
+<text x="662.5" y="140.0" text-anchor="middle" font-size="12">数千の環境を並べる（GPU）</text>
+<text x="927.5" y="70.0" text-anchor="middle" font-size="14" font-weight="bold">ROS2でロボットへ</text>
+<text x="927.5" y="96.0" text-anchor="middle" font-size="12">URDF・tf2</text>
+<text x="927.5" y="118.0" text-anchor="middle" font-size="12">ros2_control</text>
+<text x="927.5" y="140.0" text-anchor="middle" font-size="12">Gazebo・実機</text>
+<text x="662.5" y="185.0" text-anchor="middle" font-size="12">（点線の2つは、このページでは読み物として扱う）</text>
+</g>
+</svg>
