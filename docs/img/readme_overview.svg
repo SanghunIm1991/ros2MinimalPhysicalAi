@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 888" width="1320" height="888" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" role="img" aria-label="図: ROS2の最低限の構成で、フィジカルAIの技術スタックを一通り学ぶ教材の全体像。ゴールは慣性のある車両を目標の速度に追従させるシミュレーション（目標速度のノード→PI制御のノード→ペダル→車両→速度をPI制御へ戻す閉じたループ）。道のりは基礎（フェーズ0〜4）・制御（フェーズ5）・評価（フェーズ6）の必須の3段階と、AI（フェーズ7、発展）の4段階で、制御の段階でゴールに到達し、評価の段階でゴールを記録して判定する。土台は、実行環境がWindows 11・WSL2・Ubuntu 24.04・ROS 2 Jazzy・Gazebo、強化学習がStable-Baselines3（別の仮想環境）、専用のGPUは不要、言語はPythonとC++">
+<title>図: ROS2の最低限の構成で、フィジカルAIの技術スタックを一通り学ぶ教材の全体像。ゴールは慣性のある車両を目標の速度に追従させるシミュレーション（目標速度のノード→PI制御のノード→ペダル→車両→速度をPI制御へ戻す閉じたループ）。道のりは基礎（フェーズ0〜4）・制御（フェーズ5）・評価（フェーズ6）の必須の3段階と、AI（フェーズ7、発展）の4段階で、制御の段階でゴールに到達し、評価の段階でゴールを記録して判定する。土台は、実行環境がWindows 11・WSL2・Ubuntu 24.04・ROS 2 Jazzy・Gazebo、強化学習がStable-Baselines3（別の仮想環境）、専用のGPUは不要、言語はPythonとC++</title>
+<defs>
+<marker id="k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1c2430"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b6cb0"/></marker>
+<marker id="g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4f5967"/></marker>
+<marker id="o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b4561a"/></marker>
+<pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="1.3" fill="#d3dae3"/></pattern>
+</defs>
+<rect x="0" y="0" width="1320" height="888" fill="#f3f5f7"/>
+<rect x="0" y="0" width="1320" height="888" fill="url(#dots)"/>
+<text x="44.0" y="58.0" font-size="30" text-anchor="start" font-weight="bold" fill="#1c2430">ROS2の最低限の構成で、フィジカルAIの技術スタックを一通り</text>
+<rect x="48.0" y="96.0" width="1240.0" height="236.0" rx="28" fill="#d6e2f2" stroke="none" stroke-width="2"/>
+<rect x="40.0" y="88.0" width="1240.0" height="236.0" rx="28" fill="#ffffff" stroke="#1c2430" stroke-width="2"/>
+<rect x="64.0" y="108.0" width="84.0" height="32.0" rx="16" fill="#1c2430" stroke="none" stroke-width="2"/>
+<text x="106.0" y="130.0" font-size="17" text-anchor="middle" font-weight="bold" fill="#ffffff">ゴール</text>
+<text x="164.0" y="133.0" font-size="25" text-anchor="start" font-weight="bold" fill="#1c2430">慣性のある車両を、目標の速度に追従させるシミュレーション</text>
+<rect x="80.0" y="172.0" width="230.0" height="80.0" rx="40" fill="#ffffff" stroke="#1c2430" stroke-width="2"/>
+<rect x="420.0" y="172.0" width="230.0" height="80.0" rx="40" fill="#e4ecf7" stroke="#2b6cb0" stroke-width="2"/>
+<text x="195.0" y="219.0" font-size="19" text-anchor="middle" font-weight="bold" fill="#1c2430">目標速度のノード</text>
+<text x="535.0" y="219.0" font-size="19" text-anchor="middle" font-weight="bold" fill="#1c2430">PI制御のノード</text>
+<rect x="770.0" y="172.0" width="270.0" height="80.0" rx="18" fill="#fff1e2" stroke="#1c2430" stroke-width="2"/>
+<g transform="translate(788,222.0) scale(0.95)" stroke="#1c2430" stroke-width="2" stroke-linejoin="round">
+<path d="M0 0V-12L10 -22H40L52 -12H62V0Z" fill="#f6d2a8"/>
+<path d="M14 -19H38L45 -12H9Z" fill="#ffffff" stroke-width="1.5"/>
+<circle cx="15" cy="1" r="7" fill="#1c2430"/><circle cx="15" cy="1" r="2.4" fill="#ffffff" stroke="none"/>
+<circle cx="47" cy="1" r="7" fill="#1c2430"/><circle cx="47" cy="1" r="2.4" fill="#ffffff" stroke="none"/>
+</g>
+<text x="953.0" y="199.0" font-size="19" text-anchor="middle" font-weight="bold" fill="#1c2430">車両</text>
+<text x="953.0" y="222.0" font-size="15" text-anchor="middle" font-weight="normal" fill="#4f5967">自作の疑似プラント</text>
+<text x="953.0" y="242.0" font-size="15" text-anchor="middle" font-weight="normal" fill="#4f5967">またはGazeboの物理</text>
+<path d="M312,212.0 L416,212.0" fill="none" stroke="#1c2430" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M652,212.0 L766,212.0" fill="none" stroke="#1c2430" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#k)"/>
+<text x="710.0" y="200.0" font-size="16" text-anchor="middle" font-weight="bold" fill="#4f5967">ペダル</text>
+<path d="M905.0,254 L905.0,292 L535.0,292 L535.0,257" fill="none" stroke="#1c2430" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#k)"/>
+<text x="720.0" y="282.0" font-size="16" text-anchor="middle" font-weight="bold" fill="#4f5967">速度</text>
+<g transform="translate(1080,112)" stroke-linecap="round" stroke-linejoin="round">
+<rect x="0.0" y="0.0" width="176.0" height="188.0" rx="12" fill="#f3f5f7" stroke="#1c2430" stroke-width="2"/>
+<path d="M0 22H176" stroke="#1c2430" stroke-width="2"/>
+<circle cx="14" cy="11.5" r="3" fill="#b4561a"/>
+<circle cx="25" cy="11.5" r="3" fill="#c9d2de"/>
+<circle cx="36" cy="11.5" r="3" fill="#c9d2de"/>
+<path d="M14 40H164" stroke="#1c2430" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+<path d="M14 78C28 78 34 34 50 36S66 44 78 41S100 40 164 40" stroke="#2b6cb0" stroke-width="2.5" fill="none"/>
+<path d="M1 96H175V176A11 11 0 0 1 164 187H12A11 11 0 0 1 1 176Z" fill="#e3e9f0" stroke="none"/>
+<path d="M0 96H176" stroke="#1c2430" stroke-width="1.5"/>
+<g stroke="#b9c4d2" stroke-width="1.5" fill="none"><path d="M88 96L6 186"/><path d="M88 96L170 186"/></g>
+<path d="M44 148H54M38 158H52" stroke="#2b6cb0" stroke-width="2.5" fill="none"/>
+</g>
+<g transform="translate(1138,276) scale(1.0)" stroke="#1c2430" stroke-width="2" stroke-linejoin="round">
+<path d="M0 0V-12L10 -22H40L52 -12H62V0Z" fill="#2b6cb0"/>
+<path d="M14 -19H38L45 -12H9Z" fill="#ffffff" stroke-width="1.5"/>
+<circle cx="15" cy="1" r="7" fill="#1c2430"/><circle cx="15" cy="1" r="2.4" fill="#ffffff" stroke="none"/>
+<circle cx="47" cy="1" r="7" fill="#1c2430"/><circle cx="47" cy="1" r="2.4" fill="#ffffff" stroke="none"/>
+</g>
+<rect x="40.0" y="404.0" width="1240.0" height="296.0" rx="28" fill="#e4ecf7" stroke="none" stroke-width="2"/>
+<text x="64.0" y="434.0" font-size="17" text-anchor="start" font-weight="bold" fill="#1c2430">道のり（左から順に）</text>
+<line x1="256.0" y1="428" x2="290.0" y2="428" stroke="#2b6cb0" stroke-width="3" stroke-linecap="round"/>
+<text x="300.0" y="434.0" font-size="16" text-anchor="start" font-weight="bold" fill="#2b6cb0">必須（フェーズ0〜6）</text>
+<line x1="994.0" y1="428" x2="1028.0" y2="428" stroke="#b4561a" stroke-width="3" stroke-dasharray="7 5"/>
+<text x="1038.0" y="434.0" font-size="16" text-anchor="start" font-weight="bold" fill="#b4561a">発展（フェーズ7）</text>
+<rect x="64.0" y="448.0" width="262.0" height="228.0" rx="20" fill="#ffffff" stroke="#1c2430" stroke-width="2"/>
+<text x="86.0" y="490.0" font-size="25" text-anchor="start" font-weight="bold" fill="#1c2430">基礎</text>
+<text x="86.0" y="514.0" font-size="15" text-anchor="start" font-weight="bold" fill="#2b6cb0">フェーズ0〜4</text>
+<g transform="translate(246.0,462)" fill="none" stroke="#2b6cb0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<rect x="4" y="8" width="56" height="46" rx="8" fill="#e4ecf7"/>
+<path d="M4 19H60"/>
+<circle cx="11" cy="13.5" r="1.8" fill="#2b6cb0" stroke="none"/>
+<circle cx="18" cy="13.5" r="1.8" fill="#2b6cb0" stroke="none"/>
+<circle cx="25" cy="13.5" r="1.8" fill="#2b6cb0" stroke="none"/>
+<path d="M13 28L21 34L13 40"/><path d="M26 42H40"/>
+</g>
+<line x1="84.0" y1="532" x2="306.0" y2="532" stroke="#2b6cb0" stroke-width="1" opacity="0.5"/>
+<circle cx="90.0" cy="554.5" r="3.5" fill="#2b6cb0"/>
+<text x="102.0" y="560.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">CLIで観察</text>
+<circle cx="90.0" cy="584.5" r="3.5" fill="#2b6cb0"/>
+<text x="102.0" y="590.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">パッケージとビルド</text>
+<circle cx="90.0" cy="614.5" r="3.5" fill="#2b6cb0"/>
+<text x="102.0" y="620.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">Pub/Sub・QoS・パラメータ</text>
+<circle cx="90.0" cy="644.5" r="3.5" fill="#2b6cb0"/>
+<text x="102.0" y="650.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">launch</text>
+<path d="M332.0,562.0 L366.0,562.0" fill="none" stroke="#1c2430" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#k)"/>
+<rect x="374.0" y="448.0" width="262.0" height="228.0" rx="20" fill="#ffffff" stroke="#1c2430" stroke-width="2"/>
+<text x="396.0" y="490.0" font-size="25" text-anchor="start" font-weight="bold" fill="#1c2430">制御</text>
+<text x="396.0" y="514.0" font-size="15" text-anchor="start" font-weight="bold" fill="#2b6cb0">フェーズ5</text>
+<g transform="translate(556.0,462)" fill="none" stroke="#2b6cb0" stroke-linecap="round" stroke-linejoin="round">
+<path d="M32 32L62 47L32 62L2 47Z" fill="#ffffff" stroke-width="2"/>
+<path d="M12.0 42.0L42.0 57.0M42.0 37.0L12.0 52.0M22.0 37.0L52.0 52.0M52.0 42.0L22.0 57.0" stroke-width="1.2" opacity="0.6"/>
+<path d="M32 4L50 13V33L32 42L14 33V13Z" fill="#e4ecf7" stroke-width="2.5"/>
+<path d="M14 13L32 22L50 13M32 22V42" stroke-width="2.5"/>
+</g>
+<line x1="394.0" y1="532" x2="616.0" y2="532" stroke="#2b6cb0" stroke-width="1" opacity="0.5"/>
+<circle cx="400.0" cy="554.5" r="3.5" fill="#2b6cb0"/>
+<text x="412.0" y="560.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">Gazebo</text>
+<circle cx="400.0" cy="584.5" r="3.5" fill="#2b6cb0"/>
+<text x="412.0" y="590.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">疑似プラント</text>
+<circle cx="400.0" cy="614.5" r="3.5" fill="#2b6cb0"/>
+<text x="412.0" y="620.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">PI制御</text>
+<path d="M642.0,562.0 L676.0,562.0" fill="none" stroke="#1c2430" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#k)"/>
+<rect x="684.0" y="448.0" width="262.0" height="228.0" rx="20" fill="#ffffff" stroke="#1c2430" stroke-width="2"/>
+<text x="706.0" y="490.0" font-size="25" text-anchor="start" font-weight="bold" fill="#1c2430">評価</text>
+<text x="706.0" y="514.0" font-size="15" text-anchor="start" font-weight="bold" fill="#2b6cb0">フェーズ6</text>
+<g transform="translate(866.0,462)" fill="none" stroke="#2b6cb0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="5" width="58" height="54" rx="8" fill="#e4ecf7" stroke="none"/>
+<path d="M11 11V51H57"/>
+<path d="M11 25H55" stroke="#1c2430" stroke-dasharray="5 4" stroke-width="2.5"/>
+<path d="M11 51C17 51 20 15 28 17S36 28 42 26S50 25 55 25"/>
+</g>
+<line x1="704.0" y1="532" x2="926.0" y2="532" stroke="#2b6cb0" stroke-width="1" opacity="0.5"/>
+<circle cx="710.0" cy="554.5" r="3.5" fill="#2b6cb0"/>
+<text x="722.0" y="560.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">ros2 bagで記録</text>
+<circle cx="710.0" cy="584.5" r="3.5" fill="#2b6cb0"/>
+<text x="722.0" y="590.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">ゴールの判定</text>
+<circle cx="710.0" cy="614.5" r="3.5" fill="#2b6cb0"/>
+<text x="722.0" y="620.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">指標（行き過ぎ量・</text>
+<text x="722.0" y="650.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">整定時間・RMS）</text>
+<path d="M952.0,562.0 L986.0,562.0" fill="none" stroke="#b4561a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#o)"/>
+<rect x="994.0" y="448.0" width="262.0" height="228.0" rx="20" fill="#fff4ea" stroke="#b4561a" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="1016.0" y="490.0" font-size="25" text-anchor="start" font-weight="bold" fill="#1c2430">AI（発展）</text>
+<text x="1016.0" y="514.0" font-size="15" text-anchor="start" font-weight="bold" fill="#b4561a">フェーズ7</text>
+<g transform="translate(1176.0,462)" fill="none" stroke="#b4561a" stroke-width="2" stroke-linecap="round">
+<path d="M9 20L32 9M9 20L32 32M9 20L32 55M9 44L32 9M9 44L32 32M9 44L32 55M32 9L55 32M32 32L55 32M32 55L55 32" opacity="0.8"/>
+<circle cx="9" cy="20" r="5.5" fill="#ffffff"/>
+<circle cx="9" cy="44" r="5.5" fill="#ffffff"/>
+<circle cx="32" cy="9" r="5.5" fill="#ffffff"/>
+<circle cx="32" cy="32" r="5.5" fill="#ffffff"/>
+<circle cx="32" cy="55" r="5.5" fill="#ffffff"/>
+<circle cx="55" cy="32" r="6.5" fill="#b4561a"/>
+</g>
+<line x1="1014.0" y1="532" x2="1236.0" y2="532" stroke="#b4561a" stroke-width="1" opacity="0.5"/>
+<circle cx="1020.0" cy="554.5" r="3.5" fill="#b4561a"/>
+<text x="1032.0" y="560.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">強化学習でゲインを調整</text>
+<circle cx="1020.0" cy="584.5" r="3.5" fill="#b4561a"/>
+<text x="1032.0" y="590.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">NNの方策に置き換え</text>
+<circle cx="1020.0" cy="614.5" r="3.5" fill="#b4561a"/>
+<text x="1032.0" y="620.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">ROS2のノードに</text>
+<circle cx="1020.0" cy="644.5" r="3.5" fill="#b4561a"/>
+<text x="1032.0" y="650.0" font-size="16" text-anchor="start" font-weight="normal" fill="#1c2430">二足歩行への橋渡し</text>
+<g transform="translate(1190.0,602)" fill="none" stroke="#b4561a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M24 4V9"/>
+<circle cx="24" cy="3" r="2.5" fill="#b4561a"/>
+<rect x="13" y="9" width="22" height="16" rx="5" fill="#ffffff"/>
+<circle cx="19.5" cy="17" r="2" fill="#b4561a" stroke="none"/><circle cx="28.5" cy="17" r="2" fill="#b4561a" stroke="none"/>
+<rect x="11" y="29" width="26" height="19" rx="5" fill="#fbe3d1"/>
+<path d="M11 33L4 43M37 33L44 41"/>
+<path d="M19 48V58L14 62M29 48L33 57L39 59"/>
+</g>
+<path d="M524.0,446 L524.0,330" fill="none" stroke="#2b6cb0" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#b)"/>
+<text x="538.0" y="372.0" font-size="17" text-anchor="start" font-weight="bold" fill="#2b6cb0">ここでゴールに到達</text>
+<path d="M834.0,446 L834.0,330" fill="none" stroke="#4f5967" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#g)"/>
+<text x="848.0" y="372.0" font-size="17" text-anchor="start" font-weight="bold" fill="#4f5967">記録して判定</text>
+<rect x="40.0" y="728.0" width="1240.0" height="132.0" rx="24" fill="#1c2430" stroke="none" stroke-width="2"/>
+<text x="96.0" y="802.0" font-size="23" text-anchor="middle" font-weight="bold" fill="#ffffff">土台</text>
+<rect x="152.0" y="746.0" width="606.5" height="46.0" rx="12" fill="#2e3a4b" stroke="none" stroke-width="2"/>
+<text x="170.0" y="775.0" font-size="15" text-anchor="start" font-weight="normal" fill="#c3ccd8">実行環境</text>
+<line x1="238.0" y1="758" x2="238.0" y2="780" stroke="#56657a" stroke-width="1.5"/>
+<text x="246.0" y="776.0" font-size="17" text-anchor="start" font-weight="bold" fill="#ffffff">Windows 11 + WSL2 + Ubuntu 24.04 + ROS 2 Jazzy + Gazebo</text>
+<rect x="772.5" y="746.0" width="420.5" height="46.0" rx="12" fill="#2e3a4b" stroke="none" stroke-width="2"/>
+<text x="790.5" y="775.0" font-size="15" text-anchor="start" font-weight="normal" fill="#c3ccd8">強化学習</text>
+<line x1="858.4899999999996" y1="758" x2="858.4899999999996" y2="780" stroke="#56657a" stroke-width="1.5"/>
+<text x="866.5" y="776.0" font-size="17" text-anchor="start" font-weight="bold" fill="#ffffff">Stable-Baselines3（別の仮想環境）</text>
+<rect x="152.0" y="804.0" width="231.1" height="46.0" rx="12" fill="#2e3a4b" stroke="none" stroke-width="2"/>
+<text x="170.0" y="833.0" font-size="15" text-anchor="start" font-weight="normal" fill="#c3ccd8">マシン</text>
+<line x1="223.0" y1="816" x2="223.0" y2="838" stroke="#56657a" stroke-width="1.5"/>
+<text x="231.0" y="834.0" font-size="17" text-anchor="start" font-weight="bold" fill="#ffffff">専用のGPUは不要</text>
+<rect x="397.1" y="804.0" width="201.5" height="46.0" rx="12" fill="#2e3a4b" stroke="none" stroke-width="2"/>
+<text x="415.1" y="833.0" font-size="15" text-anchor="start" font-weight="normal" fill="#c3ccd8">言語</text>
+<line x1="453.09000000000003" y1="816" x2="453.09000000000003" y2="838" stroke="#56657a" stroke-width="1.5"/>
+<text x="461.1" y="834.0" font-size="17" text-anchor="start" font-weight="bold" fill="#ffffff">Python と C++</text>
+</svg>
