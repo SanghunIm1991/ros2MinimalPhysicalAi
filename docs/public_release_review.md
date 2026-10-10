@@ -22,7 +22,7 @@
 | PC固有の情報 | ユーザー名を含むパス（`/home/<名前>`、`C:\Users\<名前>`）、ドライブ構成、RAM・ディスク容量などの実測スペック（[`README.md`](../README.md) の「確認した環境」は、学習者が見比べるために意図して載せたもので対象外。ただし項目が増えていないかは見る） | `docs/` 全体、特に環境構築とフェーズ0 |
 | PCの利用状況 | PCの具体的な用途など、個人の生活を推測させる記述、スペックの制約、グローバルの安全ルールへの言及 | [`docs/idea_origin.md`](idea_origin.md)、[`CLAUDE.md`](../CLAUDE.md) |
 | 追跡してはいけないもの | 個人メモ（`notes/`）、練習用のワークスペース（`ros2_ws/`。作者の練習環境の `ws/` も）、`.env`・鍵ファイル、WSLのエクスポート | `.gitignore` と `git ls-files` |
-| 画像の写り込み | スクリーンショットや写真に、画面上の個人情報・顔・書類が写っていないか（現在、追跡している画像は、自作のSVGと、Gazeboのウィンドウだけを撮った `phase5_0_gazebo.png`（2026-09-28に確認済み）の1枚） | `docs/img/` |
+| 画像の写り込み | スクリーンショットや写真に、画面上の個人情報・顔・書類が写っていないか（現在、追跡している画像は、自作のSVG（README冒頭の全体像の絵は、Claude Designで作った案を移植したもの）と、Gazeboのウィンドウだけを撮った `phase5_0_gazebo.png`（2026-09-28に確認済み）の1枚） | `docs/img/` |
 | 学習済みの重み | `.npz`（zipの形）の中身が、数の配列（`.npy`）だけで、pickle（読み込むときに任意のコードを実行しうる形）を含まないか。`grep` では中身を見られないので、下の機械点検のコマンドで見る（2026-10-08に追加） | `docs/models/` |
 
 ### 1-2. 機械点検
@@ -87,7 +87,7 @@ python3 -c "import sys, zipfile; [print(f, n, zipfile.ZipFile(f).read(n)[10:128]
 | 同等の値の明記 | コマンド例の値が公式の例と同等である旨の記述が残っているか | [`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md) |
 | 引用の範囲 | 雛形の `CMakeLists.txt`（Apache 2.0）の各行や、setuptoolsとStable-Baselines3（MIT）の警告文の引用や、型の定義（`ros2 interface show` の表示）が、説明に必要な範囲に留まり、出典があるか | [`docs/tips.md`](tips.md)、[`docs/phase7_1_vehicle_env.md`](phase7_1_vehicle_env.md)・[`docs/archive/phase7_1_vehicle_env_v1.md`](archive/phase7_1_vehicle_env_v1.md)（没案）の5-1節の課題1、[`docs/reference_interfaces.md`](reference_interfaces.md)、[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)（`turtlesim` の型、BSD）、[`docs/phase3_4_services.md`](phase3_4_services.md)・[`docs/phase3_5_actions.md`](phase3_5_actions.md)（`example_interfaces` の型、Apache-2.0） |
 | ソースの解説 | `rclpy`・`rclcpp` のソースを、丸ごと写さず自分の言葉で解説しているか | [`docs/reference_node_class.md`](reference_node_class.md) |
-| 図 | `docs/img/` のSVGが自作のもので、第三者の図・ロゴ・埋め込み画像が混ざっていないか。PNGのスクリーンショットは、写っている第三者の画面が `LICENSE` の第三者の一覧に載っているか | `docs/img/` |
+| 図 | `docs/img/` のSVGが自作のもので、第三者の図・ロゴ・埋め込み画像が混ざっていないか。AIのサービス（Claude Design等）で作った案を移植した図は、出どころの注記（README・`CLAUDE.md`）があるか、外部のフォント・外部のリソース・既存のアイコン集のパスが残っていないか。PNGのスクリーンショットは、写っている第三者の画面が `LICENSE` の第三者の一覧に載っているか | `docs/img/` |
 | サンプルコード | 公式チュートリアルや他のリポジトリのコードを、丸ごと転載していないか | 各手順書のコードブロック |
 | 第三者のファイル | データシート・PDF・フォント・画像など、ライセンスが不明なファイルが追跡されていないか | `git ls-files` |
 | リポジトリのライセンス | `LICENSE` の「第三者の著作物」の一覧が最新か（前回以降に、公式ドキュメントの抜粋や、雛形・ツールの出力の引用を足していないか）。サンプルコードが使うパッケージに、コピーレフト（GPL等）のものが加わっていないか | [`LICENSE`](../LICENSE)、[`LICENSE-MIT`](../LICENSE-MIT)（学習済みの重み）、[`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)、`README.md` のライセンスの節 |
