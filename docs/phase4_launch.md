@@ -132,6 +132,10 @@ mv ~/ros2_ws/config/param_talker.yaml ~/ros2_ws/src/learn_bringup/config/
 <exec_depend>launch_yaml</exec_depend>
 ```
 
+**`<depend>` でなく `<exec_depend>` にする理由**: [フェーズ3-2aの3節](phase3_2a_turtlesim.md)のとおり、`<depend>` は、ビルド時と実行時の両方の依存をまとめて宣言する書き方である（`package.xml` の書き方の規則の[REP 149](https://ros.org/reps/rep-0149.html)では、ビルド時の依存の `<build_depend>`、このパッケージを使う側のビルドに要る依存の `<build_export_depend>`、実行時の依存の `<exec_depend>` の3つを、同時に書いたのと同じと決めている）。`learn_bringup` は、C++やPythonのコードを持たず、launchファイルとYAMLをインストールするだけなので、ビルドのときには上のパッケージを使わない。使うのは、`ros2 launch` で起動するときだけである。そこで、実行時の依存だけを表す `<exec_depend>` で書く。`<depend>` で書いてもビルドと起動はできるが、実際には要らない「ビルド時の依存」まで宣言することになる。
+
+一方、`learn_py`・`learn_cpp` の `<depend>` は、`ros2 pkg create` の `--dependencies` が書いたものである。C++の `learn_cpp` は、`rclcpp` などのヘッダとライブラリをビルドで使うので、ビルド時の依存も要る。Pythonの `learn_py` は、ビルドでコンパイルしないので、厳密には実行時の依存だけで足りるが、雛形が書いた `<depend>` のままにしている（どちらで書いても、ビルドと実行の結果は変わらない）。
+
 ### 3-3. `CMakeLists.txt` でインストールする
 
 `ros2_ws/src/learn_bringup/CMakeLists.txt` の `ament_package()` の**前**に、`launch/` と `config/` を `share/` へ入れる指定を足す。
@@ -776,6 +780,7 @@ source install/setup.bash
 - [Integrating launch files into ROS 2 packages — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Launch-system.html)
 - [Launch tutorials — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Launch-Main.html)
 - [Launching nodes — Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Launching-Multiple-Nodes/Launching-Multiple-Nodes.html)
+- [REP 149 — Package Manifest Format Three Specification](https://ros.org/reps/rep-0149.html)（`package.xml` の書き方の規則。3-2節の `<depend>` と `<exec_depend>` の違い。2026-10-12に原稿で確認）
 
 > 公式ドキュメントと食い違う場合は、公式を優先する。
 

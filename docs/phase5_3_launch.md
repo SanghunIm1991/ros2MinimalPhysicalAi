@@ -180,7 +180,7 @@ def main(args=None):
             'target_generator = learn_py.target_node:main',
 ```
 
-`learn_bringup` の `package.xml` に、5-0のデモのパッケージへの実行時の依存を足す（フェーズ4の3-2節で足した `<exec_depend>` の並びに加える。`learn_py`・`launch`・`launch_ros` はフェーズ4で足してある）。
+`learn_bringup` の `package.xml` に、5-0のデモのパッケージへの実行時の依存を足す（フェーズ4の3-2節で足した `<exec_depend>` の並びに加える。`learn_py`・`launch`・`launch_ros` はフェーズ4で足してある）。`learn_bringup` は、デモのパッケージを、launchファイルから起動するときにだけ使い、ビルドには使わないので、`<depend>` でなく、実行時の依存の `<exec_depend>` で書く（[フェーズ4の3-2節](phase4_launch.md)の「`<depend>` でなく `<exec_depend>` にする理由」）。
 
 ```xml
 <exec_depend>ros_gz_sim_demos</exec_depend>

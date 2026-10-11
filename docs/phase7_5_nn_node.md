@@ -189,7 +189,7 @@ def main(args=None):
 
 ### 2-4. 依存と登録、ビルド
 
-`ros2_ws/src/learn_py/package.xml` の `<exec_depend>` の並びに、numpyへの実行時の依存を1行足す。numpyは、ROS2を入れたときにすでに入っている（ROS2の `ros2topic` などが使っている、aptの `python3-numpy`）ので、新しく入れる必要は無い。
+`ros2_ws/src/learn_py/package.xml` の `<depend>` の並びの後に、numpyへの実行時の依存を1行足す。numpyは、ノードを実行するときにだけ使い、ビルドには使わないので、`<depend>` でなく、実行時の依存の `<exec_depend>` で書く（[フェーズ4の3-2節](phase4_launch.md)の「`<depend>` でなく `<exec_depend>` にする理由」）。numpyは、ROS2を入れたときにすでに入っている（ROS2の `ros2topic` などが使っている、aptの `python3-numpy`）ので、新しく入れる必要は無い。
 
 ```xml
 <exec_depend>python3-numpy</exec_depend>
