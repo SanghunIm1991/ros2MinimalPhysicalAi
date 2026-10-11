@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 680" width="1180" height="680" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="この教材の最終ゴール（フェーズ7-5）の一式。launchファイルで起動した一式の中で、target_generator（フェーズ5-3）が目標速度を、nn_controller（フェーズ7-5）が学習したNNでペダルを決め、gz_plant（フェーズ5-1・5-4）がペダルを車輪の力に直して、Gazeboとブリッジ（フェーズ5-0・5-4）が車両の物理を計算し、オドメトリから速度を返す。nn_controller は、引数でPI制御の pi_controller（フェーズ5-2）と入れ替えられる。NNの重み（.npz、フェーズ7-4）は、ROS2の外で強化学習（Gymnasium・SB3、フェーズ7-0〜7-4）で学習させる。一式のトピックは ros2 bag record（フェーズ6-1）で記録し、再生して metrics（フェーズ6-3）で指標を計算して、PI制御とNNを比べる">
+<title>この教材の最終ゴール（フェーズ7-5）の一式。launchファイルで起動した一式の中で、target_generator（フェーズ5-3）が目標速度を、nn_controller（フェーズ7-5）が学習したNNでペダルを決め、gz_plant（フェーズ5-1・5-4）がペダルを車輪の力に直して、Gazeboとブリッジ（フェーズ5-0・5-4）が車両の物理を計算し、オドメトリから速度を返す。nn_controller は、引数でPI制御の pi_controller（フェーズ5-2）と入れ替えられる。NNの重み（.npz、フェーズ7-4）は、ROS2の外で強化学習（Gymnasium・SB3、フェーズ7-0〜7-4）で学習させる。一式のトピックは ros2 bag record（フェーズ6-1）で記録し、再生して metrics（フェーズ6-3）で指標を計算して、PI制御とNNを比べる</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="1180" height="680" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="20" y="160" width="1140" height="340" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<path d="M240,75 L340,75" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M440,130 L440,200" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" stroke-dasharray="6 4"/>
+<path d="M240,255 L340,255" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M540,235 L640,235" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M640,280 L540,280" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M840,235 L940,235" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M940,280 L840,280" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M740,500 L740,540" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M840,595 L940,595" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="40" y="20" width="200" height="110" rx="8" fill="#f3eefa" stroke="#7a5aa6" stroke-width="1.5"/>
+<rect x="340" y="20" width="200" height="110" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="40" y="200" width="200" height="110" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="340" y="200" width="200" height="110" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5"/>
+<rect x="640" y="200" width="200" height="110" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="940" y="200" width="200" height="110" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
+<rect x="340" y="350" width="200" height="110" rx="8" fill="#fff4e5" stroke="#c77d1a" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="640" y="540" width="200" height="110" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="940" y="540" width="200" height="110" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="40" y="184" font-weight="bold">launchファイルで一式を起動（フェーズ4・5-3・7-5）</text>
+<text x="140" y="46" text-anchor="middle" font-weight="bold">強化学習で学習</text>
+<text x="140" y="66" text-anchor="middle">Gymnasium・SB3</text>
+<text x="140" y="86" text-anchor="middle">（ROS2の外）</text>
+<text x="140" y="110" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ7-0〜7-4</text>
+<text x="440" y="46" text-anchor="middle" font-weight="bold">学習済みの重み</text>
+<text x="440" y="66" text-anchor="middle">（.npz）</text>
+<text x="440" y="86" text-anchor="middle">numpyだけで読む</text>
+<text x="440" y="110" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ7-4</text>
+<text x="140" y="226" text-anchor="middle" font-weight="bold">target_generator</text>
+<text x="140" y="246" text-anchor="middle">目標速度を</text>
+<text x="140" y="266" text-anchor="middle">階段状に送る</text>
+<text x="140" y="290" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ5-3</text>
+<text x="440" y="226" text-anchor="middle" font-weight="bold">nn_controller</text>
+<text x="440" y="246" text-anchor="middle">学習したNNで</text>
+<text x="440" y="266" text-anchor="middle">ペダルを決める</text>
+<text x="440" y="290" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ7-5</text>
+<text x="740" y="226" text-anchor="middle" font-weight="bold">gz_plant</text>
+<text x="740" y="246" text-anchor="middle">ペダルを</text>
+<text x="740" y="266" text-anchor="middle">車輪の力に直す</text>
+<text x="740" y="290" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ5-1・5-4</text>
+<text x="1040" y="226" text-anchor="middle" font-weight="bold">Gazebo＋ブリッジ</text>
+<text x="1040" y="246" text-anchor="middle">車両の物理を</text>
+<text x="1040" y="266" text-anchor="middle">計算する</text>
+<text x="1040" y="290" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ5-0・5-4</text>
+<text x="440" y="376" text-anchor="middle" font-weight="bold">pi_controller</text>
+<text x="440" y="396" text-anchor="middle">PI制御。引数で</text>
+<text x="440" y="416" text-anchor="middle">NNと入れ替える</text>
+<text x="440" y="440" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ5-2</text>
+<text x="740" y="566" text-anchor="middle" font-weight="bold">ros2 bag record</text>
+<text x="740" y="586" text-anchor="middle">トピックを</text>
+<text x="740" y="606" text-anchor="middle">ファイルに記録</text>
+<text x="740" y="630" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ6-1</text>
+<text x="1040" y="566" text-anchor="middle" font-weight="bold">metrics</text>
+<text x="1040" y="586" text-anchor="middle">指標を計算して</text>
+<text x="1040" y="606" text-anchor="middle">PIとNNを比べる</text>
+<text x="1040" y="630" text-anchor="middle" fill="#9a3412" font-weight="bold">フェーズ6-3</text>
+<text x="290" y="67" text-anchor="middle" font-size="13">学習</text>
+<text x="290" y="247" text-anchor="middle" font-size="13">目標速度</text>
+<text x="590" y="227" text-anchor="middle" font-size="13">ペダル</text>
+<text x="590" y="272" text-anchor="middle" font-size="13">速度</text>
+<text x="890" y="227" text-anchor="middle" font-size="13">力</text>
+<text x="890" y="272" text-anchor="middle" font-size="13">オドメトリ</text>
+<text x="770" y="525" text-anchor="middle" font-size="13">記録</text>
+<text x="890" y="587" text-anchor="middle" font-size="13">再生</text>
+</g>
+</svg>
