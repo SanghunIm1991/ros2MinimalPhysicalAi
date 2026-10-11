@@ -251,7 +251,7 @@ episodes   steps   return  ent_coef  time[s]
 
 ### 4-1. 重みのファイルを置く
 
-3節の学習を待てない場合は、作成時に3節の①②と同じ手順で学習させた重みを、このリポジトリから `~/rl_practice` に置く。①と②の両方を自分で学習させた場合は、自分の重み（`gz_pedal_w20.npz`・`gz_pedal_w0.npz`）がすでにあるので、この節の4-1は飛ばしてよい（同じ名前なので、取ってくると上書きされる）。①だけを自分で学習させた場合は、下の2つ目のコマンド（`gz_pedal_w0.npz`）だけを実行する。
+3節の学習を待てない場合は、作成時に3節の①②と同じ手順で学習させた重みを、このリポジトリから `~/rl_practice` に置く。①と②の両方を自分で学習させた場合は、自分の重み（`gz_pedal_w20.npz`・`gz_pedal_w0.npz`）がすでにあるので、この節の4-1は飛ばしてよい（同じ名前なので、取ってくると上書きされる）。①だけを自分で学習させた場合は、下の `cd` と、最後のコマンド（`gz_pedal_w0.npz`）だけを実行する。
 
 ```bash
 cd ~/rl_practice
@@ -467,11 +467,12 @@ PI制御は、「偏差に比例して踏み、偏差の積み重ねに応じて
 
 ## 10. 公式ドキュメント・参考資料
 
-確認状況（2026-10-06）: 下のページは、実在を確認した（HTTP 200）。2-2節の `pickle` の警告は、Pythonの公式の文書の `pickle` のページの冒頭で、`allow_pickle` の既定の値と意味は、numpyの `numpy.load` のページで、SB3の `.zip` の中身とcloudpickleを使うことは、SB3の保存の形式のページで確かめた。
+確認状況（2026-10-06。3-1節の解説は2026-10-11に足した）: 下のページは、実在を確認した（HTTP 200）。2-2節の `pickle` の警告は、Pythonの公式の文書の `pickle` のページの冒頭で、`allow_pickle` の既定の値と意味は、numpyの `numpy.load` のページで、SB3の `.zip` の中身とcloudpickleを使うことは、SB3の保存の形式のページで確かめた。3-1節の解説の、評価用の環境を分ける勧めは、Tips and Tricksのページの本文で、`learning_starts` の既定値（100）と、エントロピーの係数の初期値（1.0）・調整の目標（行動の数のマイナス）は、導入したSB3 2.9.0のソース（`stable_baselines3/sac/sac.py`）で確かめた。
 
 - [Python — pickle（Pythonオブジェクトの直列化）](https://docs.python.org/ja/3/library/pickle.html)（冒頭の警告）
 - [NumPy — numpy.load](https://numpy.org/doc/stable/reference/generated/numpy.load.html)（`allow_pickle`）
 - [Stable-Baselines3 — On saving and loading](https://stable-baselines3.readthedocs.io/en/master/guide/save_format.html)（`.zip` の中身）
 - [Stable-Baselines3 — SAC](https://stable-baselines3.readthedocs.io/en/master/modules/sac.html)（SACの引数と方策の形）
+- [Stable-Baselines3 — Reinforcement Learning Tips and Tricks](https://stable-baselines3.readthedocs.io/en/master/guide/rl_tips.html)（学習とは別の環境で評価する勧め）
 
-> 出典: 2-2節のpickle・numpy・SB3の保存の形式の説明は、各公式の文書を自分の言葉で要約したもので、逐語の転載ではない。このページのサンプルコード（`train_gz.py`・`npz_policy.py`・`compare_gz.py`）は独自に書いたもので、フェーズ7-3の `gz_pedal_env.py` と、フェーズ5-2・6-3のサンプルを読み込んで使う。配布する重み（`docs/models/` の `.npz`）は、作成時に、このページの3節の手順で学習させたもので、MIT License（[`LICENSE`](../LICENSE) の3、全文は [`LICENSE-MIT`](../LICENSE-MIT)）で配布している。
+> 出典: 2-2節のpickle・numpy・SB3の保存の形式の説明と、3-1節の解説のSB3の説明は、各公式の文書とソースを自分の言葉で要約したもので、逐語の転載ではない。このページのサンプルコード（`train_gz.py`・`npz_policy.py`・`compare_gz.py`）は独自に書いたもので、フェーズ7-3の `gz_pedal_env.py` と、フェーズ5-2・6-3のサンプルを読み込んで使う。配布する重み（`docs/models/` の `.npz`）は、作成時に、このページの3節の手順で学習させたもので、MIT License（[`LICENSE`](../LICENSE) の3、全文は [`LICENSE-MIT`](../LICENSE-MIT)）で配布している。

@@ -173,6 +173,6 @@ flowchart TB
 
 ## 9. 次へ
 
-7-2の3節以降（[`docs/phase7_2_gain_tuning.md`](phase7_2_gain_tuning.md)）では、2節のゲインを選ぶ環境で、SACにゲインを学習させる。最終ゴールまでの道筋に戻る場合は、7-3（[`docs/phase7_3_gazebo_env.md`](phase7_3_gazebo_env.md)）へ進む。この章の5節の反省を踏まえ、学習の前に、既定のゲインと格子の探索の最良の差（改善の余地）を確かめるところから始める。
+7-2の3節以降（[`docs/phase7_2_gain_tuning.md`](phase7_2_gain_tuning.md)）では、2節のゲインを選ぶ環境で、SACにゲインを学習させる。この章の5節の反省を踏まえ、学習の前に、既定のゲインと格子の探索の最良の差（改善の余地）を確かめるところから始める。最終ゴールまでの道筋に戻る場合は、7-3（[`docs/phase7_3_gazebo_env.md`](phase7_3_gazebo_env.md)）へ進む。
 
 > 出典: この章は、筆者がフェーズ7の手順書を作る途中で行った実験と判断を、自分の言葉でまとめたものである。SB3・Gymnasiumの挙動（`gradient_steps`・エントロピーの係数・`terminated` と `truncated` の扱い）は、フェーズ7-0・7-1と没案の7-2の出典に挙げた公式の文書とソースで確かめた。
