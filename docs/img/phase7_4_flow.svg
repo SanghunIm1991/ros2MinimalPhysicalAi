@@ -28,7 +28,7 @@
 <text x="690.0" y="116.0" text-anchor="middle" font-size="12">PI制御とNN</text>
 <text x="130.0" y="222.0" text-anchor="middle" font-size="14" font-weight="bold">学習（3節）</text>
 <text x="130.0" y="244.0" text-anchor="middle" font-size="12">train_gz.py</text>
-<text x="130.0" y="266.0" text-anchor="middle" font-size="12">SAC・②重み20 ③重み0</text>
+<text x="130.0" y="266.0" text-anchor="middle" font-size="12">SAC・①重み20 ②重み0</text>
 <text x="410.0" y="226.0" text-anchor="middle" font-size="13" font-weight="bold">gz_pedal_w20.npz</text>
 <text x="410.0" y="250.0" text-anchor="middle" font-size="12">方策の重みだけ（数の配列6つ）</text>
 <text x="690.0" y="222.0" text-anchor="middle" font-size="14" font-weight="bold">NpzPolicy</text>
