@@ -134,7 +134,7 @@ mv ~/ros2_ws/config/param_talker.yaml ~/ros2_ws/src/learn_bringup/config/
 
 **`<depend>` でなく `<exec_depend>` にする理由**: [フェーズ3-2aの3節](phase3_2a_turtlesim.md)のとおり、`<depend>` は、ビルド時と実行時の両方の依存をまとめて宣言する書き方である（`package.xml` の書き方の規則の[REP 149](https://ros.org/reps/rep-0149.html)では、ビルド時の依存の `<build_depend>`、このパッケージを使う側のビルドに要る依存の `<build_export_depend>`、実行時の依存の `<exec_depend>` の3つを、同時に書いたのと同じと決めている）。`learn_bringup` は、C++やPythonのコードを持たず、launchファイルとYAMLをインストールするだけなので、ビルドのときには上のパッケージを使わない。使うのは、`ros2 launch` で起動するときだけである。そこで、実行時の依存だけを表す `<exec_depend>` で書く。`<depend>` で書いてもビルドと起動はできるが、実際には要らない「ビルド時の依存」まで宣言することになる。
 
-一方、`learn_py`・`learn_cpp` の `<depend>` は、`ros2 pkg create` の `--dependencies` が書いたものである。C++の `learn_cpp` は、`rclcpp` などのヘッダとライブラリをビルドで使うので、ビルド時の依存も要る。Pythonの `learn_py` は、ビルドでコンパイルしないので、厳密には実行時の依存だけで足りるが、雛形が書いた `<depend>` のままにしている（どちらで書いても、ビルドと実行の結果は変わらない）。
+一方、`learn_py`・`learn_cpp` の `<depend>` は、`ros2 pkg create` の `--dependencies` が書いたもの（`rclpy`・`rclcpp`・`std_msgs`）と、フェーズ3-2a（`geometry_msgs`）などで、その書き方にならって足したものである。C++の `learn_cpp` は、メッセージの型やライブラリのヘッダをビルドで使うので、ビルド時の依存も要る。Pythonの `learn_py` は、ビルドでコンパイルしないので、厳密には実行時の依存だけで足りるが、メッセージの型のパッケージは、雛形とC++版にそろえて `<depend>` で書いている（どちらで書いても、ビルドと実行の結果は変わらない）。メッセージの型ではないライブラリ（フェーズ7-5のnumpy）は、実行時にだけ使うことがはっきりしているので、`<exec_depend>` で書く。
 
 ### 3-3. `CMakeLists.txt` でインストールする
 
