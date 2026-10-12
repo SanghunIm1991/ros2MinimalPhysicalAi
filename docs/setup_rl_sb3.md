@@ -8,7 +8,7 @@
 
 > **この手順書の位置づけ**: フェーズ7（7-0〜7-6）は、ひととおり作成を終えた段階である。今後の見直しで、導入するライブラリと版を改めることがある。
 
-> **期待する結果の出どころ**: **筆者の環境（2026-10-02に導入）で実際に表示されたもの**である。ただし、画面の記録が残っていなかった分（3節のダウンロードの行のファイル名と、2節のpipの更新・4節の導入の `Successfully installed` の行）は、仮想環境に導入されたものから書き起こしている（ダウンロードの行は、導入されたPyTorchの記録にある版と対応する環境の名前から。`Successfully installed` の行は、導入された版の一覧からの抜粋）。版の数字・所要時間・ディスクの大きさは、導入した時期と環境によって異なる。7節（2026-10-06に追加）の表示の出どころは、次のとおり。`import rclpy` の失敗は、筆者の仮想環境で実際に実行した表示。`pip install pyyaml==6.0.3` の `Successfully installed` の行は、PyTorch等を入れていない使い捨ての仮想環境に入れたときの表示で、その仮想環境の `site-packages` を `PYTHONPATH` に足して、筆者の仮想環境のPythonで `rclpy: OK` と表示されることを確かめた（PyTorchを入れていない仮想環境では、`launch-ros ... requires setuptools` という `ERROR` の行も出たが、3節で入れるPyTorchが `setuptools` を一緒に入れるので、手順書のとおりの仮想環境では出ない見込み）。
+> **期待する結果の出どころ**: **筆者の環境（2026-10-02に導入）で実際に表示されたもの**である。ただし、画面の記録が残っていなかった分（3節のダウンロードの行のファイル名と、2節のpipの更新・4節の導入の `Successfully installed` の行）は、仮想環境に導入されたものから書き起こしている（ダウンロードの行は、導入されたPyTorchの記録にある版と対応する環境の名前から。`Successfully installed` の行は、導入された版の一覧からの抜粋）。版の数字・所要時間・ディスクの大きさは、導入した時期と環境によって異なる。7節（2026-10-06に追加）の表示の出どころは、次のとおり。`import rclpy` の失敗は、筆者の仮想環境で実際に実行した表示。`pip install pyyaml==6.0.3` の `Successfully installed` の行は、PyTorch等を入れていない使い捨ての仮想環境に入れたときの表示で、その仮想環境の `site-packages` を `PYTHONPATH` に足して、筆者の仮想環境のPythonで `rclpy: OK` と表示されることを確かめた（PyTorchを入れていない仮想環境では、`launch-ros ... requires setuptools` という `ERROR` の行も出たが、3節で入れるPyTorchが `setuptools` を一緒に入れるので、手順書のとおりの仮想環境では出ない見込み）。7節の末尾の注意書きの `generate-parameter-library-py ... requires typeguard` の表示は、Gazeboの物理の間章の5節のパッケージを入れた環境で、7節の `pip install pyyaml==6.0.3` を実行したときに実際に出たもの（2026-10-12）。3節・4節の導入で同じパッケージについて出る行は、確かめておらず、pipの仕組みから想定したものである。
 
 ## 目的・ゴール
 
@@ -125,7 +125,7 @@ Successfully installed MarkupSafe-3.0.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3
 > launch-ros 0.26.12 requires pyyaml, which is not installed.
 > ```
 >
-> これは導入の失敗ではなく、無視してよい。`~/.bashrc` でROS2を読み込んでいると、環境変数 `PYTHONPATH` にROS2のPythonのパッケージの場所（`/opt/ros/jazzy/lib/python3.12/site-packages`）が入り、仮想環境のpipにもROS2の `launch_ros` が見える。`launch_ros` が必要とするpyyamlは、aptでシステムのPythonの側（`python3-yaml`）に入っているが、仮想環境からはシステムの側のパッケージが見えない。そのためpipは「pyyamlが無い」と報告する。仮想環境の中ではROS2のlaunchを使わないので、学習には影響しない。ROS2のコマンドはシステムのPythonで動くので、こちらも影響を受けない。フェーズ7-0〜7-2では、このまま進めてよい。フェーズ7-3からは、仮想環境の中でROS2の `rclpy` を使うので、7節でpyyamlを入れる（入れた後は、この表示は出なくなる）。版の数字（`0.26.12`）は、ROS2の更新の状況で違うことがある。
+> これは導入の失敗ではなく、無視してよい。`~/.bashrc` でROS2を読み込んでいると、環境変数 `PYTHONPATH` にROS2のPythonのパッケージの場所（`/opt/ros/jazzy/lib/python3.12/site-packages`）が入り、仮想環境のpipにもROS2の `launch_ros` が見える。`launch_ros` が必要とするpyyamlは、aptでシステムのPythonの側（`python3-yaml`）に入っているが、仮想環境からはシステムの側のパッケージが見えない。そのためpipは「pyyamlが無い」と報告する。仮想環境の中ではROS2のlaunchを使わないので、学習には影響しない。ROS2のコマンドはシステムのPythonで動くので、こちらも影響を受けない。フェーズ7-0〜7-2では、このまま進めてよい。フェーズ7-3からは、仮想環境の中でROS2の `rclpy` を使うので、7節でpyyamlを入れる（入れた後は、この行は出なくなる）。版の数字（`0.26.12`）は、ROS2の更新の状況で違うことがある。[Gazeboの物理の間章](interlude_gazebo_physics.md)の5節で、ros2_controlのパッケージを入れている場合は、同じ理由で、`generate-parameter-library-py ... requires ...` という行も出ることがある（7節の末尾の注意書き）。
 
 入ったことを確かめる。
 
@@ -258,6 +258,15 @@ rclpy: OK
 
 `Successfully installed pyyaml-6.0.3` の後、`rclpy: OK` と表示されれば、仮想環境のPythonから、ROS2のライブラリとメッセージの型（ここではオドメトリの [`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg)）を使える。
 
+> **`generate-parameter-library-py ... requires typeguard` と出る場合**: [Gazeboの物理の間章](interlude_gazebo_physics.md)の5節で、ros2_controlのパッケージ（`ros-jazzy-ros2-controllers` 等）を入れていると、`pip install pyyaml==6.0.3` の `Successfully installed` の直前に、次の `ERROR` が出る。
+>
+> ```text
+> ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+> generate-parameter-library-py 0.7.6 requires typeguard, which is not installed.
+> ```
+>
+> これも3節の注意書きの `launch-ros` と同じ理由で、導入の失敗ではなく、無視してよい。`generate_parameter_library_py` は、ros2_controlのパッケージが依存してaptで入るROS2のPythonのパッケージで、コントローラのパラメータを扱うコードをビルドの時に作る道具である。`PYTHONPATH` を通して仮想環境のpipにも見え、それが必要とする `typeguard` がシステムの側にしか無いため、「無い」と報告される。仮想環境の中では使わないので、`typeguard` を入れる必要はない。`rclpy: OK` と表示されていれば、7節は済んでいる。3節・4節の導入でも、同じパッケージについて、`typeguard` やpyyamlなどが無いという行が出ることがある。版の数字（`0.7.6`）は、ROS2の更新の状況で違うことがある。
+
 > **補足: 仮想環境とROS2のライブラリの組み合わせ方**
 >
 > - **一般的な方法**: ROS2の公式の文書（Using Python Packages with ROS 2）は、特別なオプションを付けずに仮想環境を作り、要るパッケージを仮想環境に `pip` で入れる形を示している。注意として挙げているのは、ROS2を作ったのと同じPython（Ubuntu 24.04では、システムの `python3`）で仮想環境を作ることで、2節の作り方はこれを満たしている。
@@ -272,6 +281,7 @@ rclpy: OK
 | `pip install` で `externally-managed-environment` と出る | 仮想環境を有効にしたか（プロンプトに `(rl_venv)` があるか）。新しいターミナルでは、有効にし直す |
 | 導入に長い時間がかかり、`nvidia-...` という名前のパッケージが次々にダウンロードされる | 3節より先にSB3を入れて、GPU向けのPyTorchが選ばれている。`Ctrl+C` で止め、6節で消して作り直す |
 | `pip install` の最後に `launch-ros ... requires pyyaml, which is not installed.` という `ERROR` が出る | `Successfully installed` の行が出ていれば、導入は成功している。ROS2を読み込んだターミナルで出ることがあり、無視してよい（3節の注意書き）。7節でPyYAMLを入れた後は、出なくなる |
+| `pip install` の最後に `generate-parameter-library-py ... requires typeguard, which is not installed.` という `ERROR` が出る | `Successfully installed` の行が出ていれば、導入は成功している。Gazeboの物理の間章の5節でros2_controlのパッケージを入れていると出ることがあり、無視してよい（7節の末尾の注意書き）。7節でPyYAMLを入れた後も出る |
 | `import rclpy` で `No module named 'yaml'` と出る | 7節のPyYAMLを、仮想環境を有効にしたターミナルで入れたか |
 | `import rclpy` で `No module named 'rclpy'` と出る | ROS2を読み込んだターミナルか（`source /opt/ros/jazzy/setup.bash`。`~/.bashrc` で読み込んでいれば不要） |
 | `import gymnasium` で `No module named 'gymnasium'` と出る | 仮想環境を有効にしたか。`which python` が `~/rl_venv/bin/python` を指しているか |
