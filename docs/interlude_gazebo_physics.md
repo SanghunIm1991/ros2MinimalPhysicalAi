@@ -2,14 +2,14 @@
 
 この章は、フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）までを読み終えた人向けの、任意の章である。フェーズ5では、Gazeboに付属する2輪車のワールドを写し、車輪にトルクをかけて走らせた。車両の形や重さ、地面との摩擦は、付属のファイルに書かれたものをそのまま使い、中身にはほとんど触れなかった。けれども、自分のロボットをシミュレーションしたくなったら、ロボットの形・重さ・関節を自分で書き、地面や物との接触がどう計算されるかを知っておく必要がある。この章では、箱を落とす、坂で滑らせる、球を跳ねさせる、腕を振り下ろす、という小さな体験を通して、ワールドとロボットの書き方と、物理エンジンが何を計算しているかをひととおり見ていく。
 
-- 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy + Gazebo Harmonic（フェーズ5-0で導入したもの）
+- 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy + Gazebo Harmonic（フェーズ5-0で導入したもの）。5節だけは、ros2_controlのパッケージを追加で導入する（5節の冒頭）
 - 前提: フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）。フェーズ6・7の本文は、この章に依存しない
 - 所要目安: 1〜2コマ
 - 言語: なし（XMLのファイルを書き、コマンドで動かす。PythonやC++のコードは書かない）
 
 > **この章の位置づけ**: 小さな体験つきの読み物である。体験に使うファイルは、どれも数十行のXMLで、パッケージやビルドは要らない。練習のファイルは、ワークスペース（`~/ros2_ws`）とは別のフォルダ `~/gz_practice` に置く。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない（要素の名前と書き方は公式の文書と同等。出典は末尾に記載する）。センサの節は、今後書き足す予定である。
 
-> **期待する結果の出どころ**: `gz sdf`・`xacro`・`check_urdf` の表示は、この章の作成時に実際に実行した表示。2〜3節の位置の数値（`gz model` の表示）は、作成時にGazeboを画面なしで起動し、一時停止したまま決めた刻みだけ進めて読んだ表示。4-4節の角度（`ros2 topic echo` の表示）とノードのログは、作成時に画面なしのGazeboで同じ手順を実行し、15秒進めた後に読んだ表示で、ログの時刻と `stamp` は実行ごとに異なる。5節のノード・コントローラ・アクションの表示と角度、5-4節の表の角度は、作成時に画面なしのGazeboで同じ手順を実行して読んだ表示（5-3節のT1〜T4の起動のログと最初の `spawner` のログは、ほかの表示と別の回の実行のもの）で、ログの時刻・`stamp`・アクションの `ID` は実行ごとに異なる。Gazeboの画面での見え方は、その数値から筆者が想定したもの。
+> **期待する結果の出どころ**: `gz sdf`・`xacro`・`check_urdf` の表示は、この章の作成時に実際に実行した表示。2〜3節の位置の数値（`gz model` の表示）は、作成時にGazeboを画面なしで起動し、一時停止したまま決めた刻みだけ進めて読んだ表示。4-4節の角度（`ros2 topic echo` の表示）とノードのログは、作成時に画面なしのGazeboで同じ手順を実行し、15秒進めた後に読んだ表示で、ログの時刻と `stamp` は実行ごとに異なる。5節のノード・コントローラ・アクションの表示と角度、5-4節の表の角度は、作成時に画面なしのGazeboで同じ手順を実行して読んだ表示（5-3節のT1〜T4の起動のログ・最初の `spawner` のログ・`ros2 topic pub` の表示と、5-4節の有効化の失敗の表示は、ほかの表示と別の回の実行のもの）で、ログの時刻・`stamp`・アクションの `ID` は実行ごとに異なる。5節の冒頭の `dpkg -l` の表示は、作成時の環境で実際に実行した表示。Gazeboの画面での見え方は、その数値から筆者が想定したもの。
 
 ## 0. この章で得てほしいこと
 
@@ -849,6 +849,23 @@ effort:
 
 ## 5. ros2_controlで関節を動かす
 
+この節では、フェーズ5-0で入れたGazeboのパッケージに含まれない、ros2_controlのパッケージを使う。体験の前に、次の2つを導入する。
+
+```bash
+sudo apt install ros-jazzy-gz-ros2-control ros-jazzy-ros2-controllers
+
+dpkg -l ros-jazzy-gz-ros2-control ros-jazzy-ros2-controllers
+```
+
+**期待する結果**（`dpkg -l` の分の末尾の2行。版と日付は導入した時期によって変わる）:
+
+```text
+ii  ros-jazzy-gz-ros2-control  1.2.20-1noble.20261006.040504 amd64        Gazebo ros2_control package allows to control simulated robots using ros2_control framework.
+ii  ros-jazzy-ros2-controllers 4.42.1-1noble.20260924.191822 amd64        Metapackage for ros2_controllers related packages
+```
+
+2行とも先頭が `ii`（導入済み）なら準備ができている。`ros-jazzy-gz-ros2-control` は、Gazeboの中でros2_controlを動かすためのもの、`ros-jazzy-ros2-controllers` は、この節で使うコントローラ（5-1節の表）を含むパッケージの集まりである。コントローラマネージャ（`controller_manager`）などのros2_controlの本体も、依存するパッケージとして一緒に入る。
+
 ### 5-1. ros2_controlの仕組み
 
 4-4節では、関節の角度を読むだけで、腕は重力に任せて垂れ下がった。腕を狙った角度に動かすには、関節に指令を送る仕組みが要る。3-4節の表のように、Gazeboのシステム（`ApplyJointForce` 等）で関節に力をかけることもできるが、それはGazeboの中だけの書き方で、実機のロボットに移すときには、指令を送る側を書き直すことになる。
@@ -1027,7 +1044,7 @@ T2は、4-4節と同じで、展開するファイルだけが違う。T3は、�
 
 T4の `Waiting messages on topic [robot_description].` の行は、2回以上出ることもある。T1には、モデルが出た後に、`GazeboSimROS2ControlPlugin` が起動したコントローラマネージャのログが続く。`Received robot description from topic.` は、コントローラマネージャも、`create` と同じトピック `/robot_description` からURDFを受け取ったことを示す。`Loading joint:` の行で、URDFの `<ros2_control>` に書いた2つの関節が読み込まれ、`Starting Controller Manager services...` で準備ができる（ここに載せた行のほかに、`WARN` の行もいくつか出るが、この体験では問題にならない）。
 
-T1の画面では、腕は4-4節と違い、水平に伸びたまま止まっている。`GazeboSimROS2ControlPlugin` は、どのコントローラも指令を書いていない関節を、その場の角度に保つ（`hold_joints` の設定で、既定で有効）。作成時には、`create` の5秒後に、2つの関節の角度が0のままであることを、Gazeboのトピックで確かめた。
+T1の画面では、腕は4-4節と違い、水平に伸びたまま止まっている。`GazeboSimROS2ControlPlugin` は、どのコントローラも指令を書いていない関節を、その場の角度に保つ（`hold_joints` の設定で、既定で有効）。作成時には、`create` の5秒後に、Gazeboのトピック（4-3節の `JointStatePublisher` が送る、関節の状態）に、2つの関節の角度の値が出ていないこと（この表示の形式では、0の値は省かれる）から、角度が0のままであると判断した。
 
 コントローラを読み込んで有効にする。
 
@@ -1046,7 +1063,7 @@ ros2 run controller_manager spawner joint_state_broadcaster arm_position_control
 [INFO] [1791810693.390987546] [spawner_joint_state_broadcaster]: Configured and activated arm_position_controller
 ```
 
-`spawner`（スポナー）は、コントローラマネージャのサービスを呼んで、名前を並べたコントローラを順に読み込み（`Loaded`）、準備して有効にする（`Configured and activated`）小さなプログラムで、終わると自分で終了する。ノードの名前は、最初に並べたコントローラの名前から付く。2つとも `Configured and activated` が出れば成功である。この時点では、位置のコントローラにまだ目標が届いていないので、腕は水平のままである。
+`spawner`（スポナー）は、コントローラマネージャのサービスを呼んで、名前を並べたコントローラを順に読み込み（`Loaded`）、準備して有効にする（`Configured and activated`）小さなプログラムで、終わると自分で終了する。ノードの名前は、最初に並べたコントローラの名前から付く。2つとも `Configured and activated` が出れば成功である。この時点では、位置のコントローラにまだ目標が届いていないので、腕は水平のままのはずである（`hold_joints` の説明からの想定で、作成時にはこの時点の角度を読んでいない）。
 
 位置のコントローラに、目標の角度を送る。位置のコントローラは、トピック `/<コントローラの名前>/commands` で、関節の角度を [`std_msgs/msg/Float64MultiArray`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64MultiArray.msg)（数の並び）として受け取る。並びの順は、設定のファイルの `joints` の順（`joint1`、`joint2`）である。
 
@@ -1167,7 +1184,7 @@ Goal finished with status: SUCCEEDED
 - 0〜2秒の間、`joint1` は0.5秒ごとに約0.25 radずつ、一定の速さ（0.5 rad/s）で変わっている。2〜4秒の間も、別の一定の速さ（`joint1` は0.25 rad/s）で変わる。この軌道では、点ごとに角度だけを書き、角速度を書いていないので、軌道のコントローラは、点と点の間を直線でつないだ。直線でつなぐと、点のところで速さが急に変わるので、公式の説明は勧めていない。点ごとに角速度も書くと3次の曲線で、さらに角加速度も書くと5次の曲線で、なめらかにつなぐ。
 - 2秒の時点の角度（−0.4588）は、軌道の点の−0.5に届いていない。差の約0.04 radは、0.5 rad/sで動く目標を、5-3節の時定数0.1秒の遅れで追いかけた分（約0.05 rad）に近い。軌道のコントローラが書く指令は軌道の上にあり、`GazeboSimSystem` がそれを0.1秒ほど遅れて追う。4秒の時点も同じ理由で0に届かず、その後0.5秒ほどで0に落ち着く。
 
-> **補足（`ros2 control` のコマンド）**: コントローラの一覧や状態は、`ros2 control list_controllers` などのコマンドで見られるが、このコマンドは、この章で入れたパッケージには含まれず、別のパッケージ `ros-jazzy-ros2controlcli` にある（作成時の環境で確かめた。この章では使わない）。
+> **補足（`ros2 control` のコマンド）**: コントローラの一覧や状態は、`ros2 control list_controllers` などのコマンドで見られるが、このコマンドは、5節の冒頭で入れたパッケージには含まれず、別のパッケージ `ros-jazzy-ros2controlcli` にある（作成時の環境で確かめた。この章では使わない）。
 
 止めるときは、T3・T2・T1の順に `Ctrl+C` で止める。
 
@@ -1223,4 +1240,4 @@ Goal finished with status: SUCCEEDED
 - [ros-controls/gz_ros2_control（GitHub、jazzyブランチ）](https://github.com/ros-controls/gz_ros2_control/tree/jazzy)（ソースとデモ。デモのURDFと設定のファイルが手本になる）
 - [joint_state_broadcaster — ros2_control: Jazzy](https://control.ros.org/jazzy/doc/ros2_controllers/joint_state_broadcaster/doc/userdoc.html)・[position_controllers](https://control.ros.org/jazzy/doc/ros2_controllers/position_controllers/doc/userdoc.html)・[joint_trajectory_controller](https://control.ros.org/jazzy/doc/ros2_controllers/joint_trajectory_controller/doc/userdoc.html)（この章で使った3つのコントローラ。軌道の補間の仕方は、同じ場所の「Trajectory Representation」のページ）
 
-> 出典: ワールドとロボットのファイルと、コントローラの設定のファイルは、上記の公式の文書とSDFの仕様の要素の名前と書き方にならって独自に書いたもので、転載ではない。`gz sdf`・`xacro`・`check_urdf`・ノード・コントローラ・`ros2` のコマンドの表示は、導入したツールの出力を載せたもの（SDFormat・Gazebo Sim・ros_gz・gz_ros2_control・ros2_control・ros2_controllers・ros2cli はApache License 2.0、xacro・urdfdom・robot_state_publisher はBSD License）。文章は独自に書いたもの。
+> 出典: ワールドとロボットのファイルと、コントローラの設定のファイルは、上記の公式の文書とSDFの仕様の要素の名前と書き方にならって独自に書いたもので、転載ではない（5節の `<ros2_control>` と設定のファイルの書き方は、`gz_ros2_control` のデモと同等）。`gz sdf`・`xacro`・`check_urdf`・ノード・コントローラ・`ros2` のコマンドの表示は、導入したツールの出力を載せたもの（SDFormat・Gazebo Sim・ros_gz・gz_ros2_control・ros2_control・ros2_controllers・ros2cli はApache License 2.0、xacro・urdfdom・robot_state_publisher はBSD License）。文章は独自に書いたもの。
