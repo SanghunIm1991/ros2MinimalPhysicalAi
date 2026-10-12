@@ -88,6 +88,12 @@
 - 内容: 一次遅れの解と時定数（63%・95%）、定常速度と速度の時定数の手計算、オイラー法の刻み幅と時定数の関係、抵抗を線形にした理由（5-1の補足）。P制御だけで残る偏差、極零相殺によるゲインの目安、アクセルとブレーキでのループの速さ（5-2の補足）。目標0で止まりきらない理由（5-3の5節）と、Gazeboの物理で同じゲインの追従が変わる理由（5-4の7節）の読み解き。
 - 言語: なし（読み物と手計算）。
 
+### 間章: Gazeboの物理シミュレーションの基本（任意）— 1〜2コマ
+
+- 位置づけ（2026-10-12、ユーザー判断）: このプロジェクトで使っていない機能も含め、ROS2と連携したロボットの物理シミュレーションの基本を知るための、フェーズ5-4の後の任意の間章 [`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md)。形は読み物＋小さな体験。フェーズ6・7の本文は、この章に依存しない。
+- 内容: SDFの入れ子とリンクの3つの情報（慣性・衝突・見た目）、物理エンジンと刻み幅、摩擦と反発（係数の組み合わせ方を含む）、URDFとxacro、ROS2からのモデルの出し方と `/joint_states`。今後、ros2_control（位置・軌道のコントローラ）とセンサの節を足す（ユーザーが導入した後）。
+- 言語: なし（SDF・URDF・xacroのファイルとコマンド）。
+
 ### フェーズ6: 可視化・記録（E）— 3〜5コマ（見込み）
 
 - 着地（2026-09-26、ユーザー判断）: 「グラフで見た違いを、数で言えるようにする」まで進める。`rqt_plot` で見る → `ros2 bag` で記録する → 再生して同じグラフを見直す → 解析のノードで記録から指標を計算し、条件ごとの比較表を作る。指標は、ステップ6（強化学習）の報酬を作る下地にもなる。
@@ -191,6 +197,7 @@
 | 5-3 | [`docs/phase5_3_launch.md`](phase5_3_launch.md) | Python（launchもPython形式） | 作成済み（2026-09-26。使い捨ての環境で、ビルド、launchの`--show-args`・`--print`、`gazebo:=false` での起動のログ、画面なしのGazeboでのオドメトリの速度、`Ctrl+C` の後の表示まで確認。Gazeboの画面の見え方、`rqt_plot` のグラフ、ユーザーの実機での実行は未確認。図（`docs/img/phase5_3_launch.svg`）の見た目は未確認） |
 | 5-4 | [`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md) | Python（launchもPython形式）＋ワールドファイル | 作成済み（2026-09-26。使い捨ての環境で、ワールドの `gz sdf -k`、ビルド、launchの`--show-args`・`--print`、画面なしのGazeboでの起動のログと、オドメトリの記録による比較まで確認。Gazeboの画面の見え方と、ユーザーの実機での実行は未確認。図（`docs/img/phase5_4_gazebo_plant.svg`）の見た目は未確認） |
 | 間章（古典制御） | [`docs/interlude_classical_control.md`](interlude_classical_control.md) | なし（読み物） | 作成済み（2026-10-05。フェーズ5-1〜5-4の古典制御の具体的な説明（手計算・導出・現象の読み解き）を移した任意の章。数値はフェーズ5の手順書の計算・実行の結果を使い、新たな実行はしていない） |
+| 間章（Gazeboの物理） | [`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md) | なし（SDF・URDF・xacroのファイルとコマンド） | 作成中（2026-10-12。1〜4節（SDF・物理・URDFとxacro）を作成。使い捨ての環境で、`gz sdf -k`・`-p`、`xacro`・`check_urdf`、画面なし・一時停止のGazeboを決めた刻みだけ進めた位置と角度、`robot_state_publisher`・`create`・ブリッジでの `/joint_states` まで確認。ros2_controlとセンサの節は、ユーザーが `ros-jazzy-gz-ros2-control` 等を導入した後に追加する。Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図（`docs/img/interlude_gazebo_overview.svg`）の見た目は未確認） |
 | 6-1 | [`docs/phase6_1_record.md`](phase6_1_record.md) | Python（launchもPython形式） | 作成済み（2026-09-27。使い捨ての環境で、手での記録・`ros2 bag info`・再生、2つの記録の同時再生、`record.launch.py` で5-3の一式と5-4の一式（画面なしのGazebo）を決めた時間で記録して止まるまでを確認。`rqt_plot` の画面、Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図（`docs/img/phase6_1_record.svg`）の見た目は未確認） |
 | 6-2 | [`docs/phase6_2_goal.md`](phase6_2_goal.md) | Python（launchもPython形式） | 作成済み（2026-09-27。使い捨ての環境で、`record_goal.launch.py` で5-3の一式（案A）と5-4の一式（案B、画面なしのGazebo）をゴールの450 mで記録して止まるまでと、案Aと案Bの距離の比較を確認。Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図（`docs/img/phase6_2_goal.svg`）の見た目は未確認） |
 | 6-3 | [`docs/phase6_3_metrics.md`](phase6_3_metrics.md) | Python（C++版はサンプルを動かす程度） | 作成済み（2026-09-27。使い捨ての環境で、`metrics.py` の閉ループの計算への当てはめ、3つの記録（5-3の既定・`tau_brake` 1.0・5-4の既定。5-4は画面なしのGazebo）の解析、Python版とC++版の結果の一致を確認。ユーザーの実機での実行は未確認。図（`docs/img/phase6_3_metrics.svg`）の見た目は未確認） |

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 450" width="930" height="450" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: ワールドの記述（SDF）を gz sim のサーバーが読み込み、物理エンジン（DART）とシステムが刻みごとに動きを計算して、様子を画面（GUI）に送る。ロボットの記述（URDF）は、xacroから展開して作り、create でSDFに変換してワールドに出す。gz sim と ROS2のノードは、ros_gz_bridge がトピックを中継してつなぐ">
+<title>図: ワールドの記述（SDF）を gz sim のサーバーが読み込み、物理エンジン（DART）とシステムが刻みごとに動きを計算して、様子を画面（GUI）に送る。ロボットの記述（URDF）は、xacroから展開して作り、create でSDFに変換してワールドに出す。gz sim と ROS2のノードは、ros_gz_bridge がトピックを中継してつなぐ</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="930" height="450" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<path d="M250,90 L350,90" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M250,230 L350,230" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M140,320 L140,280" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M570,90 L680,90" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M460,280 L460,320" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M570,370 L680,370" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<rect x="30" y="40" width="220" height="100" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5"/>
+<rect x="30" y="180" width="220" height="100" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5"/>
+<rect x="30" y="320" width="220" height="100" rx="8" fill="#f6f6f6" stroke="#888888" stroke-width="1.5"/>
+<rect x="350" y="40" width="220" height="240" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
+<rect x="680" y="40" width="220" height="100" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
+<rect x="350" y="320" width="220" height="100" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="680" y="320" width="220" height="100" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<text x="140" y="66" text-anchor="middle" font-weight="bold">ワールドの記述</text>
+<text x="140" y="86" text-anchor="middle">SDF（.sdf）</text>
+<text x="140" y="106" text-anchor="middle">地面・光・物理の設定</text>
+<text x="140" y="206" text-anchor="middle" font-weight="bold">ロボットの記述</text>
+<text x="140" y="226" text-anchor="middle">URDF（.urdf）</text>
+<text x="140" y="246" text-anchor="middle">SDFに変換して読まれる</text>
+<text x="140" y="346" text-anchor="middle" font-weight="bold">xacro</text>
+<text x="140" y="366" text-anchor="middle">URDFをマクロで短く書く</text>
+<text x="140" y="386" text-anchor="middle">（.urdf.xacro）</text>
+<text x="460" y="66" text-anchor="middle" font-weight="bold">gz sim（サーバー）</text>
+<text x="460" y="86" text-anchor="middle">物理エンジン（DART）が</text>
+<text x="460" y="106" text-anchor="middle">刻みごとに動きを計算</text>
+<text x="460" y="146" text-anchor="middle" font-weight="bold">システム（プラグイン）</text>
+<text x="460" y="166" text-anchor="middle">物理・コマンドの受付・</text>
+<text x="460" y="186" text-anchor="middle">状態の配信・関節の角度…</text>
+<text x="790" y="66" text-anchor="middle" font-weight="bold">画面（GUI）</text>
+<text x="790" y="86" text-anchor="middle">3Dの表示と操作</text>
+<text x="790" y="106" text-anchor="middle">gz sim -s では開かない</text>
+<text x="460" y="346" text-anchor="middle" font-weight="bold">ros_gz_bridge</text>
+<text x="460" y="366" text-anchor="middle">gzとROS2の</text>
+<text x="460" y="386" text-anchor="middle">トピックを中継する</text>
+<text x="790" y="346" text-anchor="middle" font-weight="bold">ROS2のノード</text>
+<text x="790" y="366" text-anchor="middle">robot_state_publisher</text>
+<text x="790" y="386" text-anchor="middle">自作のノード・ros2 コマンド</text>
+<text x="300" y="82" text-anchor="middle" font-size="13">読み込む</text>
+<text x="300" y="222" text-anchor="middle" font-size="13">create</text>
+<text x="150" y="307" text-anchor="start" font-size="13">展開する</text>
+<text x="625" y="82" text-anchor="middle" font-size="13">様子</text>
+<text x="470" y="307" text-anchor="start" font-size="13">gzのトピック</text>
+<text x="625" y="362" text-anchor="middle" font-size="13">ROS2のトピック</text>
+</g>
+</svg>

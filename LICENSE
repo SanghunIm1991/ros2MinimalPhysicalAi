@@ -98,6 +98,9 @@ the author (SanghunIm1991) and the license are credited.
      Farama Foundation）, MIT License
      MIT License の全文と著作権の表示 / Full text and notices:
      LICENSE-MIT-THIRD-PARTY（このリポジトリの直下）
+   - docs/interlude_gazebo_physics.md の期待する結果に載せた、`gz sdf -p` が
+     表示したSDF（SDFormat, Apache License 2.0）と、`check_urdf` の表示
+     （urdfdom, BSD License）
    - 「期待する結果」等に載せたコマンドの出力: 各ツールの表示
    - docs/img/phase5_0_gazebo.png（docs/phase5_0_gazebo.md の冒頭）に写っている
      Gazebo Sim の画面と、付属のワールド `diff_drive.sdf` の中身: Open Source
