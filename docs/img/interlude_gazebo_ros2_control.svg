@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1030 525" width="1030" height="525" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: ROS2のノード（ros2 topic pub、ros2 action send_goal）が、トピックやアクションで、コントローラに目標を送る。gz sim の中では、コントローラマネージャが update_rate ごとに、コントローラと joint_state_broadcaster を動かす。コントローラマネージャは、ハードウェアの部品（GazeboSimSystem）と指令・状態をやり取りし、GazeboSimSystem は Gazebo の関節に指令を書き、状態を読む。joint_state_broadcaster は、状態を /joint_states に送り、ros2 topic echo などで読める">
+<title>図: ROS2のノード（ros2 topic pub、ros2 action send_goal）が、トピックやアクションで、コントローラに目標を送る。gz sim の中では、コントローラマネージャが update_rate ごとに、コントローラと joint_state_broadcaster を動かす。コントローラマネージャは、ハードウェアの部品（GazeboSimSystem）と指令・状態をやり取りし、GazeboSimSystem は Gazebo の関節に指令を書き、状態を読む。joint_state_broadcaster は、状態を /joint_states に送り、ros2 topic echo などで読める</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="1030" height="525" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="260" y="10" width="450" height="500" rx="10" fill="#f7fbf7" stroke="#3a8a3a" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="270" y="36" font-weight="bold">gz sim の中</text>
+<rect x="275" y="45" width="420" height="150" rx="10" fill="#fffbf2" stroke="#b7791f" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="285" y="71" font-weight="bold">コントローラマネージャ（update_rate ごとに繰り返す）</text>
+<path d="M200,130 L290,130" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M680,130 L830,130" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M380,195 L380,245" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M380,345 L380,395" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<rect x="20" y="80" width="180" height="100" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="290" y="80" width="180" height="100" rx="8" fill="#fff6e5" stroke="#b7791f" stroke-width="1.5"/>
+<rect x="500" y="80" width="180" height="100" rx="8" fill="#fff6e5" stroke="#b7791f" stroke-width="1.5"/>
+<rect x="830" y="80" width="180" height="100" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="290" y="245" width="180" height="100" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
+<rect x="290" y="395" width="180" height="100" rx="8" fill="#eef7ee" stroke="#3a8a3a" stroke-width="1.5"/>
+<text x="110" y="106" text-anchor="middle" font-weight="bold">ROS2のノード</text>
+<text x="110" y="126" text-anchor="middle">ros2 topic pub</text>
+<text x="110" y="146" text-anchor="middle">ros2 action</text>
+<text x="110" y="166" text-anchor="middle">send_goal</text>
+<text x="380" y="106" text-anchor="middle" font-weight="bold">コントローラ</text>
+<text x="380" y="126" text-anchor="middle">位置のコントローラ</text>
+<text x="380" y="146" text-anchor="middle">軌道のコントローラ</text>
+<text x="590" y="106" text-anchor="middle" font-weight="bold">joint_state_</text>
+<text x="590" y="126" text-anchor="middle">broadcaster</text>
+<text x="590" y="146" text-anchor="middle">状態を送る</text>
+<text x="920" y="106" text-anchor="middle" font-weight="bold">ros2 topic echo</text>
+<text x="920" y="126" text-anchor="middle">など</text>
+<text x="380" y="271" text-anchor="middle" font-weight="bold">ハードウェアの部品</text>
+<text x="380" y="291" text-anchor="middle">GazeboSimSystem</text>
+<text x="380" y="421" text-anchor="middle" font-weight="bold">Gazeboの関節</text>
+<text x="380" y="441" text-anchor="middle">物理エンジンが</text>
+<text x="380" y="461" text-anchor="middle">動きを計算</text>
+<text x="230" y="122" text-anchor="middle" font-size="13">目標</text>
+<text x="770" y="122" text-anchor="middle" font-size="13">/joint_states</text>
+<text x="390" y="230" text-anchor="start" font-size="13">指令・状態</text>
+<text x="390" y="380" text-anchor="start" font-size="13">書く・読む</text>
+</g>
+</svg>
