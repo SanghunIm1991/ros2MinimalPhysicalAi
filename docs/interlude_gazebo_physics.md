@@ -881,7 +881,7 @@ effort:
 - [Building your own robot — Gazebo Harmonic](https://gazebosim.org/docs/harmonic/building_robot/)（SDFでモデル・リンク・慣性・衝突と見た目・関節を書くチュートリアル）
 - [Spawn URDF — Gazebo Harmonic](https://gazebosim.org/docs/harmonic/spawn_urdf/)（URDFをSDFに変換してワールドに出す仕組み。Gazeboのサービスで出す方法）
 - [Spawn a Gazebo model from ROS 2 — Gazebo Harmonic](https://gazebosim.org/docs/harmonic/ros2_spawn_model/)（ROS 2からモデルを出す方法。Jazzyのlaunchファイル `gz_spawn_model.launch.py` も紹介している）
-- [SDFormat Specification](http://sdformat.org/spec)（SDFの要素の一覧と既定値）
+- [SDFormat Specification](https://sdformat.org/spec)（SDFの要素の一覧と既定値）
 - [gz::sim::systems::Physics — Gazebo Sim 8 APIリファレンス](https://gazebosim.org/api/sim/8/classgz_1_1sim_1_1systems_1_1Physics.html)（物理のシステム）
 - [gz::sim::systems::JointStatePublisher — Gazebo Sim 8 APIリファレンス](https://gazebosim.org/api/sim/8/classgz_1_1sim_1_1systems_1_1JointStatePublisher.html)（関節の状態を送るシステム。トピック名の決まり）
 - [Building a visual robot model from scratch — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/Building-a-Visual-Robot-Model-with-URDF-from-Scratch.html)（URDFの書き方のチュートリアル）
