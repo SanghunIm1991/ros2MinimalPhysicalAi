@@ -11,7 +11,7 @@
 
 > **進め方**: 1節で全体像を見て、2節で強化学習の用語を押さえる。3節でGymnasiumの環境を、エージェント無しで（でたらめな行動で）動かす。4節でSB3のSACに振り子を学習させ、5節で学習したNNの中身を見る。6節で、自分で式を書いた制御器と比べる。3節・4節では、公式の文書の例を抜粋して読んでから、この教材の題材に合わせて書き直したスクリプトを動かす。抜粋した部分は、各節と末尾に出典を書いている。それ以外のサンプルは、学習の手がかりとして最小限に書いたものである。
 
-> **期待する結果の出どころ**: **筆者の環境（2026-10-02。PyTorch 2.14.1のCPU版・SB3 2.9.0・Gymnasium 1.3.0。導入は [`docs/setup_rl_sb3.md`](setup_rl_sb3.md)）で、各スクリプトを実際に実行した表示**である（3-1節はウィンドウを出さない形で実行した）。ウィンドウを出す形は、WSL2（WSLg）の環境で、3-1節と6-3節（任意。ウィンドウで動きを見る）を実行した（2026-10-13）。3-1節ではウィンドウが見えず、6-3節ではウィンドウが開いて振り子が真上で保たれた（3-1節の `time.sleep` を足す対処は試していない）。6-3節の動きの細部（2回の動きとその違い・表示の時間・ウィンドウが閉じる時機）とターミナルの表示は、コードとライブラリの仕様から想定したものである。学習の結果（報酬の値・学習の時間）は、PCとライブラリの版によって変わる。
+> **期待する結果の出どころ**: **筆者の環境（2026-10-02。PyTorch 2.14.1のCPU版・SB3 2.9.0・Gymnasium 1.3.0。導入は [`docs/setup_rl_sb3.md`](setup_rl_sb3.md)）で、各スクリプトを実際に実行した表示**である（3-1節はウィンドウを出さない形で実行した）。ウィンドウを出す形は、WSL2（WSLg）の環境で、3-1節と6-3節（任意。ウィンドウで動きを見る）を実行した（2026-10-13）。3-1節ではウィンドウが見えず、6-3節ではウィンドウが開いて振り子が真上で保たれた（3-1節のコードに足した `time.sleep` の2行は試していない）。6-3節の動きの細部（2回の動きとその違い・表示の時間・ウィンドウが閉じる時機）とターミナルの表示は、コードとライブラリの仕様から想定したものである。学習の結果（報酬の値・学習の時間）は、PCとライブラリの版によって変わる。
 
 ## 0. 学習目標と完了条件
 
@@ -114,11 +114,12 @@ source ~/rl_venv/bin/activate
 
 ### 3-1. 公式の例: でたらめな行動でCartPoleを動かす
 
-Gymnasiumの公式の入門（Basic Usage）の「Your First RL Program」は、台車の上の棒を倒さないように保つ環境 `CartPole-v1` を、でたらめな行動で1エピソード動かす例である。以下は、その例の抜粋である（逐語。出典は末尾）。
+Gymnasiumの公式の入門（Basic Usage）の「Your First RL Program」は、台車の上の棒を倒さないように保つ環境 `CartPole-v1` を、でたらめな行動で1エピソード動かす例である。以下は、その例の抜粋である（逐語。ただし、ウィンドウを見るための2行（`import time` と `time.sleep(3)`。コメントの「公式の例に追加」の行）を足した。出典は末尾）。
 
 ```python
 # Run `pip install "gymnasium[classic-control]"` for this example.
 import gymnasium as gym
+import time  # 公式の例に追加: ウィンドウを閉じる前に待つため
 
 # Create our training environment - a cart with a pole that needs balancing
 env = gym.make("CartPole-v1", render_mode="human")
@@ -150,6 +151,7 @@ while not episode_over:
     episode_over = terminated or truncated
 
 print(f"Episode finished! Total reward: {total_reward}")
+time.sleep(3)  # 公式の例に追加: ウィンドウを閉じる前に3秒待つ
 env.close()
 ```
 
@@ -162,13 +164,13 @@ env.close()
 - `terminated` か `truncated` のどちらかが `True` になったら、エピソードは終わり。次を始めるには、また `reset` する。
 - CartPoleでは、棒が立っている間、1ステップごとに報酬+1が入る。でたらめに押すと、棒はすぐに倒れる（`terminated`）。
 
-この例を `~/rl_practice/cartpole_random.py` として保存し（ファイルの置き方は [サンプルコードを練習環境に置く方法](howto_place_code.md)）、仮想環境を有効にしたターミナルで実行する。ウィンドウを出したくない場合は、`render_mode="human"` を消してから実行する。
+この例を `~/rl_practice/cartpole_random.py` として保存し（ファイルの置き方は [サンプルコードを練習環境に置く方法](howto_place_code.md)）、仮想環境を有効にしたターミナルで実行する。ウィンドウを出したくない場合は、`render_mode="human"` を消してから実行する（`time.sleep(3)` は残しても、終わるのが3秒遅れるだけである）。
 
 ```bash
 python cartpole_random.py
 ```
 
-`render_mode="human"` のまま実行すると、ウィンドウが開き、台車がでたらめに左右へ動いて、棒がやがて倒れる（公式の文書の「What you should see」）。ただし、CartPoleの表示は毎秒50コマで、でたらめな行動では10〜40ステップ程度で倒れるので、1エピソードは1秒足らずで終わり、すぐに `env.close()` でウィンドウが閉じる。ウィンドウは一瞬しか見えないか、環境によっては見えないまま終わる（WSL2の環境では見えなかった例がある。原因は確かめていない）。ウィンドウが見えない場合は、`env.close()` の前に `import time` と `time.sleep(3)` を足して閉じるまでの時間を延ばすと、見えるかどうかを確かめられる（この対処の効果は確かめていない）。
+`render_mode="human"` のまま実行すると、ウィンドウが開き、台車がでたらめに左右へ動いて、棒がやがて倒れる（公式の文書の「What you should see」）。ただし、CartPoleの表示は毎秒50コマで、でたらめな行動では10〜40ステップ程度で倒れるので、1エピソードは1秒足らずで終わる。公式の例のままでは、すぐに `env.close()` でウィンドウが閉じるので、ウィンドウは一瞬しか見えないか、環境によっては見えないまま終わる（WSL2の環境では見えなかった例がある。原因は確かめていない）。そのため、上のコードでは `env.close()` の前に `time.sleep(3)` を足し、閉じる前に3秒待つようにした（この2行で見えるようになるかは確かめていない）。
 
 **期待する結果**（`render_mode="human"` を消して実行した場合。数は実行ごとに変わる）:
 
@@ -550,7 +552,7 @@ python watch_pendulum.py
 | `compare_controllers.py` で `No module named 'random_pendulum'` | `~/rl_practice` で実行しているか（`pwd`）。3-2節の `random_pendulum.py` が同じフォルダにあるか |
 | `compare_controllers.py` で `sac_pendulum.zip` が見つからない | 4-2節の `train_sac_pendulum.py` を、同じフォルダで最後まで実行したか（`ls` で `sac_pendulum.zip` があるか） |
 | 学習の後の評価（`evaluation`）が −300 より悪い | 途中経過の表の `ep_rew_mean` が、学習の後半に上がり続けていたか（100エピソードの平均なので、序盤の悪い分を含む）。ステップ数を増やすか、`seed` を変えて学習し直す（4-2節の末尾） |
-| 3-1節の `cartpole_random.py` で、ウィンドウが見えない（一瞬で消える） | 1エピソードが1秒足らずで終わり、ウィンドウがすぐに閉じることが考えられる（3-1節）。`env.close()` の前に `import time` と `time.sleep(3)` を足し、見えるかどうかを確かめる（3-1節）。6-3節の振り子のウィンドウが開くなら、表示の仕組みは動いている |
+| 3-1節の `cartpole_random.py` で、ウィンドウが見えない（一瞬で消える） | 1エピソードが1秒足らずで終わり、ウィンドウがすぐに閉じることが考えられる（3-1節）。3-1節のコードの、公式の例に足した2行（`import time` と、`env.close()` の前の `time.sleep(3)`）を写したか。6-3節の振り子のウィンドウが開くなら、表示の仕組みは動いている |
 | 公式の例（4-1節）を実行したら、学習がとても遅い | `render_mode="human"` のまま学習している。学習では表示しない（4-2節） |
 | 公式の例（4-1節）が終わらない | 最後のループは止まらない作り。`Ctrl+C` で止める |
 | `evaluate_policy` で `Monitor` の警告が出る | 評価用の環境を `Monitor` で包んだか（4-2節） |
@@ -584,4 +586,4 @@ python watch_pendulum.py
 
 > 記事は個人による非公式の解説で、版によって異なる場合がある。公式ドキュメントと食い違う場合は公式を優先する。日本語の記事は [`docs/idea_origin.md`](idea_origin.md) に掲載済みのもので、今回は再確認していない。
 
-> 出典: 3-1節のコードは、Gymnasiumの公式の文書（Basic Usage）からの抜粋である（Copyright (c) 2016 OpenAI, Copyright (c) 2022 Farama Foundation, MIT License）。4-1節のコードは、Stable-Baselines3の公式の文書（SAC）からの抜粋である（Copyright (c) 2019 Antonin Raffin, MIT License）。MIT Licenseの全文は [`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)。3-1節・4-1節・4-2節の説明と、3-2節の振り子の仕様の表は、それぞれの公式の文書とGymnasiumのソース（`pendulum.py` の説明）を、自分の言葉で要約・再構成したもの。2節の用語の説明は、上の強化学習の入門を参考に、自分の言葉でまとめたもの。3-2節・4-2節・6節のサンプルコードと、6節の手書きの制御器は独自に書いたもの。
+> 出典: 3-1節のコードは、Gymnasiumの公式の文書（Basic Usage）からの抜粋である（Copyright (c) 2016 OpenAI, Copyright (c) 2022 Farama Foundation, MIT License）。ただし、ウィンドウを見るための2行（`import time` と `time.sleep(3)`）を足した。4-1節のコードは、Stable-Baselines3の公式の文書（SAC）からの抜粋である（Copyright (c) 2019 Antonin Raffin, MIT License）。MIT Licenseの全文は [`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)。3-1節・4-1節・4-2節の説明と、3-2節の振り子の仕様の表は、それぞれの公式の文書とGymnasiumのソース（`pendulum.py` の説明）を、自分の言葉で要約・再構成したもの。2節の用語の説明は、上の強化学習の入門を参考に、自分の言葉でまとめたもの。3-2節・4-2節・6節のサンプルコードと、6節の手書きの制御器は独自に書いたもの。
