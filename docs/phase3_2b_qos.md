@@ -3,14 +3,14 @@
 [`docs/learning_plan.md`](learning_plan.md) フェーズ3（[`docs/idea_origin.md`](idea_origin.md) ステップ1のQoS補足）に対応する。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ3-1完了（`talker` 等が動く）。フェーズ3-2a（Twistでturtlesimを動かす）とは独立したテーマで、3-2aで作ったものは使わない
+- 前提: フェーズ3-1完了（`talker` 等が動く）。フェーズ3-2a（Twistでturtlesimを動かす）とは独立したテーマで、フェーズ3-2aで作ったものは使わない
 - 所要目安: 半コマ
 - 言語: **Python**（C++版は任意）
 - OSS: なし
 
 > **このフェーズの位置づけ**: 「QoSという設定があり、合わないと**エラーも出ずに黙ってつながらない**ことがある」と知るのが目的で、概要を掴む程度でよい（フェーズ5では、全ノードが既定のQoSのまま通信する）。2-2節の7通りの組み合わせのうち、①（talker・listenerとも `reliable`。つながる）と④（talkerが `best_effort`、listenerが `reliable`。つながらない）の2つを試せば十分で、残りは任意。C++版（4節）も任意とする。
 >
-> **進め方**: 3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。3節・4節冒頭の「主なAPI」表（C++版の4節は任意）とサンプルコード・解説を読んで理解し、QoSのパラメータを変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、手順は実機で実行して確認済み（2026-09-26）。出力が細部で違う場合は、実機の表示を優先する。
+> **進め方**: フェーズ3-1と同じく、2節の仕様は「何を作るか」の定義で、APIの使い方までは書いていない。3節・4節冒頭の「主なAPI」表（C++版の4節は任意）とサンプルコード・解説を読んで理解し、QoSのパラメータを変えて動かしながら体で覚える。サンプルはこの手順書の作成時にビルド確認済みで、手順は実機で実行して確認済み（2026-09-26）。出力が細部で違う場合は、実機の表示を優先する。
 >
 > **パラメータについて（詳しくは次のフェーズ3-3）**: このフェーズでは、QoSの設定を起動時に切り替えるために、ROSのパラメータ（ノードの外から与えられる設定値）を使う。ただし、パラメータそのものの解説は、次のフェーズ3-3（[`docs/phase3_3_parameters.md`](phase3_3_parameters.md)）で行う。ここでは「`declare_parameter` で名前と既定値を宣言し、起動時に `-p 名前:=値` で値を渡すと、ノードの中で読み取れる」という使い方だけを押さえておけば十分で、細かな仕組みが分からなくても先へ進んでよい。
 
@@ -74,7 +74,7 @@ ros2 run learn_py qos_talker --ros-args -p reliability:=best_effort -p durabilit
 
 このコマンドを実際に実行して結果を見るのは、5節の実験である。
 
-（パラメータの詳しい扱いは、次のフェーズ3-3で学ぶ。宣言・取得・型の決まり方は3-3の3節、起動時の `-p` は5-2節、実行中に値を読み書きする `ros2 param` は5-3節、YAMLファイルでの指定は5-4節で扱う。ここでは「起動時に値を渡せる」ことだけを使う。）
+（パラメータの詳しい扱いは、次のフェーズ3-3で学ぶ。宣言・取得・型の決まり方はフェーズ3-3の3節、起動時の `-p` は5-2節、実行中に値を読み書きする `ros2 param` は5-3節、YAMLファイルでの指定は5-4節で扱う。ここでは「起動時に値を渡せる」ことだけを使う。）
 
 ### 2-2. 試す組み合わせ（①〜⑦）
 
@@ -225,7 +225,7 @@ def main(args=None):
 - `from learn_py.qos_util import make_qos`: 上の `qos_util.py` の関数を読み込む。QoSの組み立ては `make_qos` に任せたので、このファイルでは `rclpy.qos` を `import` しない。`import` の並べ方は、ROS2の標準のLinter（`ament_flake8`。`colcon test` で動く）の規則に合わせている。この規則では、自分のパッケージ `learn_py` も `rclpy`・`std_msgs` と同じ「インストール済みのパッケージ」として扱い、モジュール名のアルファベット順に並べる（`learn_py` → `rclpy` → `std_msgs`）。一般的なPythonの慣習（PEP 8）では自作のモジュールを最後に分けて書くことも多いが、ROS2のパッケージではLinterの規則に従うほうが、`colcon test` で指摘されずに済む。
 - 次の2項目（`declare_parameter` と `get_parameter`）は、フェーズ3-3で詳しく学ぶパラメータの先取りである。ここでは「こう書くと `-p` で渡した値を読める」と分かれば十分。
 - `declare_parameter('reliability', 'reliable')`: パラメータを名前と既定値つきで宣言する。宣言していないパラメータは `-p` で渡しても受け付けられない。既定値の型（ここでは文字列）が、そのパラメータの型になる。
-- `get_parameter(...).get_parameter_value().string_value`: `get_parameter` が返すのは `Parameter`（名前と値の組）で、そこから `get_parameter_value()` で値の入れ物 `ParameterValue` を取り出し、型に合ったフィールド（文字列なら `string_value`）を読む。整数なら `integer_value`、実数なら `double_value`。フェーズ3-3では、型を問わずに値を取り出せる、より短い `get_parameter(...).value` の書き方を使う（3-3の3節の「主なAPI」表）。
+- `get_parameter(...).get_parameter_value().string_value`: `get_parameter` が返すのは `Parameter`（名前と値の組）で、そこから `get_parameter_value()` で値の入れ物 `ParameterValue` を取り出し、型に合ったフィールド（文字列なら `string_value`）を読む。整数なら `integer_value`、実数なら `double_value`。フェーズ3-3では、型を問わずに値を取り出せる、より短い `get_parameter(...).value` の書き方を使う（フェーズ3-3の3節の「主なAPI」表）。
 - 起動時に `QoS: reliability=..., durability=...` をログに出しているのは、「今どの設定で動いているか」をターミナルで確認するため。実験で設定を取り違えないための工夫。
 - `on_timer`: `f'msg {self.count}'` で連番の文字列を作り、`publish` してログに出す。ログの `publish:` は「送ろうとした」印であり、受け取り側がいるかどうかは関係なく出る。**つながらない組み合わせでも、talker側は普通にログを出し続ける**（相手が受け取れないだけで、送り手のエラーにはならない）。
 
@@ -556,7 +556,7 @@ colcon build --symlink-install --packages-select learn_cpp
 source install/setup.bash
 ```
 
-**期待する結果**: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`install(TARGETS ...)` に作っていないノード（3-2aでC++版を作らなかった場合の `turtle_circle` など）の名前が残っていると、`Failed <<< learn_cpp` になり、その上に `install TARGETS given target "turtle_circle" which does not exist` という趣旨のCMakeのエラーが出る（9節）。
+**期待する結果**: `Finished <<< learn_cpp` と `Summary: 1 package finished` が出れば成功。`install(TARGETS ...)` に作っていないノード（フェーズ3-2aでC++版を作らなかった場合の `turtle_circle` など）の名前が残っていると、`Failed <<< learn_cpp` になり、その上に `install TARGETS given target "turtle_circle" which does not exist` という趣旨のCMakeのエラーが出る（9節）。
 
 ## 5. 実験: QoSの相性を確かめる
 

@@ -129,7 +129,7 @@ ros2 run rqt_console rqt_console    # ログ表示ウィンドウ（rqt_console�
 | `echo $DISPLAY` が空 | WSLgが無効。Windows側のPowerShellで `wsl --version` を実行しWSLgの記載を確認し、`wsl --update` を実行 |
 | `wsl --update` 後も出ない | Windows側のPowerShellで `wsl --shutdown` を実行し、WSLを開き直して手順Aからやり直す |
 | Qtの `could not connect to display` 系のエラー | 手順Aの `$DISPLAY` を再確認。別ターミナルで `export DISPLAY=:0` を試す（一時的な確認用） |
-| `Package 'turtlesim' not found` | 1-1の導入が未完了。`ros2 pkg executables turtlesim` で確認 |
+| `Package 'turtlesim' not found` | 1-1節の導入が未完了。`ros2 pkg executables turtlesim` で確認 |
 
 - 目的・影響: 上記はすべて読み取りか自分のPC内のプロセス起動で、外部通信・設定変更はない（`wsl --update` はMicrosoftの公式更新でWindows側の変更を伴うため、実行するかは自分で判断する）。
 - 出力例・エラー文言は筆者の知識に基づく。実機の表示が違う場合は、実機を優先する。
@@ -223,7 +223,7 @@ flowchart LR
 ros2 run turtlesim turtlesim_node
 ```
 
-**期待する結果**: 青い背景に亀のウィンドウが出る（ターミナルのログは1-2の手順Bと同じ）。
+**期待する結果**: 青い背景に亀のウィンドウが出る（ターミナルのログは1-2節の手順Bと同じ）。
 
 ### 3-2. キーボードで動かす（T2）
 

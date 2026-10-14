@@ -3,7 +3,7 @@
 [`docs/learning_plan.md`](learning_plan.md) フェーズ4（[`docs/idea_origin.md`](idea_origin.md) ステップ1の1-6）に対応する。これまで別々のターミナルで起動していたノードを、1つのlaunchファイルで起動する。**Python版とC++版のノードを引数で切り替える**のが要点。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy
-- 前提: フェーズ3-1〜3-3完了（`learn_py` と `learn_cpp` に、このフェーズで起動する `talker`・`listener`・`param_talker`・`turtle_circle` がある）。フェーズ3-4・3-5のノードは使わないので、3-4・3-5は概要を掴んだだけでも先へ進める。C++版の `param_talker`・`turtle_circle`（フェーズ3-2a・3-3で任意）が無い場合は、`lang:=cpp` の代わりに `lang:=py` で起動する。`learn_cpp` の `talker`・`listener`（フェーズ3-1）は、言語の切り替え（4-1節）で使うので必要
+- 前提: フェーズ3-1〜3-3完了（`learn_py` と `learn_cpp` に、このフェーズで起動する `talker`・`listener`・`param_talker`・`turtle_circle` がある）。フェーズ3-4・3-5のノードは使わないので、フェーズ3-4・3-5は概要を掴んだだけでも先へ進める。C++版の `param_talker`・`turtle_circle`（フェーズ3-2a・3-3で任意）が無い場合は、`lang:=cpp` の代わりに `lang:=py` で起動する。`learn_cpp` の `talker`・`listener`（フェーズ3-1）は、言語の切り替え（4-1節）で使うので必要
 - 所要目安: 1〜2コマ
 - 言語: launchファイルはPython・XML・YAMLの3形式を扱う（ノードはPython・C++）
 - OSS: turtlesim（GUIのウィンドウが開く）
@@ -409,7 +409,7 @@ YAMLでもXMLでも「引数を宣言 → ノードを起動」という順序�
 | 引数の埋め込み | `LaunchConfiguration('引数名')`（Pythonのオブジェクトとして扱う） | `$(var 引数名)` | `$(var 引数名)`（XMLと共通の記法） |
 | 条件分岐・計算 | 可能（条件で起動するかを切り替える `IfCondition`・Pythonの式を評価する `PythonExpression` や、素のPythonの関数・分岐がそのまま使える） | 不可（宣言的な起動の一覧のみ） | 不可（同左） |
 
-行数だけならXMLが圧倒的に短いが、これは「talker/listenerを1つずつ書くだけ」という単純な内容だから。4-4・4-6のようにパスの組み立てや条件分岐が絡むと、Python形式でないと書けない処理が増える（この節の末尾の課題4で、3形式を実際に動かして確かめる）。
+行数だけならXMLが圧倒的に短いが、これは「talker/listenerを1つずつ書くだけ」という単純な内容だから。4-4節・4-6節のようにパスの組み立てや条件分岐が絡むと、Python形式でないと書けない処理が増える（この節の末尾の課題4で、3形式を実際に動かして確かめる）。
 
 > **実行する前に**: 4-2節の `pubsub.launch.xml` と、この節の `pubsub.launch.yaml` を足したので、4-1節と同じく、`ros2_ws/`（`cd ~/ros2_ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
 
@@ -421,7 +421,7 @@ ros2 launch learn_bringup pubsub.launch.xml talker_lang:=cpp --print
 ros2 launch learn_bringup pubsub.launch.yaml talker_lang:=cpp --print
 ```
 
-**期待する結果**: どちらも、4-1の `pubsub.launch.py --print` と同じ木（`DeclareLaunchArgument` 2つ、`ExecuteProcess` 2つ）が表示される。`talker_lang:=cpp` を付けていても、パッケージ名は `'learn_' + LaunchConfig('talker_lang')` のまま。XMLやYAMLの書式を間違えている場合は、木の代わりに読み込みのエラーが出る。
+**期待する結果**: どちらも、4-1節の `pubsub.launch.py --print` と同じ木（`DeclareLaunchArgument` 2つ、`ExecuteProcess` 2つ）が表示される。`talker_lang:=cpp` を付けていても、パッケージ名は `'learn_' + LaunchConfig('talker_lang')` のまま。XMLやYAMLの書式を間違えている場合は、木の代わりに読み込みのエラーが出る。
 
 > 課題4: 3形式（Python/XML/YAML）で同じ`pubsub.launch.*`を実際に動かし、上の表の内容（行数・引数の埋め込み・分岐可否）を自分の目で確かめる。目安: 複雑な条件・計算が要る場合はPython、単純な起動の一覧はXML/YAMLが読みやすい。
 
@@ -512,7 +512,7 @@ ros2 launch learn_bringup param.launch.py
 ros2 launch learn_bringup param.launch.py lang:=cpp period:=0.2   # C++版の param_talker を作った場合。作っていなければ lang:=py
 ```
 
-**期待する結果**（2つ目のコマンドの例。launch自体の行は4-1と同じなので省く）: YAMLの `message`（`from yaml`）が、引数で上書きした周期0.2秒（1秒に5行）で送られる。
+**期待する結果**（2つ目のコマンドの例。launch自体の行は4-1節と同じなので省く）: YAMLの `message`（`from yaml`）が、引数で上書きした周期0.2秒（1秒に5行）で送られる。
 
 ```text
 [INFO] [param_talker-1]: process started with pid [12400]
@@ -749,7 +749,7 @@ source install/setup.bash
 | 4通りの組み合わせ（Py×Py / Py×C++ / C++×Py / C++×C++）の起動結果 | 全通りとも**つながる**（4-1節、フェーズ3-1で確認済みの「言語は関係なくつながる」がlaunchでも成り立つ） |
 | パラメータの優先順位（YAML／引数） | `parameters=[YAML, {...}]`のリストは**後ろが勝つ**（4-4節）。さらに引数側に既定値があると、指定しなくても引数が優先されYAMLの値は使われない（4-4節の課題5補足） |
 | `namespace`と`remap`の効き方 | 名前空間は**相対名**（先頭が`/`でない名前）にだけ効く。絶対名（`/chatter`等）で書かれたノードには効かない（4-6節）。remapは送信側・受信側の**両方**に同じ指定が要る（片方だけだとつながらなくなる） |
-| Python／XML／YAMLの使い分け | 単純な起動の並びはXML/YAMLが短く書ける（`pubsub.launch.*`で7行・19行・25行）。条件分岐・計算・パスの組み立てが要る場合（4-4・4-6）はPython形式でないと書けない（4-3節） |
+| Python／XML／YAMLの使い分け | 単純な起動の並びはXML/YAMLが短く書ける（`pubsub.launch.*`で7行・19行・25行）。条件分岐・計算・パスの組み立てが要る場合（4-4節・4-6節）はPython形式でないと書けない（4-3節） |
 
 フェーズ3-1〜3-5・フェーズ2の各「Python版とC++版の違いのまとめ」節と合わせて読み返すと、**1-7の振り返り**（[学習計画](learning_plan.md)でフェーズ3・4の後に置いた、PythonとC++を比べる振り返り。コード量・型の扱い・ビルド手順・つまずきの傾向）の材料になる。フェーズ5の言語方針（Python中心）は既に決定済みだが、この振り返りは今後C++で書く場合の勘所の再確認として使える。
 
@@ -759,7 +759,7 @@ source install/setup.bash
 |---|---|
 | `file 'xxx' was not found in the share directory of package 'learn_bringup'` | launchファイルを追加した後に再ビルドしたか。`CMakeLists.txt` の `install(DIRECTORY launch config ...)` があるか |
 | `Package 'learn_cpp' not found` | `source install/setup.bash` をしたか。`learn_cpp` をビルド済みか |
-| ビルドで `ament_cmake_symlink_install_directory() can't find '.../config'` | `ros2_ws/src/learn_bringup/config/` が無い（または空でGit上に存在しない）。手順3-1のとおり `config/` を作り、`param_talker.yaml` を入れる |
+| ビルドで `ament_cmake_symlink_install_directory() can't find '.../config'` | `ros2_ws/src/learn_bringup/config/` が無い（または空でGit上に存在しない）。3-1節の手順のとおり `config/` を作り、`param_talker.yaml` を入れる |
 | `ros2 launch` でパラメータが効かない | YAMLの1行目のノード名と、`Node(name=...)` が一致しているか。`ros__parameters` の綴り |
 | 型の不一致（`period`） | `ParameterValue(..., value_type=float)` を使っているか。YAMLの `period: 1` のような整数になっていないか |
 | ノードが起動しない・すぐ終了する | `output='screen'` にして、エラーログを見る。`ros2 launch ... --print` でファイルが読み込めるか、`--show-args` で引数の名前と既定値を確認（置換の値は `--print` では評価されない） |

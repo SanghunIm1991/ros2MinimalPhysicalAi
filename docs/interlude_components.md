@@ -370,7 +370,7 @@ ros2 run learn_components listener_node
 [INFO] [1790292101.101000000] [listener]: received: hello 1
 ```
 
-`main` を1行も書いていない同じコードが、今度は2つの別々のプロセスとして動いている。7-1と7-2で変わったのは起動の仕方だけで、コードもビルドも同じ。これが「配置を後から決める」ということである。
+`main` を1行も書いていない同じコードが、今度は2つの別々のプロセスとして動いている。7-1節と7-2節で変わったのは起動の仕方だけで、コードもビルドも同じ。これが「配置を後から決める」ということである。
 
 ### 7-3. launchで1つのコンテナにまとめて起動する
 
@@ -429,8 +429,8 @@ def generate_launch_description():
 
 | 部分 | 何をしているか |
 |---|---|
-| `ComposableNodeContainer(...)` | 7-1で手で起動した `component_container` を、launchから起動する。`name` はコンテナ自身のノード名（ここでは `pubsub_container`。既定の `ComponentManager` を上書きしている）。`namespace=''` は名前空間なし。 |
-| `composable_node_descriptions=[...]` | コンテナが起動した直後に読み込むコンポーネントの一覧。7-1の `ros2 component load` を、launchが代わりに行う。 |
+| `ComposableNodeContainer(...)` | 7-1節で手で起動した `component_container` を、launchから起動する。`name` はコンテナ自身のノード名（ここでは `pubsub_container`。既定の `ComponentManager` を上書きしている）。`namespace=''` は名前空間なし。 |
+| `composable_node_descriptions=[...]` | コンテナが起動した直後に読み込むコンポーネントの一覧。7-1節の `ros2 component load` を、launchが代わりに行う。 |
 | `ComposableNode(package=..., plugin=...)` | `ros2 component load` の2つの引数（パッケージ名・クラス名）に相当する。`name` はノード名の指定。 |
 | `extra_arguments=[{'use_intra_process_comms': True}]` | このノードに、同じプロセスの中の相手とはDDSを通さずメモリ上で受け渡す**プロセス内通信**を使わせる指定。コンストラクタで受け取る `NodeOptions` に入って届く。 |
 | `output='screen'` | コンテナのログを端末に出す。コンテナの中の全ノードのログがまとめて出る。 |
@@ -492,7 +492,7 @@ $ ros2 component list
 
 ### 7-4. フェーズ3-1のPython版と組み合わせる
 
-7-3のlaunchを動かしたまま、別のターミナルでフェーズ3-1のPython版 `listener` を起動する。
+7-3節のlaunchを動かしたまま、別のターミナルでフェーズ3-1のPython版 `listener` を起動する。
 
 ```bash
 ros2 run learn_py listener
@@ -506,9 +506,9 @@ ros2 run learn_py listener
 
 コンテナの中の `talker` は、同じプロセスの `listener` にはプロセス内通信で、外のPythonの `listener` にはDDSで、同じメッセージを届けている。受け取る側は、相手がコンポーネントかどうかも、C++かPythonかも気にしない。つながりを決めているのは、**トピック名と型（インターフェース）だけ**である。なお、ノード名 `listener` が2つになるので、`ros2 node list` では重複の警告が出ることがある（フェーズ3-1の6節の課題2と同じ現象）。気になる場合は `ros2 run learn_py listener --ros-args -r __node:=py_listener` のように名前を変える。
 
-> 課題1: 7-1の手順で、`--node-name`（`-n`）を付けて `Talker` を2つ読み込む（例: `ros2 component load /ComponentManager learn_components learn_components::Talker -n talker2`）。1つのプロセスの中に、同じクラスのノードが2つ動くことを確認する。
+> 課題1: 7-1節の手順で、`--node-name`（`-n`）を付けて `Talker` を2つ読み込む（例: `ros2 component load /ComponentManager learn_components learn_components::Talker -n talker2`）。1つのプロセスの中に、同じクラスのノードが2つ動くことを確認する。
 >
-> 課題2: 7-1の手順で、`-r chatter:=chatter2` を付けて `Listener` を読み込み、`talker` のメッセージが届かなくなることを確認する。フェーズ4の4-6節で見たremapが、コンテナへの読み込みでも同じように使えることを確認する。
+> 課題2: 7-1節の手順で、`-r chatter:=chatter2` を付けて `Listener` を読み込み、`talker` のメッセージが届かなくなることを確認する。フェーズ4の4-6節で見たremapが、コンテナへの読み込みでも同じように使えることを確認する。
 >
 > 課題3（発展）: `component_container` の代わりに `component_container_mt`（複数スレッドで回すコンテナ）がある。`ros2 pkg executables rclcpp_components` で種類を確認し、どんなときに使い分けるか調べる。手がかり: ふつうの `spin`（単一スレッド）は、コールバックを1つずつ順に処理するので、長い処理のコールバックが1つあると、その間は同じプロセスの他のコールバックが待たされる。複数スレッドなら、別のノード（部品）のコールバックどうしを並行して動かせる（同じノードの中のコールバックまで並行させるには、コールバックグループの指定も要る。任意の[フェーズ3-5](phase3_5_actions.md)を読んだ場合は、4節のPython版のアクションサーバで `MultiThreadedExecutor` と `ReentrantCallbackGroup` を使った理由がこれにあたる）。
 >
@@ -526,7 +526,7 @@ ros2 run learn_py listener
 | 1つのノードの異常の影響 | そのプロセスだけが落ちる | 同じコンテナの全ノードが巻き込まれる |
 | 対応言語 | Python・C++ | C++のみ（Jazzy時点） |
 
-コンポーネントは「常に良い」わけではない。同じコンテナに入れると、効率は上がるが、1つのノードの不具合（例外で落ちる、コンストラクタで止まる）が他を巻き込む。開発中やデバッグ中は7-2のように別々のプロセスで動かし、完成したら7-3のように1つのコンテナにまとめる、という使い分けができるのが、コンポーネントの最大の利点である。
+コンポーネントは「常に良い」わけではない。同じコンテナに入れると、効率は上がるが、1つのノードの不具合（例外で落ちる、コンストラクタで止まる）が他を巻き込む。開発中やデバッグ中は7-2節のように別々のプロセスで動かし、完成したら7-3節のように1つのコンテナにまとめる、という使い分けができるのが、コンポーネントの最大の利点である。
 
 ## 9. マイクロサービスの考え方との対応
 

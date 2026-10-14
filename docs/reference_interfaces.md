@@ -392,7 +392,7 @@ float64 traveled        # ここまでに走った距離 [m]
 - ファイル名は型名と同じにする（2-6節の決まり）。置くフォルダは、種類ごとに `msg/`・`srv/`・`action/` にする。
 - `VehicleState` は、`std_msgs/Header` で時刻を持たせ（3-2節）、単位をコメントに書いた（3-3節）。ペダルの範囲は定数にしたので、使う側は `1.0` と書く代わりに `PEDAL_MAX` と書ける。
 - `SetGains` の応答は、`std_srvs/srv/Trigger` と同じ `success`・`message` の組にした。受け付けなかった理由（負のゲインなど）を `message` で返せる。
-- `DriveDistance` は、フェーズ6-2で扱う「決めた距離まで走ったら終わる」を、アクションの形にしたものである。途中経過で走った距離を返せば、呼んだ側は、6-2の見張りのノード `goal_monitor` のログのように、進み具合を見られる。
+- `DriveDistance` は、フェーズ6-2で扱う「決めた距離まで走ったら終わる」を、アクションの形にしたものである。途中経過で走った距離を返せば、呼んだ側は、フェーズ6-2の見張りのノード `goal_monitor` のログのように、進み具合を見られる。
 
 ### 6-3. `CMakeLists.txt` と `package.xml` に書き足す
 
@@ -543,14 +543,14 @@ msg.pedal = learn_interfaces::msg::VehicleState::PEDAL_MAX;
 
 | 型 | 種類 | 使った手順書 |
 |---|---|---|
-| `std_msgs/msg/String` | メッセージ | 3-1（`talker`・`listener`） |
-| `std_msgs/msg/Float64` | メッセージ | 3-1（`sine_pub`）、5-1〜5-4・6-1〜6-3（目標速度・速度・ペダル） |
-| `std_msgs/msg/Int32` | メッセージ | 3-4（`counter_node`） |
-| `geometry_msgs/msg/Twist` | メッセージ | 1（`turtlesim`）、3-2a、5-0（車両への速度の指令） |
-| `nav_msgs/msg/Odometry` | メッセージ | 5-0・5-4（Gazeboの車両の位置と速度）、6-2（案B） |
-| `rosgraph_msgs/msg/Clock` | メッセージ | 5-4（シミュレーション時刻） |
+| `std_msgs/msg/String` | メッセージ | フェーズ3-1（`talker`・`listener`） |
+| `std_msgs/msg/Float64` | メッセージ | フェーズ3-1（`sine_pub`）、フェーズ5-1〜5-4・フェーズ6-1〜6-3（目標速度・速度・ペダル） |
+| `std_msgs/msg/Int32` | メッセージ | フェーズ3-4（`counter_node`） |
+| `geometry_msgs/msg/Twist` | メッセージ | 1（`turtlesim`）、フェーズ3-2a、5-0（車両への速度の指令） |
+| `nav_msgs/msg/Odometry` | メッセージ | フェーズ5-0・5-4（Gazeboの車両の位置と速度）、フェーズ6-2（案B） |
+| `rosgraph_msgs/msg/Clock` | メッセージ | フェーズ5-4（シミュレーション時刻） |
 | `example_interfaces/srv/AddTwoInts` | サービス | 3-4 |
-| `std_srvs/srv/Trigger` | サービス | 3-4（`counter_node`） |
+| `std_srvs/srv/Trigger` | サービス | フェーズ3-4（`counter_node`） |
 | `std_srvs/srv/Empty` | サービス | 1（`turtlesim` の `/clear` など） |
 | `example_interfaces/action/Fibonacci` | アクション | 3-5 |
 | `turtlesim` の型（`Pose`・`Spawn`・`RotateAbsolute` など） | 3種類とも | 1・3-2a |

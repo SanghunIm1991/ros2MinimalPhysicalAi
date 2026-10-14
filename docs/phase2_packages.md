@@ -204,7 +204,7 @@ learn_py/test/test_pep257.py
 - `hello.py` の中身は、`print('Hi from learn_py.')` を実行するだけの `main` 関数。
 - `test/` の3ファイルは、著作権表示・コードの書式・docstringの書式を検査する雛形のテスト。
 
-`package.xml` に `<depend>rclpy</depend>` と `<depend>std_msgs</depend>` の2行があれば、`--dependencies` が効いている。`<test_depend>` の行しか無い場合は指定が抜けているので、この2行を `<license>` の行の後ろに手で足す（フェーズ3-1の3-2でも触れる）。
+`package.xml` に `<depend>rclpy</depend>` と `<depend>std_msgs</depend>` の2行があれば、`--dependencies` が効いている。`<test_depend>` の行しか無い場合は指定が抜けているので、この2行を `<license>` の行の後ろに手で足す（フェーズ3-1の3-2節でも触れる）。
 
 ### 2-3. C++パッケージを作る
 
@@ -236,7 +236,7 @@ learn_cpp/src/hello.cpp
 - `package.xml` には `<buildtool_depend>ament_cmake</buildtool_depend>` と、`<depend>rclcpp</depend>`・`<depend>std_msgs</depend>` が入る。
 - `CMakeLists.txt` には、`find_package(rclcpp REQUIRED)` などの依存の読み込みと、`add_executable(hello src/hello.cpp)`・`install(TARGETS hello ...)` という実行ファイルの登録が入る。
 
-> 補足: `--node-name` は生成する実行ファイルの**名前**を指定するだけのオプション（`ros2 pkg create --help` でも `name of the empty executable` としか説明されておらず、選べる「種類」の列挙はない）。ノードの言語・雛形の中身を決めているのは `--build-type` の方（`ament_python` → Pythonの雛形、`ament_cmake`/`cmake` → C++の雛形、`ament_cargo` → Rust）。2-2と2-3で同じ `--node-name hello` を指定しているのは、両方とも「動作確認用の最小の実行ファイル」という同じ役割を、`--build-type` 違いのテンプレートで作っているため。
+> 補足: `--node-name` は生成する実行ファイルの**名前**を指定するだけのオプション（`ros2 pkg create --help` でも `name of the empty executable` としか説明されておらず、選べる「種類」の列挙はない）。ノードの言語・雛形の中身を決めているのは `--build-type` の方（`ament_python` → Pythonの雛形、`ament_cmake`/`cmake` → C++の雛形、`ament_cargo` → Rust）。2-2節と2-3節で同じ `--node-name hello` を指定しているのは、両方とも「動作確認用の最小の実行ファイル」という同じ役割を、`--build-type` 違いのテンプレートで作っているため。
 
 > 課題1: 2つのパッケージの `package.xml` を見比べる。`<buildtool_depend>` の違い（`ament_python` / `ament_cmake`）と、`<export><build_type>` の違いを確認する。
 
@@ -335,7 +335,7 @@ learn_cpp hello
 
 | サブコマンド | 役割 | 主なオプション |
 |---|---|---|
-| `create <package_name>` | 新規パッケージの雛形を作る（2-2/2-3で使用） | `--build-type {cmake,ament_cmake,ament_cargo,ament_python}`（言語・ビルド系）、`--node-name`（雛形ノードの実行ファイル名。上記の補足参照）、`--library-name`（雛形ライブラリ名、C++のみ）、`--dependencies`（`package.xml`の`<depend>`）、`--license`、`--maintainer-name`/`--maintainer-email`、`--destination-directory`（作成先ディレクトリ）、`--package-format {2,3}`（`package.xml`のスキーマ版） |
+| `create <package_name>` | 新規パッケージの雛形を作る（2-2節・2-3節で使用） | `--build-type {cmake,ament_cmake,ament_cargo,ament_python}`（言語・ビルド系）、`--node-name`（雛形ノードの実行ファイル名。上記の補足参照）、`--library-name`（雛形ライブラリ名、C++のみ）、`--dependencies`（`package.xml`の`<depend>`）、`--license`、`--maintainer-name`/`--maintainer-email`、`--destination-directory`（作成先ディレクトリ）、`--package-format {2,3}`（`package.xml`のスキーマ版） |
 | `list` | `source`済みの環境から見えているパッケージ名を一覧表示する | オプションなし（`-h`のみ）。今回のように `grep` で絞り込む使い方が一般的 |
 | `prefix <package_name>` | そのパッケージのインストール先prefix（`install/<pkg>` 等）を表示する | `--share`: launchファイルやconfig等の共有リソースが入る `share/<pkg>` を表示する |
 | `executables [package_name]` | そのパッケージが提供する実行ファイル名（`ros2 run` の第2引数に使える名前）を一覧表示する | `package_name`省略で全パッケージ分。`--full-path`: インストール先の絶対パスも表示する |

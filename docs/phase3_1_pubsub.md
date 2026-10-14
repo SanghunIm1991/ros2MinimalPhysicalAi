@@ -729,7 +729,7 @@ ros2 run learn_cpp talker
 ros2 run learn_cpp listener
 ```
 
-**期待する結果**: ビルドの表示は3-3と同じ形（`Finished <<< learn_cpp` と `Summary: 1 package finished`）。Pythonより時間がかかり、コンパイルの進行中は `[Processing: learn_cpp]` のような表示が出ることがある。実行時のログはPython版と同じ形式で、本文も同じ文言にしてある。
+**期待する結果**: ビルドの表示は3-3節と同じ形（`Finished <<< learn_cpp` と `Summary: 1 package finished`）。Pythonより時間がかかり、コンパイルの進行中は `[Processing: learn_cpp]` のような表示が出ることがある。実行時のログはPython版と同じ形式で、本文も同じ文言にしてある。
 
 ```text
 # T1（talker）
@@ -740,7 +740,7 @@ ros2 run learn_cpp listener
 [INFO] [1790232101.224012345] [listener]: received: hello 1
 ```
 
-ログの見た目だけでは、PythonのノードかC++のノードかは区別できない。これは、同じトピック名・型なら言語を気にせずつながる（6節）ことの裏返しでもある。②の `sine_pub` / `sine_sub` も、`ros2 run learn_cpp sine_pub` と `ros2 run learn_cpp sine_sub` で同じように動かすと、3-3と同じ表示になる。
+ログの見た目だけでは、PythonのノードかC++のノードかは区別できない。これは、同じトピック名・型なら言語を気にせずつながる（6節）ことの裏返しでもある。②の `sine_pub` / `sine_sub` も、`ros2 run learn_cpp sine_pub` と `ros2 run learn_cpp sine_sub` で同じように動かすと、3-3節と同じ表示になる。
 
 > C++のビルドは時間がかかる。エラーが出たら**最初の `error:` の行**から読む（後続のエラーは連鎖であることが多い）。
 
@@ -828,7 +828,7 @@ average rate: 10.000
 | C++ → Python | `ros2 run learn_cpp talker` | `ros2 run learn_py listener` |
 | C++ → C++ | `ros2 run learn_cpp talker` | `ros2 run learn_cpp listener` |
 
-**期待する結果**: 4つの組み合わせすべてで、3-3と同じ表示（T1に `publish: hello N`、T2に `received: hello N`）になる。組み合わせによってログの見た目が変わることはない。どれか1つでもT2に何も出ない場合は、その組み合わせで使っているパッケージのビルドと `source` を確認する。
+**期待する結果**: 4つの組み合わせすべてで、3-3節と同じ表示（T1に `publish: hello N`、T2に `received: hello N`）になる。組み合わせによってログの見た目が変わることはない。どれか1つでもT2に何も出ない場合は、その組み合わせで使っているパッケージのビルドと `source` を確認する。
 
 > 課題1: `ros2 topic info /chatter -v` で、PublisherとSubscriberのノード名・型・QoSを確認する。言語が違っても、表示が同じ形式になることを確認する。
 >
@@ -861,7 +861,7 @@ C++の方が記述量・手数は増えるが、コールバック配線の間�
 |---|---|
 | `ros2 run` で `No executable found` | `setup.py` の `entry_points` / `CMakeLists.txt` の `install(TARGETS ...)` を足したか。再ビルド後に `source` したか |
 | C++で `fatal error: std_msgs/msg/string.hpp: No such file` | `find_package(std_msgs REQUIRED)` と `ament_target_dependencies` があるか（雛形の `--dependencies` を指定しなかった場合は手で足す） |
-| Pythonの `package.xml` に `<test_depend>` しか無い | `ros2 pkg create` で `--dependencies` を指定し忘れている。3-2のとおり `<depend>rclpy</depend>` と `<depend>std_msgs</depend>` を手で足す（無くてもこの環境では動くが、依存の宣言として必要） |
+| Pythonの `package.xml` に `<test_depend>` しか無い | `ros2 pkg create` で `--dependencies` を指定し忘れている。3-2節のとおり `<depend>rclpy</depend>` と `<depend>std_msgs</depend>` を手で足す（無くてもこの環境では動くが、依存の宣言として必要） |
 | listenerに何も出ない | トピック名（`chatter`）と型の綴り。`ros2 topic list -t` で確認 |
 | 起動後すぐ終了する | `spin` を呼んでいるか |
 | Ctrl+CでPythonが例外を吐く | `try/finally` と `rclpy.try_shutdown()` の記述を確認 |
@@ -869,7 +869,7 @@ C++の方が記述量・手数は増えるが、コールバック配線の間�
 
 ## 9. 次へ
 
-フェーズ3-2a（[`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md)）で、Twistでturtlesimを動かす。続くフェーズ3-2b（[`docs/phase3_2b_qos.md`](phase3_2b_qos.md)）では、QoSの相性を体験する（3-2aとは独立したテーマ）。
+フェーズ3-2a（[`docs/phase3_2a_turtlesim.md`](phase3_2a_turtlesim.md)）で、Twistでturtlesimを動かす。続くフェーズ3-2b（[`docs/phase3_2b_qos.md`](phase3_2b_qos.md)）では、QoSの相性を体験する（フェーズ3-2aとは独立したテーマ）。
 
 ## 10. 公式ドキュメント・参考資料
 

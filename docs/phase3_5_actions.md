@@ -133,7 +133,7 @@ C++の `CMakeLists.txt` にも足す（既存の `find_package(...)` の並び�
 find_package(rclcpp_action REQUIRED)
 ```
 
-**`example_interfaces` の依存（フェーズ3-4を飛ばした場合だけ）**: 使うアクションの型 `Fibonacci` は、`example_interfaces` パッケージのもの。フェーズ3-4（[`docs/phase3_4_services.md`](phase3_4_services.md)）の3節を済ませていれば、依存は足してあるので、ここは読み飛ばしてよい。3-4を飛ばした場合は、`package.xml`（Python版は `learn_py`、C++版を作る場合は `learn_cpp` にも）に次の行を足す。
+**`example_interfaces` の依存（フェーズ3-4を飛ばした場合だけ）**: 使うアクションの型 `Fibonacci` は、`example_interfaces` パッケージのもの。フェーズ3-4（[`docs/phase3_4_services.md`](phase3_4_services.md)）の3節を済ませていれば、依存は足してあるので、ここは読み飛ばしてよい。フェーズ3-4を飛ばした場合は、`package.xml`（Python版は `learn_py`、C++版を作る場合は `learn_cpp` にも）に次の行を足す。
 
 ファイル: `ros2_ws/src/learn_py/package.xml`（C++版を作る場合は `ros2_ws/src/learn_cpp/package.xml` にも）
 
@@ -365,7 +365,7 @@ def main(args=None):
 役割は「ゴールを送り、feedback をログに出し、結果を受けて終わる。設定があれば途中で中断要求も送る」こと。クライアントは、サーバと違って**待ち受ける処理が非同期の連鎖**になる。流れは、`send_goal`（送信）→ `on_goal_response`（受理/拒否の返事）→ `on_feedback`（何度も）→ `on_result`（最終結果）、と、それぞれ前段の Future やコールバックが完了したときに次が動く。
 
 - **`STATUS_NAMES`**: 結果の `response.status` は `GoalStatus` の整数値。そのままだと読みにくいので、名前に直す辞書を用意している。1節の状態遷移図の終端3つ（SUCCEEDED / CANCELED / ABORTED）に対応する。
-- **パラメータ**: `declare_parameter` で `order` と `cancel_after` を宣言し、`--ros-args -p order:=6` のように起動時に渡せるようにしている（3-3の復習）。
+- **パラメータ**: `declare_parameter` で `order` と `cancel_after` を宣言し、`--ros-args -p order:=6` のように起動時に渡せるようにしている（フェーズ3-3の復習）。
 - **`self.done`**: 終了判定用のフラグ。`main` のループがこれを見て抜ける。ゴール拒否・サーバ不在・結果受信、どのケースでも `True` にしないと終わらなくなる（8節参照）。
 - **`send_goal`**: `wait_for_server(timeout_sec=5.0)` はサーバが見つかるまで最大5秒待つ（見つからなければ `False`）。`send_goal_async(goal, feedback_callback=...)` はゴールを送るとすぐ戻り、返ってくる `Future`（後で結果が入る入れ物）を返す。`add_done_callback` で「返事が来たらこの関数を呼ぶ」と登録している。この時点では返事はまだ来ていない。
 - **`on_goal_response`**: `future.result()` が `goal_handle`（ゴールを識別・操作するための取っ手）。`goal_handle.accepted` が `False` なら拒否されたということ。受理なら、`goal_handle.get_result_async()` で「最終結果を取る Future」を得て、これにも完了コールバック（`on_result`）をつなぐ。ここで結果を**待ち始める**が、実際の結果はゴール完了後に届く。

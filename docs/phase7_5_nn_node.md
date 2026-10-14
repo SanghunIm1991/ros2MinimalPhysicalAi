@@ -1,9 +1,9 @@
 # フェーズ7-5 手順書: 学習したNNをROS2のノードにする
 
-[`docs/learning_plan.md`](learning_plan.md) フェーズ7の7-5（[`docs/idea_origin.md`](idea_origin.md) ステップ6）に対応する。フェーズ7-4では、Gazeboの車両で、ペダルを直接選ぶNNの方策を学習させ、重みを数だけのファイル（`.npz`）に書き出した。ただし、7-4の比較は、強化学習の環境（Gazeboを少しずつ進める仕組み）の中で行ったもので、ROS2のノードどうしがトピックでつながる、ふだんの形ではなかった。このページでは、その重みを読み込むROS2のノードを作り、フェーズ5-2の `pi_controller` の代わりに置いて、現実の時間で動くGazeboの車両とループを閉じる。フェーズ6の記録と指標で、PI制御と比べる。
+[`docs/learning_plan.md`](learning_plan.md) フェーズ7の7-5（[`docs/idea_origin.md`](idea_origin.md) ステップ6）に対応する。フェーズ7-4では、Gazeboの車両で、ペダルを直接選ぶNNの方策を学習させ、重みを数だけのファイル（`.npz`）に書き出した。ただし、フェーズ7-4の比較は、強化学習の環境（Gazeboを少しずつ進める仕組み）の中で行ったもので、ROS2のノードどうしがトピックでつながる、ふだんの形ではなかった。このページでは、その重みを読み込むROS2のノードを作り、フェーズ5-2の `pi_controller` の代わりに置いて、現実の時間で動くGazeboの車両とループを閉じる。フェーズ6の記録と指標で、PI制御と比べる。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy（Gazebo Harmonic）
-- 前提: フェーズ7-4（[`docs/phase7_4_gz_nn_policy.md`](phase7_4_gz_nn_policy.md)。`~/rl_practice` に `gz_pedal_w20.npz`（自分で学習させたものか、4節の配布の重み）と `npz_policy.py` がある）、フェーズ6-3（[`docs/phase6_3_metrics.md`](phase6_3_metrics.md)。`learn_py` に `metrics` があり、`learn_bringup` に6-1の `record.launch.py` がある）
+- 前提: フェーズ7-4（[`docs/phase7_4_gz_nn_policy.md`](phase7_4_gz_nn_policy.md)。`~/rl_practice` に `gz_pedal_w20.npz`（自分で学習させたものか、4節の配布の重み）と `npz_policy.py` がある）、フェーズ6-3（[`docs/phase6_3_metrics.md`](phase6_3_metrics.md)。`learn_py` に `metrics` があり、`learn_bringup` にフェーズ6-1の `record.launch.py` がある）
 - 所要目安: 2コマ
 - 言語: Python（launchもPython形式）
 
@@ -11,7 +11,7 @@
 
 > **進め方**: 1節で全体像を見る。2節で、NNの重みでペダルを計算するノードを作る。3節で、PI制御とNNを引数で切り替えられるlaunchとYAMLを作る。4節で、PI制御とNNで記録を取り、5節で、フェーズ6-3の指標で比べる。サンプルは学習の手がかりとして最小限に書いたもので、公式の文書の転載ではない。
 
-> **期待する結果の出どころ**: 3-4節のビルドと `--show-args` の表示は、使い捨ての環境で実際に実行した表示。4節の起動のログと、5節の `metrics` の表示は、使い捨ての環境で、Gazeboを画面なし（4-1節の末尾の `gz_args` の上書き）で起動し、実際に実行した表示（2026-10-08）である。行頭の時刻・プロセスの番号・パス・ビルドの秒数は、実行ごとに変わる。作成時は、`~/ros2_ws` の代わりに、このページで使うパッケージだけを手順書から写した使い捨てのワークスペースで確かめ、重みは7-4の配布の重み（`gz_pedal_w20.npz`）を使った。5節の指標は、Gazeboを現実の時間で動かすので、記録を取り直すと少し変わる。
+> **期待する結果の出どころ**: 3-4節のビルドと `--show-args` の表示は、使い捨ての環境で実際に実行した表示。4節の起動のログと、5節の `metrics` の表示は、使い捨ての環境で、Gazeboを画面なし（4-1節の末尾の `gz_args` の上書き）で起動し、実際に実行した表示（2026-10-08）である。行頭の時刻・プロセスの番号・パス・ビルドの秒数は、実行ごとに変わる。作成時は、`~/ros2_ws` の代わりに、このページで使うパッケージだけを手順書から写した使い捨てのワークスペースで確かめ、重みはフェーズ7-4の配布の重み（`gz_pedal_w20.npz`）を使った。5節の指標は、Gazeboを現実の時間で動かすので、記録を取り直すと少し変わる。
 
 ## 0. 学習目標と完了条件
 
@@ -20,17 +20,17 @@
 3. launchの引数と条件で、起動する制御器を切り替えられる。
 4. PI制御とNNを、同じ一式・同じ目標の並びで記録し、フェーズ6-3の指標で比べられる。
 
-完了条件: 4節でPI制御とNNの記録を取り、5節の比較表から、7-4と同じ傾向（NNはPI制御に届かず、定常偏差が残る）が、ROS2のノードの形でも見えることを説明できる。
+完了条件: 4節でPI制御とNNの記録を取り、5節の比較表から、フェーズ7-4と同じ傾向（NNはPI制御に届かず、定常偏差が残る）が、ROS2のノードの形でも見えることを説明できる。
 
 ## 1. 全体像
 
-フェーズ5-4では、`target_generator` が目標速度を送り、`pi_controller` がペダルを決め、`gz_plant` がGazeboの車両を動かして速度を返す、という形でループを閉じた。`pi_controller` は、`/target_velocity` と `/plant/velocity` を受けて `/plant/pedal` を送るだけなので、同じトピックを受けて送るノードなら、何でも代わりに置ける。このページでは、そこに、7-4で学習させたNNの方策を置く。
+フェーズ5-4では、`target_generator` が目標速度を送り、`pi_controller` がペダルを決め、`gz_plant` がGazeboの車両を動かして速度を返す、という形でループを閉じた。`pi_controller` は、`/target_velocity` と `/plant/velocity` を受けて `/plant/pedal` を送るだけなので、同じトピックを受けて送るノードなら、何でも代わりに置ける。このページでは、そこに、フェーズ7-4で学習させたNNの方策を置く。
 
-NNの方策は、7-4の2-1節のとおり、掛け算と足し算と `ReLU`・`tanh` を重ねるだけの関数である。重みは `.npz` にあるので、ノードはnumpyだけで計算できる。PyTorchもSB3も要らないので、ノードは、強化学習の仮想環境ではなく、ふだんのROS2のPythonで動く。学習の道具と、学習したものを使う側を分けられることも、`.npz` に書き出した理由の1つである。
+NNの方策は、フェーズ7-4の2-1節のとおり、掛け算と足し算と `ReLU`・`tanh` を重ねるだけの関数である。重みは `.npz` にあるので、ノードはnumpyだけで計算できる。PyTorchもSB3も要らないので、ノードは、強化学習の仮想環境ではなく、ふだんのROS2のPythonで動く。学習の道具と、学習したものを使う側を分けられることも、`.npz` に書き出した理由の1つである。
 
-ただし、学習のときと条件をそろえる必要がある。NNは、7-3の学習用のワールド（車輪の関節に減衰を入れたもの）と、ブレーキの遅いプラント（`tau_brake` 1.0秒）で学習した。また、観測は、目標・速度・偏差・前回のペダル・次の変わり目までの時間の5つだった。このページでは、5-4の一式を写して、ワールドとプラントのパラメータを学習のときに合わせ、観測をトピックの値から作る。走らせる目標の並びは、7-4の確かめ用のシナリオの1つ（種20）にして、7-4の結果と見比べられるようにする。
+ただし、学習のときと条件をそろえる必要がある。NNは、フェーズ7-3の学習用のワールド（車輪の関節に減衰を入れたもの）と、ブレーキの遅いプラント（`tau_brake` 1.0秒）で学習した。また、観測は、目標・速度・偏差・前回のペダル・次の変わり目までの時間の5つだった。このページでは、フェーズ5-4の一式を写して、ワールドとプラントのパラメータを学習のときに合わせ、観測をトピックの値から作る。走らせる目標の並びは、フェーズ7-4の確かめ用のシナリオの1つ（種20）にして、フェーズ7-4の結果と見比べられるようにする。
 
-![記録用のlaunch（record.launch.py）が、7-5のlaunch（gazebo_nn.launch.py）と ros2 bag record を起動する。target_generator が目標速度を送り、制御器（引数 controller で nn_controller か pi_controller を選ぶ）がペダルを gz_plant へ送る。gz_plant はトルクをブリッジ経由で現実の時間で動くGazebo（減衰入りの vehicle_rl.sdf）へ送り、オドメトリから速度を返す。nn_controller は7-4の重み（.npz）を numpy だけで読む。記録は後で再生し、metrics ノードで6-3の指標を出す](img/phase7_5_node.svg)
+![記録用のlaunch（record.launch.py）が、フェーズ7-5のlaunch（gazebo_nn.launch.py）と ros2 bag record を起動する。target_generator が目標速度を送り、制御器（引数 controller で nn_controller か pi_controller を選ぶ）がペダルを gz_plant へ送る。gz_plant はトルクをブリッジ経由で現実の時間で動くGazebo（減衰入りの vehicle_rl.sdf）へ送り、オドメトリから速度を返す。nn_controller はフェーズ7-4の重み（.npz）を numpy だけで読む。記録は後で再生し、metrics ノードでフェーズ6-3の指標を出す](img/phase7_5_node.svg)
 
 <details>
 <summary>同じ図（mermaid版）</summary>
@@ -67,14 +67,14 @@ flowchart LR
 - ノード名・実行ファイル名: `nn_controller`（パッケージ `learn_py`）
 - 受ける: `/target_velocity` と `/plant/velocity`（どちらも [`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg)）。
 - 送る: `/plant/pedal`（`std_msgs/msg/Float64`、−1〜1）を、`period` 秒ごとに。名前・型は `pi_controller` と同じにする。
-- 観測は、7-3の4節の環境の `_observation` と同じ5つ（目標と速度は10で割り、偏差は `error_scale` で割り、前回のペダル、次の変わり目までの時間を `change_interval` で割ったもの。±5に収める）。次の変わり目までの時間は、目標が変わった時刻を覚え、学習と同じく `change_interval` 秒ごとに変わる前提で数える。
+- 観測は、フェーズ7-3の4節の環境の `_observation` と同じ5つ（目標と速度は10で割り、偏差は `error_scale` で割り、前回のペダル、次の変わり目までの時間を `change_interval` で割ったもの。±5に収める）。次の変わり目までの時間は、目標が変わった時刻を覚え、学習と同じく `change_interval` 秒ごとに変わる前提で数える。
 - 目標が0以下の間（`target_generator` の最初の切り替えまで）は、NNを使わず、ペダル0を送る。学習では、目標は3〜15 m/sの範囲だけだったので、0はNNにとって学習した範囲の外である。
-- パラメータ: `weights`（重みのファイルのパス）、`period`（既定0.1秒。学習と同じ）、`change_interval`（既定10秒）、`error_scale`（既定1。7-3の環境の既定と同じ）。どれも起動するときに決め、実行中の変更は受け付けない。
+- パラメータ: `weights`（重みのファイルのパス）、`period`（既定0.1秒。学習と同じ）、`change_interval`（既定10秒）、`error_scale`（既定1。フェーズ7-3の環境の既定と同じ）。どれも起動するときに決め、実行中の変更は受け付けない。
 - ログ: 1秒に1回、目標・速度・ペダルを出す。
 
 ### 2-2. 方策のクラスを `learn_py` に写す
 
-7-4の4-2節の `npz_policy.py`（`NpzPolicy`）は、ROS2を使わないクラスなので、そのまま `learn_py` に写して、ノードから `import` する（フェーズ5-1の `vehicle_model.py` を、`plant_node.py` から使ったのと同じ形）。
+フェーズ7-4の4-2節の `npz_policy.py`（`NpzPolicy`）は、ROS2を使わないクラスなので、そのまま `learn_py` に写して、ノードから `import` する（フェーズ5-1の `vehicle_model.py` を、`plant_node.py` から使ったのと同じ形）。
 
 ```bash
 cp ~/rl_practice/npz_policy.py ~/ros2_ws/src/learn_py/learn_py/
@@ -98,8 +98,8 @@ from std_msgs.msg import Float64
 from learn_py.npz_policy import NpzPolicy
 
 
-# 7-4で学習させたNNの方策（.npz）で、目標速度と現在速度からペダルの指令を計算して plant/pedal へ送るノード。
-# 観測の作り方は、7-3の環境（gz_pedal_env.py）の _observation と同じにする。
+# フェーズ7-4で学習させたNNの方策（.npz）で、目標速度と現在速度からペダルの指令を計算して plant/pedal へ送るノード。
+# 観測の作り方は、フェーズ7-3の環境（gz_pedal_env.py）の _observation と同じにする。
 class NNControllerNode(Node):
     # 重みのファイル・周期・目標が変わる間隔を宣言し、方策・通信の口・タイマーを用意する。
     def __init__(self):
@@ -177,7 +177,7 @@ def main(args=None):
 
 - **`__init__`**: パラメータを宣言し、`weights` のファイルから `NpzPolicy` を作る。`os.path.expanduser` は、パスの先頭の `~` をホームのフォルダに直す（YAMLや引数に `~/rl_practice/...` と書いても読めるようにするため）。ファイルが無いと、ここで `FileNotFoundError` になって止まる。読み込めたら、そのパスをログに出す。
 - **`on_target`**: 目標が前と違えば、その時刻を `change_time` に覚える。時刻は、ノードの時計（`get_clock().now()`）で測る。launchで `use_sim_time` を真にするので、シミュレーション時刻になる（フェーズ5-4の5節）。
-- **`on_timer`**: 7-3の環境の `_observation` と同じ並びで観測を作り、方策でペダルを計算して送る。次の変わり目までの時間は、「`change_interval` から、目標が変わってからの経過時間を引いたもの」を `change_interval` で割った値（0より小さくはしない）である。学習では、目標はちょうど10秒ごとに変わったので、この前提が成り立つ。目標が0以下の間は、ペダル0を送り、前回のペダルも0にしておく。
+- **`on_timer`**: フェーズ7-3の環境の `_observation` と同じ並びで観測を作り、方策でペダルを計算して送る。次の変わり目までの時間は、「`change_interval` から、目標が変わってからの経過時間を引いたもの」を `change_interval` で割った値（0より小さくはしない）である。学習では、目標はちょうど10秒ごとに変わったので、この前提が成り立つ。目標が0以下の間は、ペダル0を送り、前回のペダルも0にしておく。
 - **前回のペダル**: 観測の1つなので、送ったペダルを `self.pedal` に覚えておき、次の計算に使う。
 - 実行中の変更（`ros2 param set`）を受け付ける `on_params` は、書いていない。重みや観測の作り方を途中で変えると、学習のときと条件がずれるためである。変える場合は、ノードを起動し直す。
 
@@ -235,10 +235,10 @@ target_generator:
     step_values: [6.96, 9.34, 6.78, 4.55, 3.25, 7.21, 9.56, 6.64, 4.73]
 ```
 
-- **`gz_plant`**: `tau_brake` を1.0にして、7-3の環境の既定（ブレーキの遅いプラント）に合わせる。ほかは、フェーズ5-4の `gazebo_plant.yaml` と同じである。
-- **`pi_controller`**: ゲインは5-4と同じ既定。`period` を0.1秒にして、7-4で比べたPI制御（0.1秒ごとに計算）とそろえる。5-4では0.02秒（`pi_node.py` の既定）だった。
+- **`gz_plant`**: `tau_brake` を1.0にして、フェーズ7-3の環境の既定（ブレーキの遅いプラント）に合わせる。ほかは、フェーズ5-4の `gazebo_plant.yaml` と同じである。
+- **`pi_controller`**: ゲインはフェーズ5-4と同じ既定。`period` を0.1秒にして、フェーズ7-4で比べたPI制御（0.1秒ごとに計算）とそろえる。フェーズ5-4では0.02秒（`pi_node.py` の既定）だった。
 - **`nn_controller`**: `period` と `change_interval` は、学習のときと同じ値（既定と同じ）を明示しておく。`weights` は、3-3節のlaunchの引数で渡す。
-- **`target_generator`**: 7-4の確かめ用のシナリオの種20の目標（7-1の `make_targets` で作った9つの値を、小数第2位で丸めたもの）を、10秒ごとに並べた。最初の10秒は目標0で、その間にGazeboが起動する。Gazeboの画面が開くのに10秒より長くかかるPCでは、最初の段が始まる前に車両の準備が整わないことがある（`target_generator` は現実の時間で目標を切り替える）。その場合は、4-1節の末尾のとおり画面なしで起動するか、`step_times` をすべて同じだけ遅らせる（5-4の6-1節では、最初の切り替えを15秒にした）。
+- **`target_generator`**: フェーズ7-4の確かめ用のシナリオの種20の目標（フェーズ7-1の `make_targets` で作った9つの値を、小数第2位で丸めたもの）を、10秒ごとに並べた。最初の10秒は目標0で、その間にGazeboが起動する。Gazeboの画面が開くのに10秒より長くかかるPCでは、最初の段が始まる前に車両の準備が整わないことがある（`target_generator` は現実の時間で目標を切り替える）。その場合は、4-1節の末尾のとおり画面なしで起動するか、`step_times` をすべて同じだけ遅らせる（フェーズ5-4の6-1節では、最初の切り替えを15秒にした）。
 
 記録用に、終わる時刻を足したYAMLも作る（フェーズ6-1の4-3節と同じ）。
 
@@ -262,11 +262,11 @@ target_generator:
 
 ### 3-2. ワールド
 
-7-3の2-3節の学習用のワールド（`learn_bringup/worlds/vehicle_rl.sdf`）を、そのまま使う。7-3では、画面なし・一時停止で起動し、サービスで少しずつ進めた。このページでは、5-4と同じく、`-r`（再生した状態で始める）を付けて、現実の時間で動かす。
+フェーズ7-3の2-3節の学習用のワールド（`learn_bringup/worlds/vehicle_rl.sdf`）を、そのまま使う。フェーズ7-3では、画面なし・一時停止で起動し、サービスで少しずつ進めた。このページでは、フェーズ5-4と同じく、`-r`（再生した状態で始める）を付けて、現実の時間で動かす。
 
 ### 3-3. launchファイル（`launch/gazebo_nn.launch.py`）
 
-フェーズ5-4の6-2節の `gazebo_plant.launch.py` を元に、ワールド・YAMLを替え、制御器を引数で切り替えられるようにする。6-1の4-2節で足した、`target_generator` が終わったら全体を止める `on_exit=Shutdown()` も入れておく。
+フェーズ5-4の6-2節の `gazebo_plant.launch.py` を元に、ワールド・YAMLを替え、制御器を引数で切り替えられるようにする。フェーズ6-1の4-2節で足した、`target_generator` が終わったら全体を止める `on_exit=Shutdown()` も入れておく。
 
 ファイル: `ros2_ws/src/learn_bringup/launch/gazebo_nn.launch.py`
 
@@ -281,7 +281,7 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-# 7-3の学習用のワールド（減衰入り）を現実の時間で動かし、PI制御か学習したNNでループを閉じる。
+# フェーズ7-3の学習用のワールド（減衰入り）を現実の時間で動かし、PI制御か学習したNNでループを閉じる。
 # Gazeboとブリッジ、gz_plant、制御器（引数 controller で pi か nn を選ぶ）、target_generator を起動する。
 def generate_launch_description():
     controller = LaunchConfiguration('controller')
@@ -299,7 +299,7 @@ def generate_launch_description():
             description='制御器（pi または nn）'),
         DeclareLaunchArgument(
             'weights', default_value=[EnvironmentVariable('HOME'), '/rl_practice/gz_pedal_w20.npz'],
-            description='nn のときに読み込む重みのファイル（7-4の .npz）'),
+            description='nn のときに読み込む重みのファイル（フェーズ7-4の .npz）'),
         DeclareLaunchArgument(
             'gz_args', default_value=['-r ', world],
             description='Gazeboに渡す引数（既定はワールドを再生した状態で開く）'),
@@ -350,13 +350,13 @@ def generate_launch_description():
 
 **`gazebo_nn.launch.py` の解説**
 
-5-4の `gazebo_plant.launch.py` と同じ部分（Gazebo・ブリッジ・`gz_plant`・`target_generator`）の説明は、5-4の6-2節を見る。違う部分は次のとおり。
+フェーズ5-4の `gazebo_plant.launch.py` と同じ部分（Gazebo・ブリッジ・`gz_plant`・`target_generator`）の説明は、フェーズ5-4の6-2節を見る。違う部分は次のとおり。
 
 | 部分 | 何をしているか |
 |---|---|
 | `DeclareLaunchArgument('controller', default_value='nn')` | 起動する制御器を選ぶ引数。`controller:=pi` でPI制御、`controller:=nn`（既定）でNNになる |
-| `condition=IfCondition(EqualsSubstitution(controller, 'pi'))` | `Node` に条件を付ける。`EqualsSubstitution(a, b)` は、`a` と `b` が等しければ `true`、違えば `false` という文字列になる置換である。`IfCondition` は、それが `true` のときだけ、その `Node` を起動する（5-3の3-3節で、引数 `gazebo` の値で表示用のGazeboを起動するかを切り替えた `condition=IfCondition(gazebo)` と同じ仕組み）。`pi_controller` と `nn_controller` に逆の条件を付けて、どちらか一方だけが起動するようにする |
-| `DeclareLaunchArgument('weights', default_value=[EnvironmentVariable('HOME'), '/rl_practice/gz_pedal_w20.npz'])` | 重みのファイルの引数。`EnvironmentVariable('HOME')` は、環境変数 `HOME`（ホームのフォルダのパス）に置き換わる置換で、後ろの文字列とつながって1つのパスになる。別の重み（7-4の②の `gz_pedal_w0.npz` 等）を使うときは、`weights:=...` で差し替える |
+| `condition=IfCondition(EqualsSubstitution(controller, 'pi'))` | `Node` に条件を付ける。`EqualsSubstitution(a, b)` は、`a` と `b` が等しければ `true`、違えば `false` という文字列になる置換である。`IfCondition` は、それが `true` のときだけ、その `Node` を起動する（フェーズ5-3の3-3節で、引数 `gazebo` の値で表示用のGazeboを起動するかを切り替えた `condition=IfCondition(gazebo)` と同じ仕組み）。`pi_controller` と `nn_controller` に逆の条件を付けて、どちらか一方だけが起動するようにする |
+| `DeclareLaunchArgument('weights', default_value=[EnvironmentVariable('HOME'), '/rl_practice/gz_pedal_w20.npz'])` | 重みのファイルの引数。`EnvironmentVariable('HOME')` は、環境変数 `HOME`（ホームのフォルダのパス）に置き換わる置換で、後ろの文字列とつながって1つのパスになる。別の重み（フェーズ7-4の②の `gz_pedal_w0.npz` 等）を使うときは、`weights:=...` で差し替える |
 | `parameters=[params_file, sim_time, {'weights': LaunchConfiguration('weights')}]` | YAMLの値に加えて、引数の `weights` を、`nn_controller` のパラメータとして渡す。リストの後ろのものが勝つ（フェーズ4の4-4節） |
 | `'vehicle_rl.sdf'` と `'gazebo_nn.yaml'` | ワールドとYAMLを、このページのものにする |
 
@@ -408,7 +408,7 @@ Arguments (pass arguments as '<name>:=<value>'):
 
 ## 4. PI制御とNNで記録する
 
-フェーズ6-1の `record.launch.py` を、`scenario:=gazebo_nn` で使う。`gazebo_nn.launch.py` と `gazebo_nn_record.yaml` の名前は、6-1の4-4節の決まり（`<scenario>.launch.py` と `<scenario>_record.yaml`）に合わせてある。`controller:=...` のように、`record.launch.py` に無い引数を付けても、取り込んだ `gazebo_nn.launch.py` にそのまま届く（6-1の5節の `gz_args` と同じ）。
+フェーズ6-1の `record.launch.py` を、`scenario:=gazebo_nn` で使う。`gazebo_nn.launch.py` と `gazebo_nn_record.yaml` の名前は、フェーズ6-1の4-4節の決まり（`<scenario>.launch.py` と `<scenario>_record.yaml`）に合わせてある。`controller:=...` のように、`record.launch.py` に無い引数を付けても、取り込んだ `gazebo_nn.launch.py` にそのまま届く（フェーズ6-1の5節の `gz_args` と同じ）。
 
 ### 4-1. PI制御で記録する
 
@@ -416,11 +416,11 @@ Arguments (pass arguments as '<name>:=<value>'):
 ros2 launch learn_bringup record.launch.py scenario:=gazebo_nn controller:=pi bag:=$HOME/ros2_ws/bags/gz_pi
 ```
 
-**期待する結果**: 6-1の5節と同じ流れで、100秒たつと `target_generator` が `end_time reached, shutting down` を出し、全体が止まる。Gazeboのウィンドウが開き、緑の車両が10秒後に走り出す。`pi_controller` のログは、5-4と同じ形で1秒に1回出る（ログは、4-2節のNNのものだけを載せる）。
+**期待する結果**: フェーズ6-1の5節と同じ流れで、100秒たつと `target_generator` が `end_time reached, shutting down` を出し、全体が止まる。Gazeboのウィンドウが開き、緑の車両が10秒後に走り出す。`pi_controller` のログは、フェーズ5-4と同じ形で1秒に1回出る（ログは、4-2節のNNのものだけを載せる）。
 
 止まったら、フェーズ6-1の5節の末尾の手順（`pgrep -af "gz sim"` で確かめ、残っていれば `pkill -INT -f "gz sim"`）で、Gazeboの本体が残っていないかを確かめる。
 
-PCが重い場合は、6-1の5節と同じく、`gz_args` に `-s`（画面なし）を足して記録できる（例: `gz_args:="-s -r $(ros2 pkg prefix --share learn_bringup)/worlds/vehicle_rl.sdf"` をコマンドの末尾に足す）。この手順書の作成時の確認は、この方法で行った。
+PCが重い場合は、フェーズ6-1の5節と同じく、`gz_args` に `-s`（画面なし）を足して記録できる（例: `gz_args:="-s -r $(ros2 pkg prefix --share learn_bringup)/worlds/vehicle_rl.sdf"` をコマンドの末尾に足す）。この手順書の作成時の確認は、この方法で行った。
 
 > **Gazeboが残ったまま次の記録を取らない**: 作成時に、PI制御の記録の後にGazeboの本体が残ったまま、4-2節のNNの記録を取ると、2つのワールドが同時に動き、同じ名前のオドメトリが2つ届いた。速度のサンプルが約2倍になり、記録は使えなかった。続けて記録を取るときは、毎回、Gazeboが残っていないことを確かめる。
 
@@ -456,7 +456,7 @@ ros2 launch learn_bringup record.launch.py scenario:=gazebo_nn controller:=nn ba
 
 ### 5-1. 2つの記録を解析する
 
-フェーズ6-3の7-1節と同じ手順で、`gz_pi` と `gz_nn` を解析する。速度は50 Hzで送られているので、`sample_period` を0.02にする（6-3の3節）。T3で `Subscription count: 1` を確かめてから、T1でスペースキーを押す（6-3の6-1節）。
+フェーズ6-3の7-1節と同じ手順で、`gz_pi` と `gz_nn` を解析する。速度は50 Hzで送られているので、`sample_period` を0.02にする（フェーズ6-3の3節）。T3で `Subscription count: 1` を確かめてから、T1でスペースキーを押す（フェーズ6-3の6-1節）。
 
 ```bash
 # T1
@@ -526,18 +526,18 @@ ros2 topic info /plant/velocity
 | 6.6 → 4.7 | 減速 | 40.29% | 0.00% | −0.07 | −1.65 |
 | 全体のRMS | | 1.249 m/s | 1.377 m/s | | |
 
-- **減速の段で、PI制御は大きく行き過ぎる**: ブレーキの遅いプラント（`tau_brake` 1.0秒）なので、PI制御は減速の段で約40%行き過ぎる（目標より下まで落ちる）。その後は、積分の項で目標に戻り、段の最後の偏差は0.1 m/s以内に収まる。このPI制御は、7-4と同じく、手で決めた既定のゲイン（`kp` 0.5・`ki` 0.1）で、任意の7-2で調整したゲインではない（7-4の5-2節の「比べたPI制御は、手で決めた既定のゲインである」）。
+- **減速の段で、PI制御は大きく行き過ぎる**: ブレーキの遅いプラント（`tau_brake` 1.0秒）なので、PI制御は減速の段で約40%行き過ぎる（目標より下まで落ちる）。その後は、積分の項で目標に戻り、段の最後の偏差は0.1 m/s以内に収まる。このPI制御は、フェーズ7-4と同じく、手で決めた既定のゲイン（`kp` 0.5・`ki` 0.1）で、任意のフェーズ7-2で調整したゲインではない（フェーズ7-4の5-2節の「比べたPI制御は、手で決めた既定のゲインである」）。
 - **NNは、減速の段の行き過ぎが小さい代わりに、目標まで落としきらない**: NNの減速の段の行き過ぎ量は0〜17%と小さい。一方、定常偏差は−0.6〜−1.65 m/sで、段の最後になっても、目標より速いままである（定常偏差は「目標−速度」なので、負は速度が目標より大きいことを表す）。行き過ぎを重く減点されて学んだ（重み20）ので、減速ではブレーキを控えめにしている、という読み方もできるが、作成時には確かめていない推測である。次の項目のとおり、行き過ぎの減点は加速の段にもかかるのに、NNは加速の段では行き過ぎているので、重みだけでは説明しきれない。
-- **加速の段では、NNが行き過ぎる**: PI制御は、加速の段ではほとんど行き過ぎない（アクセル全開に張り付いて上げ、手前で緩める）。NNは、加速の段で11〜30%行き過ぎ、3.2 → 7.2の段では、段の最後まで目標より速いまま残る。最初の段（0.0 → 7.0）は、学習では、止まった状態から始める最初の10秒にあたり、行き過ぎを数えない段だった（7-1の4節の `vehicle_env.py` の解説の `direction`。最初の段には「上げる・下げる」の向きが無いので0になる。7-3の環境も同じ数え方）。学習で減点されなかった振る舞いが、そのまま出ている可能性がある。
-- **RMSは、PI制御が少しよい**: 1.249 m/sと1.377 m/s。どちらも、最初の段（目標0 → 7.0）の加速を含むので、7-4の5-2節のRMS（最初の10秒を含まない）より大きい。また、7-4の値は5つのシナリオ（種20〜24）の平均で、このページは種20の1回だけなので、そのまま比べる値ではない。
-- **7-4と同じ傾向が、ROS2のノードの形でも見える**: NNはPI制御に届かず、定常偏差が残る（7-4の5-2節）。強化学習の環境の中で比べた結果と、ROS2のトピックでつないだ一式で比べた結果が、同じ向きになった。学習した方策を、学習の道具の外に持ち出しても、少なくともこの1つのシナリオの1回の記録では、学習の環境と同じ傾向で働いた（記録を取り直すと、値は少し変わる。冒頭の注記）。
+- **加速の段では、NNが行き過ぎる**: PI制御は、加速の段ではほとんど行き過ぎない（アクセル全開に張り付いて上げ、手前で緩める）。NNは、加速の段で11〜30%行き過ぎ、3.2 → 7.2の段では、段の最後まで目標より速いまま残る。最初の段（0.0 → 7.0）は、学習では、止まった状態から始める最初の10秒にあたり、行き過ぎを数えない段だった（フェーズ7-1の4節の `vehicle_env.py` の解説の `direction`。最初の段には「上げる・下げる」の向きが無いので0になる。フェーズ7-3の環境も同じ数え方）。学習で減点されなかった振る舞いが、そのまま出ている可能性がある。
+- **RMSは、PI制御が少しよい**: 1.249 m/sと1.377 m/s。どちらも、最初の段（目標0 → 7.0）の加速を含むので、フェーズ7-4の5-2節のRMS（最初の10秒を含まない）より大きい。また、フェーズ7-4の値は5つのシナリオ（種20〜24）の平均で、このページは種20の1回だけなので、そのまま比べる値ではない。
+- **フェーズ7-4と同じ傾向が、ROS2のノードの形でも見える**: NNはPI制御に届かず、定常偏差が残る（フェーズ7-4の5-2節）。強化学習の環境の中で比べた結果と、ROS2のトピックでつないだ一式で比べた結果が、同じ向きになった。学習した方策を、学習の道具の外に持ち出しても、少なくともこの1つのシナリオの1回の記録では、学習の環境と同じ傾向で働いた（記録を取り直すと、値は少し変わる。冒頭の注記）。
 
 > **補足: 強化学習の環境と、ROS2の一式の違い**
 >
-> 7-4の環境と、このページの一式は、同じワールド・同じプラント・同じ観測を使うが、次の点が違う。そのため、同じ種20のシナリオでも、指標の値はぴったりは一致しない。
+> フェーズ7-4の環境と、このページの一式は、同じワールド・同じプラント・同じ観測を使うが、次の点が違う。そのため、同じ種20のシナリオでも、指標の値はぴったりは一致しない。
 >
-> - **時間の進め方**: 7-4の環境は、Gazeboを一時停止して0.02秒ずつ進め、計算が終わるのを待った。このページは、Gazeboが現実の時間で動き続け、ノードは0.1秒ごとのタイマーで計算する。計算の遅れや、トピックが届く時機の分、ペダルが変わる時機がわずかにずれる。
-> - **アクチュエータの計算の刻み**: 7-3の環境は0.02秒ごと、`gz_plant` は0.01秒ごと（`period` の既定）に計算する。
+> - **時間の進め方**: フェーズ7-4の環境は、Gazeboを一時停止して0.02秒ずつ進め、計算が終わるのを待った。このページは、Gazeboが現実の時間で動き続け、ノードは0.1秒ごとのタイマーで計算する。計算の遅れや、トピックが届く時機の分、ペダルが変わる時機がわずかにずれる。
+> - **アクチュエータの計算の刻み**: フェーズ7-3の環境は0.02秒ごと、`gz_plant` は0.01秒ごと（`period` の既定）に計算する。
 > - **目標の値**: YAMLには、小数第2位で丸めた値を書いた。
 > - **目標の切り替えの時計**: `target_generator` は、現実の時間で目標を切り替える（フェーズ6-1の5節の注記）。PCが重く、Gazeboが現実より遅れると、段の長さがシミュレーションの時間で見て10秒より短くなる。
 
@@ -546,13 +546,13 @@ ros2 topic info /plant/velocity
 - 学習した方策を、`.npz` の重みとnumpyだけで計算するROS2のノード（`nn_controller`）にした。PyTorchやSB3を、ふだんのROS2のPythonに入れずに済む。
 - 観測は、学習のときと同じ並び・同じ割り算で、トピックの値から作った。次の変わり目までの時間は、目標が変わった時刻から数えた。学習した範囲の外（目標0）では、NNを使わず、ペダル0にした。
 - launchの引数と `IfCondition`・`EqualsSubstitution` で、PI制御とNNを切り替えた。トピックの名前と型をそろえておけば、制御器を入れ替えるだけで、同じ一式・同じ記録と解析の手順で比べられる。
-- ROS2の一式でも、7-4と同じく、NNはPI制御に届かず、定常偏差が残った。NNは、減速の段の行き過ぎは小さいが、目標まで落としきらない。
+- ROS2の一式でも、フェーズ7-4と同じく、NNはPI制御に届かず、定常偏差が残った。NNは、減速の段の行き過ぎは小さいが、目標まで落としきらない。
 
 ## 7. つまずきやすい点
 
 | 症状 | 確認すること |
 |---|---|
-| `nn_controller` が `FileNotFoundError` で止まる | `~/rl_practice/gz_pedal_w20.npz` があるか（7-4の3節で学習させたか、4節で取ってきたか）。別の場所に置いたなら、`weights:=...` で渡す |
+| `nn_controller` が `FileNotFoundError` で止まる | `~/rl_practice/gz_pedal_w20.npz` があるか（フェーズ7-4の3節で学習させたか、4節で取ってきたか）。別の場所に置いたなら、`weights:=...` で渡す |
 | `ModuleNotFoundError: No module named 'learn_py.npz_policy'` | 2-2節で、`npz_policy.py` を `learn_py/learn_py/` に写したか。写した後にビルドし直したか |
 | `executable 'nn_controller' not found` | 2-4節の `entry_points` の行を足して、ビルドし直したか |
 | `file 'gazebo_nn.launch.py' was not found` や、YAMLが見つからない | launchとYAMLを足した後に、`learn_bringup` をビルドし直したか。`record.launch.py` の `scenario` の名前と、ファイル名（`gazebo_nn.launch.py`・`gazebo_nn_record.yaml`）がそろっているか |
@@ -562,7 +562,7 @@ ros2 topic info /plant/velocity
 
 ## 8. 次へ
 
-フェーズ7の7-0〜7-5で、強化学習の基本から、PI制御のゲインの学習、NNの方策の学習、学習したものをROS2のノードとして使うところまでを一通り行い、この教材の最終ゴールに着いた。次の7-6（[`docs/phase7_6_bipedal_bridge.md`](phase7_6_bipedal_bridge.md)）では、二足歩行のように、人が式で制御器を書きにくい問題に目を向け、MuJoCoの二足を小さく学習させて、本格的に取り組むための道具と要件を整理する。
+フェーズ7の7-0〜7-5で、強化学習の基本から、PI制御のゲインの学習、NNの方策の学習、学習したものをROS2のノードとして使うところまでを一通り行い、この教材の最終ゴールに着いた。次のフェーズ7-6（[`docs/phase7_6_bipedal_bridge.md`](phase7_6_bipedal_bridge.md)）では、二足歩行のように、人が式で制御器を書きにくい問題に目を向け、MuJoCoの二足を小さく学習させて、本格的に取り組むための道具と要件を整理する。
 
 ## 9. 公式ドキュメント・参考資料
 
