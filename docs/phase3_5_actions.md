@@ -135,6 +135,8 @@ find_package(rclcpp_action REQUIRED)
 
 **`example_interfaces` の依存（フェーズ3-4を飛ばした場合だけ）**: 使うアクションの型 `Fibonacci` は、`example_interfaces` パッケージのもの。フェーズ3-4（[`docs/phase3_4_services.md`](phase3_4_services.md)）の3節を済ませていれば、依存は足してあるので、ここは読み飛ばしてよい。3-4を飛ばした場合は、`package.xml`（Python版は `learn_py`、C++版を作る場合は `learn_cpp` にも）に次の行を足す。
 
+ファイル: `ros2_ws/src/learn_py/package.xml`（C++版を作る場合は `ros2_ws/src/learn_cpp/package.xml` にも）
+
 ```xml
 <depend>example_interfaces</depend>
 ```

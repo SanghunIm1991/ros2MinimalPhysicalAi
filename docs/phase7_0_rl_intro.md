@@ -280,9 +280,9 @@ random: mean  -1225.3  std  268.2  min  -1638.7
 
 ### 4-1. 公式の例: SACでPendulumを学習させる
 
-SB3の公式の文書のSACのページには、`Pendulum-v1` をSACで学習させる例が載っている。以下は、その例の抜粋である（逐語。出典は末尾）。この節では読むことが目的で、学習させるのは4-2節で書き直したスクリプトである。試しに実行する場合は、次のファイルとして保存する。
+SB3の公式の文書のSACのページには、`Pendulum-v1` をSACで学習させる例が載っている。以下は、その例の抜粋である（逐語。出典は末尾）。この節では読むことが目的で、学習させるのは4-2節で書き直したスクリプトである。試しに実行する場合は、`~/rl_practice` とは別のフォルダ `~/rl_practice/official` に保存し、そのフォルダで実行する。この例は、学習したモデルを `sac_pendulum.zip` という名前で、実行したフォルダに保存する。これは4-2節で作り、6節で読み込むモデルと同じ名前なので、`~/rl_practice` で実行すると、そのモデルを上書きしてしまう。
 
-ファイル: `~/rl_practice/sac_pendulum_official.py`（任意）
+ファイル: `~/rl_practice/official/sac_pendulum_official.py`（任意）
 
 ```python
 import gymnasium as gym

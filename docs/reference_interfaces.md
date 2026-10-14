@@ -513,7 +513,7 @@ learn_interfaces.msg.VehicleState(header=std_msgs.msg.Header(stamp=builtin_inter
 
 指定しなかった項目（`header`・`target_velocity`）は、既定の0や空の値で作られている（2-5節）。定数 `PEDAL_MAX` は、作ったメッセージではなく、型（クラス）から読める。サービスとアクションは、`from learn_interfaces.srv import SetGains`・`from learn_interfaces.action import DriveDistance` で読み込み、`SetGains.Request(kp=0.5, ki=0.1)`・`DriveDistance.Goal(distance=450.0)` のように要求やゴールを作る（フェーズ3-4・3-5の `AddTwoInts.Request()`・`Fibonacci.Goal()` と同じ形）。
 
-**C++**: `ros2_ws/src/learn_cpp/CMakeLists.txt` で `find_package(learn_interfaces REQUIRED)` とし、`ament_target_dependencies` に `learn_interfaces` を足す（フェーズ3-1の4-2節で `talker` に `std_msgs` を足したのと同じ形）。コードでは、ヘッダを `#include` して、型名で使う。
+**C++**: `ros2_ws/src/learn_cpp/CMakeLists.txt` で `find_package(learn_interfaces REQUIRED)` とし、`ament_target_dependencies` に `learn_interfaces` を足す（フェーズ3-1の4-2節で `talker` に `std_msgs` を足したのと同じ形）。コードでは、ヘッダを `#include` して、型名で使う。次は、ノードのソース（例: `ros2_ws/src/learn_cpp/src/` の下の `.cpp`）に書く部分だけを抜き出した使い方の例で、ファイルの完全な形ではない（`#include` はファイルの先頭に、残りはメッセージを作る関数の中に書く）。
 
 ```cpp
 #include "learn_interfaces/msg/vehicle_state.hpp"
