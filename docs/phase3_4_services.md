@@ -123,6 +123,8 @@ string message # informational, e.g. for error messages
 
 `package.xml` に、次の2行を足す（C++版を作る場合は `learn_cpp` 側にも。必須の範囲だけなら `learn_py` 側の `example_interfaces` だけでよい）。
 
+ファイル: `ros2_ws/src/learn_py/package.xml`（C++版を作る場合は `ros2_ws/src/learn_cpp/package.xml` にも）
+
 ```xml
 <depend>example_interfaces</depend>
 <depend>std_srvs</depend>
@@ -363,6 +365,8 @@ def main(args=None):
 
 `setup.py` の `entry_points` に、作ったノードの行を足し、再ビルドする。下の3行のうち、1行目が①の `add_server`、2行目が①の `add_client`、3行目が②の `counter_node` である（作らなかったノードの行は書かない）。
 
+ファイル: `ros2_ws/src/learn_py/setup.py`（`entry_points` の部分）
+
 <!-- snippet: py_entry_points_service -->
 ```python
             'add_server = learn_py.add_server:main',
@@ -600,6 +604,8 @@ Python版と同じく、タイマーによる配信と `reset_counter` サービ
 ### 5-5. 登録とビルド（①・②共通）
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` に名前を足す（これまでの分は残す。前のフェーズでC++版を作らなかったノードの名前は書かない。書くと、存在しないターゲットとしてビルドがエラーになる）。`add_executable` の3組のうち、最初の2組が①足し算、3組目が②カウンタのリセットである。
+
+ファイル: `ros2_ws/src/learn_cpp/CMakeLists.txt`（追記する部分）
 
 <!-- snippet: cmake_service -->
 ```cmake

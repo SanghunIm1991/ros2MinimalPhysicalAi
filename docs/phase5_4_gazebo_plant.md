@@ -96,6 +96,8 @@ cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/ros
 
 **(1) ファイルの先頭のコメント**（`<!--` から `-->` まで。デモの使い方が書かれている）を、出典と変更点を書いたコメントに置き換える。
 
+ファイル: `ros2_ws/src/learn_bringup/worlds/vehicle_force.sdf`（ファイルの先頭のコメント）
+
 <!-- snippet: world_header_comment -->
 ```xml
 <!--
@@ -108,6 +110,8 @@ cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/ros
 
 **(2) ワールドの名前**を変える。
 
+ファイル: `ros2_ws/src/learn_bringup/worlds/vehicle_force.sdf`（`<world>` の行）
+
 ```xml
   <world name="vehicle_force">
 ```
@@ -115,6 +119,8 @@ cp /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/diff_drive.sdf ~/ros
 （元は `<world name="diff_drive">`。Gazeboのトピック名の一部（`/world/vehicle_force/...`）になるので、5-0のデモと区別できるようにする。）
 
 **(3) 緑の車両のプラグイン**を置き換える。ファイルの後半の `<model name='vehicle_green'>` の中の、最後にある `<plugin filename="gz-sim-diff-drive-system" ...>` から `</plugin>` までを、次の3つのプラグインに置き換える（青の車両の中にも同じDiffDriveがあるが、そちらは変えない）。
+
+ファイル: `ros2_ws/src/learn_bringup/worlds/vehicle_force.sdf`（緑の車両のプラグイン）
 
 <!-- snippet: world_green_plugins -->
 ```xml
@@ -155,6 +161,8 @@ Valid.
 
 `learn_bringup` の `CMakeLists.txt` の `install(DIRECTORY ...)` に、`worlds` を足す（フェーズ4の3-3節で書いた行を変える）。
 
+ファイル: `ros2_ws/src/learn_bringup/CMakeLists.txt`（`install(DIRECTORY ...)` の部分）
+
 <!-- snippet: cmake_bringup_worlds -->
 ```cmake
 install(DIRECTORY launch config worlds
@@ -162,6 +170,8 @@ install(DIRECTORY launch config worlds
 ```
 
 `package.xml` に、この手順書で起動するパッケージへの実行時の依存を足す（`ros_gz_sim_demos` の行の後に）。
+
+ファイル: `ros2_ws/src/learn_bringup/package.xml`（`<exec_depend>` の並び）
 
 ```xml
 <exec_depend>ros_gz_sim</exec_depend>
@@ -527,6 +537,8 @@ def generate_launch_description():
 ### 6-3. ビルドして起動する
 
 `learn_py` の `setup.py` の `entry_points` に1行足す（既存の行は残す。5-3の3-1節で足した `target_generator` の行の後に続ける）。
+
+ファイル: `ros2_ws/src/learn_py/setup.py`（`entry_points` の部分）
 
 <!-- snippet: py_entry_points_gz_plant -->
 ```python

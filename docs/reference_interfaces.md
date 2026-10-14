@@ -490,6 +490,8 @@ float64 pedal             # ペダル（PEDAL_MIN〜PEDAL_MAX。正がアクセ�
 
 自作の型を使う側のパッケージ（`learn_py`・`learn_cpp` など）の `package.xml` に、依存を1行足す。
 
+ファイル: `ros2_ws/src/learn_py/package.xml`（`learn_cpp` から使う場合は `ros2_ws/src/learn_cpp/package.xml`）
+
 ```xml
 <depend>learn_interfaces</depend>
 ```
@@ -511,7 +513,7 @@ learn_interfaces.msg.VehicleState(header=std_msgs.msg.Header(stamp=builtin_inter
 
 指定しなかった項目（`header`・`target_velocity`）は、既定の0や空の値で作られている（2-5節）。定数 `PEDAL_MAX` は、作ったメッセージではなく、型（クラス）から読める。サービスとアクションは、`from learn_interfaces.srv import SetGains`・`from learn_interfaces.action import DriveDistance` で読み込み、`SetGains.Request(kp=0.5, ki=0.1)`・`DriveDistance.Goal(distance=450.0)` のように要求やゴールを作る（フェーズ3-4・3-5の `AddTwoInts.Request()`・`Fibonacci.Goal()` と同じ形）。
 
-**C++**: `CMakeLists.txt` で `find_package(learn_interfaces REQUIRED)` とし、`ament_target_dependencies` に `learn_interfaces` を足す（フェーズ3-1の4-2節で `talker` に `std_msgs` を足したのと同じ形）。コードでは、ヘッダを `#include` して、型名で使う。
+**C++**: `ros2_ws/src/learn_cpp/CMakeLists.txt` で `find_package(learn_interfaces REQUIRED)` とし、`ament_target_dependencies` に `learn_interfaces` を足す（フェーズ3-1の4-2節で `talker` に `std_msgs` を足したのと同じ形）。コードでは、ヘッダを `#include` して、型名で使う。
 
 ```cpp
 #include "learn_interfaces/msg/vehicle_state.hpp"

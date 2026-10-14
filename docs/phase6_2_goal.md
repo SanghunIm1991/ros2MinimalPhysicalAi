@@ -225,7 +225,7 @@ cp gazebo_plant_record.yaml gazebo_plant_goal.yaml
 
 写したファイルの最後に、それぞれ次の部分を足す。
 
-`vehicle_sim_goal.yaml`（5-3の一式。案A）:
+ファイル: `ros2_ws/src/learn_bringup/config/vehicle_sim_goal.yaml`（5-3の一式。案A。ファイルの最後に足す部分）
 
 <!-- snippet: vehicle_sim_goal_yaml -->
 ```yaml
@@ -234,7 +234,7 @@ goal_monitor:
     goal_distance: 450.0
 ```
 
-`gazebo_plant_goal.yaml`（5-4の一式。案B）:
+ファイル: `ros2_ws/src/learn_bringup/config/gazebo_plant_goal.yaml`（5-4の一式。案B。ファイルの最後に足す部分）
 
 <!-- snippet: gazebo_plant_goal_yaml -->
 ```yaml

@@ -250,6 +250,8 @@ cp gazebo_nn.yaml gazebo_nn_record.yaml
 
 写した `gazebo_nn_record.yaml` の `target_generator` の部分に、1行足す。最後の目標（90秒から）の10秒後に終わる。
 
+ファイル: `ros2_ws/src/learn_bringup/config/gazebo_nn_record.yaml`（`target_generator` の部分）
+
 ```yaml
 target_generator:
   ros__parameters:

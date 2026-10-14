@@ -175,12 +175,16 @@ def main(args=None):
 
 `learn_py` の `setup.py` の `entry_points` に1行足す（既存の行は残す。5-2の5-3節の一覧の最後に続ける）。
 
+ファイル: `ros2_ws/src/learn_py/setup.py`（`entry_points` の部分）
+
 <!-- snippet: py_entry_points_target -->
 ```python
             'target_generator = learn_py.target_node:main',
 ```
 
 `learn_bringup` の `package.xml` に、5-0のデモのパッケージへの実行時の依存を足す（フェーズ4の3-2節で足した `<exec_depend>` の並びに加える。`learn_py`・`launch`・`launch_ros` はフェーズ4で足してある）。`learn_bringup` は、デモのパッケージを、launchファイルから起動するときにだけ使い、ビルドには使わないので、`<depend>` でなく、実行時の依存の `<exec_depend>` で書く（[フェーズ4の3-2節](phase4_launch.md)の「`<depend>` でなく `<exec_depend>` にする理由」）。
+
+ファイル: `ros2_ws/src/learn_bringup/package.xml`（`<exec_depend>` の並び）
 
 ```xml
 <exec_depend>ros_gz_sim_demos</exec_depend>

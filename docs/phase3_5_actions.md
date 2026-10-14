@@ -126,6 +126,8 @@ int32[] sequence
 
 C++の `CMakeLists.txt` にも足す（既存の `find_package(...)` の並びへ）。
 
+ファイル: `ros2_ws/src/learn_cpp/CMakeLists.txt`（`find_package(...)` の並び）
+
 <!-- snippet: cmake_find_action -->
 ```cmake
 find_package(rclcpp_action REQUIRED)
@@ -378,6 +380,8 @@ def main(args=None):
 - サーバを起動していないと、5秒待って `not available` のエラーで終わる。先にサーバを起動しているか確認する。
 
 `setup.py` の `entry_points` に2行を足し、再ビルドする。
+
+ファイル: `ros2_ws/src/learn_py/setup.py`（`entry_points` の部分）
 
 <!-- snippet: py_entry_points_action -->
 ```python
@@ -680,6 +684,8 @@ Python版クライアントと同じ役割。構造の違いは、Pythonが `Fut
 観察ポイント: `cancel_after:=3.0` でPython版クライアントと同じログの並びになること（feedback → `send cancel request` → `result [CANCELED]`）を確認する。
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` に名前を足す（これまでの分は残す。前のフェーズでC++版を作らなかったノードの名前は書かない。書くと、存在しないターゲットとしてビルドがエラーになる）。
+
+ファイル: `ros2_ws/src/learn_cpp/CMakeLists.txt`（追記する部分）
 
 <!-- snippet: cmake_action -->
 ```cmake

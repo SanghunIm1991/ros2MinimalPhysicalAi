@@ -200,6 +200,8 @@ def main(args=None):
 
 `setup.py` の `entry_points` に1行足し、再ビルドする。
 
+ファイル: `ros2_ws/src/learn_py/setup.py`（`entry_points` の部分）
+
 <!-- snippet: py_entry_points_param -->
 ```python
             'param_talker = learn_py.param_talker:main',
@@ -337,6 +339,8 @@ int main(int argc, char ** argv)
 - **観察ポイント**: Python版と同じ実験（5節）を、`ros2 run learn_cpp param_talker` で繰り返し、同じ結果（間隔の変化・拒否のメッセージ）になること。
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` へ `param_talker` を足す（これまでの分は残す。前のフェーズでC++版を作らなかったノードの名前は書かない。書くと、存在しないターゲットとしてビルドがエラーになる）。
+
+ファイル: `ros2_ws/src/learn_cpp/CMakeLists.txt`（追記する部分）
 
 <!-- snippet: cmake_param -->
 ```cmake

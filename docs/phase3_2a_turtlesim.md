@@ -150,6 +150,8 @@ def main(args=None):
 
 `setup.py` の `entry_points` に1行を足し（フェーズ3-1までに足した行は残す）、再ビルドする。
 
+ファイル: `ros2_ws/src/learn_py/setup.py`（`entry_points` の部分）
+
 <!-- snippet: py_entry_points_turtle -->
 ```python
             'turtle_circle = learn_py.turtle_circle:main',
@@ -244,6 +246,8 @@ Python版と同じ「10 Hzで `linear.x=2.0`、`angular.z=1.0` を送る」Publi
 つまずき: `CMakeLists.txt` の `ament_target_dependencies` に `geometry_msgs` を書き忘れると、`geometry_msgs/msg/twist.hpp` が見つからないビルドエラーになる。
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` へ `turtle_circle` を足す（フェーズ3-1までの分は残す）。
+
+ファイル: `ros2_ws/src/learn_cpp/CMakeLists.txt`（追記する部分）
 
 <!-- snippet: cmake_turtle -->
 ```cmake

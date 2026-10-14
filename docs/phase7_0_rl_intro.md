@@ -116,6 +116,8 @@ source ~/rl_venv/bin/activate
 
 Gymnasiumの公式の入門（Basic Usage）の「Your First RL Program」は、台車の上の棒を倒さないように保つ環境 `CartPole-v1` を、でたらめな行動で1エピソード動かす例である。以下は、その例の抜粋である（逐語。ただし、ウィンドウを見るための2行を足した。足した行には「公式の例に追加」のコメントを付けた。出典は末尾）。
 
+ファイル: `~/rl_practice/cartpole_random.py`（ファイルの置き方は [サンプルコードを練習環境に置く方法](howto_place_code.md)）
+
 ```python
 # Run `pip install "gymnasium[classic-control]"` for this example.
 import gymnasium as gym
@@ -164,7 +166,7 @@ env.close()
 - `terminated` か `truncated` のどちらかが `True` になったら、エピソードは終わり。次を始めるには、また `reset` する。
 - CartPoleでは、棒が立っている間、1ステップごとに報酬+1が入る。でたらめに押すと、棒はすぐに倒れる（`terminated`）。
 
-この例を `~/rl_practice/cartpole_random.py` として保存し（ファイルの置き方は [サンプルコードを練習環境に置く方法](howto_place_code.md)）、仮想環境を有効にしたターミナルで実行する。ウィンドウを出したくない場合は、`render_mode="human"` を消してから実行する（`time.sleep(3)` は残しても、終わるのが3秒遅れるだけである）。
+この例を保存し、仮想環境を有効にしたターミナルで実行する。ウィンドウを出したくない場合は、`render_mode="human"` を消してから実行する（`time.sleep(3)` は残しても、終わるのが3秒遅れるだけである）。
 
 ```bash
 python cartpole_random.py
@@ -278,7 +280,9 @@ random: mean  -1225.3  std  268.2  min  -1638.7
 
 ### 4-1. 公式の例: SACでPendulumを学習させる
 
-SB3の公式の文書のSACのページには、`Pendulum-v1` をSACで学習させる例が載っている。以下は、その例の抜粋である（逐語。出典は末尾）。
+SB3の公式の文書のSACのページには、`Pendulum-v1` をSACで学習させる例が載っている。以下は、その例の抜粋である（逐語。出典は末尾）。この節では読むことが目的で、学習させるのは4-2節で書き直したスクリプトである。試しに実行する場合は、次のファイルとして保存する。
+
+ファイル: `~/rl_practice/sac_pendulum_official.py`（任意）
 
 ```python
 import gymnasium as gym

@@ -324,6 +324,8 @@ Python版の4ファイルに共通する要点は、「ノードクラスの `__
 
 `package.xml` には、`ros2 pkg create` 時に `--dependencies rclpy std_msgs` を指定していれば、依存はすでに入っている（`<depend>rclpy</depend>` と `<depend>std_msgs</depend>`）。`cat ros2_ws/src/learn_py/package.xml` で `<test_depend>` の行しか見えない場合は、`--dependencies` の指定が抜けていた。その場合は `<license>` の行の後ろに次の2行を手で足し、再ビルドする。
 
+ファイル: `ros2_ws/src/learn_py/package.xml`（`<license>` の行の後ろ）
+
 ```xml
   <depend>rclpy</depend>
   <depend>std_msgs</depend>

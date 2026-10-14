@@ -295,6 +295,8 @@ def main(args=None):
 
 `setup.py` の `entry_points` に2行を足し（前節までの行は残す）、再ビルドする。
 
+ファイル: `ros2_ws/src/learn_py/setup.py`（`entry_points` の部分）
+
 <!-- snippet: py_entry_points_qos -->
 ```python
             'qos_talker = learn_py.qos_talker:main',
@@ -515,6 +517,8 @@ Python版 `qos_listener.py` と同じ Subscriber。`make_qos` はtalkerと同じ
 観察ポイント: 2-2節のつながらない組み合わせ（④: talkerが `best_effort`・listenerが `reliable`、⑦: talkerが `volatile`・listenerが `transient_local`）では `received:` が出ず、警告だけが出る。警告の末尾には、どのQoSポリシーが非互換かが示される（文言の例は5-1節の「期待する結果」を参照）。
 
 `CMakeLists.txt` に追記し、`install(TARGETS ...)` へ名前を足す（前節までの分は残す）。
+
+ファイル: `ros2_ws/src/learn_cpp/CMakeLists.txt`（追記する部分）
 
 <!-- snippet: cmake_qos -->
 ```cmake

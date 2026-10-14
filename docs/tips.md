@@ -378,7 +378,15 @@ ROS1の最後の版（Noetic）のサポートは2025年5月に終了してお�
 
 ### 8-4. 確かめる: YAMLのノード名と名前空間
 
-ROS2に付属するデモのtalker（`demo_nodes_cpp`）を、名前空間 `/demo` で起動し、`use_sim_time: true` を書いたYAMLを渡す。ノード名の書き方だけが違う、次の3つのファイルを用意する（置き場所はどこでもよいが、T1はそのディレクトリで実行する。別の場所から実行する場合は、`--params-file` に絶対パスで渡す）。
+ROS2に付属するデモのtalker（`demo_nodes_cpp`）を、名前空間 `/demo` で起動し、`use_sim_time: true` を書いたYAMLを渡す。ノード名の書き方だけが違う、次の3つのファイルを用意する。ここでは、確かめるためだけのディレクトリ `~/yaml_check` に置き、T1はそのディレクトリで実行する（ほかの場所に置いてもよい。別の場所から実行する場合は、`--params-file` に絶対パスで渡す）。
+
+```bash
+mkdir -p ~/yaml_check
+```
+
+**期待する結果**: 何も表示されない（すでにあるディレクトリでも、エラーにならない）。
+
+ファイル: `~/yaml_check/talker.yaml`
 
 ```yaml
 # talker.yaml
@@ -387,12 +395,16 @@ talker:
     use_sim_time: true
 ```
 
+ファイル: `~/yaml_check/demo_talker.yaml`
+
 ```yaml
 # demo_talker.yaml
 /demo/talker:
   ros__parameters:
     use_sim_time: true
 ```
+
+ファイル: `~/yaml_check/all.yaml`
 
 ```yaml
 # all.yaml
@@ -405,6 +417,8 @@ T1で1つめのファイルを渡して起動し、T2で確かめる。確かめ
 
 ```bash
 # T1
+cd ~/yaml_check
+
 ros2 run demo_nodes_cpp talker --ros-args -r __ns:=/demo --params-file talker.yaml
 
 # T2

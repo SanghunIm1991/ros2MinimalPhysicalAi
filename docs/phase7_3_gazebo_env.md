@@ -98,6 +98,8 @@ cp ~/ros2_ws/src/learn_bringup/worlds/vehicle_force.sdf ~/ros2_ws/src/learn_brin
 
 **(1) ファイルの先頭のコメント**を、出典と変更点を書いたものにする。
 
+ファイル: `ros2_ws/src/learn_bringup/worlds/vehicle_rl.sdf`（ファイルの先頭のコメント）
+
 <!-- snippet: rl_world_header_comment -->
 ```xml
 <!--
@@ -111,11 +113,15 @@ cp ~/ros2_ws/src/learn_bringup/worlds/vehicle_force.sdf ~/ros2_ws/src/learn_brin
 
 **(2) ワールドの名前**を変える（元は `<world name="vehicle_force">`）。ワールドの名前は、3節のサービスの名前（`/world/vehicle_rl/control`）の一部になる。
 
+ファイル: `ros2_ws/src/learn_bringup/worlds/vehicle_rl.sdf`（`<world>` の行）
+
 ```xml
   <world name="vehicle_rl">
 ```
 
 **(3) 緑の車両の左右の車輪の関節**（`<model name='vehicle_green'>` の中の `<joint name='left_wheel_joint' ...>` と `<joint name='right_wheel_joint' ...>`）に、減衰の行を1行ずつ足す。それぞれの関節の `<axis>` の中にある `</limit>` の次の行に、次の1行を書く（`</axis>` より前）。青の車両の関節は変えない。
+
+ファイル: `ros2_ws/src/learn_bringup/worlds/vehicle_rl.sdf`（緑の車両の左右の車輪の関節）
 
 <!-- snippet: rl_world_damping_line -->
 ```xml

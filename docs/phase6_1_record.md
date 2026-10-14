@@ -348,10 +348,14 @@ def main(args=None):
 
 フェーズ5-3の `vehicle_sim.launch.py`（3-3節）と、フェーズ5-4の `gazebo_plant.launch.py`（6-2節）の2つのファイルで、`target_generator` の `Node(...)` に1行足し、`import` の行に `Shutdown` を足す。
 
+ファイル: `ros2_ws/src/learn_bringup/launch/vehicle_sim.launch.py` と `ros2_ws/src/learn_bringup/launch/gazebo_plant.launch.py`（`import` の行）
+
 <!-- snippet: launch_target_on_exit -->
 ```python
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, Shutdown
 ```
+
+ファイル: `ros2_ws/src/learn_bringup/launch/vehicle_sim.launch.py` と `ros2_ws/src/learn_bringup/launch/gazebo_plant.launch.py`（`target_generator` の `Node(...)` の部分）
 
 ```python
         Node(
@@ -379,7 +383,7 @@ cp gazebo_plant.yaml gazebo_plant_record.yaml
 
 写したファイルの `target_generator` の部分に、1行ずつ足す。
 
-`vehicle_sim_record.yaml`（`target_generator` の部分）:
+ファイル: `ros2_ws/src/learn_bringup/config/vehicle_sim_record.yaml`（`target_generator` の部分）
 
 <!-- snippet: vehicle_sim_record_yaml -->
 ```yaml
@@ -390,7 +394,7 @@ target_generator:
     end_time: 100.0
 ```
 
-`gazebo_plant_record.yaml`（`target_generator` の部分）:
+ファイル: `ros2_ws/src/learn_bringup/config/gazebo_plant_record.yaml`（`target_generator` の部分）
 
 <!-- snippet: gazebo_plant_record_yaml -->
 ```yaml
