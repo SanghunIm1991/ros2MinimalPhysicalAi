@@ -544,16 +544,16 @@ msg.pedal = learn_interfaces::msg::VehicleState::PEDAL_MAX;
 | 型 | 種類 | 使った手順書 |
 |---|---|---|
 | `std_msgs/msg/String` | メッセージ | フェーズ3-1（`talker`・`listener`） |
-| `std_msgs/msg/Float64` | メッセージ | フェーズ3-1（`sine_pub`）、フェーズ5-1〜5-4・フェーズ6-1〜6-3（目標速度・速度・ペダル） |
+| `std_msgs/msg/Float64` | メッセージ | フェーズ3-1（`sine_pub`）、5-1〜5-4・6-1〜6-3（目標速度・速度・ペダル） |
 | `std_msgs/msg/Int32` | メッセージ | フェーズ3-4（`counter_node`） |
-| `geometry_msgs/msg/Twist` | メッセージ | 1（`turtlesim`）、フェーズ3-2a、5-0（車両への速度の指令） |
-| `nav_msgs/msg/Odometry` | メッセージ | フェーズ5-0・5-4（Gazeboの車両の位置と速度）、フェーズ6-2（案B） |
+| `geometry_msgs/msg/Twist` | メッセージ | フェーズ1（`turtlesim`）、3-2a、5-0（車両への速度の指令） |
+| `nav_msgs/msg/Odometry` | メッセージ | フェーズ5-0・5-4（Gazeboの車両の位置と速度）、6-2（案B） |
 | `rosgraph_msgs/msg/Clock` | メッセージ | フェーズ5-4（シミュレーション時刻） |
-| `example_interfaces/srv/AddTwoInts` | サービス | 3-4 |
+| `example_interfaces/srv/AddTwoInts` | サービス | フェーズ3-4 |
 | `std_srvs/srv/Trigger` | サービス | フェーズ3-4（`counter_node`） |
-| `std_srvs/srv/Empty` | サービス | 1（`turtlesim` の `/clear` など） |
-| `example_interfaces/action/Fibonacci` | アクション | 3-5 |
-| `turtlesim` の型（`Pose`・`Spawn`・`RotateAbsolute` など） | 3種類とも | 1・3-2a |
+| `std_srvs/srv/Empty` | サービス | フェーズ1（`turtlesim` の `/clear` など） |
+| `example_interfaces/action/Fibonacci` | アクション | フェーズ3-5 |
+| `turtlesim` の型（`Pose`・`Spawn`・`RotateAbsolute` など） | 3種類とも | フェーズ1・3-2a |
 
 教材で使ったメッセージの多くは、値を1つ包んだだけの `std_msgs` の型だった。その理由と、実務での選び方は5節にまとめた。
 

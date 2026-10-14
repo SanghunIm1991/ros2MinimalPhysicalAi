@@ -340,7 +340,7 @@ Arguments (pass arguments as '<name>:=<value>'):
 
 フェーズ6-1の `record.launch.py` と同じ3つの引数が並び、`params_file` の既定だけが `_goal.yaml` になっていれば、書けている。
 
-## 5. 案Aで、5-3の一式を記録する
+## 5. 案Aで、フェーズ5-3の一式を記録する
 
 ```bash
 ros2 launch learn_bringup record_goal.launch.py bag:=$HOME/ros2_ws/bags/sim_goal
@@ -394,7 +394,7 @@ ros2 launch learn_bringup record_goal.launch.py bag:=$HOME/ros2_ws/bags/sim_goal
 - ゴールは、目標を5 m/sにしてから約17秒後（起動から約67秒。4-1節の計算と同じ）で、時間切れの100秒より前である。記録は、フェーズ6-1の約100秒より短くなる（`ros2 bag info` の `Duration` で確かめられる）。この例のログの時刻で数えると約20秒後に見えるのは、PCの時計が飛ぶ環境で取ったためである（フェーズ6-1の2-2節の注記）。
 - この例では、距離の増え方がところどころ小さい行がある（60.7 m → 80.7 mなど）。PCの時計が飛ぶ環境で、ログの間引きの間隔（PCの現在時刻で数える。3-2節の解説）が実際より短くなったためで、距離そのものは影響を受けていない。時計が飛ばない環境では、どの行も同じように増える。
 
-## 6. 案Bで、5-4の一式を記録する
+## 6. 案Bで、フェーズ5-4の一式を記録する
 
 ```bash
 ros2 launch learn_bringup record_goal.launch.py scenario:=gazebo_plant bag:=$HOME/ros2_ws/bags/gz_goal

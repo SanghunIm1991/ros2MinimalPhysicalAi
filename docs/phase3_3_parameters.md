@@ -412,7 +412,7 @@ ros2 run learn_py param_talker --ros-args -p message:="from cli" -p period:=0.5
 [INFO] [1790252011.500000000] [param_talker]: publish: from cli
 ```
 
-この節（5-2）の末尾にある課題1の `-p period:=2` では、ノードは起動直後に異常終了する。Python版の場合は、トレースバック（エラーまでの呼び出しの履歴）の最後に次の行が出る。
+この節（5-2節）の末尾にある課題1の `-p period:=2` では、ノードは起動直後に異常終了する。Python版の場合は、トレースバック（エラーまでの呼び出しの履歴）の最後に次の行が出る。
 
 ```text
 rclpy.exceptions.InvalidParameterTypeException: Trying to set parameter 'period' to '2' of type 'INTEGER', expecting type 'DOUBLE'

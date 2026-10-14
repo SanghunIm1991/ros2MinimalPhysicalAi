@@ -106,7 +106,7 @@ ros2 pkg create --build-type ament_cmake \
 mkdir -p learn_bringup/launch learn_bringup/config
 ```
 
-**期待する結果**: `ros2 pkg create` の表示は、フェーズ2の2-3（C++パッケージ）と同じ形。`--node-name` を付けていないので、`src/` の中に実行ファイルの雛形（フェーズ2の `hello.cpp` にあたるもの）は作られない（`src/` と `include/learn_bringup/` は、空のフォルダとして作られる）。`--dependencies` を付けていないので、`dependencies: []` と表示される。`mkdir` は成功しても何も表示しない。`ls learn_bringup` を実行すると、`CMakeLists.txt  LICENSE  config  include  launch  package.xml  src` のように並ぶ（`include/` と `src/` は雛形が作る空のフォルダで、このパッケージでは使わない）。
+**期待する結果**: `ros2 pkg create` の表示は、フェーズ2の2-3節（C++パッケージ）と同じ形。`--node-name` を付けていないので、`src/` の中に実行ファイルの雛形（フェーズ2の `hello.cpp` にあたるもの）は作られない（`src/` と `include/learn_bringup/` は、空のフォルダとして作られる）。`--dependencies` を付けていないので、`dependencies: []` と表示される。`mkdir` は成功しても何も表示しない。`ls learn_bringup` を実行すると、`CMakeLists.txt  LICENSE  config  include  launch  package.xml  src` のように並ぶ（`include/` と `src/` は雛形が作る空のフォルダで、このパッケージでは使わない）。
 
 フェーズ3-3で `ros2_ws/config/` に作ったパラメータYAMLを、このパッケージへ移す。
 
@@ -211,7 +211,7 @@ def generate_launch_description():
 | `Node(package=..., executable=..., name=..., output='screen')` | ROS2ノードを1つ起動する。`package` と `executable` は `ros2 run パッケージ 実行ファイル` の2つの引数に相当し、`name` でノード名を上書きし、`output='screen'` でログを端末に出す。 |
 | `package=['learn_', LaunchConfiguration('talker_lang')]` | 文字列と置換をリストで並べると、**連結されて1つの文字列**になる。`py` なら `learn_py`、`cpp` なら `learn_cpp` になり、**パッケージ名を切り替える**ことで言語を切り替えている。 |
 
-ポイントは、`LaunchConfiguration` が「あとで評価される置換」であること。`generate_launch_description()` が動く時点では、まだ引数の値は確定していない。そのため、この関数の中で `if LaunchConfiguration(...) == 'cpp':` のように**Pythonの `if` では判定できない**（常に「置換オブジェクト」が比較されてしまう）。値で分岐したい場合は、`OpaqueFunction` を使う（この節（4-1）の末尾の課題3で扱う）。
+ポイントは、`LaunchConfiguration` が「あとで評価される置換」であること。`generate_launch_description()` が動く時点では、まだ引数の値は確定していない。そのため、この関数の中で `if LaunchConfiguration(...) == 'cpp':` のように**Pythonの `if` では判定できない**（常に「置換オブジェクト」が比較されてしまう）。値で分岐したい場合は、`OpaqueFunction` を使う（この節（4-1節）の末尾の課題3で扱う）。
 
 つまずきやすい点:
 
@@ -751,7 +751,7 @@ source install/setup.bash
 | `namespace`と`remap`の効き方 | 名前空間は**相対名**（先頭が`/`でない名前）にだけ効く。絶対名（`/chatter`等）で書かれたノードには効かない（4-6節）。remapは送信側・受信側の**両方**に同じ指定が要る（片方だけだとつながらなくなる） |
 | Python／XML／YAMLの使い分け | 単純な起動の並びはXML/YAMLが短く書ける（`pubsub.launch.*`で7行・19行・25行）。条件分岐・計算・パスの組み立てが要る場合（4-4節・4-6節）はPython形式でないと書けない（4-3節） |
 
-フェーズ3-1〜3-5・フェーズ2の各「Python版とC++版の違いのまとめ」節と合わせて読み返すと、**1-7の振り返り**（[学習計画](learning_plan.md)でフェーズ3・4の後に置いた、PythonとC++を比べる振り返り。コード量・型の扱い・ビルド手順・つまずきの傾向）の材料になる。フェーズ5の言語方針（Python中心）は既に決定済みだが、この振り返りは今後C++で書く場合の勘所の再確認として使える。
+フェーズ3-1〜3-5・フェーズ2の各「Python版とC++版の違いのまとめ」節と合わせて読み返すと、**学習計画の1-7の振り返り**（[学習計画](learning_plan.md)でフェーズ3・4の後に置いた、PythonとC++を比べる振り返り。コード量・型の扱い・ビルド手順・つまずきの傾向）の材料になる。フェーズ5の言語方針（Python中心）は既に決定済みだが、この振り返りは今後C++で書く場合の勘所の再確認として使える。
 
 ## 7. つまずきやすい点
 

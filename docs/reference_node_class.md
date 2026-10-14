@@ -245,7 +245,7 @@ C++版の `create_*` は、作ったものを `SharedPtr`（参照の数を数�
 | `Node` の継承 | `class Talker(Node)` | `class Talker : public rclcpp::Node` | 3-1〜 |
 | Publisher・Subscription | `create_publisher`・`create_subscription` | 同じ名前（テンプレート） | 3-1・3-2a・3-2b |
 | タイマー | `create_timer` | `create_wall_timer` | 3-1〜 |
-| 時計 | `get_clock().now()` | `now()` | フェーズ3-1（`sine_pub`） |
+| 時計 | `get_clock().now()` | `now()` | 3-1（`sine_pub`） |
 | ログ | `get_logger().info(...)` | `RCLCPP_INFO(get_logger(), ...)` | 3-1〜 |
 | パラメータ | `declare_parameter`・`get_parameter` | `declare_parameter<型>` | 3-2b・3-3 |
 | パラメータ変更の検証 | `add_on_set_parameters_callback` | 同じ名前（戻り値を保持） | 3-3 |

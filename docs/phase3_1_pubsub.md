@@ -487,7 +487,7 @@ int main(int argc, char ** argv)
 - **`create_publisher<std_msgs::msg::String>("chatter", 10)`**: 型は `< >` のテンプレート引数、引数は「トピック名・QoS」。数値の `10` はQoSのdepthを簡易指定したもので、Pythonと同じ意味。戻り値は `SharedPtr`（`std::shared_ptr` の別名）なので、`pub_` メンバに保存し、送るときは `pub_->publish(msg)` と矢印で呼ぶ。
 - **`create_wall_timer(1s, [this]() { on_timer(); })`**: `wall` は「壁掛け時計」の意味で、実時間（シミュレーション時間ではない）で数える。周期は `std::chrono` の型で渡す。コールバックには**ラムダ式**を使っている。`[this]` は「このオブジェクト（`this`）をラムダの中で使えるように取り込む」という指定で、これがないと `on_timer()` を呼べない。同じことは `std::bind(&Talker::on_timer, this)` でも書けるが、ラムダのほうが読みやすいので今回はこちらを使う。
 - **`on_timer`**: `count_++` は「今の値を使ってから1増やす」後置インクリメント。`std::to_string` で数値を文字列に変える。ログの `RCLCPP_INFO(get_logger(), "publish: %s", msg.data.c_str())` は `printf` 形式で、`%s` に渡すのは `std::string` ではなく `c_str()` で得るC文字列。`std::string` をそのまま渡すと、コンパイルは通っても実行時に文字化けや異常終了になりうる。
-- **メンバ変数（`pub_`, `timer_`）**: ローカル変数にすると、コンストラクタを抜けた時点で解放されて、タイマーが止まる。`create_publisher` や `create_wall_timer` が返す `SharedPtr` は、持ち主の数を数えて、0になったら自動で片付けるポインタである。`rclcpp::Node` の側は作ったものを持ち続けないので、メンバ変数に入れてノードを持ち主にしておかないと、持ち主が0になって片付けられる。仕組みの詳しい説明と、Python版との考え方の違いは、この節（4-1）の末尾（C++版の4つのサンプルの後）の「補足: スマートポインタ」にある。
+- **メンバ変数（`pub_`, `timer_`）**: ローカル変数にすると、コンストラクタを抜けた時点で解放されて、タイマーが止まる。`create_publisher` や `create_wall_timer` が返す `SharedPtr` は、持ち主の数を数えて、0になったら自動で片付けるポインタである。`rclcpp::Node` の側は作ったものを持ち続けないので、メンバ変数に入れてノードを持ち主にしておかないと、持ち主が0になって片付けられる。仕組みの詳しい説明と、Python版との考え方の違いは、この節（4-1節）の末尾（C++版の4つのサンプルの後）の「補足: スマートポインタ」にある。
 - **`main`**:
   - `rclcpp::init(argc, argv)` は、Pythonの `rclpy.init` に相当する初期化（ROS引数もここで解釈される）。
   - `std::make_shared<Talker>()` でノードを `shared_ptr` として作り、`rclcpp::spin` に渡す。`spin` は Ctrl+C までブロックする。ノードのオブジェクトは、`spin` を抜けるまで `shared_ptr` により生存している。
