@@ -859,7 +859,11 @@ C++の方が記述量・手数は増えるが、コールバック配線の間�
 
 | 症状 | 確認すること |
 |---|---|
-| `ros2 run` で `No executable found` | `setup.py` の `entry_points` / `CMakeLists.txt` の `install(TARGETS ...)` を足したか。再ビルド後に `source` したか |
+| `ros2 run` で `No executable found` | `setup.py` の `entry_points` / `CMakeLists.txt` の `install(TARGETS ...)` を足したか。再ビルド後に `source` したか。C++なら、`add_executable` の1つ目の名前を、`ament_target_dependencies`・`install(TARGETS ...)` の行まで、そろって間違えていないか（綴りがそろっていればエラーにならず、間違えた名前の実行ファイルができる）。登録された名前は `ros2 pkg executables learn_cpp` で確かめる |
+| C++のビルドで `ament_target_dependencies() the first argument must be a valid target name` | `add_executable` の1つ目の名前と、すぐ後の `ament_target_dependencies` の1つ目の名前が同じか。CMakeは名前の正しさを判定できず、ファイルの中で同じ名前がそろっているかだけを見る |
+| C++のビルドで `install TARGETS given target "..." which does not exist` | `install(TARGETS ...)` に並べた名前が、`add_executable` の名前と同じか |
+| C++のビルドで `Cannot find source file` | `add_executable` の2つ目（`src/talker.cpp` 等）のパスとファイル名が、実際のファイルと合っているか |
+| C++で、名前を直してビルドし直したのに、`ros2 run` で前の名前の実行ファイルも動く | `colcon` は、前のビルドで `install/` に入れた実行ファイルを消さないので、古い名前の実行ファイルが残っている。`ros2 pkg executables learn_cpp` で、同じノードの名前が2つ並んでいないかを見る。古いほうを確実に消すには、`ros2_ws` で `rm -rf build/learn_cpp install/learn_cpp` としてからビルドし直す |
 | C++で `fatal error: std_msgs/msg/string.hpp: No such file` | `find_package(std_msgs REQUIRED)` と `ament_target_dependencies` があるか（雛形の `--dependencies` を指定しなかった場合は手で足す） |
 | Pythonの `package.xml` に `<test_depend>` しか無い | `ros2 pkg create` で `--dependencies` を指定し忘れている。3-2節のとおり `<depend>rclpy</depend>` と `<depend>std_msgs</depend>` を手で足す（無くてもこの環境では動くが、依存の宣言として必要） |
 | listenerに何も出ない | トピック名（`chatter`）と型の綴り。`ros2 topic list -t` で確認 |
