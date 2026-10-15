@@ -82,7 +82,7 @@ flowchart LR
 
 この節の表は、2節で作る2種類のパッケージの違いを先に並べたものである。表に出てくるファイルや設定は、2-2節〜2-7節で実物を見ながら確かめるので、ここでは名前を眺める程度でよい。表の前に、表に出てくる用語を短く説明しておく。
 
-- `setup.py`・`setup.cfg`: Pythonのパッケージのビルドとインストールの設定（`setup.cfg` は、インストール先などの細かな設定を分けて書いたもの）。`install_requires` は、`setup.py` に書く「動かすのに要るPythonのパッケージ」の一覧。
+- `setup.py`・`setup.cfg`: Pythonのパッケージのビルドとインストールの設定（`setup.cfg` は、インストール先などの細かな設定を分けて書いたもの。この教材では、作られたまま使い、編集しない。役割と、編集が要る場面は [`docs/tips.md`](tips.md) の10節）。`install_requires` は、`setup.py` に書く「動かすのに要るPythonのパッケージ」の一覧。
 - `package.xml`: パッケージの名前・メンテナ・依存（`<depend>`）などを書く、ROS2のパッケージの設定ファイル（2-2節）。
 - `entry_points` の `console_scripts`（Python）と `add_executable`・`install(TARGETS ...)`（C++）: `ros2 run` で起動できる実行ファイルとして登録する書き方（1-4節、2-6節）。`find_package` は、C++で使う外部のパッケージを探して使えるようにする命令。
 - `--symlink-install`: `colcon build` に付けるオプション。ソースを `install/` へ写す代わりに、リンク（参照）でつなぐ。Pythonなら、ソースを書き換えるだけで、ビルドし直さずに反映される（2-6節の課題3、2-7節）。

@@ -5,9 +5,9 @@
 - 対象: ROS2 Jazzy（Ubuntu 24.04）。版に依存する記述は、この資料の作成時に `/opt/ros/jazzy` とUbuntuのパッケージに入っていたもので確かめた
 - 所要目安: 1項目あたり5〜15分（読み物）
 
-> **期待する結果の出どころ**: ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの（`mkdir -p` が何も表示しないことは、コマンドの仕様から書いた）。
+> **期待する結果の出どころ**: ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの（`mkdir -p` が何も表示しないことは、コマンドの仕様から書いた）。10節の `No executable found` と警告の文面は、使い捨てのワークスペースで実際に表示させたもの。
 
-> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節・7節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の10節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。9節は、数値計算の一般的な内容を自分の言葉で書いたもので、9-3節の数値は、この資料の作成時に、フェーズ5-1の式を写したPythonのスクリプトで計算した（2026-10-12）。
+> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節・7節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の10節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。9節は、数値計算の一般的な内容を自分の言葉で書いたもので、9-3節の数値は、この資料の作成時に、フェーズ5-1の式を写したPythonのスクリプトで計算した（2026-10-12）。10節は、`/opt/ros/jazzy` の `ros2pkg`（雛形と、実行ファイルを探す処理）と、Ubuntuのパッケージの `colcon-core`（0.21.3）のソースを読み、使い捨てのワークスペースで、`setup.cfg` を雛形のまま・消した場合・古い名前のまま・ハイフンでつないだ名前の場合のビルドと、`ros2 pkg executables`・`ros2 run` の表示を確かめた（`ros2 run` は、`setup.cfg` の名前を古いままにした場合に実行し、実行ファイルが見つからずに終わることを確かめた。消した場合は、`ros2 pkg executables` が何も表示しないことから同じと判断した。2026-10-15）。
 
 ## 項目の一覧
 
@@ -22,6 +22,7 @@
 | 7 | ROS1との違い | フェーズ0の1節 |
 | 8 | 名前空間（namespace）が効く範囲 | フェーズ3-2a（絶対名のトピック）、フェーズ4の4-6節（名前空間・remap） |
 | 9 | オイラー法の更新の順番（力を先に更新しないのはなぜか） | フェーズ5-1の2-4節・4節（車両の疑似プラント。フェーズ7-1以降も同じモデルを使う） |
+| 10 | `setup.cfg` の役割（この教材では編集しない） | フェーズ2の1-3節・2-2節・2-6節（Pythonのパッケージ） |
 
 ## 1. シミュレーション時刻（`use_sim_time`）
 
@@ -171,7 +172,7 @@ SetuptoolsDeprecationWarning: setup.py install is deprecated.
 それでも警告を見かけることがあるのは、主に次のような場合である。
 
 - **setuptoolsの版が違う**: `pip` で新しいsetuptoolsを入れていると、警告の文言が変わり、colconの指定（文言の先頭の一致で判定する）に当たらなくなることがある。ROS2のPythonパッケージはシステムのPython（aptで入れたもの）に合わせて作られているので、システム側へ `pip` でsetuptoolsを入れ直すことは避ける。
-- **別の非推奨を踏んでいる**: たとえば `setup.cfg` に `script-dir` のようなハイフン区切りの名前を書くと、「アンダースコア区切り（`script_dir`）を使ってほしい」という別の `SetuptoolsDeprecationWarning` が出る（setuptools 68.1.2のソースで確認）。古いROS2の版向けに書かれたパッケージや記事をそのまま使うと出ることがある。こちらはパッケージを書く側で直せるので、警告の文面に出てくる名前に書き換える。
+- **別の非推奨を踏んでいる**: たとえば `setup.cfg` に `script-dir` のようなハイフン区切りの名前を書くと、「アンダースコア区切り（`script_dir`）を使ってほしい」という別の `SetuptoolsDeprecationWarning` が出る（setuptools 68.1.2で実際に表示させて確かめた。文面の例は10-4節）。古いROS2の版向けに書かれたパッケージや記事をそのまま使うと出ることがある。こちらはパッケージを書く側で直せるので、警告の文面に出てくる名前に書き換える（`setup.cfg` の役割と、警告の文面の例は10節）。
 
 どちらの場合も、判断の基準はフェーズ2の4節の表と同じで、`Summary` の行で失敗（`Failed`）が無いかを確かめる。警告の文面を読み、自分のパッケージのファイル名や項目名が出てくるなら直せる警告、そうでなければ道具の側の話、と見分けるとよい。
 
@@ -482,7 +483,80 @@ Boolean value is: False
 
 精度を上げたいときは、刻み幅を小さくするか、台形則やルンゲ・クッタ法のような、高い次数の方法を使う。一次遅れの式だけなら、正確な解（指数関数）で1ステップ進めることもできる。
 
-## 10. 参考資料
+## 10. `setup.cfg` の役割（この教材では編集しない）
+
+> **読める時期**: フェーズ2（[`docs/phase2_packages.md`](phase2_packages.md)）の2-6節で、`install/` の中身を見た後（2-2節でPythonのパッケージを作り、2-4節でビルドし、2-5節で `ros2 run` を使った後）。
+
+### 10-1. 疑問: 一度も編集しないファイルは、何のためにあるのか
+
+`ros2 pkg create --build-type ament_python` で作ったパッケージには、`setup.py` と並んで `setup.cfg` がある。この教材では、ノードを足すときは `setup.py` の `entry_points` を、依存を足すときは `package.xml` を書き換えるが、`setup.cfg` は、どのフェーズでも作られたまま使い、一度も編集しない。それでも、このファイルを消した状態で一からビルドすると、ビルドは成功するのに `ros2 run` でノードを起動できなくなる。この節では、このファイルが何をしているのかと、編集が要るのはどんな場面かをまとめる。
+
+### 10-2. 雛形の中身
+
+フェーズ2の `learn_py` の場合、雛形の `setup.cfg` の中身は次の4行である（`ros2 pkg create` が作ったまま。書き換えないので、写す必要は無い）。
+
+ファイル: `ros2_ws/src/learn_py/setup.cfg`
+
+```ini
+[develop]
+script_dir=$base/lib/learn_py
+[install]
+install_scripts=$base/lib/learn_py
+```
+
+`setup.cfg` は、`setup.py` を実行したときに、setuptools（3-1節）が読みに行く設定ファイルである。`[ ]` で囲んだ見出しは、setuptoolsのコマンドの名前で、その下に、そのコマンドの設定を書く。
+
+- `[develop]`: `colcon build --symlink-install` のときに、colconが実行する `setup.py develop` の設定。
+- `[install]`: `--symlink-install` を付けないときに、colconが実行する `setup.py install` の設定。
+- `$base`: インストール先の根元（このパッケージの `install/learn_py`）に置き換わる。
+
+つまり、2つの見出しは、どちらのビルドの仕方でも、**`entry_points` の `console_scripts` で作られる実行ファイルを、`install/learn_py/lib/learn_py/` に置く**、という同じことを言っている。パッケージの名前が2か所に入っているのは、`ros2 pkg create` が作るときに、指定したパッケージ名を埋め込んだためである。
+
+### 10-3. なぜ要るのか: `ros2 run` が探す場所
+
+`ros2 run パッケージ名 実行ファイル名` は、パッケージのインストール先の `lib/パッケージ名/` の中だけを探す（`/opt/ros/jazzy` の `ros2pkg` のソースで確かめた）。C++のパッケージでは、`install(TARGETS ... DESTINATION lib/${PROJECT_NAME})` の行が、実行ファイルをこの場所に置く（2-2節の表の `install(TARGETS ...)` の行）。Pythonのパッケージで同じ場所に置かせているのが、`setup.cfg` である。
+
+`setup.cfg` が無いと、setuptoolsは実行ファイルを、Pythonの道具の既定の置き場所の `bin/` に置く。この資料の作成時に、使い捨てのワークスペースで雛形のパッケージ（`--node-name` で実行ファイルを1つ登録したもの）を `colcon build` し、`ros2 pkg executables パッケージ名`（`ros2 run` で起動できる実行ファイルの一覧を表示するコマンド）で確かめた結果は次のとおりである。
+
+| `setup.cfg` | ビルドの仕方 | ビルド | 実行ファイルの場所 | `ros2 pkg executables` |
+|---|---|---|---|---|
+| 雛形のまま | `--symlink-install` あり・なし | 成功 | `install/パッケージ名/lib/パッケージ名/` | 表示される |
+| 消した | `--symlink-install` あり・なし | 成功 | `install/パッケージ名/bin/` | 何も表示されない |
+
+`setup.cfg` を消してもビルドは成功するので、ビルドの表示だけでは気づけない。`ros2 run` を実行して初めて、次の1行だけが表示されて終わる（この表示は、10-4節の、名前を古いままにした場合に実際に確かめたもの。消した場合も、`ros2 pkg executables` に何も表示されないので、同じ表示になる）。
+
+```text
+No executable found
+```
+
+ただし、これは一から作ったワークスペースの場合である。colconは、ビルドし直しても `install/` の古いファイルを消さない。前のビルドの実行ファイルが `install/パッケージ名/lib/パッケージ名/` に残っていると、`setup.cfg` を消した後も、`ros2 run` はその古い実行ファイルを起動する。確かめるときは、そのパッケージの `build/パッケージ名`・`install/パッケージ名` を消してからビルドする。
+
+補足として、colconは、`[install]` の `install_scripts` の値を自分で読み、`setup.py install` に引数（`--install-scripts`）としても渡している（Pythonの仮想環境の中では、setuptoolsが設定ファイルのこの項目を無視するため。Ubuntu 24.04のcolcon-core 0.21.3のソースのコメントで確かめた）。どちらの経路も `setup.cfg` の同じ値を使うので、実行ファイルの置き場所は変わらない。この教材のROS2は仮想環境の中では動かさないので、読み流してよい。
+
+### 10-4. 編集が要る場面
+
+この教材のように、`ros2 pkg create` で作ったパッケージに、ノード・依存・データのファイルを足していくだけなら、`setup.cfg` を編集する場面は無い。足すものごとの書き換え先は、次のとおりである。
+
+| 足すもの | 書き換えるファイル |
+|---|---|
+| ノード（実行ファイル） | `setup.py` の `entry_points` の `console_scripts` |
+| 依存するパッケージ | `package.xml`（Pythonのライブラリなら、`setup.py` の `install_requires` も） |
+| launchファイル・YAML等のデータ | `setup.py` の `data_files`（この教材では、Pythonのパッケージには置かず、`ament_cmake` の `learn_bringup` にまとめている。フェーズ4の3-3節） |
+
+編集が要るのは、次のような場面である。
+
+- **パッケージの名前を変えたとき**: パッケージの名前は、多くの場所に入っている。`package.xml` の `<name>`、`setup.py` の `package_name` と `entry_points` のモジュール名（`learn_py.hello:main` の `learn_py`）、`resource/` の目印のファイル名（`resource/learn_py`）、内側のモジュールのフォルダ名（`learn_py/learn_py/`）、そして `setup.cfg` の2か所である。`setup.cfg` だけを直し忘れても、ビルドは成功する。しかし実行ファイルは `install/新しい名前/lib/古い名前/` に入るので、`ros2 run 新しい名前 実行ファイル名` は `No executable found` で終わる（この資料の作成時に、使い捨てのワークスペースで確かめた）。`ros2 pkg create` を新しい名前でやり直し、コードを写すほうが、直し忘れが起きにくい。
+- **古い版向けのパッケージを使うとき**: 古い記事や、古いROS2の版の雛形から作ったパッケージには、`script-dir`・`install-scripts` のように、ハイフンでつないだ名前で書かれているものがある。Ubuntu 24.04のsetuptools（68.1.2）では、実行ファイルは正しい場所に入るが、ビルドのたびに、次のような非推奨の警告（3節）が出る（この資料の作成時に、使い捨てのワークスペースで表示させたもの。前後の行は省略）。警告の文面のとおり、アンダースコアでつないだ名前（`script_dir`・`install_scripts`）に書き換える。
+
+```text
+SetuptoolsDeprecationWarning: Invalid dash-separated options
+        Usage of dash-separated 'script-dir' will not be supported in future
+        versions. Please use the underscore name 'script_dir' instead.
+```
+
+`setup.cfg` には、ほかにも、パッケージの名前や依存などのsetuptoolsの設定を書くことができる。ただし、ROS2の雛形では、それらを `setup.py` に書いているので、`setup.cfg` には、上の2つの見出しだけを置いておけばよい。
+
+## 11. 参考資料
 
 確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。
 
@@ -491,4 +565,4 @@ Boolean value is: False
 - [CMake Documentation — cmake-buildsystem(7)](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html)（ターゲットと `PUBLIC`/`PRIVATE`/`INTERFACE` の考え方）
 - [Why you shouldn't invoke setup.py directly（Paul Ganssle）](https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html)（setuptoolsの警告文に出てくる解説記事）
 
-> 出典: 文章は自分の言葉で書いたもので、上記のドキュメントやソースの転載ではない。`CMakeLists.txt` の各行と警告の文面は、ROS2の雛形（Apache 2.0）とsetuptoolsの出力を、説明に必要な範囲で引用した。
+> 出典: 文章は自分の言葉で書いたもので、上記のドキュメントやソースの転載ではない。`CMakeLists.txt` の各行・`setup.cfg` の中身と警告の文面は、ROS2の雛形（Apache 2.0）とsetuptoolsの出力を、説明に必要な範囲で引用した。
