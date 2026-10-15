@@ -7,7 +7,7 @@
 
 > **期待する結果の出どころ**: ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの（`mkdir -p` が何も表示しないことは、コマンドの仕様から書いた）。10節の `No executable found` と警告の文面は、使い捨てのワークスペースで実際に表示させたもの。
 
-> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節・7節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の10節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。9節は、数値計算の一般的な内容を自分の言葉で書いたもので、9-3節の数値は、この資料の作成時に、フェーズ5-1の式を写したPythonのスクリプトで計算した（2026-10-12）。10節は、`/opt/ros/jazzy` の `ros2pkg`（雛形と、実行ファイルを探す処理）と、Ubuntuのパッケージの `colcon-core`（0.21.3）のソースを読み、使い捨てのワークスペースで、`setup.cfg` を雛形のまま・消した場合・古い名前のまま・ハイフンでつないだ名前の場合のビルドと、`ros2 pkg executables`・`ros2 run` の表示を確かめた（`ros2 run` は、`setup.cfg` の名前を古いままにした場合に実行し、実行ファイルが見つからずに終わることを確かめた。消した場合は、`ros2 pkg executables` が何も表示しないことから同じと判断した。2026-10-15）。
+> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節と7-1節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の10節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。7-2〜7-4節（ROS1のコードの移植）は、ROS2の公式の移植のガイド（GitHubの `ros2_documentation` の `jazzy` ブランチの原稿）と `ros1_bridge` のREADMEを読んで、自分の言葉でまとめた。フィールドの名前の決まりはJazzyの `rosidl_adapter`、`Header` の中身は `ros2 interface show`、rclpyの `Rate` の作りはJazzyのrclpyのソース、`tf` パッケージが無いことは `/opt/ros/jazzy/share`、`rclcpp::Rate` の作りはrclcppのヘッダ、`set_parameter` は `launch_ros` のソース、`ament_python` の雛形に `<buildtool_depend>` が無いことは `ros2pkg` のソースで確かめた。ROS1の `.bag` が `ros2 bag` で直接は再生できないことは、一般的な情報から書いたもので、確かめていない。ROS1のコードを実際に移植して動かしてはいない（2026-10-15）。9節は、数値計算の一般的な内容を自分の言葉で書いたもので、9-3節の数値は、この資料の作成時に、フェーズ5-1の式を写したPythonのスクリプトで計算した（2026-10-12）。10節は、`/opt/ros/jazzy` の `ros2pkg`（雛形と、実行ファイルを探す処理）と、Ubuntuのパッケージの `colcon-core`（0.21.3）のソースを読み、使い捨てのワークスペースで、`setup.cfg` を雛形のまま・消した場合・古い名前のまま・ハイフンでつないだ名前の場合のビルドと、`ros2 pkg executables`・`ros2 run` の表示を確かめた（`ros2 run` は、`setup.cfg` の名前を古いままにした場合に実行し、実行ファイルが見つからずに終わることを確かめた。消した場合は、`ros2 pkg executables` が何も表示しないことから同じと判断した。2026-10-15）。
 
 ## 項目の一覧
 
@@ -19,7 +19,7 @@
 | 4 | トピック通信の裏側（ディスカバリと届いたことの確認） | フェーズ3-2b（QoS） |
 | 5 | パラメータを利用者に知らせる方法 | フェーズ3-3（パラメータ）、フェーズ4（launch） |
 | 6 | ROS2の通信の層を詳しく（DDS・RMW・ディスカバリ・QoS） | フェーズ0の2節 |
-| 7 | ROS1との違い | フェーズ0の1節 |
+| 7 | ROS1との違いと、ROS1のコードの移植 | フェーズ0の1節、フェーズ2〜4（移植の書き換え先） |
 | 8 | 名前空間（namespace）が効く範囲 | フェーズ3-2a（絶対名のトピック）、フェーズ4の4-6節（名前空間・remap） |
 | 9 | オイラー法の更新の順番（力を先に更新しないのはなぜか） | フェーズ5-1の2-4節・4節（車両の疑似プラント。フェーズ7-1以降も同じモデルを使う） |
 | 10 | `setup.cfg` の役割（この教材では編集しない） | フェーズ2の1-3節・2-2節・2-6節（Pythonのパッケージ） |
@@ -335,7 +335,9 @@ Set parameter successful
 - **ディスカバリ（自動発見）**: 各ノードは起動すると、マルチキャストでお互いを見つけ合う。同じネットワークにある別のシステムと混ざらないよう、`ROS_DOMAIN_ID`（ドメインID）の番号で通信の範囲を分ける。見つけた相手と何を確かめ合っているかは、この資料の4節で説明した。
 - **QoS（Quality of Service）**: トピックごとに、信頼性（reliability: 送りっぱなしか、確実に届けるか）、持続性（durability: 後から参加した購読側に過去のデータを渡すか）、履歴（history: 直近の何件を手元に残すか）等を決められる。配信側と購読側のQoSが噛み合わないと、つながらない（購読側が求める水準を、配信側が満たしているかで決まる）。実際に試すのはフェーズ3-2b（[`docs/phase3_2b_qos.md`](phase3_2b_qos.md)）。
 
-## 7. ROS1との違い
+## 7. ROS1との違いと、ROS1のコードの移植
+
+### 7-1. 違いの要点
 
 ROS2は、初代のROS（ROS1）を作り直したものである。古い記事やサンプルにはROS1向けのものが多いので、読み分けるために違いの要点を知っておくと役に立つ。
 
@@ -344,6 +346,58 @@ ROS1では、`roscore`（マスター）という中央のプロセスがノー�
 ROS2は、この反省から、通信の層に業界標準のDDS（この資料の6節）を採用し、**中央の管理者がいない分散型の構成**に作り直された。リアルタイム制御・組み込み機器・複数台のロボット・セキュリティを、最初から考えに入れた設計になっている。
 
 ROS1の最後の版（Noetic）のサポートは2025年5月に終了しており、今の新規開発はROS2が前提である。記事やサンプルが `roscore`・`rosrun`・`catkin_make` を使っていたら、ROS1向けと見分けられる（ROS2では `ros2 run`・`colcon build` を使う）。
+
+### 7-2. 移植する前に決めること
+
+ROS1で作られたパッケージ（レガシーコード）をROS2で使いたいときは、ROS2のパッケージとして書き直す（移植する）ことになる。ROS1とROS2は、ビルドの仕組みも、ノードを書くライブラリ（ROS1の `rospy`・`roscpp`、ROS2の `rclpy`・`rclcpp`）も別物で、ROS1のコードはそのままではビルドも実行もできない。手を付ける前に、次の3つを確かめておく。
+
+- **依存するものが、ROS2にそろっているか**: 移植するパッケージが使うパッケージ（メッセージの型・ライブラリ・ドライバ）が、ROS2の版（この教材ではJazzy）にすべて無いと、移植は終わらない。ROS2で名前が変わったものや、ROS2には無いもの（例: 座標変換の古い `tf` パッケージ。ROS2には後継の `tf2` だけがある）もあるので、`package.xml` の依存を1つずつ、ROS2側にあるかを調べる。足りないものがあれば、それを先に移植するか、代わりを探す。
+- **書き直すか、構造を保って写すか**: コードの構造をなるべく保って、ROS2のAPIへ置き換えていく方法と、同じ機能をROS2の流儀で一から書き直す方法がある。小さなノードなら、7-3節の対応表を見ながら置き換えるほうが早い。設計がROS1の仕組み（7-4節のグローバルなパラメータや、同期のサービス呼び出し）に強く依存しているなら、書き直したほうが、後で困らない。
+- **ROS1と並べて動かせるか**: ROS1とROS2の間でトピックを中継する `ros1_bridge` を使えば、一部のノードだけを先に移植して、残りをROS1のまま動かす、という段階的な移植ができる。ただし、ROS1の最後の版（Noetic）はUbuntu 20.04向けで、Ubuntu 24.04にはROS1が無いため、Jazzyは `ros1_bridge` の公式の対応から外れている（`ros1_bridge` のREADMEの対応表で、Ubuntu 24.04とJazzyは対象外。aptにもJazzy向けのパッケージが無い）。この教材の環境では、パッケージを丸ごと移植してから動かすことになる。
+
+ライセンスは、移植しても元のパッケージのものを引き継ぐ（公式の移植のガイドも、そう勧めている）。移植したコードは元のコードの改変にあたるので、元のライセンスの条件（著作権の表示を残す等）に従う。
+
+移植の順番は、依存される側から進める。複数のパッケージがあるなら、まずメッセージの型だけを持つパッケージ（インターフェースのパッケージ）、次にライブラリ、次にノード、最後にlaunchファイルとパラメータのファイルの順に移すと、移した部品から順にビルドして確かめられる。
+
+### 7-3. 書き換える場所の対応表
+
+主な置き換え先は、次のとおりである。ROS1の欄は、古い記事やコードで見かける書き方である。
+
+| 対象 | ROS1 | ROS2 |
+|---|---|---|
+| ビルド | `catkin_make`・`catkin build`、`devel/` | `colcon build`、`install/`（`devel/` に当たるものは無い） |
+| `package.xml` | 形式1も使われていた。`<buildtool_depend>catkin</buildtool_depend>` | 形式2以上。C++は `<buildtool_depend>ament_cmake</buildtool_depend>` と `<export>` の `<build_type>ament_cmake</build_type>`、Pythonは `<export>` の `<build_type>ament_python</build_type>` だけ（`ros2 pkg create` の雛形のとおり） |
+| C++の `CMakeLists.txt` | `find_package(catkin COMPONENTS ...)`、`catkin_package()`、`${catkin_LIBRARIES}` | 依存ごとの `find_package()`、末尾の `ament_package()`、ターゲットにリンクする書き方（2節） |
+| Pythonのパッケージ | `CMakeLists.txt` と `setup.py`（catkin経由） | `ament_python` の `setup.py`・`setup.cfg`（10節）。Pythonだけなら `CMakeLists.txt` は要らない。Python 3が前提 |
+| メッセージの型の生成 | `add_message_files`・`generate_messages` | `rosidl_generate_interfaces`。型は `ament_cmake` のパッケージ（`CMakeLists.txt` のあるパッケージ。C++のコードは無くてよい）でしか作れないので、Pythonだけのパッケージに型があったら、型だけのパッケージに分ける |
+| ノードを作る（Python） | `rospy.init_node('名前')` | `rclpy.init()` の後、`Node` を継承したクラスを作る（フェーズ3-1） |
+| ノードを作る（C++） | `ros::init`、`ros::NodeHandle` | `rclcpp::init`、`rclcpp::Node`（を継承したクラス） |
+| 送る・受ける | `rospy.Publisher('名前', 型, queue_size=10)` | `create_publisher(型, '名前', 10)`。型とトピック名の順番が逆になり、最後の数はQoS（7-4節） |
+| 型のC++の名前 | `std_msgs::String`、`#include <std_msgs/String.h>` | `std_msgs::msg::String`、`#include <std_msgs/msg/string.hpp>`（`msg`・`srv`・`action` の段が入り、ヘッダのファイル名は小文字とアンダースコア） |
+| ログ | `rospy.loginfo(...)`、`ROS_INFO(...)` | `self.get_logger().info(...)`、`RCLCPP_INFO(this->get_logger(), ...)` |
+| 周期の処理 | `rospy.Rate` と `while not rospy.is_shutdown():` のループ | タイマー（`create_timer`）のコールバック（7-4節） |
+| パラメータ | `rospy.get_param('名前', 既定値)` | `declare_parameter('名前', 既定値)` で宣言してから読む（フェーズ3-3） |
+| サービスの呼び出し | `rospy.ServiceProxy` で同期的に呼ぶ | `create_client` と `call_async` で非同期に呼ぶ（フェーズ3-4、7-4節） |
+| 時刻 | `ros::Time`、メッセージの中の `time`・`duration` 型 | `rclcpp::Time`・`self.get_clock().now()`、`builtin_interfaces/Time`・`Duration` 型（フィールドは `sec`・`nanosec`） |
+| launchファイル | XMLだけ（`.launch`） | Python・XML・YAML（フェーズ4）。XMLの書き方も一部変わる（7-4節） |
+| 座標変換 | `tf`・`tf2` | `tf2` だけ |
+| 記録 | `rosbag`（`.bag` ファイル） | `ros2 bag`（ファイルの形式が違い、ROS1の `.bag` は `ros2 bag` で直接は再生できないので、変換が要る） |
+| C++のBoost | `boost::shared_ptr`・`boost::function` など | 標準のC++の `std::shared_ptr`・`std::function` など |
+
+### 7-4. 注意点: 書き換えても、同じように動くとは限らない
+
+7-3節の表の置き換えは、名前を変えるだけでは済まないものがある。ROS1とROS2で動き方が違うために、ビルドが通っても、動かすと違う結果になる点を挙げる。
+
+- **メッセージの型の名前の決まりが厳しい**: ROS2では、フィールドの名前は小文字で始まり、小文字・数字・アンダースコアだけを使い、アンダースコアの連続や末尾のアンダースコアは使えない（Jazzyの `rosidl_adapter` のソースで確かめた）。ROS1で許されていた `targetSpeed` のような名前は、`target_speed` に変えないと型を生成できない。名前を変えると、それを読み書きしているコードもすべて直すことになる。
+- **`Header` に `seq` が無い**: ROS1の `std_msgs/Header` にあった通し番号の `seq` は、ROS2の `std_msgs/msg/Header` には無い（`stamp` と `frame_id` だけ。`ros2 interface show std_msgs/msg/Header` で確かめられる）。`seq` で取りこぼしを調べていたコードは、別の方法に変える。
+- **グローバルなパラメータが無い**: ROS1では、`roscore` がパラメータの置き場（パラメータサーバ）を持ち、どのノードからも読み書きできた。ROS2のパラメータはノードごとに持ち、使う前に宣言が要る（フェーズ3-3）。複数のノードで同じ値を共有していたなら、launchファイルから各ノードに同じ値を渡す形に変える。パラメータのYAMLファイルも、ノード名と `ros__parameters` の段が要る形に書き換える（フェーズ3-3の5-4節）。
+- **サービスは非同期で呼ぶ**: ROS1の `ServiceProxy` は、応答が返るまで待つ同期の呼び出しだった。ROS2では、`call_async` で呼んで、後で結果を受け取る。既定の、1つのスレッドでコールバックを順に実行する形のままで、コールバックの中に、応答を待つ処理（`rclpy.spin_until_future_complete` など）を書くと、ノードが応答を受け取れなくなり、止まってしまう（デッドロック）。ROS1のコードで、コールバックの中からサービスを呼んでいた箇所は、作りを見直す。
+- **`Rate` のループをそのまま写さない**: Pythonでは、rclpyにも `Rate` はあるが、その `sleep` は、ノードを回す処理（spin）がタイマーを動かすのを待つ作りになっている（Jazzyのrclpyのソースで確かめた）。ROS1のように、spinせずに `while` と `sleep` だけで回すと、待ったまま戻らない。C++の `rclcpp::Rate` は、決めた時間だけ待つ作りで、この問題は無い（Jazzyのrclcppのヘッダで確かめた）。ただし、ループの間はspinしないので、受信のコールバックが呼ばれない。どちらの言語でも、周期の処理は、タイマーのコールバックに書き換えるのが基本である（フェーズ3-1）。
+- **`queue_size` がQoSになる**: ROS1の `queue_size` は、ROS2ではQoS（通信の送り方の約束。フェーズ3-2b、詳しくは6節）の `depth`（ためておく数）に当たる。ROS2では、送る側と受ける側のQoSが合わないと、エラーにはならず（受ける側に警告が出るだけで）、つながらないことがある（フェーズ3-2b、警告の文面は4-2節）。たとえば、センサのドライバには `best_effort` で送るものが多く、`reliable` で受けるとつながらない。ROS1の、最後の値を後から来た相手にも渡す設定（latch）は、ROS2では durability の `transient_local` に当たり、送る側と受ける側の両方で指定する。
+- **launchのXMLも書き方が変わる**: ROS2もXMLのlaunchファイルを読めるが、ROS1のファイルはそのままでは動かない。たとえば、ノードの `type` は `exec`、`ns` は `namespace` になり、ROS1のように、`<param>` をlaunchファイルの直下に置いてグローバルなパラメータにすることはできない（グローバルなパラメータが無いため）。パラメータは `node` の中に書くか、そのlaunchファイル（またはグループ）の中で後に起動するすべてのノードに同じ値を渡す `set_parameter` を使う（Jazzyの `launch_ros` にXMLでも使える形であることを確かめた）。パッケージの場所を返す `$(find パッケージ名)` は `$(find-pkg-share パッケージ名)` になり、引数を読む `$(arg 名前)` は `$(var 名前)` になる。
+- **シミュレーション時刻**: ROS1の `use_sim_time` はグローバルなパラメータだったが、ROS2では、ノードごとのパラメータである（1節）。シミュレータとつなぐノードには、1つずつ設定する。
+
+移植の後は、ROS1で動かしていたときの記録（ログやbag）と見比べて、同じ入力で同じ結果になるかを確かめる。上の注意点は、ビルドでは見つからず、動かして初めて違いが分かるものが多い。
 
 ## 8. 名前空間（namespace）が効く範囲
 
@@ -558,11 +612,14 @@ SetuptoolsDeprecationWarning: Invalid dash-separated options
 
 ## 11. 参考資料
 
-確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。
+確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。5〜7つ目は、2026-10-15に、ページの実在をWeb検索で、原稿とREADMEの内容をGitHubで確かめた。
 
 - [Using the ros2 param command-line tool — Jazzy](https://docs.ros.org/en/jazzy/How-To-Guides/Using-ros2-param.html)（`use_sim_time` などのパラメータの扱い）
 - [ament_cmake user documentation — Jazzy](https://docs.ros.org/en/jazzy/How-To-Guides/Ament-CMake-Documentation.html)（`ament_target_dependencies` などの `ament_` の関数）
 - [CMake Documentation — cmake-buildsystem(7)](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html)（ターゲットと `PUBLIC`/`PRIVATE`/`INTERFACE` の考え方）
 - [Why you shouldn't invoke setup.py directly（Paul Ganssle）](https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html)（setuptoolsの警告文に出てくる解説記事）
+- [Migrating Packages — Jazzy](https://docs.ros.org/en/jazzy/How-To-Guides/Migrating-from-ROS1/Migrating-Packages.html)（ROS1からの移植のガイドの1ページ目。7-2節）
+- [ros2_documentation の移植のガイドの原稿（GitHub、`jazzy` ブランチ）](https://github.com/ros2/ros2_documentation/tree/jazzy/source/How-To-Guides/Migrating-from-ROS1)（パッケージ・インターフェース・C++・Python・launch・パラメータの各ページ。7-3節・7-4節）
+- [ros2/ros1_bridge（GitHub）](https://github.com/ros2/ros1_bridge)（対応するUbuntuとROSの版の表。7-2節）
 
-> 出典: 文章は自分の言葉で書いたもので、上記のドキュメントやソースの転載ではない。`CMakeLists.txt` の各行・`setup.cfg` の中身と警告の文面は、ROS2の雛形（Apache 2.0）とsetuptoolsの出力を、説明に必要な範囲で引用した。
+> 出典: 文章は自分の言葉で書いたもので、上記のドキュメントやソースの転載ではない（7-2〜7-4節は、ROS 2の公式ドキュメント（CC BY 4.0）の移植のガイドを元に、要点を自分の言葉でまとめ直したもの）。`CMakeLists.txt` の各行・`setup.cfg` の中身と警告の文面は、ROS2の雛形（Apache 2.0）とsetuptoolsの出力を、説明に必要な範囲で引用した。

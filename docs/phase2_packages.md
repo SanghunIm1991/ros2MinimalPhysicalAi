@@ -255,7 +255,7 @@ learn_cpp/src/hello.cpp
 
 > 補足: `--node-name` は生成する実行ファイルの**名前**を指定するだけのオプション（`ros2 pkg create --help` でも `name of the empty executable` としか説明されておらず、選べる「種類」の列挙はない）。ノードの言語・雛形の中身を決めているのは `--build-type` の方（`ament_python` → Pythonの雛形、`ament_cmake`/`cmake` → C++の雛形、`ament_cargo` → Rust）。2-2節と2-3節で同じ `--node-name hello` を指定しているのは、両方とも「動作確認用の最小の実行ファイル」という同じ役割を、`--build-type` 違いのテンプレートで作っているため。
 
-> 課題1: 2つのパッケージの `package.xml` を見比べる。`<buildtool_depend>` の違い（`ament_python` / `ament_cmake`）と、`<export><build_type>` の違いを確認する。
+> 課題1: 2つのパッケージの `package.xml` を見比べる。C++版にだけ `<buildtool_depend>ament_cmake</buildtool_depend>` があり、Python版には `<buildtool_depend>` が無いことと、`<export><build_type>` の違い（`ament_python` / `ament_cmake`）を確認する。
 
 ### 2-4. ビルドする
 
