@@ -1,6 +1,6 @@
 # 間章: Gazeboの物理シミュレーションの基本（フェーズ5の補足）
 
-この章は、フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）までを読み終えた人向けの、任意の章である。フェーズ5では、Gazeboに付属する2輪車のワールドを写し、車輪にトルクをかけて走らせた。車両の形や重さ、地面との摩擦は、付属のファイルに書かれたものをそのまま使い、中身にはほとんど触れなかった。けれども、自分のロボットをシミュレーションしたくなったら、ロボットの形・重さ・関節を自分で書き、地面や物との接触がどう計算されるかを知っておく必要がある。この章では、箱を落とす、坂で滑らせる、球を跳ねさせる、腕を振り下ろす、という小さな体験を通して、ワールドとロボットの書き方と、物理エンジンが何を計算しているかをひととおり見ていく。
+この章は、フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）までを読み終えた人向けの、任意の章である。フェーズ5では、Gazeboに付属する2輪車のワールドを写し、車輪にトルクをかけて走らせた。車両の形や重さ、地面との摩擦は、付属のファイルに書かれたものをそのまま使い、中身にはほとんど触れなかった。けれども、自分のロボットをシミュレーションしたくなったら、ロボットの形・重さ・関節を自分で書き、地面や物との接触がどう計算されるかを知っておく必要がある。この章では、箱を落とす、坂で滑らせる、球を跳ねさせる、ばねでおもりを揺らす、腕を振り下ろす、という小さな体験を通して、ワールドとロボットの書き方と、物理エンジンが何を計算しているかをひととおり見ていく。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy + Gazebo Harmonic（フェーズ5-0で導入したもの）。5節だけは、ros2_controlのパッケージを追加で導入する（5節の冒頭）
 - 前提: フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）。フェーズ6・7の本文は、この章に依存しない
@@ -15,11 +15,11 @@
 
 1. Gazeboのワールドの記述（SDF）の入れ子（ワールド・モデル・リンク・関節）と、リンクが持つ3つの情報（慣性・衝突・見た目）を説明できる。
 2. 物理エンジンが刻みごとに動きを計算していることと、刻み幅（`max_step_size`）と実時間の倍率（`real_time_factor`）の意味を説明できる。
-3. 摩擦係数と反発係数を書き換えて、滑り方と跳ね方が変わることを、手計算の値と比べて確かめられる。
+3. 摩擦係数と反発係数を書き換えて、滑り方と跳ね方が変わることを、手計算の値と比べて確かめられる。関節の軸にばねと減衰を持たせて、ばねとダンパーを表せる。
 4. ロボットの記述（URDF）とSDFの違いを説明でき、xacroで書いた2関節のアームをGazeboに出して、関節の角度をROS2のトピックで読める。
 5. ros2_controlの部品（ハードウェアの部品・インターフェース・コントローラ・コントローラマネージャ）の役目を説明でき、位置と軌道のコントローラでアームを動かせる。
 
-完了条件: 2〜4節の体験で、Gazeboが計算した位置・角度が、手計算の値（落下・坂・反発・関節の制限）とどこまで合い、どこがなぜずれるかを説明できる。5節の体験で、アームが位置のコントローラの目標の角度に止まり、軌道のコントローラの軌道を少し遅れて追うことを確かめ、その理由を説明できる。
+完了条件: 2〜4節の体験で、Gazeboが計算した位置・角度が、手計算の値（落下・坂・反発・ばね・関節の制限）とどこまで合い、どこがなぜずれるかを説明できる。5節の体験で、アームが位置のコントローラの目標の角度に止まり、軌道のコントローラの軌道を少し遅れて追うことを確かめ、その理由を説明できる。
 
 ## 1. 全体像
 
@@ -558,14 +558,183 @@ Model: [8]
 
 **2つの面の反発係数の組み合わせ方**: DARTでは、2つの面の反発係数の**積**が使われる。そのため、このワールドでは地面の反発係数を1にしている。作成時に、地面の反発係数を書かずに（既定の0で）同じ球を落としたところ、 $0.8 \times 0 = 0$ で、まったく跳ねなかった。摩擦（3-2節。小さいほう）と組み合わせ方が違うので、跳ねさせたいのに跳ねないときは、相手の面の値を確かめる。
 
-### 3-4. そのほかにできること
+### 3-4. 体験: ばねとダンパー
+
+ばね（変位に比例して押し戻す力）とダンパー（速さに比例して動きを妨げる力）は、機械の振動や、サスペンション・柔らかい関節を表すのに欠かせない。Gazeboには、ばねやダンパーを1つの部品として置く要素は無い。代わりに、**関節の軸に、ばねと減衰を持たせる**。関節の `<axis>` の `<dynamics>` に、次の3つを書く。
+
+| 要素 | 意味 | 単位（直動の関節／回転の関節） |
+|---|---|---|
+| `<spring_stiffness>` | ばね定数 $k$ | N/m ／ N·m/rad |
+| `<spring_reference>` | ばねの力が0になる関節の位置 $x_0$（自然長の位置） | m ／ rad |
+| `<damping>` | 減衰係数 $c$（ダンパー） | N·s/m ／ N·m·s/rad |
+
+関節には、 $-k(x - x_0) - c\dot{x}$ の力（回転の関節ならトルク）がかかる。 $x$ は関節の位置、 $\dot{x}$ はその速さである。まっすぐ伸び縮みするばねは、直動の関節（`type="prismatic"`。軸の向きにだけ動く関節）で、ねじりばねは、回転の関節（`type="revolute"`）で表す。
+
+天井から、質量1 kgのおもりを、ばね定数100 N/mのばねで吊るす。減衰の無いものと、減衰のあるものの2つを並べる。
+
+ファイル: `gz_practice/spring.sdf`
+
+<!-- file: gz_practice/spring.sdf -->
+```xml
+<?xml version="1.0" ?>
+<!-- 天井から吊るしたおもりを、直動の関節のばねとダンパーで表すワールド -->
+<sdf version="1.11">
+  <world name="spring">
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+
+    <light type="directional" name="sun">
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- 減衰なしのばね（ばね定数100 N/m、減衰係数0 N·s/m） -->
+    <model name="spring_free">
+      <pose>0 0 1 0 0 0</pose>
+      <link name="weight">
+        <inertial>
+          <mass>1.0</mass>
+          <inertia>
+            <ixx>0.00667</ixx><iyy>0.00667</iyy><izz>0.00667</izz>
+            <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
+          <material><diffuse>0.9 0.3 0.2 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="spring" type="prismatic">
+        <parent>world</parent>
+        <child>weight</child>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <dynamics>
+            <damping>0</damping>
+            <spring_reference>0</spring_reference>
+            <spring_stiffness>100</spring_stiffness>
+          </dynamics>
+        </axis>
+      </joint>
+    </model>
+
+    <!-- 減衰ありのばね（ばね定数100 N/m、減衰係数20 N·s/m） -->
+    <model name="spring_damped">
+      <pose>1 0 1 0 0 0</pose>
+      <link name="weight">
+        <inertial>
+          <mass>1.0</mass>
+          <inertia>
+            <ixx>0.00667</ixx><iyy>0.00667</iyy><izz>0.00667</izz>
+            <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
+          <material><diffuse>0.3 0.3 0.8 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="spring" type="prismatic">
+        <parent>world</parent>
+        <child>weight</child>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <dynamics>
+            <damping>20</damping>
+            <spring_reference>0</spring_reference>
+            <spring_stiffness>100</spring_stiffness>
+          </dynamics>
+        </axis>
+      </joint>
+    </model>
+  </world>
+</sdf>
+```
+
+ファイルの中身を読む。
+
+- 地面は置いていない。おもりは天井（ワールド）から吊るされていて、地面まで届かないので要らない。
+- **`<parent>world</parent>`**: 関節の親を `world`（ワールドそのもの）にすると、関節の付け根がワールドに固定される。おもりは、この関節で動ける向き（次の項目）にだけ動き、ほかの向きには動かない。
+- **`type="prismatic"` と `<xyz>0 0 1</xyz>`**: おもりは、z軸（上下）の向きにだけ動ける。関節の位置 $x$ は、最初の位置（高さ1 m）から上へ測った変位で、 $x = 0$ がばねの自然長の位置（`<spring_reference>` が0）である。
+- 2つのモデルの違いは、`<damping>` の値（0と20）と、置いた位置（x = 0と1）と色だけである。
+
+手で計算しておく。おもりが重さとばねの力で釣り合う位置は、 $kx = -mg$ から $x = -mg/k = -1.0 \times 9.8 / 100 = -0.098$ m、つまり高さ0.902 mである。減衰が無ければ、おもりは自然長の位置（高さ1.0 m）から放されたので、釣り合いの位置を中心に、上下に0.098 mずつ、高さ1.0 mと0.804 mの間を揺れ続ける。揺れの角振動数は $\omega = \sqrt{k/m} = 10$ rad/s で、1往復の時間（周期）は $2\pi/\omega \approx 0.628$ 秒である。0.3秒の時点の高さは $1 - 0.098 \times (1 - \cos 3) \approx 0.805$ m（ほぼいちばん下）になる。
+
+減衰係数20 N·s/mは、 $2\sqrt{mk} = 20$ と同じ値にしてある。この値を臨界減衰と言い、おもりは釣り合いの位置を行き過ぎない範囲で、最も速く落ち着く。このときの高さは $1 - 0.098 \times [1 - (1 + \omega t)e^{-\omega t}]$ で、0.3秒の時点では $1 - 0.098 \times (1 - 4e^{-3}) \approx 0.9215$ m である。減衰係数がこれより小さいと、揺れながら少しずつ落ち着き、大きいと、行き過ぎずにゆっくり落ち着く。
+
+```bash
+# T1
+cd ~/gz_practice
+
+gz sim spring.sdf
+```
+
+```bash
+# T2
+gz service -s /world/spring/control --reqtype gz.msgs.WorldControl --reptype gz.msgs.Boolean --timeout 5000 --req 'multi_step: 300, pause: true'
+
+gz model -m spring_free -p
+
+gz model -m spring_damped -p
+```
+
+**期待する結果**（T2の表示。進める前の高さは、どちらも1.000000）:
+
+```text
+$ gz service -s /world/spring/control --reqtype gz.msgs.WorldControl --reptype gz.msgs.Boolean --timeout 5000 --req 'multi_step: 300, pause: true'
+data: true
+
+$ gz model -m spring_free -p
+
+Requesting state for world [spring]...
+
+Model: [4]
+  - Name: spring_free
+  - Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.000000 0.000000 0.806426]
+    [0.000000 -0.000000 0.000000]
+
+$ gz model -m spring_damped -p
+
+Requesting state for world [spring]...
+
+Model: [9]
+  - Name: spring_damped
+  - Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [1.000000 0.000000 0.921662]
+    [0.000000 -0.000000 0.000000]
+```
+
+**読み方**: 画面では、0.3秒の間に、赤いおもりは大きく下がり、青いおもりは少しだけ下がって止まって見える。0.3秒の時点で、赤いおもり（減衰なし）は0.806426 mで、手計算の0.805 mとほぼ合う（いちばん下の近く。1.4 mmの差は、この後の段落で見る、揺れの幅の減り方による）。青いおもり（臨界減衰）は0.921662 mで、手計算の0.9215 mと合う。モデルの番号（`[4]`・`[9]`）は、ファイルの書き方によって変わる。▶を押して進めると、赤いおもりは上下に揺れ続け、青いおもりは揺れずに止まる。青いおもりは1.6秒の時点で0.902000 mに止まり、釣り合いの位置（高さ0.902 m。関節の位置では−0.098 m）と合う（作成時に0.1秒ごとに読んだ値）。
+
+**減衰の無いばねも、少しずつ揺れが小さくなる**: 作成時に、半周期（0.314秒）ごとに赤いおもりの高さを読んだところ、揺れの幅（釣り合いの位置0.902 mからの距離）が、減衰を0にしたのに、少しずつ小さくなった。刻み幅を半分（0.0005秒。3-1節の `<max_step_size>`）にすると、小さくなる速さも、ほぼ半分になった。
+
+| 時刻 | 手計算 | 刻み幅0.001秒（既定） | 刻み幅0.0005秒 |
+|---|---|---|---|
+| 0.314秒（放してから最初のいちばん下） | 0.804 m | 0.805527 m | 0.804766 m |
+| 1.884秒（放してから3往復後のいちばん上） | 1.000 m | 0.991186 m | 0.995487 m |
+| 3.768秒（放してから6往復後のいちばん上） | 1.000 m | 0.983156 m | 0.991173 m |
+
+連続の時間の物理では、減衰の無いばねは同じ幅で揺れ続けるはずなので、この減り方は、刻みごとの計算から来るものである。2-2節で見た、速度を先に、位置を後に更新する計算だけなら、ばねの揺れの幅はふつう減らないので、関節のばねと減衰は、それとは別の形で計算されていると考えられる（DARTの内部の計算までは確かめていない）。4-4節でも、関節の減衰について、刻み幅に比例する同じ種類のずれが出る。見かけの減衰が加わったように振る舞うので、減衰の小さいばねの揺れを長い時間シミュレーションするときは、刻み幅を変えて、結果がどのくらい変わるかを確かめておく。
+
+関節でつながっていない2つの物の間のばね（ゴムひもなど）を、そのまま書く要素は無い。直動の関節でつないで表すか、リンクに力をかけるシステム（3-5節の表の `ApplyLinkWrench`）へ、変位から計算した力を送り続ける仕組みを、自分で用意することになる（この教材では試していない）。
+
+### 3-5. そのほかにできること
 
 物理のふるまいは、ここまでの要素のほかにも、関節の設定と、システム（プラグイン）で足せる。Gazeboに付属する例のワールド（`/opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/worlds/`）に、それぞれの書き方の手本がある。
 
 | できること | 書く場所 | 例のワールド |
 |---|---|---|
 | 関節の動ける範囲・力と速さの上限 | 関節の `<axis>` の `<limit>` | この章の4-3節 |
-| 関節の減衰（速さに比例する抵抗）・摩擦・ばね | 関節の `<axis>` の `<dynamics>`（4節で使う。フェーズ7-3でも使う） | `joint_position_controller.sdf` |
+| 関節の減衰（速さに比例する抵抗）・摩擦・ばね | 関節の `<axis>` の `<dynamics>`（ばねと減衰は3-4節、減衰は4節でも使う。フェーズ7-3でも使う） | `joint_position_controller.sdf` |
 | 関節に力（トルク）をかける | システム `ApplyJointForce`（フェーズ5-4で使った） | `apply_joint_force.sdf` |
 | リンクに力をかける | システム `ApplyLinkWrench` | `apply_link_wrench.sdf` |
 | 水の浮力 | システム `Buoyancy` | `buoyancy.sdf` |
@@ -573,7 +742,7 @@ Model: [8]
 | 風 | ワールドの `<wind>` とシステム `WindEffects` | `wind.sdf` |
 | 接触の検出（何と何が触れたか） | 接触センサとシステム `Contact` | `contact_sensor.sdf` |
 
-例のワールドは、`gz sim apply_link_wrench.sdf` のように、ファイル名だけで開ける（Gazeboが付属のフォルダから探す）。中身を読むときは、上のフォルダのファイルを開く。作成時には、この表の例のワールドが付属のフォルダにあることまでを確かめた（表の機能は、関節の制限・減衰と `ApplyJointForce` のほかは、この教材では動かしていない）。
+例のワールドは、`gz sim apply_link_wrench.sdf` のように、ファイル名だけで開ける（Gazeboが付属のフォルダから探す）。中身を読むときは、上のフォルダのファイルを開く。作成時には、この表の例のワールドが付属のフォルダにあることまでを確かめた（表の機能は、関節の制限・減衰・ばねと `ApplyJointForce` のほかは、この教材では動かしていない）。
 
 ## 4. URDFとxacroでロボットを書く
 
@@ -697,6 +866,8 @@ URDFには、変数や繰り返しの仕組みが無い。同じ形の腕を2本
 - **`<limit>`**: `joint1` は−1.0〜1.0 rad（約±57度）しか回らない。`effort` と `velocity` は、関節に出せる力と速さの上限（URDFの回転の関節では、書くことが必須）。
 - **`<dynamics damping="0.5">`**: 関節の減衰。角速度に比例する抵抗のトルク（N·m·s/rad）で、これが無いと、腕はいつまでも揺れ続ける。
 - **`<gazebo>`**: Gazeboにだけ伝えたい設定。ここでは、関節の角度をGazeboのトピックに送るシステム `JointStatePublisher` を足す。`reference` 属性を付けずに書くと、モデル全体に付く。
+
+**URDFでばねを書く場合**: URDFの関節の `<dynamics>` に書けるのは、減衰（`damping`）と摩擦（`friction`）だけで、3-4節のばね（ばね定数と自然長の位置）の項目は無い。Gazeboに読み込むURDFでは、上の `<gazebo>` の要素に、関節の名前を `reference` 属性で付けて書き、その中に `<springStiffness>`（ばね定数）と `<springReference>`（自然長の位置）を書く。作成時に、`<gazebo reference="spring">` の中に `<springStiffness>100</springStiffness>` を書いたURDFを `gz sdf -p` でSDFに変換し、関節の `<dynamics>` に `<spring_stiffness>100</spring_stiffness>` が入ることを確かめた。このアームでは、ばねは使わない。
 
 腕が水平な姿勢（角度0）から放すと、`joint1` は重力で正の向きに回り、上限の1.0 radで止まるはずである。`link2` は、`joint1` が止まった後も回り続け、真下に垂れて落ち着くはずである。`link1` が水平から1.0 rad下がっているので、`link2` が真下（水平から $\pi/2 \approx 1.571$ rad）を向くときの `joint2` の角度は、 $\pi/2 - 1.0 \approx 0.571$ rad になる。
 
@@ -843,7 +1014,7 @@ effort:
 
 - `name` と `position` は、同じ順番で対応している。固定の関節 `fix_base` も並ぶが、角度は常に0である。
 - `joint1` は1.0 radで、`<limit>` の上限で止まっている。
-- `joint2` は約0.580 radで、手計算の0.571 radより、約0.009 rad（約0.5度）大きい。`velocity` がほぼ0なので、揺れている途中ではなく、この角度で止まっている。このずれは、刻みごとの計算から来るものである。作成時に、関節の減衰を4倍（2.0）にすると、ずれも約4倍（0.034 rad）になり、刻み幅を半分（0.0005秒）にすると、ずれも半分（0.0045 rad）になった。連続の時間の物理では、減衰は動いているときだけ効くので、止まった位置を変えないはずである。`joint1` を上限に押し付けたまま、刻みごとに計算するうちに、減衰の力が、わずかに残る形になっていると考えられる（DARTの内部の計算までは確かめていない）。シミュレーションの結果は、刻み幅や物理エンジンの設定で少し変わるので、実機と比べるときは、どのくらいずれうるかを、刻み幅を変えて確かめておく。
+- `joint2` は約0.580 radで、手計算の0.571 radより、約0.009 rad（約0.5度）大きい。`velocity` がほぼ0なので、揺れている途中ではなく、この角度で止まっている。このずれは、刻みごとの計算から来るものである。作成時に、関節の減衰を4倍（2.0）にすると、ずれも約4倍（0.034 rad）になり、刻み幅を半分（0.0005秒）にすると、ずれも半分（0.0045 rad）になった。連続の時間の物理では、減衰は動いているときだけ効くので、止まった位置を変えないはずである。3-4節で、減衰の無いばねの揺れの幅が、刻み幅に比例して少しずつ小さくなったのと、同じ種類のずれである。`joint1` を上限に押し付けたまま、刻みごとに計算するうちに、減衰の力が、わずかに残る形になっていると考えられる（DARTの内部の計算までは確かめていない）。シミュレーションの結果は、刻み幅や物理エンジンの設定で少し変わるので、実機と比べるときは、どのくらいずれうるかを、刻み幅を変えて確かめておく。
 
 止めるときは、T3・T2・T1の順に `Ctrl+C` で止める（T4の `create` と `ros2 topic echo --once` は、自分で終わる）。
 
@@ -1193,6 +1364,7 @@ Goal finished with status: SUCCEEDED
 - Gazeboのワールドは、SDFで、ワールド → モデル → リンク・関節の入れ子に書く。リンクは、慣性（質量と慣性モーメント）・衝突の形・見た目の3つを持ち、物理の計算に使うのは慣性と衝突の形である。
 - 物理エンジン（既定はDART）は、刻み幅（既定0.001秒）ごとに、まず速度を、次に位置を更新する。落下の位置は、この計算の式と小数第6位まで一致した。接触では、物どうしが数ミリ重なることを許し、少しずつ押し戻す。
 - 摩擦係数と反発係数は、衝突の形の `<surface>` に書く。DARTでは、2つの面の摩擦係数は小さいほう、反発係数は積が使われる。坂で滑る距離と、跳ね上がる高さは、手計算と合った。
+- ばねとダンパーは、関節の軸の `<dynamics>` に、ばね定数・自然長の位置・減衰係数を書いて表す。吊るしたおもりの釣り合いの位置と揺れは手計算と合い、減衰の無いばねでも、刻み幅に比例して揺れが少しずつ小さくなった。
 - ロボット1台は、ROS2の道具と共通のURDFで書き、xacroで短く書いて展開する。Gazeboは、読み込むときにSDFに変換する。Gazebo特有の設定は `<gazebo>` に書く。
 - `create` でURDFをワールドに出し、`JointStatePublisher` とブリッジで、関節の角度をROS2の `/joint_states` として読めた。関節の制限は正確に効き、止まった角度には、刻み幅に比例する小さなずれがあった。
 - ros2_controlは、コントローラ（指令を計算する側）とハードウェアの部品（関節を読み書きする側）を、インターフェースでつなぐ。URDFの `<ros2_control>` に関節ごとのインターフェースを書き、Gazeboでは `GazeboSimROS2ControlPlugin` がコントローラマネージャを動かす。コントローラは `spawner` で読み込んで有効にし、1つの指令のインターフェースは1つのコントローラだけが使える。
@@ -1221,7 +1393,7 @@ Goal finished with status: SUCCEEDED
 
 ## 9. 公式ドキュメント・参考資料
 
-確認状況（2026-10-12）: Gazeboの「SDF worlds」「Building your own robot」「Spawn URDF」「Spawn a Gazebo model from ROS 2」のページは、この章の作成時に本文を確認した。要素の既定値は、導入したSDFormat（14.9.0）の仕様の表示（`gz sdf -d`）で、`create` のオプションは `ros2 run ros_gz_sim create --help` で確認した。URDFとxacroのROS 2のチュートリアルは、原稿（`ros2/ros2_documentation` のjazzyブランチ）が実在することを確かめた。摩擦と反発の係数の組み合わせ方と、4-4節の角度のずれは、作成時の実験で確かめたもので、DARTのソースは読んでいない。5節のros2_controlの記述と設定は、`gz_ros2_control` のjazzyの版の説明とデモの設定のファイル、ros2_controlの公式の文書（jazzy）を確認し、作成時に導入した版（`gz_ros2_control` 1.2.20、`ros2_controllers` 4.42.1、`controller_manager` 4.48.1）で動かして確かめた。角度の指令の動き（`position_proportional_gain`）と軌道の補間の仕方は、公式の説明と、5-4節の記録が合うことを確かめた。
+確認状況（2026-10-12）: Gazeboの「SDF worlds」「Building your own robot」「Spawn URDF」「Spawn a Gazebo model from ROS 2」のページは、この章の作成時に本文を確認した。要素の既定値は、導入したSDFormat（14.9.0）の仕様の表示（`gz sdf -d`）で、`create` のオプションは `ros2 run ros_gz_sim create --help` で確認した。URDFとxacroのROS 2のチュートリアルは、原稿（`ros2/ros2_documentation` のjazzyブランチ）が実在することを確かめた。摩擦と反発の係数の組み合わせ方と、3-4節のばねの揺れの減り方と、4-4節の角度のずれは、作成時の実験で確かめたもので、DARTのソースは読んでいない。3-4節のばねの要素（`<spring_stiffness>`・`<spring_reference>`）は、SDFの仕様の表示（`gz sdf -d`）で確かめ、4-3節の、URDFの `<gazebo>` の `springStiffness` がSDFに変換されることは、`gz sdf -p` で確かめた（2026-10-15）。5節のros2_controlの記述と設定は、`gz_ros2_control` のjazzyの版の説明とデモの設定のファイル、ros2_controlの公式の文書（jazzy）を確認し、作成時に導入した版（`gz_ros2_control` 1.2.20、`ros2_controllers` 4.42.1、`controller_manager` 4.48.1）で動かして確かめた。角度の指令の動き（`position_proportional_gain`）と軌道の補間の仕方は、公式の説明と、5-4節の記録が合うことを確かめた。
 
 ### 公式
 
