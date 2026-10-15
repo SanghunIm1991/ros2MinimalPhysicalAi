@@ -682,6 +682,22 @@ ros2 run rqt_console rqt_console
 - [Introspection with command line tools — Jazzy](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Command-Line-Tools.html)
 - [Basic Concepts — Jazzy](https://docs.ros.org/en/jazzy/Concepts/Basic.html)
 
+### turtlesimのソースコード（任意）
+
+このフェーズはコードを読まなくても完了できる。3節で観察したトピック・サービス・パラメータ・アクションが、ノードの中でどう作られているかを見てみたい場合の手がかりとして載せる。中身はC++とQt（GUIの部品集）で書かれており、C++のノードの書き方はフェーズ3-1の4節（[`docs/phase3_1_pubsub.md`](phase3_1_pubsub.md)）で学ぶので、今は「どのファイルに何があるか」の見当をつける程度でよい。
+
+aptで入れたturtlesimには、ビルド済みのプログラム（`/opt/ros/jazzy/lib/turtlesim/` の4つ）と型の定義（`/opt/ros/jazzy/share/turtlesim/` の `msg`・`srv`・`action` のフォルダ）だけが入っていて、C++のソースは入っていない。ソースは、GitHubの公式リポジトリ [`ros/ros_tutorials`](https://github.com/ros/ros_tutorials/tree/jazzy/turtlesim) の `jazzy` ブランチの `turtlesim/` にある（BSD License）。主なファイルと、3節で観察したものとの対応は次のとおり（2026-10-15に `jazzy` ブランチで確認）。
+
+| ファイル（`turtlesim/` から） | 中身 | 3節で観察したもの |
+| --- | --- | --- |
+| [`src/turtlesim.cpp`](https://github.com/ros/ros_tutorials/blob/jazzy/turtlesim/src/turtlesim.cpp) | `turtlesim_node` の `main` 関数。ROS2とQtのアプリを起動する | 3-1節の起動 |
+| [`src/turtle_frame.cpp`](https://github.com/ros/ros_tutorials/blob/jazzy/turtlesim/src/turtle_frame.cpp) | ウィンドウ（青い背景）と、亀の全体の管理。背景色と `holonomic` のパラメータの宣言と、`/clear`・`/reset`・`/spawn`・`/kill` のサービス | 3-5節のサービス、3-6節のパラメータ |
+| [`src/turtle.cpp`](https://github.com/ros/ros_tutorials/blob/jazzy/turtlesim/src/turtle.cpp) | 1匹の亀の動き。`cmd_vel` の購読、`pose`・`color_sensor` の配信、`set_pen`・`teleport_*` のサービス、`rotate_absolute` のアクション（どれも亀の名前、例えば `/turtle1/` が付く） | 3-4節のトピック、3-5節のサービス（`/turtle1/set_pen` 等）、3-7節のアクション |
+| [`tutorials/teleop_turtle_key.cpp`](https://github.com/ros/ros_tutorials/blob/jazzy/turtlesim/tutorials/teleop_turtle_key.cpp) | `turtle_teleop_key`。キー入力を `cmd_vel` として配信し、`rotate_absolute` のゴールを送る | 3-2節のキーボード操作（G・Bなどのキーで向きを変えるのは、3-7節のアクション） |
+| [`tutorials/draw_square.cpp`](https://github.com/ros/ros_tutorials/blob/jazzy/turtlesim/tutorials/draw_square.cpp)・[`tutorials/mimic.cpp`](https://github.com/ros/ros_tutorials/blob/jazzy/turtlesim/tutorials/mimic.cpp) | 1-1節で一覧に出た残りの2つ（`draw_square`・`mimic`）。この手順書では使わない | — |
+
+どの実行ファイルがどのソースから作られるかは、同じフォルダの [`CMakeLists.txt`](https://github.com/ros/ros_tutorials/blob/jazzy/turtlesim/CMakeLists.txt) の `add_executable` の行に書かれている（`CMakeLists.txt` の読み方はフェーズ2の1-3節・1-4節（[`docs/phase2_packages.md`](phase2_packages.md)）で学ぶ）。ブランチは、使っているROS2の版（このプロジェクトでは `jazzy`）に合わせる。既定のブランチは開発中の版のもので、Jazzyのものと細部が異なる場合がある。
+
 ### 日本語記事（Qiita）
 
 - [実習ROS 2 ROStools #ROS2 - Qiita](https://qiita.com/s-kubota/items/e9d69b44d6659d44e95c)
