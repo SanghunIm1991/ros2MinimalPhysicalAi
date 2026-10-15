@@ -149,6 +149,12 @@ install(DIRECTORY launch config
 - ここでインストールしたものが、`ros2 launch` から探される（`install/learn_bringup/share/learn_bringup/launch`）。
 - `--symlink-install` でビルドすると、**既存ファイルの編集は再ビルド不要**で反映される。**新しいファイルを足したときは再ビルド**が必要。
 
+**Pythonでノードを書いていても `CMakeLists.txt` を編集する理由**: `CMakeLists.txt` はC++のためのファイルに見えるが、ここで書いた2行はコンパイルの指定ではなく、「`launch/` と `config/` のフォルダを、インストール先の `share/learn_bringup/` へ置く」という指定である。C++の知識は要らない。`learn_bringup` を `ament_cmake` で作ったのは、このパッケージがノードを持たず、Python版（`learn_py`）とC++版（`learn_cpp`）のどちらのノードも起動する、言語に属さないパッケージだからである。上の2行はフォルダを丸ごと指定しているので、`launch/` に新しいファイルを足しても、この行を変えずに再ビルドするだけでよい。
+
+一般論として、launchファイルはPythonのパッケージ（`ament_python`）にも置ける。その場合は `CMakeLists.txt` の代わりに、`setup.py` の `data_files` に、インストールするファイルとその置き場所（`share/<パッケージ名>/launch` 等）を書く。`data_files` は、Pythonのコード以外のファイルをインストールするための一覧で、`ros2 pkg create` の雛形の `setup.py` にも、`package.xml` を入れる行が既にある。書かないと、launchファイルは `install/` に入らず、`ros2 launch` から見つからない。ファイル名を1つずつ並べる代わりに、Python標準の `glob`（`glob('launch/*.launch.py')` のように、パターンに合うファイルの一覧を返す関数）で書けば、`ament_cmake` と同じく、ファイルを足しても `setup.py` を変えずに再ビルドするだけでよい（2026-10-15に使い捨ての環境で、`data_files` に書かないと入らないこと、`glob` で書けば後から足したファイルも再ビルドで入ることを確かめた）。このように、どちらの形でも「フォルダのファイルを `share/` へ入れる」指定がどこかに要り、この教材では、それを `learn_bringup` の `CMakeLists.txt` にまとめている。フェーズ5-4の2-3節で `worlds/` を足すときも、同じ行を変える。
+
+なお、Pythonだけで書くノードのために、自作のメッセージなどの型（インターフェース）を作る場合も `CMakeLists.txt` を編集する。こちらは、型からPythonとC++のコードを作る仕組みがCMakeで動くためで、詳しくは参考資料（[`docs/reference_interfaces.md`](reference_interfaces.md)）の6-1節にある。
+
 ## 4. launchファイルを書く
 
 ### 4-1. Python形式（`pubsub.launch.py`）
