@@ -102,6 +102,11 @@ the author (SanghunIm1991) and the license are credited.
    - docs/interlude_gazebo_physics.md の期待する結果に載せた、`gz sdf -p` が
      表示したSDF（SDFormat, Apache License 2.0）と、`check_urdf` の表示
      （urdfdom, BSD License）
+   - docs/interlude_urdf_rviz.md の期待する結果に、`cat`・`diff`・`grep`・`sed`・
+     `xacro` の表示として抜粋したURDFとxacroのファイルの中身:
+     urdf_tutorial（David V. Lu!! ほか）, BSD 3-Clause License。読者は、各自の
+     環境に導入したファイルを開いて全体を読む。出どころとライセンスの全文 /
+     Attribution and full text: LICENSE-BSD-THIRD-PARTY（このリポジトリの直下）
    - 「期待する結果」等に載せたコマンドの出力: 各ツールの表示
    - docs/img/phase5_0_gazebo.png（docs/phase5_0_gazebo.md の冒頭）に写っている
      Gazebo Sim の画面と、付属のワールド `diff_drive.sdf` の中身: Open Source

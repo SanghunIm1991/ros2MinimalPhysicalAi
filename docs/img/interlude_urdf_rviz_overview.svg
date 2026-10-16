@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: URDFのファイル（01〜07は .urdf、08は .urdf.xacro）を、xacroが展開してURDFの文字列にし、robot_state_publisher に渡す。robot_state_publisher は、/robot_description を joint_state_publisher_gui と RViz2 に配る。joint_state_publisher_gui は、スライダーの角度を /joint_states に送る。robot_state_publisher は、関節の角度からTFを計算して、/tf と /tf_static を RViz2 に配り、RViz2 は RobotModel と TF の表示で3Dに描く。xacro から RViz2 と joint_state_publisher_gui までが、display.launch.py が起動する範囲">
+<title>図: URDFのファイル（01〜07は .urdf、08は .urdf.xacro）を、xacroが展開してURDFの文字列にし、robot_state_publisher に渡す。robot_state_publisher は、/robot_description を joint_state_publisher_gui と RViz2 に配る。joint_state_publisher_gui は、スライダーの角度を /joint_states に送る。robot_state_publisher は、関節の角度からTFを計算して、/tf と /tf_static を RViz2 に配り、RViz2 は RobotModel と TF の表示で3Dに描く。xacro から RViz2 と joint_state_publisher_gui までが、display.launch.py が起動する範囲</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="1200" height="400" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="250" y="10" width="940" height="380" rx="10" fill="#fbfbfb" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="260" y="36" font-weight="bold">display.launch.py が起動する範囲</text>
+<path d="M230,115 L270,115" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M480,115 L590,115" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M800,115 L970,115" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M650,160 L650,280" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M740,280 L740,160" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="20" y="70" width="210" height="90" rx="8" fill="#f3f3f3" stroke="#666666" stroke-width="1.5"/>
+<rect x="270" y="70" width="210" height="90" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="590" y="70" width="210" height="90" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="970" y="70" width="210" height="90" rx="8" fill="#fff6e5" stroke="#b7791f" stroke-width="1.5"/>
+<rect x="590" y="280" width="210" height="90" rx="8" fill="#fff6e5" stroke="#b7791f" stroke-width="1.5"/>
+<text x="125" y="96" text-anchor="middle" font-weight="bold">URDFのファイル</text>
+<text x="125" y="116" text-anchor="middle">01〜07: .urdf</text>
+<text x="125" y="136" text-anchor="middle">08: .urdf.xacro</text>
+<text x="375" y="96" text-anchor="middle" font-weight="bold">xacro</text>
+<text x="375" y="116" text-anchor="middle">展開して</text>
+<text x="375" y="136" text-anchor="middle">URDFの文字列にする</text>
+<text x="695" y="96" text-anchor="middle" font-weight="bold">robot_state_publisher</text>
+<text x="695" y="116" text-anchor="middle">関節の角度から</text>
+<text x="695" y="136" text-anchor="middle">TFを計算して配る</text>
+<text x="1075" y="96" text-anchor="middle" font-weight="bold">RViz2</text>
+<text x="1075" y="116" text-anchor="middle">RobotModel と TF</text>
+<text x="1075" y="136" text-anchor="middle">で3Dに表示する</text>
+<text x="695" y="306" text-anchor="middle" font-weight="bold">joint_state_</text>
+<text x="695" y="326" text-anchor="middle">publisher_gui</text>
+<text x="695" y="346" text-anchor="middle">スライダーで角度</text>
+<text x="535" y="107" text-anchor="middle" font-size="13">URDFの文字列</text>
+<text x="885" y="107" text-anchor="middle" font-size="13">/robot_description</text>
+<text x="885" y="137" text-anchor="middle" font-size="13">/tf・/tf_static</text>
+<text x="640" y="225" text-anchor="end" font-size="13">/robot_description</text>
+<text x="750" y="225" text-anchor="start" font-size="13">/joint_states</text>
+</g>
+</svg>

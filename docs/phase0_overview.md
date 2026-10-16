@@ -308,8 +308,8 @@ flowchart LR
 | 起動管理 | launchファイル（Python/XML/YAML）、namespace、remap（起動するときにノード名やトピック名を付け替えること） | フェーズ4 |
 | 実行モデル | Executor、コールバックグループ、spin（コールバックを呼び出しながら、ノードを動かし続ける処理） | フェーズ3で触れる程度（フェーズ3-5で複数スレッドのexecutorに少し触れる）。深入りは発展課題 |
 | ノードの組み立て方 | コンポーネント（Composition）、`Node` クラスの内部構造 | 間章（[`docs/interlude_components.md`](interlude_components.md)）、参考資料（[`docs/reference_node_class.md`](reference_node_class.md)） |
-| 座標変換 | tf2（broadcaster/listener、座標系） | フェーズ8 |
-| ロボット記述 | URDF／xacro、RViz2での可視化 | フェーズ8 |
+| 座標変換 | tf2（broadcaster/listener、座標系） | フェーズ8（TFの仕組みと、`tf2_echo` での読み方の基本は、任意の間章（[`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md)）の4-4節） |
+| ロボット記述 | URDF／xacro、RViz2での可視化 | 間章（[`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md)。任意。用意されたロボットの表示）・間章（[`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md)の4節。任意）、フェーズ8（発展） |
 | 制御フレームワーク | ros2_control（ハードウェア抽象化） | フェーズ8 |
 | シミュレーション | Gazebo（物理エンジン、センサ模擬） | フェーズ5-0（導入と基本。必須）、フェーズ5-1〜5-4（車両の表示と、物理での制御）、フェーズ7-3〜7-5（強化学習の環境と、最終ゴールの一式）、フェーズ8（URDF等と組み合わせた発展） |
 | 強化学習 | エージェント・環境・観測・行動・報酬・方策、Gymnasium・Stable-Baselines3（ROS2のパッケージではない） | フェーズ7（最終ゴールまでの道筋。PIのゲインの調整、PI制御のニューラルネットワークへの置き換えとROS2のノードへの持ち出し。二足歩行への橋渡しのフェーズ7-6は発展） |
@@ -318,7 +318,7 @@ flowchart LR
 | セキュリティ | SROS2（認証・暗号化） | この教材では扱わない（用語のみ把握） |
 | 組み込み | micro-ROS | この教材では扱わない（将来の実機連携時に検討） |
 
-5節の周辺ツールのうち、この教材の必須の範囲で使うのは、場面1のcolconとament（`rosdep` は使わない）、場面2のrqt系（`rqt_graph`・`rqt_console` はフェーズ1、`rqt_plot` はフェーズ6-1）、場面3の `ros2 bag`（フェーズ6）、場面4のGazebo（フェーズ5-0から。フェーズ7-3〜7-5でも使う）である。URDF/xacroとros2_controlは、任意の間章（[`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md)）の4節・5節で体験する。RViz2とtf2は、保留中のフェーズ8で扱う予定である。PlotJugglerとFoxglove Studio、Nav2とMoveIt2、場面5のツールは扱わない。導入時期は [`docs/learning_plan.md`](learning_plan.md) の「OSS活用計画」を参照。
+5節の周辺ツールのうち、この教材の必須の範囲で使うのは、場面1のcolconとament（`rosdep` は使わない）、場面2のrqt系（`rqt_graph`・`rqt_console` はフェーズ1、`rqt_plot` はフェーズ6-1）、場面3の `ros2 bag`（フェーズ6）、場面4のGazebo（フェーズ5-0から。フェーズ7-3〜7-5でも使う）である。URDF/xacroとros2_controlは、任意の間章（[`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md)）の4節・5節で体験する。URDFとRViz2での表示の基本（TFを配る `robot_state_publisher` を含む）は、任意の間章（[`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md)）で体験する。tf2を使うノードの自作と、RViz2を使った発展は、保留中のフェーズ8で扱う予定である。PlotJugglerとFoxglove Studio、Nav2とMoveIt2、場面5のツールは扱わない。導入時期は [`docs/learning_plan.md`](learning_plan.md) の「OSS活用計画」を参照。
 
 ## 9. 次のフェーズへ
 

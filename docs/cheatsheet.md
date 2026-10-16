@@ -196,12 +196,18 @@ ROS2のコマンドは、**ターミナルごとに**環境を読み込んでか
 
 `parameter_bridge` の引数は「トピック名@ROS2の型[Gazeboの型」の形で、間の記号が向きを表す。`[` はGazeboからROS2へ、`]` はROS2からGazeboへ、`@` は両方向である。
 
-## 12. 任意の章で使うコマンド（ros2_control・コンポーネント）
+## 12. 任意の章で使うコマンド（URDFとRViz2・ros2_control・コンポーネント）
 
 最初のゴール（フェーズ5）にも最終ゴール（フェーズ7-5）にも要らない、任意の章でだけ使うコマンド。
 
 | やりたいこと | コマンド（この教材の例） | 出てくる手順書 |
 |---|---|---|
+| URDFのロボットを、関節のスライダーと一緒にRViz2で表示する | `ros2 launch urdf_tutorial display.launch.py model:=urdf/06-flexible.urdf` | [URDFとRViz2の間章](interlude_urdf_rviz.md)の4-3節 |
+| URDFの木の形と誤りを確かめる（xacroは展開してから） | `check_urdf 05-visual.urdf` | [URDFとRViz2の間章](interlude_urdf_rviz.md)の3-5節 |
+| xacroを普通のURDFに展開して表示する | `xacro 08-macroed.urdf.xacro` | [URDFとRViz2の間章](interlude_urdf_rviz.md)の6-2節 |
+| 2つのフレームの間の位置と向き（TF）を読む | `ros2 run tf2_ros tf2_echo base_link left_gripper` | [URDFとRViz2の間章](interlude_urdf_rviz.md)の4-4節 |
+| 関節の角度をスライダーで送る | `ros2 run joint_state_publisher_gui joint_state_publisher_gui` | [URDFとRViz2の間章](interlude_urdf_rviz.md)の7-3節 |
+| 設定のファイルを指定してRViz2を開く | `rviz2 -d $(ros2 pkg prefix --share urdf_tutorial)/rviz/urdf.rviz` | [URDFとRViz2の間章](interlude_urdf_rviz.md)の7-3節 |
 | xacroのファイルからロボットの説明を配る | `ros2 run robot_state_publisher robot_state_publisher --ros-args -p robot_description:="$(xacro arm.urdf.xacro)"` | [Gazeboの物理の間章](interlude_gazebo_physics.md)の4-4節 |
 | 配られたロボットを、動いているGazeboに出す | `ros2 run ros_gz_sim create -topic robot_description -name arm` | [Gazeboの物理の間章](interlude_gazebo_physics.md)の4-4節 |
 | ros2_controlのコントローラを動かし始める | `ros2 run controller_manager spawner joint_state_broadcaster arm_position_controller` | [Gazeboの物理の間章](interlude_gazebo_physics.md)の5-3節 |

@@ -1,0 +1,46 @@
+このファイルは、このリポジトリの手順書に抜粋した、BSD Licenseの第三者の著作物の
+出どころとライセンスの全文である。どの文書のどの部分かは LICENSE の「4. 第三者の
+著作物」に書いている。
+This file contains the attribution and the full text of the BSD License for
+third-party material excerpted in the documents of this repository. See
+section 4 of LICENSE for where each excerpt appears.
+
+1. urdf_tutorial 1.1.0（docs/interlude_urdf_rviz.md に、URDFとxacroのファイルの
+   一部を抜粋）
+   https://github.com/ros/urdf_tutorial
+
+   作者 / Author: David V. Lu!! and contributors（package.xml の表記。元の
+   LICENSE のファイルには、著作権の表示の行が無い / The original LICENSE file
+   contains no copyright line）
+
+上の著作物に、次のライセンスが適用される（元の LICENSE のファイルの写し）。
+The following license applies to the work above (copied from its LICENSE file).
+
+  Software License Agreement (BSD License)
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+   * Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+     copyright notice, this list of conditions and the following
+     disclaimer in the documentation and/or other materials provided
+     with the distribution.
+   * Neither the name of the copyright holder nor the names of its
+     contributors may be used to endorse or promote products derived
+     from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.

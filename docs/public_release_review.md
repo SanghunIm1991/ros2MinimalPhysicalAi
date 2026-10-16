@@ -82,7 +82,7 @@ python3 -c "import sys, zipfile; [print(f, n, zipfile.ZipFile(f).read(n)[10:128]
 
 | 観点 | 具体例 | 主な置き場所 |
 |---|---|---|
-| 公式ドキュメントの抜粋 | 抜粋した箇所に、帰属表示（出典・ライセンス（CC BY 4.0）へのリンク・改変の有無）が残っているか。MIT Licenseの抜粋には、著作権の表示と全文（`LICENSE-MIT-THIRD-PARTY`）への案内が残っているか。抜粋が必要な範囲に留まり、丸ごとの転載になっていないか | [`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) の手順4、[`docs/setup_rl_sb3.md`](setup_rl_sb3.md) の4節（Stable-Baselines3、MIT）、[`docs/phase7_0_rl_intro.md`](phase7_0_rl_intro.md) の3-1節（Gymnasium、MIT）・4-1節（Stable-Baselines3、MIT） |
+| 公式ドキュメントの抜粋 | 抜粋した箇所に、帰属表示（出典・ライセンス（CC BY 4.0）へのリンク・改変の有無）が残っているか。MIT Licenseの抜粋には、著作権の表示と全文（`LICENSE-MIT-THIRD-PARTY`）への案内が、BSD Licenseの抜粋には、出どころと全文（`LICENSE-BSD-THIRD-PARTY`）への案内が残っているか。抜粋が必要な範囲に留まり、丸ごとの転載になっていないか | [`docs/setup_wsl2_ros2.md`](setup_wsl2_ros2.md) の手順4、[`docs/setup_rl_sb3.md`](setup_rl_sb3.md) の4節（Stable-Baselines3、MIT）、[`docs/phase7_0_rl_intro.md`](phase7_0_rl_intro.md) の3-1節（Gymnasium、MIT）・4-1節（Stable-Baselines3、MIT）、[`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md) の3〜6節（`urdf_tutorial` のファイルの表示、BSD） |
 | 各ページの出典注記 | 公式チュートリアルと同等のコマンド・API利用パターンを含むページに、出典（元にしたものとそのライセンス。公式ドキュメントならCC BY 4.0）と「逐語の転載でない」旨の注記があるか | `docs/phase*.md`、`docs/interlude_*.md`（間章）、[`docs/tips.md`](tips.md)、[`docs/reference_node_class.md`](reference_node_class.md)、[`docs/reference_interfaces.md`](reference_interfaces.md)、[`docs/cheatsheet.md`](cheatsheet.md) |
 | 同等の値の明記 | コマンド例の値が公式の例と同等である旨の記述が残っているか | [`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md) |
 | 引用の範囲 | 雛形の `CMakeLists.txt`（Apache 2.0）の各行や、setuptoolsとStable-Baselines3（MIT）の警告文の引用や、型の定義（`ros2 interface show` の表示）が、説明に必要な範囲に留まり、出典があるか | [`docs/tips.md`](tips.md)、[`docs/phase7_1_vehicle_env.md`](phase7_1_vehicle_env.md)・[`docs/archive/phase7_1_vehicle_env_v1.md`](archive/phase7_1_vehicle_env_v1.md)（没案）の5-1節の課題1、[`docs/reference_interfaces.md`](reference_interfaces.md)、[`docs/phase1_cli_turtlesim.md`](phase1_cli_turtlesim.md)（`turtlesim` の型、BSD）、[`docs/phase3_4_services.md`](phase3_4_services.md)・[`docs/phase3_5_actions.md`](phase3_5_actions.md)（`example_interfaces` の型、Apache-2.0） |
@@ -90,14 +90,14 @@ python3 -c "import sys, zipfile; [print(f, n, zipfile.ZipFile(f).read(n)[10:128]
 | 図 | `docs/img/` のSVGが自作のもので、第三者の図・ロゴ・埋め込み画像が混ざっていないか。AIのサービス（Claude Design等）で作った案を移植した図は、出どころの注記（README・`CLAUDE.md`）があるか、外部のフォント・外部のリソース・既存のアイコン集のパスが残っていないか。PNGのスクリーンショットは、写っている第三者の画面が `LICENSE` の第三者の一覧に載っているか | `docs/img/` |
 | サンプルコード | 公式チュートリアルや他のリポジトリのコードを、丸ごと転載していないか | 各手順書のコードブロック |
 | 第三者のファイル | データシート・PDF・フォント・画像など、ライセンスが不明なファイルが追跡されていないか | `git ls-files` |
-| リポジトリのライセンス | `LICENSE` の「第三者の著作物」の一覧が最新か（前回以降に、公式ドキュメントの抜粋や、雛形・ツールの出力の引用を足していないか）。サンプルコードが使うパッケージに、コピーレフト（GPL等）のものが加わっていないか | [`LICENSE`](../LICENSE)、[`LICENSE-MIT`](../LICENSE-MIT)（学習済みの重み）、[`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)、`README.md` のライセンスの節 |
+| リポジトリのライセンス | `LICENSE` の「第三者の著作物」の一覧が最新か（前回以降に、公式ドキュメントの抜粋や、雛形・ツールの出力の引用を足していないか）。サンプルコードが使うパッケージに、コピーレフト（GPL等）のものが加わっていないか | [`LICENSE`](../LICENSE)、[`LICENSE-MIT`](../LICENSE-MIT)（学習済みの重み）、[`LICENSE-MIT-THIRD-PARTY`](../LICENSE-MIT-THIRD-PARTY)、[`LICENSE-BSD-THIRD-PARTY`](../LICENSE-BSD-THIRD-PARTY)、`README.md` のライセンスの節 |
 
 ### 2-2. 機械点検
 
 追跡しているファイルのうち、Markdown・SVG・Gitの設定以外のものを一覧する。
 
 ```bash
-git ls-files | grep -vE '\.(md|svg)$|^\.git(attributes|ignore)$|^LICENSE(-APACHE-2\.0|-MIT(-THIRD-PARTY)?)?$|^docs/img/phase5_0_gazebo\.png$|^docs/models/gz_pedal_w(20|0)\.npz$'
+git ls-files | grep -vE '\.(md|svg)$|^\.git(attributes|ignore)$|^LICENSE(-APACHE-2\.0|-MIT(-THIRD-PARTY)?|-BSD-THIRD-PARTY)?$|^docs/img/phase5_0_gazebo\.png$|^docs/models/gz_pedal_w(20|0)\.npz$'
 ```
 
 SVGに、外部の画像や外部へのリンクが埋め込まれていないかを見る。
