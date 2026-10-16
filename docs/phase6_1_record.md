@@ -706,7 +706,7 @@ ros2 node list
 | 記録の `Count` が0のトピックがある | 記録している間に、そのトピックを送るノードが動いていたか。トピック名の綴り |
 | 再生の前に起動した `ros2 topic echo` が `does not appear to be published yet` の後に `Could not determine the type for the passed topic` と出て終わる | トピックの型（`std_msgs/msg/Float64`）を書いたか（2-3節）。型を書かないと、トピックの送り手も受け手もいないうちは型を調べられない |
 | 再生した値が、ほかの値と混ざる・ギザギザになる | 再生する前に、同じトピックを送る一式を止めたか（2-3節） |
-| `rqt_plot` に線が出ない | `rqt_plot` のトピックの指定が `/トピック名/data` になっているか。付け替えた記録は、付け替えた後の名前（`/gz/...`）で指定する。`rqt_plot` を、`ros2 bag play -p` より先に開いていないか（3-1節。そのときは、`rqt_plot` を閉じて開き直す） |
+| `rqt_plot` に線が出ない | `rqt_plot` のトピックの指定が `/トピック名/data` になっているか。付け替えた記録は、付け替えた後の名前（`/gz/...`）で指定する。`rqt_plot` を、`ros2 bag play -p` より先に開いていないか（3-1節。そのときは、ウィンドウの `Topic` の欄から足すか、`rqt_plot` を閉じて開き直す。フェーズ5-3の4-3節の注記） |
 | `record.launch.py` が `bag` の指定が無いと言って止まる | `bag:=フォルダ` を指定する（4-4節）。`~` ではなく `$HOME` か絶対パスで書く |
 | 決めた時間になっても止まらない | 使っているYAMLに `end_time` があるか（4-3節）。launchの `target_generator` の `Node(...)` に `on_exit=Shutdown()` を足してビルドし直したか（4-2節） |
 | 記録の後もGazeboが残る（次に起動したとき、車両が2台ずつ見える・動きがおかしい） | 前回の `gz sim` のサーバーが裏で動き続けている。`pgrep -af "gz sim"` で確かめ、残っていれば `pkill -INT -f "gz sim"` で止める（5節の末尾） |
