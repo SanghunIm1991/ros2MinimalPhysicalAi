@@ -155,6 +155,7 @@ ROS2のコマンドは、**ターミナルごとに**環境を読み込んでか
 | 再生する | `ros2 bag play manual` | [フェーズ6-1](phase6_1_record.md)の2-3節 |
 | 5倍の速さで、止まった状態から再生する（スペースキーで開始） | `ros2 bag play sim_default -r 5 -p` | [フェーズ6-3](phase6_3_metrics.md)の6-1節 |
 | 2つ目の記録を、5秒の位置から、トピックとノードの名前を付け替えて再生する（2つの記録を重ねるとき） | `ros2 bag play gz_default --start-offset 5 --remap /target_velocity:=/gz/target_velocity /plant/velocity:=/gz/plant/velocity /plant/pedal:=/gz/plant/pedal __node:=player_gz` | [フェーズ6-1](phase6_1_record.md)の6節 |
+| 再生した値を、CSVで保存する（列は、送った時刻・受け取った時刻・通し番号2つ・値） | `ros2 topic echo --csv -i /plant/velocity std_msgs/msg/Float64 > velocity.csv` | [Tips集](tips.md)の13-2節（記録のファイルを直接読む方法は13-3節） |
 | launchで、決めた時間だけ記録する（この教材のlaunch） | `ros2 launch learn_bringup record.launch.py bag:=$HOME/ros2_ws/bags/sim_default` | [フェーズ6-1](phase6_1_record.md)の4-5節 |
 
 `ros2 bag record` は、`-o` に書いたフォルダが既にあると記録を始めない。同じ名前で取り直すときは、古いフォルダを消すか、別の名前にする。

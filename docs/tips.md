@@ -5,9 +5,9 @@
 - 対象: ROS2 Jazzy（Ubuntu 24.04）。版に依存する記述は、この資料の作成時に `/opt/ros/jazzy` とUbuntuのパッケージに入っていたもので確かめた
 - 所要目安: 1項目あたり5〜15分（読み物）
 
-> **期待する結果の出どころ**: ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの（`mkdir -p` が何も表示しないことは、コマンドの仕様から書いた）。10節の `No executable found` と警告の文面は、使い捨てのワークスペースで実際に表示させたもの。11-2節の `ros2 topic list --include-hidden-topics` で一覧に出る名前は、`rcl_action` と `rclpy` の仕組みから書いたもので、動かして確かめてはいない。
+> **期待する結果の出どころ**: ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの（`mkdir -p` が何も表示しないことは、コマンドの仕様から書いた）。10節の `No executable found` と警告の文面は、使い捨てのワークスペースで実際に表示させたもの。11-2節の `ros2 topic list --include-hidden-topics` で一覧に出る名前は、`rcl_action` と `rclpy` の仕組みから書いたもので、動かして確かめてはいない。13-2節と13-3節の表示とCSVの中身は、この資料の作成時に、`rosbag2_py` で練習用の短い記録（`std_msgs/msg/Float64` のトピック3つ）を作り、使い捨ての環境で実際に再生と書き出しをして確かめたもの（13-2節は、ほかのPCと混ざらない設定で、`ros2 bag play` と `ros2 topic echo` を起動した）。フェーズ6-1の記録そのものでは確かめていない。時刻は実行ごとに変わる。
 
-> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節と7-1節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の10節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。7-2〜7-4節（ROS1のコードの移植）は、ROS2の公式の移植のガイド（GitHubの `ros2_documentation` の `jazzy` ブランチの原稿）と `ros1_bridge` のREADMEを読んで、自分の言葉でまとめた。フィールドの名前の決まりはJazzyの `rosidl_adapter`、`Header` の中身は `ros2 interface show`、rclpyの `Rate` の作りはJazzyのrclpyのソース、`tf` パッケージが無いことは `/opt/ros/jazzy/share`、`rclcpp::Rate` の作りはrclcppのヘッダ、`set_parameter` は `launch_ros` のソース、`ament_python` の雛形に `<buildtool_depend>` が無いことは `ros2pkg` のソースで確かめた。ROS1の `.bag` が `ros2 bag` で直接は再生できないことは、一般的な情報から書いたもので、確かめていない。ROS1のコードを実際に移植して動かしてはいない（2026-10-15）。9節は、数値計算の一般的な内容を自分の言葉で書いたもので、9-3節の数値は、この資料の作成時に、フェーズ5-1の式を写したPythonのスクリプトで計算した（2026-10-12）。10節は、`/opt/ros/jazzy` の `ros2pkg`（雛形と、実行ファイルを探す処理）と、Ubuntuのパッケージの `colcon-core`（0.21.3）のソースを読み、使い捨てのワークスペースで、`setup.cfg` を雛形のまま・消した場合・古い名前のまま・ハイフンでつないだ名前の場合のビルドと、`ros2 pkg executables`・`ros2 run` の表示を確かめた（`ros2 run` は、`setup.cfg` の名前を古いままにした場合に実行し、実行ファイルが見つからずに終わることを確かめた。消した場合は、`ros2 pkg executables` が何も表示しないことから同じと判断した。2026-10-15）。11節のサービスとアクションの中身は、Jazzyの `rcl_action`（アクションが作る5つの名前と、結果を持つ時間の既定値）・`rclpy`（隠れた名前の決まり、`result_timeout` の既定値、`wait_for_service` などの関数）・`rmw`（要求の識別子の中身、サービスの既定のQoS）・`action_msgs`（ゴールの状態）と、`rmw_fastrtps_shared_cpp` の共有ライブラリに含まれる名前の頭の文字列（`rq`・`rr`・`rt`）で確かめた。トピックで組んだ場合との比較は、これらの仕組みから自分の言葉でまとめたもので、実際にトピックで組んで比べてはいない。要求の識別子で応答を振り分ける処理そのものは、RMWのソースを読んで確かめてはいない（2026-10-15）。12-2節の実行ファイルの中身は、この資料の作成時に、使い捨てのワークスペースで雛形のPythonのパッケージを、`--symlink-install` の有無の両方でビルドして確かめた（ノードは起動していない）。12節の、`ament_cmake_python`・`pybind11_vendor` が入っていること（`pybind11_vendor` がUbuntuの `pybind11-dev` に依存することは、その `package.xml` で確かめた）と、`rclpy` のネイティブのモジュールは、`/opt/ros/jazzy` で確かめた。CythonやNuitkaとnumpyの速さの話は、それらの道具についての一般的な情報から書いたもので、この環境には入れておらず、ROS2のノードで試してはいない。`rclpy` のexecutorとメッセージの変換の負担は、`rclpy` についての一般的な情報から書いたもので、測ってはいない。12-5節の周期の最短の値は、手順書のタイマーとパラメータの `period` の値と、launch・YAMLでの上書きを検索して確かめた（2026-10-16）。
+> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節と7-1節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の10節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。7-2〜7-4節（ROS1のコードの移植）は、ROS2の公式の移植のガイド（GitHubの `ros2_documentation` の `jazzy` ブランチの原稿）と `ros1_bridge` のREADMEを読んで、自分の言葉でまとめた。フィールドの名前の決まりはJazzyの `rosidl_adapter`、`Header` の中身は `ros2 interface show`、rclpyの `Rate` の作りはJazzyのrclpyのソース、`tf` パッケージが無いことは `/opt/ros/jazzy/share`、`rclcpp::Rate` の作りはrclcppのヘッダ、`set_parameter` は `launch_ros` のソース、`ament_python` の雛形に `<buildtool_depend>` が無いことは `ros2pkg` のソースで確かめた。ROS1の `.bag` が `ros2 bag` で直接は再生できないことは、一般的な情報から書いたもので、確かめていない。ROS1のコードを実際に移植して動かしてはいない（2026-10-15）。9節は、数値計算の一般的な内容を自分の言葉で書いたもので、9-3節の数値は、この資料の作成時に、フェーズ5-1の式を写したPythonのスクリプトで計算した（2026-10-12）。10節は、`/opt/ros/jazzy` の `ros2pkg`（雛形と、実行ファイルを探す処理）と、Ubuntuのパッケージの `colcon-core`（0.21.3）のソースを読み、使い捨てのワークスペースで、`setup.cfg` を雛形のまま・消した場合・古い名前のまま・ハイフンでつないだ名前の場合のビルドと、`ros2 pkg executables`・`ros2 run` の表示を確かめた（`ros2 run` は、`setup.cfg` の名前を古いままにした場合に実行し、実行ファイルが見つからずに終わることを確かめた。消した場合は、`ros2 pkg executables` が何も表示しないことから同じと判断した。2026-10-15）。11節のサービスとアクションの中身は、Jazzyの `rcl_action`（アクションが作る5つの名前と、結果を持つ時間の既定値）・`rclpy`（隠れた名前の決まり、`result_timeout` の既定値、`wait_for_service` などの関数）・`rmw`（要求の識別子の中身、サービスの既定のQoS）・`action_msgs`（ゴールの状態）と、`rmw_fastrtps_shared_cpp` の共有ライブラリに含まれる名前の頭の文字列（`rq`・`rr`・`rt`）で確かめた。トピックで組んだ場合との比較は、これらの仕組みから自分の言葉でまとめたもので、実際にトピックで組んで比べてはいない。要求の識別子で応答を振り分ける処理そのものは、RMWのソースを読んで確かめてはいない（2026-10-15）。12-2節の実行ファイルの中身は、この資料の作成時に、使い捨てのワークスペースで雛形のPythonのパッケージを、`--symlink-install` の有無の両方でビルドして確かめた（ノードは起動していない）。12節の、`ament_cmake_python`・`pybind11_vendor` が入っていること（`pybind11_vendor` がUbuntuの `pybind11-dev` に依存することは、その `package.xml` で確かめた）と、`rclpy` のネイティブのモジュールは、`/opt/ros/jazzy` で確かめた。CythonやNuitkaとnumpyの速さの話は、それらの道具についての一般的な情報から書いたもので、この環境には入れておらず、ROS2のノードで試してはいない。`rclpy` のexecutorとメッセージの変換の負担は、`rclpy` についての一般的な情報から書いたもので、測ってはいない。12-5節の周期の最短の値は、手順書のタイマーとパラメータの `period` の値と、launch・YAMLでの上書きを検索して確かめた（2026-10-16）。13節の `ros2 bag` のサブコマンドと `ros2 topic echo` の `--csv`・`-i` の意味は、手元の `--help` で、`rosbag2_py`・`rosidl_runtime_py` が入っていることは `/opt/ros/jazzy` で確かめた。13-3節のサンプルは自分で書いたもので、入れ子の型（`nav_msgs/msg/Odometry`）の書き出しも、練習用の記録で確かめた（2026-10-16）。
 
 ## 項目の一覧
 
@@ -25,6 +25,7 @@
 | 10 | `setup.cfg` の役割（この教材では編集しない） | フェーズ2の1-3節・2-2節・2-6節（Pythonのパッケージ） |
 | 11 | トピックの組み合わせで、サービス・アクションの代わりになるか | フェーズ3-4（サービス）、フェーズ3-5（アクション） |
 | 12 | Pythonのノードを速くするには（ROS2に専用の仕組みは無い） | フェーズ2（Pythonのパッケージ）、フェーズ7-5（numpyだけで計算するノード）、コンポーネントの間章 |
+| 13 | bagの記録を、トピックごとのCSVに書き出す | フェーズ6-1（`ros2 bag` の記録）、フェーズ6-3（記録の解析） |
 
 ## 1. シミュレーション時刻（`use_sim_time`）
 
@@ -711,7 +712,168 @@ Pythonのコードを機械語に直す一般的な道具（CythonやNuitkaな�
 
 速さが問題になったら、先に、どこが遅いかを測る。トピックが決めた周期で出ているかは、`ros2 topic hz` で確かめられる（[フェーズ1](phase1_cli_turtlesim.md)の3-4節）。コールバックの中のどの計算に時間がかかっているかは、Pythonの標準の道具のcProfile（プロファイラ。関数ごとに、呼ばれた回数とかかった時間を数える道具）で調べられる。遅い部分が分かってから、その部分だけを、numpyに直すか、C++にする。全体を書き直す前に測るのは、遅い原因が、計算でなく、周期の設定や、ほかのノードとのやり取りにあることもあるからである。
 
-## 13. 参考資料
+## 13. bagの記録を、トピックごとのCSVに書き出す
+
+### 13-1. 疑問: 記録した時系列を、表計算ソフトやPythonで扱いたい
+
+フェーズ6-1では、`ros2 bag` で記録した値を、`ros2 bag play` で再生して `rqt_plot` で見直した。値を表計算ソフトで並べたり、自分のPythonのスクリプトで細かく計算したりするには、トピックごとの時系列を、CSV（値をコンマで区切って1行ずつ並べたテキストのファイル）にしておくと扱いやすい。
+
+ところが、`ros2 bag` には、CSVに書き出すコマンドは無い。Jazzyの `ros2 bag` のサブコマンドは、`burst`・`convert`・`info`・`list`・`play`・`record`・`reindex` の7つで、このうち `convert` も、記録の保存の形式（MCAPなど。フェーズ6-1の2-2節）や分け方を変えるもので、CSVには直せない。Jazzyに標準で入っているものだけで済ませるなら、CSVにするには、次の2つの方法がある（PlotJugglerのような、ROS2の外の道具を使う方法もあるが、この教材では扱わない）。
+
+| 方法 | やり方 | 時刻 | 向く場面 |
+|---|---|---|---|
+| 1（13-2節） | 記録を再生し、`ros2 topic echo --csv` で受けて、ファイルに保存する | 再生したときの時刻 | コードを書かずに、手早く中身を見たいとき |
+| 2（13-3節） | 記録のファイルを、Pythonのライブラリ `rosbag2_py` で直接読んで、CSVに書く | 記録したときの時刻 | 取りこぼしなく、再生の速さに左右されずに残したいとき |
+
+### 13-2. 方法1: 再生しながら `ros2 topic echo --csv` で受ける
+
+`ros2 topic echo` に `--csv` を付けると、メッセージの項目を、コンマで区切った1行で表示する。`-i`（`--include-message-info` の短い形）も付けると、各行の先頭に、メッセージの時刻などの情報が付く。[`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg) には時刻の項目が無いので、時系列として残すには `-i` が要る。
+
+表示を `>` でファイルに保存しておき、別のターミナルで、フェーズ6-1の4-5節で取った記録 `sim_default` を再生する。受ける側（T1・T2）を先に起動してから、再生（T3）を始める。
+
+```bash
+# T1
+cd ~/ros2_ws/bags
+
+ros2 topic echo --csv -i /plant/velocity std_msgs/msg/Float64 > velocity.csv
+
+# T2
+cd ~/ros2_ws/bags
+
+ros2 topic echo --csv -i /plant/pedal std_msgs/msg/Float64 > pedal.csv
+
+# T3
+cd ~/ros2_ws/bags
+
+ros2 bag play sim_default
+```
+
+T3の再生が終わったら、T1とT2を `Ctrl+C` で止める。最後の引数の型（`std_msgs/msg/Float64`）は、再生が始まる前でも、受ける側が型を決められるように付けている。
+
+**期待する結果**（`velocity.csv` の中身の先頭。練習用の短い記録を再生した場合。時刻は実行ごとに変わる）:
+
+```text
+1792145662314081114,1792145662314338864,1,None,0.0
+1792145662334395143,1792145662334667357,2,None,0.5
+1792145662354318328,1792145662354777107,3,None,1.0
+```
+
+1行が1つのメッセージで、列は、左から次のとおりである。
+
+| 列 | 中身 |
+|---|---|
+| 1 | 送った時刻（UNIX時刻（1970年1月1日0時（UTC）からの経過時間）を、ナノ秒（10億分の1秒）の単位で表した数） |
+| 2 | 受け取った時刻（同じ） |
+| 3 | 送った側の通し番号 |
+| 4 | 受け取った側の通し番号（この資料の作成時の環境（Fast DDS）では `None` だった） |
+| 5以降 | メッセージの項目（`Float64` なら `data` の1列） |
+
+1列目の差を見ると、記録したときと同じ間隔（この例では0.02秒。フェーズ6-1の `sim_default` の `/plant/velocity` なら0.01秒）で流れていることが分かる。`-i` を付けないと、5列目以降の値だけが並ぶ（この資料の作成時に、`/plant/pedal` を `-i` なしで受けて確かめた）。
+
+この方法には、次の注意がある。
+
+- **時刻は、記録した時刻ではなく、再生した時刻である**。`ros2 bag play -r 5` のように速く再生すると、時刻の間隔も5分の1に詰まる。
+- **列の名前の行（ヘッダ）は出ない**。表計算ソフトで使うときは、自分で1行目に足す。
+- **受ける側がつながる前に流れた分は、取りこぼす**。受ける側を先に起動しておくが、それでも、再生が始まってから相手を見つけるまでの間に、最初のいくつかが欠けることがある。確実にするには、フェーズ6-3の6-1節のように、`ros2 bag play` に `-p` を付けて一時停止の状態で再生を始め、別のターミナルで `ros2 topic info /plant/velocity` を実行して `Subscription count` が受ける側の数になったのを確かめてから、T3でスペースキーを押して再生を進める。
+
+### 13-3. 方法2: 記録のファイルをPythonで直接読む
+
+Jazzyには、bagのファイルを読み書きするPythonのライブラリ `rosbag2_py` が入っている。ROS2の標準のPython（`python3`）で使えるので、追加で入れるものは無い。このライブラリで記録を先頭から順に読み、トピックごとのCSVのファイルに書くスクリプトを作る。
+
+ファイル: `ros2_ws/bags/bag_to_csv.py`
+
+```python
+# bagの記録を、トピックごとのCSVのファイルに書き出す。
+import csv
+import pathlib
+import sys
+
+import rosbag2_py
+from rclpy.serialization import deserialize_message
+from rosidl_runtime_py import message_to_ordereddict
+from rosidl_runtime_py.utilities import get_message
+
+
+# 入れ子のメッセージを、「項目.項目」の名前と値の組の並びに直す。
+def flatten(value, prefix=''):
+    if isinstance(value, dict):
+        items = []
+        for key, child in value.items():
+            items += flatten(child, f'{prefix}{key}.')
+        return items
+    return [(prefix[:-1], value)]
+
+
+# 引数のbagを読み、<bag>_csv/ の下にトピックごとのCSVを書く。
+def main():
+    bag = pathlib.Path(sys.argv[1])
+    reader = rosbag2_py.SequentialReader()
+    reader.open(rosbag2_py.StorageOptions(uri=str(bag)),
+                rosbag2_py.ConverterOptions('cdr', 'cdr'))
+    types = {t.name: t.type for t in reader.get_all_topics_and_types()}
+    out_dir = bag.parent / f'{bag.name}_csv'
+    out_dir.mkdir(exist_ok=True)
+    files, writers, counts = {}, {}, {}
+    start = None
+    while reader.has_next():
+        topic, data, stamp = reader.read_next()
+        msg = deserialize_message(data, get_message(types[topic]))
+        row = flatten(message_to_ordereddict(msg))
+        if start is None:
+            start = stamp
+        if topic not in writers:
+            path = out_dir / (topic.strip('/').replace('/', '__') + '.csv')
+            files[topic] = open(path, 'w', newline='')
+            writers[topic] = csv.writer(files[topic])
+            writers[topic].writerow(['time'] + [name for name, _ in row])
+            counts[topic] = 0
+        writers[topic].writerow([f'{(stamp - start) / 1e9:.3f}'] + [v for _, v in row])
+        counts[topic] += 1
+    for topic, f in files.items():
+        f.close()
+        print(f'{topic}: {counts[topic]}行 -> {f.name}')
+
+
+if __name__ == '__main__':
+    main()
+```
+
+- **`SequentialReader`**: bagを、記録した順に1件ずつ読む部品である。`read_next` は、トピックの名前・メッセージの中身（送るときの形のバイト列）・記録した時刻（ナノ秒）の3つを返す。
+- **`deserialize_message`**: バイト列を、型（`get_message` で、`std_msgs/msg/Float64` のような型の名前から取り出す）に合わせて、Pythonのメッセージに戻す。
+- **`message_to_ordereddict` と `flatten`**: メッセージを、項目の名前と値の辞書にし、入れ子の項目を `twist.twist.linear.x` のような1つの名前の列に並べ直す。どの型のトピックでも、同じスクリプトで書き出せる（ただし、配列の項目は分けずに1つのセルに入る。この節の末尾の段落）。
+- **時刻の列**: 記録全体の最初のメッセージを0秒として（どのトピックのCSVも同じ基準なので、`target_velocity.csv` が0.000から始まるとは限らない）、記録した時刻を秒で、小数第3位（ミリ秒）まで書く。再生しないので、取りこぼしも、再生の速さによるずれも無い。ただし、記録した時刻はPCの時計なので、PCの時計が飛ぶ環境では、その分だけ間があく（フェーズ6-1の2-2節）。
+
+フェーズ6-1の記録 `sim_default` を書き出す。ROS2を読み込んだターミナルで実行する（自分で定義した型のトピックを含む記録なら、`source ~/ros2_ws/install/setup.bash` もしておく）。
+
+```bash
+cd ~/ros2_ws/bags
+
+python3 bag_to_csv.py sim_default
+```
+
+**期待する結果**（練習用の短い記録（3つのトピック）の場合。フェーズ6-1の記録では、行の数がずっと多く、トピックの順は記録によって変わる）:
+
+```text
+/plant/velocity: 5行 -> sim_default_csv/plant__velocity.csv
+/plant/pedal: 5行 -> sim_default_csv/plant__pedal.csv
+/target_velocity: 1行 -> sim_default_csv/target_velocity.csv
+```
+
+記録のフォルダの隣に `sim_default_csv/` ができ、トピックごとのCSVが入る。ファイルの名前は、トピックの名前の `/` を `__` に直したものである。中身は、1行目が列の名前で、2行目から値が並ぶ（`plant__velocity.csv` の先頭）。
+
+```text
+time,data
+0.000,0.0
+0.020,0.5
+```
+
+[`nav_msgs/msg/Odometry`](https://github.com/ros2/common_interfaces/blob/jazzy/nav_msgs/msg/Odometry.msg) のような入れ子の型は、`header.stamp.sec`・`pose.pose.position.x` のように、項目ごとの列に分かれる。共分散のような配列の項目は、分けずに、`"[0.0, 0.0, ...]"` の形で1つのセルに入る。メッセージの配列（入れ子の型の並び）も同じく1つのセルに入り、画像のような大きな配列は、とても大きなセルになる。
+
+### 13-4. どちらを使うか
+
+手早く中身を見たいだけなら、方法1で足りる。記録を後で解析するなら、取りこぼしが無く、再生の速さにも左右されない方法2が向く。フェーズ6-3の解析のノード（`metrics`）は、再生した値をノードで受けて計算する作りで、方法1と同じく再生の仕組みに乗っている。方法2の形にすれば、同じ計算を、再生を待たずに、記録のファイルから直接行える。そのときも、時刻は `time` の列でなく、フェーズ6-3の3節と同じく、行の番号 × プラントの周期で数える（PCの時計の飛びの影響を受けないため）。
+
+## 14. 参考資料
 
 確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。5〜7つ目は、2026-10-15に、ページの実在をWeb検索で、原稿とREADMEの内容をGitHubで確かめた。
 
