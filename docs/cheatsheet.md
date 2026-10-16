@@ -79,6 +79,7 @@ ROS2のコマンドは、**ターミナルごとに**環境を読み込んでか
 | 送る側・受ける側の詳細（QoSも） | `ros2 topic info /chatter -v` | [フェーズ3-1](phase3_1_pubsub.md)の5節、[フェーズ3-2b](phase3_2b_qos.md)の5-1節 |
 | トピックの型だけ | `ros2 topic type /chatter` | [参考資料: 標準のデータ型とインターフェース](reference_interfaces.md)の4節（書き方だけを示している。`/chatter` はフェーズ3-1のトピック） |
 | 流れている中身を見続ける | `ros2 topic echo /sine` | [フェーズ3-1](phase3_1_pubsub.md)の5節 |
+| 送り手より先に起動して待ち受ける（型を書く。型が無いと、送り手か受け手がいないうちは終わってしまう） | `ros2 topic echo /target_velocity std_msgs/msg/Float64 --field data` | [フェーズ6-1](phase6_1_record.md)の2-3節 |
 | 1回だけ見る | `ros2 topic echo --once /model/vehicle_green/odometry` | [フェーズ5-0](phase5_0_gazebo.md)の3-4節 |
 | 中身の一部の項目だけ見る | `ros2 topic echo --once /model/vehicle_green/odometry --field twist.twist.linear.x` | [フェーズ5-1](phase5_1_plant.md)の6-2節 |
 | 送られてくる周期を測る | `ros2 topic hz /turtle1/pose` | [フェーズ1](phase1_cli_turtlesim.md)の3-4節 |

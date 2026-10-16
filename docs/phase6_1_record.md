@@ -9,7 +9,7 @@
 
 > **進め方**: 2節で、手で記録して再生する流れをひととおり試す。3節で、再生した値を `rqt_plot` で見直す。4節で、記録を決めた時間で終わらせる仕組みを作り、条件を変えた記録も取る（4-6節。フェーズ6-3で使う）。5節でフェーズ5-4の一式も同じ方法で記録する。6節で、2つの記録を重ねて比べる。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない。コードはこの手順書の作成時に、使い捨ての環境でビルドし、記録・再生を実行して確かめた（Gazeboは画面なしで起動したので、画面の見え方と、`rqt_plot` のグラフは未確認）。出力が違う場合は、実機の表示を優先する。
 
-> **期待する結果の出どころ**: `ros2 bag record`・`ros2 bag info`・`ros2 bag play` の表示、2-3節の `ros2 topic echo` の表示、4-5節のビルドと `--show-args` の表示、4-5節・4-6節と5節のlaunchのログ（5節はGazeboを画面なしで起動。4-6節は、YAMLを `learn_bringup` の `config/` に置いてビルドする以前の手順で記録したときのもので、表示される行は置き場所によらない）、6節の `ros2 node list`（`rqt_plot` は画面なしで起動）は、使い捨ての環境で実際に実行した表示で、時刻・パス・メッセージの数は実行ごとに異なる（ログは抜粋）。3節と6節の `rqt_plot` の画面の様子は、`rqt_plot` のソースと、記録から読み出した数値から筆者が想定したもの。5節の末尾の `pgrep` の表示は、`ros_gz_sim` のlaunchファイルがGazeboを起動するときのコマンドの形から筆者が想定したもの。
+> **期待する結果の出どころ**: `ros2 bag record`・`ros2 bag info`・`ros2 bag play` の表示、2-3節の `ros2 topic echo` の表示（型を書く前の形のコマンドで確かめた。型を書いても、表示は変わらない）、4-5節のビルドと `--show-args` の表示、4-5節・4-6節と5節のlaunchのログ（5節はGazeboを画面なしで起動。4-6節は、YAMLを `learn_bringup` の `config/` に置いてビルドする以前の手順で記録したときのもので、表示される行は置き場所によらない）、6節の `ros2 node list`（`rqt_plot` は画面なしで起動）は、使い捨ての環境で実際に実行した表示で、時刻・パス・メッセージの数は実行ごとに異なる（ログは抜粋）。3節と6節の `rqt_plot` の画面の様子は、`rqt_plot` のソースと、記録から読み出した数値から筆者が想定したもの。5節の末尾の `pgrep` の表示は、`ros_gz_sim` のlaunchファイルがGazeboを起動するときのコマンドの形から筆者が想定したもの。
 
 ## 0. 学習目標と完了条件
 
@@ -150,9 +150,11 @@ Service information:
 
 再生する間は、**一式を止めたままにしておく**（2-1節で止めたもの）。一式が動いていると、再生したメッセージと、ノードが今送っているメッセージが、同じトピックに混ざる。
 
+T1の `ros2 topic echo` には、トピックの型（[`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg)）を書く。型を書かないと、`ros2 topic echo` は、起動したときに、ROS2のネットワークにそのトピックの送り手か受け手がいるかを1度だけ調べ、そこから型を知る。この節では一式を止めているので、再生を始める前にはどちらもいない。そのため、型を調べられずに、`WARNING: topic [/target_velocity] does not appear to be published yet` と `Could not determine the type for the passed topic` を表示して終わってしまう。型を書けば、送り手がまだいなくても待ち受けを始め、再生が始まると値を表示する。
+
 ```bash
 # T1
-ros2 topic echo /target_velocity --field data
+ros2 topic echo /target_velocity std_msgs/msg/Float64 --field data
 
 # T2
 ros2 bag play manual
@@ -190,7 +192,7 @@ ros2 bag play manual
 | `-r 2` | 2倍の速さで再生する（`--rate`） |
 | `--start-offset 45` | 記録の先頭から45秒の位置から再生する（このオプションは6節でも使う） |
 | `-l` | 最後まで再生したら、先頭から繰り返す（`--loop`） |
-| `-p` | 一時停止の状態で始める（`--start-paused`。スペースキーで再生を始める） |
+| `-p` | 一時停止の状態で始める（`--start-paused`。スペースキーで再生を始める。3-1節と6節でも使う） |
 
 > 課題1: `ros2 bag play manual -r 5 --start-offset 45` で再生し、T1の `5.0` が、目標を5 m/sに下げた直後から流れ始めることと、再生が約1/5の時間で終わることを確かめる（記録を始めるのが遅れた分だけ、`5.0` が流れ始める位置は前後する）。
 
@@ -198,19 +200,23 @@ ros2 bag play manual
 
 ### 3-1. 再生した値を描く
 
-フェーズ5-3の4-3節と同じコマンドで `rqt_plot` を開き、その後で再生を始める。
+フェーズ5-3の4-3節と同じコマンドで `rqt_plot` を開いて、再生した値を描く。
+
+ただし、`rqt_plot` を開く前に、再生を一時停止の状態で準備しておく（`-p`。2-3節の表）。`rqt_plot` は、起動したときに、指定されたトピックがROS2のネットワークにあるかを調べ、そこから型を知る。見つからないトピックは描く対象に加えず、後で再生が始まっても加え直さない（`rqt_plot` のソースの `plot_widget.py`）。一時停止の状態の `ros2 bag play` は、まだメッセージを送らないが、トピックの送り手としてはネットワークに見えているので、`rqt_plot` が型を調べられる。
 
 ```bash
 # T1
-ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/pedal/data
+ros2 bag play manual -p
 
 # T2
-ros2 bag play manual
+ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/pedal/data
 ```
+
+`rqt_plot` のウィンドウが開いたら、**T1でスペースキーを押して**再生を始める。
 
 **期待する結果**: `rqt_plot` のウィンドウに、フェーズ5-3の4-3節と同じ形の3本の線が描かれていく。一式を動かしていないのに、記録したときと同じグラフになる。
 
-横軸は、`rqt_plot` を起動してからの秒数である（`rqt_plot` のソース `rosplot.py` では、メッセージに時刻の欄（`header`）が無い型は、届いた時刻で横軸を決める。[`std_msgs/msg/Float64`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Float64.msg) には時刻の欄が無い）。そのため、`rqt_plot` を開いてから再生を始めるまでの時間の分だけ、グラフは右にずれる。
+横軸は、`rqt_plot` を起動してからの秒数である（`rqt_plot` のソース `rosplot.py` では、メッセージに時刻の欄（`header`）が無い型は、届いた時刻で横軸を決める。`std_msgs/msg/Float64` には時刻の欄が無い）。そのため、`rqt_plot` を開いてからスペースキーで再生を始めるまでの時間の分だけ、グラフは右にずれる。
 
 ### 3-2. 軸の範囲を決めて、画像に保存する
 
@@ -637,22 +643,24 @@ $ pgrep -af "gz sim"
 - フェーズ5-4は、目標10 m/sを少し行き過ぎる。
 - 目標10 m/sで落ち着いたときのペダルは、フェーズ5-3が0.54、フェーズ5-4がほぼ0。
 
-ターミナルを3つ使う。T1で先に `rqt_plot` を開き、その後でT2とT3の再生を、なるべく続けて始める。
+ターミナルを3つ使う。3-1節と同じ理由で、T1とT2で2つの再生を一時停止の状態で準備してから、T3で `rqt_plot` を開く。
 
 ```bash
 # T1
-ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /gz/plant/velocity/data /plant/pedal/data /gz/plant/pedal/data
+cd ~/ros2_ws/bags
+
+ros2 bag play sim_default -p
 
 # T2
 cd ~/ros2_ws/bags
 
-ros2 bag play sim_default
+ros2 bag play gz_default -p --start-offset 5 --remap /target_velocity:=/gz/target_velocity /plant/velocity:=/gz/plant/velocity /plant/pedal:=/gz/plant/pedal __node:=player_gz
 
 # T3
-cd ~/ros2_ws/bags
-
-ros2 bag play gz_default --start-offset 5 --remap /target_velocity:=/gz/target_velocity /plant/velocity:=/gz/plant/velocity /plant/pedal:=/gz/plant/pedal __node:=player_gz
+ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /gz/plant/velocity/data /plant/pedal/data /gz/plant/pedal/data
 ```
+
+`rqt_plot` のウィンドウが開いたら、**T1とT2で、スペースキーをなるべく続けて押して**、2つの再生を始める。
 
 - `--start-offset 5`: フェーズ5-4の記録は、目標の最初の切り替えが15秒（フェーズ5-3は10秒）なので、先頭の5秒を飛ばして、切り替えの時刻をそろえる。
 - `--remap 元の名前:=新しい名前 ...`: 再生するトピックの名前を付け替える。最後の `__node:=player_gz` は、トピックではなく、再生するノード自身の名前を付け替える指定で、2つの再生のノードの名前（どちらも既定は `rosbag2_player`）が重ならないようにする。
@@ -677,7 +685,7 @@ ros2 node list
 
 **期待する結果**（`rqt_plot` の分。この手順書の作成時に取った2つの記録から読み出した数値をもとに、筆者が想定した形）: 目標を10 m/sにした後、2本の速度の線は最初の2秒ほどはほぼ重なって上がる。その後、フェーズ5-3の線は曲がり始め（速度に比例する抵抗が効いてくる）、約8秒で9.3 m/sになってから、20秒ほどかけてゆっくり10に近づく。フェーズ5-4の線は、ほぼまっすぐ上がり続け、約6秒で10を少し超え（最高10.3 m/s）、すぐ10に戻る。ペダルの線は、フェーズ5-3が+1から下がって+0.54の高さで平らになり、フェーズ5-4は約5秒で+1から一気に下がって0の付近で平らになる。目標5 m/sに下げた直後は、フェーズ5-4の速度の線だけが5を少し下回る（最低4.5 m/s）。
 
-- T2とT3を手で続けて始めるので、2つの記録には1秒ほどの時間のずれが残る。形を見比べるには十分で、正確に比べるのは、フェーズ6-3で数にしてから行う。
+- T1とT2の再生を手で続けて始めるので、2つの記録には1秒ほどの時間のずれが残る。形を見比べるには十分で、正確に比べるのは、フェーズ6-3で数にしてから行う。
 - 5節の注記のとおり、フェーズ5-4の記録は、PCの負荷によって車両の動きが少しゆっくりになっていることがある。目標の切り替えは現実の時間で行っているので、切り替えの位置はずれず、切り替えた後の速度の変わり方が、フェーズ5-3の線よりゆっくりに見える。切り替えの位置が左右にずれる原因は、手で再生を始めるずれ（すぐ上の項目）と、記録ごとに違うPCの時計の飛び（2-2節の注記）である。
 
 > 課題3: 4-6節で記録した `slow_brake` を、`/gz/...` の代わりに `/slow/...` に付け替えて、`sim_default` と重ねる。目標を5 m/sに下げたとき、`tau_brake` 1.0の速度の線だけが4 m/s前後まで下がりすぎる様子（フェーズ5-3の4-5節）を確かめる。
@@ -696,12 +704,13 @@ ros2 node list
 |---|---|
 | `ros2 bag record` がすぐにエラーで止まる | `-o` のフォルダがすでにある。別の名前にするか、要らない記録のフォルダを消す |
 | 記録の `Count` が0のトピックがある | 記録している間に、そのトピックを送るノードが動いていたか。トピック名の綴り |
+| 再生の前に起動した `ros2 topic echo` が `does not appear to be published yet` の後に `Could not determine the type for the passed topic` と出て終わる | トピックの型（`std_msgs/msg/Float64`）を書いたか（2-3節）。型を書かないと、トピックの送り手も受け手もいないうちは型を調べられない |
 | 再生した値が、ほかの値と混ざる・ギザギザになる | 再生する前に、同じトピックを送る一式を止めたか（2-3節） |
-| `rqt_plot` に線が出ない | `rqt_plot` のトピックの指定が `/トピック名/data` になっているか。付け替えた記録は、付け替えた後の名前（`/gz/...`）で指定する |
+| `rqt_plot` に線が出ない | `rqt_plot` のトピックの指定が `/トピック名/data` になっているか。付け替えた記録は、付け替えた後の名前（`/gz/...`）で指定する。`rqt_plot` を、`ros2 bag play -p` より先に開いていないか（3-1節。そのときは、`rqt_plot` を閉じて開き直す） |
 | `record.launch.py` が `bag` の指定が無いと言って止まる | `bag:=フォルダ` を指定する（4-4節）。`~` ではなく `$HOME` か絶対パスで書く |
 | 決めた時間になっても止まらない | 使っているYAMLに `end_time` があるか（4-3節）。launchの `target_generator` の `Node(...)` に `on_exit=Shutdown()` を足してビルドし直したか（4-2節） |
 | 記録の後もGazeboが残る（次に起動したとき、車両が2台ずつ見える・動きがおかしい） | 前回の `gz sim` のサーバーが裏で動き続けている。`pgrep -af "gz sim"` で確かめ、残っていれば `pkill -INT -f "gz sim"` で止める（5節の末尾） |
-| 2つの記録の線が、大きく左右にずれる | T2とT3の再生を続けて始めたか。フェーズ5-4の記録に `--start-offset 5` を付けたか（6節） |
+| 2つの記録の線が、大きく左右にずれる | T1とT2のスペースキーを続けて押したか。フェーズ5-4の記録に `--start-offset 5` を付けたか（6節） |
 
 ## 9. 次へ
 
