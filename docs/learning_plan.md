@@ -100,6 +100,12 @@
 - 内容: リンクと関節の木の形、関節の原点と形の原点、色、形のファイル（`package://`）、関節の種類（`continuous`・`revolute`・`prismatic`）と `<axis>`・`<limit>`、`robot_state_publisher`・`joint_state_publisher_gui`・RViz2のつながり（`/robot_description`・`/joint_states`・`/tf`・`/tf_static`）、衝突の形と慣性、xacroのプロパティ・式・マクロ、RViz2の表示の項目（Fixed Frame・RobotModel・TF）、自分のURDFを表示する方法。
 - 言語: なし（用意されたファイルを開いて読み、コマンドで表示する）。
 
+### 間章: micro-ROSでマイコンをROS2につなぐ（任意・読み物）— 0.5〜1コマ
+
+- 位置づけ（2026-10-16。内容と形はユーザー判断、置き場所はClaude判断）: マイコンを限定しない、micro-ROSの使い方の入門の読み物で、実習は置かない。フェーズ5-4の後の任意の間章 [`docs/interlude_micro_ros.md`](interlude_micro_ros.md)。最初はArduino UNO R3で使う方法の依頼だったが、UNO R3がmicro-ROSの対応ボードに無いことを確かめた後、ユーザーの指示でこの形にした。フェーズ6・7の本文は、この章に依存しない。
+- 内容: 普通のROS2がマイコンで動かない理由と、クライアントとエージェントに分ける仕組み、層の構成（`rclc`・`rcl`・`rmw_microxrcedds`・Micro XRCE-DDS）、通信路とエージェントの用意（WSL2でのUSBの注意を含む）、開発の道具とボードの選び方、`rclc` のノードの骨組みと `rclpy` との対応、小さなマイコンで気をつけること（メモリの枠・メッセージの大きさ・QoS・つながりの確認と時刻合わせ）。
+- 言語: C（骨組みのコードを読むだけ）。
+
 ### フェーズ6: 可視化・記録（E）— 3〜5コマ（見込み）
 
 - 着地（2026-09-26、ユーザー判断）: 「グラフで見た違いを、数で言えるようにする」まで進める。`rqt_plot` で見る → `ros2 bag` で記録する → 再生して同じグラフを見直す → 解析のノードで記録から指標を計算し、条件ごとの比較表を作る。指標は、ステップ6（強化学習）の報酬を作る下地にもなる。
@@ -154,6 +160,7 @@
 | rosbag2 | 記録・再生・bagの読み出し | フェーズ6 | ○ | ○ |
 | PlotJuggler（任意） | 高機能な可視化 | フェーズ6 | — | — |
 | tf2 / RViz2 / URDF | 座標変換、モデル表示 | 間章（Gazeboの物理）4節（URDF・xacro）、間章（URDFとRViz2。`urdf_tutorial`・`joint_state_publisher` を導入して、URDF・xacro・`robot_state_publisher`・TF・RViz2の表示）、フェーズ8 | ○ | ○ |
+| micro-ROS（概念中心） | マイコンをROS2に参加させる仕組み（クライアントとエージェント）と、`rclc` の書き方 | 間章（micro-ROS。読み物） | — | —（`rclc` はC） |
 | ros2_control（概念中心） | アクチュエータ制御の標準基盤 | 間章（Gazeboの物理）5節（体験）、フェーズ8 | ×（実質C++） | ○ |
 | Gazebo Harmonic / ros_gz | 3D物理シミュレーション、ROS2とのトピックの橋渡し | フェーズ5-0（導入）、5-1〜5-3（表示）、5-4（物理での閉ループ）、7-3〜7-5（強化学習の環境と、最終ゴールの一式）、フェーズ8（発展） | ○（自作ノード） | — |
 | Stable-Baselines3 / sb3-contrib / Gymnasium（ROS2のパッケージではない） | 強化学習のアルゴリズムと、環境の共通の形 | フェーズ7 | ○（仮想環境にpipで導入） | — |
@@ -206,6 +213,7 @@
 | 間章（古典制御） | [`docs/interlude_classical_control.md`](interlude_classical_control.md) | なし（読み物） | 作成済み（2026-10-05。フェーズ5-1〜5-4の古典制御の具体的な説明（手計算・導出・現象の読み解き）を移した任意の章。数値はフェーズ5の手順書の計算・実行の結果を使い、新たな実行はしていない） |
 | 間章（Gazeboの物理） | [`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md) | なし（SDF・URDF・xacroのファイルとコマンド） | 作成中（2026-10-12。1〜4節（SDF・物理・URDFとxacro）を作成。使い捨ての環境で、`gz sdf -k`・`-p`、`xacro`・`check_urdf`、画面なし・一時停止のGazeboを決めた刻みだけ進めた位置と角度、`robot_state_publisher`・`create`・ブリッジでの `/joint_states` まで確認。同日、5節（ros2_control）を追加し、画面なしのGazeboで、位置と軌道のコントローラの読み込み・切り替え・角度・アクションの結果まで確認。センサの節は今後追加する。Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図の見た目は、`docs/img/interlude_gazebo_ros2_control.svg` はユーザーが確認済み（2026-10-12）、`docs/img/interlude_gazebo_overview.svg` は未確認） |
 | 間章（URDFとRViz2） | [`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md) | なし（用意されたURDF・xacroのファイルとコマンド） | 作成済み（2026-10-16。ユーザーが `ros-jazzy-urdf-tutorial` を導入した後に、8つのファイルの `xacro`・`check_urdf`、`display.launch.py` の `--show-args` と `model` の既定値の不具合、`robot_state_publisher` と `joint_state_publisher`（GUI版はウィンドウを出さない設定）を画面なしで起動したときのトピック・`/joint_states`・TF（`tf2_echo`・`/tf_static` のフレーム）まで確認。RViz2の画面とスライダーのウィンドウの見え方、スライダーを動かしたときのTFの値、ユーザーの実機での実行は未確認。図（`docs/img/interlude_urdf_rviz_overview.svg`）の見た目は未確認） |
+| 間章（micro-ROS） | [`docs/interlude_micro_ros.md`](interlude_micro_ros.md) | C（読むだけ） | 作成済み（2026-10-16。実習の無い読み物。骨組みのコードは、`ros2/rclc` のjazzyの枝のヘッダーとROS2 Jazzyのヘッダーで、文法の点検（`gcc -fsyntax-only`）を警告なしで通した。マイコンへの書き込み・エージェントとの接続・8節の症状は確かめていない。図（`docs/img/interlude_micro_ros_overview.svg`）の見た目は未確認） |
 | 6-1 | [`docs/phase6_1_record.md`](phase6_1_record.md) | Python（launchもPython形式） | 作成済み（2026-09-27。使い捨ての環境で、手での記録・`ros2 bag info`・再生、2つの記録の同時再生、`record.launch.py` で5-3の一式と5-4の一式（画面なしのGazebo）を決めた時間で記録して止まるまでを確認。`rqt_plot` の画面、Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図（`docs/img/phase6_1_record.svg`）の見た目は未確認） |
 | 6-2 | [`docs/phase6_2_goal.md`](phase6_2_goal.md) | Python（launchもPython形式） | 作成済み（2026-09-27。使い捨ての環境で、`record_goal.launch.py` で5-3の一式（案A）と5-4の一式（案B、画面なしのGazebo）をゴールの450 mで記録して止まるまでと、案Aと案Bの距離の比較を確認。Gazeboの画面の見え方、ユーザーの実機での実行は未確認。図（`docs/img/phase6_2_goal.svg`）の見た目は未確認） |
 | 6-3 | [`docs/phase6_3_metrics.md`](phase6_3_metrics.md) | Python | 作成済み（2026-09-27。使い捨ての環境で、`metrics.py` の閉ループの計算への当てはめ、3つの記録（5-3の既定・`tau_brake` 1.0・5-4の既定。5-4は画面なしのGazebo）の解析、Python版とC++版の結果の一致を確認（C++版は2026-10-13に削った）。ユーザーの実機での実行は未確認。図（`docs/img/phase6_3_metrics.svg`。2026-10-13にC++版の箱を外した）の見た目は、2026-10-13にユーザーが確認した） |

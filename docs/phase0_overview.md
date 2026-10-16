@@ -66,7 +66,7 @@ flowchart TB
 
 **プログラムが実機の「安全」を左右する場面にも耐えられるよう設計されている。** QoSで通信の信頼性を作り込めること、そしてリアルタイムOS上でも動く設計を志向していることは、「多少データが欠けても良いセンサ値」と「絶対に届かないと困る制御指令」を、同じフレームワークの中で区別して扱えるということでもある（この教材ではフェーズ3-2bでQoSの一端に触れる程度に留めるが、産業用ロボットや自動運転がROS2を採用する理由の1つはここにある）。
 
-**PCの中で完結しない世界にも、同じ書き方のまま出ていける。** micro-ROSを使うと、Arduinoのような非力なマイコンでさえ、あなたが今書いているのと同じノード・トピック・パラメータの語彙でROS2に参加できる。「シミュレーションのプラントノードを、いつか本物のモータとセンサに置き換える」というこの教材の発展方向（[`docs/idea_origin.md`](idea_origin.md)の実機連携）は、まさにこの延長線上にある。
+**PCの中で完結しない世界にも、同じ書き方のまま出ていける。** micro-ROSを使うと、一部のArduinoのボードやESP32のような、小さな32ビットのマイコンでも、あなたが今書いているのと同じノード・トピック・パラメータの語彙でROS2に参加できる。「シミュレーションのプラントノードを、いつか本物のモータとセンサに置き換える」というこの教材の発展方向（[`docs/idea_origin.md`](idea_origin.md)の実機連携）は、まさにこの延長線上にある。
 
 **1台の完成形にたどり着くまでの「壊れながら育てる」過程も面倒を見てくれる。** ライフサイクルノード（managed node）という仕組みでは、ノードを「準備はできたが、まだ動いてはいけない」状態から明示的に起動させられる。何十個ものノードが絡み合う大きなシステムほど、この「順番に、確実に立ち上げる」機能のありがたみが増す。
 
@@ -145,7 +145,7 @@ flowchart TB
 | 製造業 | ROS-Industrial、メーカー公式のROS2ドライバ（Universal Robots・FANUC等）、MoveIt2 | ハードウェアの抽象化、動作計画 | フェーズ8（URDF/xacro・ros2_control） |
 | モビリティ | Autoware、Nav2 | 多数のノードへの分割、QoS、tf2 | フェーズ3-2a・3-2b、フェーズ5、フェーズ8（tf2） |
 | 建設業 | OPERA（土木研究所）、`spot_ros2` | ハードウェアの抽象化、シミュレータ | フェーズ5-0（Gazebo）、フェーズ5（疑似プラント） |
-| ドローン | PX4（uXRCE-DDS）、ArduPilot（`AP_DDS`）、Aerostack2 | マイコンとの通信、マルチロボット | 3節のmicro-ROS（この教材では扱わない） |
+| ドローン | PX4（uXRCE-DDS）、ArduPilot（`AP_DDS`）、Aerostack2 | マイコンとの通信、マルチロボット | 3節のmicro-ROS。任意の間章（[`docs/interlude_micro_ros.md`](interlude_micro_ros.md)）で、仕組みを読み物として扱う |
 | 介護・医療・生活支援 | HSR（研究用の共通機体）、Open-RMF | 相互運用、ライフサイクル、セキュリティ | フェーズ4（namespace） |
 
 業界は違っても、見えてくる構図は同じである。センサ・判断・アクチュエータをノードに分け、トピックでつなぎ、できるだけシミュレーションで試してから実機に移す。このあとのフェーズで身に着けるのは、その共通の部分である。
@@ -203,7 +203,7 @@ flowchart TB
 
 | ツール | どんな場面で効いてくるか |
 |---|---|
-| micro-ROS | マイコン（Arduino等）を、PCと同じROS2の語彙（ノード・トピック・パラメータ）でシステムに参加させる |
+| micro-ROS | マイコン（ESP32・一部のArduinoのボード等）を、PCと同じROS2の語彙（ノード・トピック・パラメータ）でシステムに参加させる |
 | SROS2 | DDS Securityによる認証・暗号化・アクセス制御。ロボットを外部ネットワークにつなぐときの安心材料 |
 | Docker | 環境をまるごと再現できるコンテナ。複数人・複数PCで同じ環境を揃えたいときに使う |
 
@@ -316,9 +316,9 @@ flowchart LR
 | ライフサイクル管理 | managed node、状態遷移 | この教材では扱わない（用語のみ把握） |
 | ナビゲーション／操作 | Nav2、MoveIt2 | この教材の範囲外（将来の発展課題） |
 | セキュリティ | SROS2（認証・暗号化） | この教材では扱わない（用語のみ把握） |
-| 組み込み | micro-ROS | この教材では扱わない（将来の実機連携時に検討） |
+| 組み込み | micro-ROS | 間章（[`docs/interlude_micro_ros.md`](interlude_micro_ros.md)。任意の読み物で、仕組み・道具・書き方の入門。実機での実習は、将来の実機連携時に検討） |
 
-5節の周辺ツールのうち、この教材の必須の範囲で使うのは、場面1のcolconとament（`rosdep` は使わない）、場面2のrqt系（`rqt_graph`・`rqt_console` はフェーズ1、`rqt_plot` はフェーズ6-1）、場面3の `ros2 bag`（フェーズ6）、場面4のGazebo（フェーズ5-0から。フェーズ7-3〜7-5でも使う）である。URDF/xacroとros2_controlは、任意の間章（[`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md)）の4節・5節で体験する。URDFとRViz2での表示の基本（TFを配る `robot_state_publisher` を含む）は、任意の間章（[`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md)）で体験する。tf2を使うノードの自作と、RViz2を使った発展は、保留中のフェーズ8で扱う予定である。PlotJugglerとFoxglove Studio、Nav2とMoveIt2、場面5のツールは扱わない。導入時期は [`docs/learning_plan.md`](learning_plan.md) の「OSS活用計画」を参照。
+5節の周辺ツールのうち、この教材の必須の範囲で使うのは、場面1のcolconとament（`rosdep` は使わない）、場面2のrqt系（`rqt_graph`・`rqt_console` はフェーズ1、`rqt_plot` はフェーズ6-1）、場面3の `ros2 bag`（フェーズ6）、場面4のGazebo（フェーズ5-0から。フェーズ7-3〜7-5でも使う）である。URDF/xacroとros2_controlは、任意の間章（[`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md)）の4節・5節で体験する。URDFとRViz2での表示の基本（TFを配る `robot_state_publisher` を含む）は、任意の間章（[`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md)）で体験する。tf2を使うノードの自作と、RViz2を使った発展は、保留中のフェーズ8で扱う予定である。場面5のツールのうち、micro-ROSは、任意の間章（[`docs/interlude_micro_ros.md`](interlude_micro_ros.md)）で、仕組みを読み物として扱う。PlotJugglerとFoxglove Studio、Nav2とMoveIt2、場面5のSROS2とDockerは扱わない。導入時期は [`docs/learning_plan.md`](learning_plan.md) の「OSS活用計画」を参照。
 
 ## 9. 次のフェーズへ
 
@@ -326,7 +326,7 @@ flowchart LR
 
 ## 10. 公式ドキュメント・参考資料
 
-確認状況（2026-09-23。「業界ごとの活用例」は2026-09-25）: 以下のURLはWeb検索結果で実在を確認した。docs.ros.orgは本文取得がボット対策で拒否されるため、内容の逐語照合はできていない（本文は自分の言葉で書いた要約）。
+確認状況（2026-09-23。「業界ごとの活用例」は2026-09-25）: 以下のURLはWeb検索結果で実在を確認した（micro-ROSは、公式サイトが移ったため、2026-10-16に移った先のアドレスに替え、開けることを確かめた）。docs.ros.orgは本文取得がボット対策で拒否されるため、内容の逐語照合はできていない（本文は自分の言葉で書いた要約）。
 
 ### ROS2本体（公式・Jazzy）
 
@@ -351,7 +351,7 @@ flowchart LR
 - [ros2_control documentation — Jazzy](https://control.ros.org/jazzy/index.html)
 - [Nav2 documentation](https://docs.nav2.org/)
 - [MoveIt 2 Documentation](https://moveit.picknik.ai/)
-- [micro-ROS](https://micro.ros.org/)
+- [micro-ROS](https://micro.vulcanexus.org/)
 - [ros2/sros2（GitHub）](https://github.com/ros2/sros2)
 - [Foxglove — Visualize ROS data](https://foxglove.dev/ros)
 - [Installing Gazebo with ROS — Gazebo documentation](https://gazebosim.org/docs/latest/ros_installation/)

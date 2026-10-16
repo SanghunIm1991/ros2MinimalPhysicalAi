@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 420" width="1240" height="420" font-family="'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="14" role="img" aria-label="図: マイコンの中では、自分のプログラムが、rclc と rcl（ノード・トピック・実行器）を使い、その下の rmw_microxrcedds（静的なメモリの枠で動かす）と、Micro XRCE-DDS のクライアントを通して通信する。クライアントは、シリアルやUDPなどの通信路で、PCの micro-ROS エージェントとXRCE-DDSでやり取りする。エージェントは、マイコンの代わりにDDSに参加し、PCのROS2のノードや ros2 topic などの道具と、普通のROS2の通信（DDS）でつながる">
+<title>図: マイコンの中では、自分のプログラムが、rclc と rcl（ノード・トピック・実行器）を使い、その下の rmw_microxrcedds（静的なメモリの枠で動かす）と、Micro XRCE-DDS のクライアントを通して通信する。クライアントは、シリアルやUDPなどの通信路で、PCの micro-ROS エージェントとXRCE-DDSでやり取りする。エージェントは、マイコンの代わりにDDSに参加し、PCのROS2のノードや ros2 topic などの道具と、普通のROS2の通信（DDS）でつながる</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+<rect x="0" y="0" width="1240" height="420" fill="#ffffff"/>
+<g fill="#1a1a1a">
+<rect x="20" y="10" width="280" height="405" rx="10" fill="#fbfbfb" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="30" y="36" font-weight="bold">マイコン（RTOS か、OSなし）</text>
+<rect x="600" y="290" width="620" height="125" rx="10" fill="#fbfbfb" stroke="#888888" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="610" y="316" font-weight="bold">PC（Linux など）</text>
+<path d="M160,132 L160,160" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M160,222 L160,250" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M160,312 L160,340" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M280,371 L620,371" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M860,371 L980,371" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)"/>
+<rect x="40" y="70" width="240" height="62" rx="8" fill="#fff6e5" stroke="#b7791f" stroke-width="1.5"/>
+<rect x="40" y="160" width="240" height="62" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="40" y="250" width="240" height="62" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="40" y="340" width="240" height="62" rx="8" fill="#eaf2ff" stroke="#3b6fb6" stroke-width="1.5"/>
+<rect x="620" y="340" width="240" height="62" rx="8" fill="#fff6e5" stroke="#b7791f" stroke-width="1.5"/>
+<rect x="980" y="340" width="240" height="62" rx="8" fill="#f3f3f3" stroke="#666666" stroke-width="1.5"/>
+<text x="160" y="96" text-anchor="middle" font-weight="bold">自分のプログラム</text>
+<text x="160" y="116" text-anchor="middle">センサを読む・指令を受ける</text>
+<text x="160" y="186" text-anchor="middle" font-weight="bold">rclc ＋ rcl</text>
+<text x="160" y="206" text-anchor="middle">ノード・トピック・実行器</text>
+<text x="160" y="276" text-anchor="middle" font-weight="bold">rmw_microxrcedds</text>
+<text x="160" y="296" text-anchor="middle">静的なメモリの枠で動かす</text>
+<text x="160" y="366" text-anchor="middle" font-weight="bold">Micro XRCE-DDS</text>
+<text x="160" y="386" text-anchor="middle">クライアント</text>
+<text x="740" y="366" text-anchor="middle" font-weight="bold">micro-ROS エージェント</text>
+<text x="740" y="386" text-anchor="middle">代わりにDDSに参加する</text>
+<text x="1100" y="366" text-anchor="middle" font-weight="bold">ROS2のノード</text>
+<text x="1100" y="386" text-anchor="middle">ros2 topic などの道具</text>
+<text x="450" y="363" text-anchor="middle" font-size="13">XRCE-DDS（シリアル・UDP など）</text>
+<text x="920" y="363" text-anchor="middle" font-size="13">DDS</text>
+<text x="920" y="393" text-anchor="middle" font-size="13">普通のROS2</text>
+</g>
+</svg>
