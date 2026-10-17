@@ -172,7 +172,7 @@ geometry_msgs/TwistWithCovariance twist
 	float64[36] covariance
 ```
 
-- 字下げが1段深い行は、その上の行の型の中身である。たとえば `pose` の中に `pose`（[`Pose`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Pose.msg)）があり、その中に `position`（`Point`。位置）と `orientation`（[`Quaternion`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Quaternion.msg)。クォータニオンという、4つの数で3次元の向きを表す形式）がある。Pythonでは、この段を `msg.pose.pose.position.x` のように `.` でたどる（フェーズ6-2で書く見張りのノード `goal_monitor` も、この書き方でオドメトリの位置を読む）。
+- 字下げが1段深い行は、その上の行の型の中身である。たとえば `pose` の中に `pose`（[`Pose`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Pose.msg)）があり、その中に `position`（`Point`。位置）と `orientation`（[`Quaternion`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/Quaternion.msg)。クォータニオンという、4つの数で3次元の向きを表す形式）がある。Pythonでは、この段を `msg.pose.pose.position.x` のように `.` でたどる（任意のフェーズ6-2で書く見張りのノード `goal_monitor` も、この書き方でオドメトリの位置を読む）。
 - 別のパッケージの型は [`std_msgs/Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg) のように「パッケージ名/型名」で書き、同じパッケージの型は `Pose` のように型名だけで書ける（[`PoseWithCovariance`](https://github.com/ros2/common_interfaces/blob/jazzy/geometry_msgs/msg/PoseWithCovariance.msg) は `geometry_msgs` の型なので、中の `Pose` は `geometry_msgs` の `Pose` になる）。定義ファイルの中では、間の `msg` を書かない。
 - `Quaternion` の `float64 w 1` の最後の `1` は既定値である（2-5節）。
 - `covariance` は、値がどれくらい不確かかを表す表（共分散行列）で、この資料では立ち入らない。
