@@ -2,12 +2,12 @@
 
 手順書（フェーズ）の本文に入れると流れが途切れる、分量の少ない補足をまとめた資料。どの項目も独立しているので、関係する手順書を読んでいるときや、疑問を持ったときに、その項目だけを読めばよい。
 
-- 対象: ROS2 Jazzy（Ubuntu 24.04）。版に依存する記述は、この資料の作成時に `/opt/ros/jazzy` とUbuntuのパッケージに入っていたもので確かめた
+- 対象: ROS2 Jazzy（Ubuntu 24.04）。版に依存する記述は、この資料の作成時に `/opt/ros/jazzy` とUbuntuのパッケージに入っていたもので確かめた（14節は、強化学習の仮想環境のSB3 2.9.0・sb3-contrib 2.9.0で確かめた）
 - 所要目安: 1項目あたり5〜15分（読み物）
 
-> **期待する結果の出どころ**: ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの（`mkdir -p` が何も表示しないことは、コマンドの仕様から書いた）。10節の `No executable found` と警告の文面は、使い捨てのワークスペースで実際に表示させたもの。11-2節の `ros2 topic list --include-hidden-topics` で一覧に出る名前は、`rcl_action` と `rclpy` の仕組みから書いたもので、動かして確かめてはいない。13-2節と13-3節の表示とCSVの中身は、この資料の作成時に、`rosbag2_py` で練習用の短い記録（`std_msgs/msg/Float64` のトピック3つ）を作り、使い捨ての環境で実際に再生と書き出しをして確かめたもの（13-2節は、ほかのPCと混ざらない設定で、`ros2 bag play` と `ros2 topic echo` を起動した）。フェーズ6-1の記録そのものでは確かめていない。時刻は実行ごとに変わる。
+> **期待する結果の出どころ**: ノードを起動した後の表示（1-4節）は、ROS2の仕様から想定したもの。3-1節の警告の文面は、使い捨ての環境で実際に表示させたもの。5-3節の `ros2 param` の表示は、手順書の作成時にturtlesimを起動して実際に確かめたもの（Tabキーでの補完の表示は確かめていない）。8-4節の表示は、この資料の作成時にデモのtalkerを起動して実際に確かめたもの（`mkdir -p` が何も表示しないことは、コマンドの仕様から書いた）。10節の `No executable found` と警告の文面は、使い捨てのワークスペースで実際に表示させたもの。11-2節の `ros2 topic list --include-hidden-topics` で一覧に出る名前は、`rcl_action` と `rclpy` の仕組みから書いたもので、動かして確かめてはいない。13-2節と13-3節の表示とCSVの中身は、この資料の作成時に、`rosbag2_py` で練習用の短い記録（`std_msgs/msg/Float64` のトピック3つ）を作り、使い捨ての環境で実際に再生と書き出しをして確かめたもの（13-2節は、ほかのPCと混ざらない設定で、`ros2 bag play` と `ros2 topic echo` を起動した）。フェーズ6-1の記録そのものでは確かめていない。時刻は実行ごとに変わる。14-3節の表示は、この資料の作成時に、強化学習の仮想環境（[`docs/setup_rl_sb3.md`](setup_rl_sb3.md)。SB3 2.9.0）で、本文のスクリプトを実際に実行したもの（学習はしない）。
 
-> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節と7-1節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の10節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。7-2〜7-4節（ROS1のコードの移植）は、ROS2の公式の移植のガイド（GitHubの `ros2_documentation` の `jazzy` ブランチの原稿）と `ros1_bridge` のREADMEを読んで、自分の言葉でまとめた。フィールドの名前の決まりはJazzyの `rosidl_adapter`、`Header` の中身は `ros2 interface show`、rclpyの `Rate` の作りはJazzyのrclpyのソース、`tf` パッケージが無いことは `/opt/ros/jazzy/share`、`rclcpp::Rate` の作りはrclcppのヘッダ、`set_parameter` は `launch_ros` のソース、`ament_python` の雛形に `<buildtool_depend>` が無いことは `ros2pkg` のソースで確かめた。ROS1の `.bag` が `ros2 bag` で直接は再生できないことは、一般的な情報から書いたもので、確かめていない。ROS1のコードを実際に移植して動かしてはいない（2026-10-15）。9節は、数値計算の一般的な内容を自分の言葉で書いたもので、9-3節の数値は、この資料の作成時に、フェーズ5-1の式を写したPythonのスクリプトで計算した（2026-10-12）。10節は、`/opt/ros/jazzy` の `ros2pkg`（雛形と、実行ファイルを探す処理）と、Ubuntuのパッケージの `colcon-core`（0.21.3）のソースを読み、使い捨てのワークスペースで、`setup.cfg` を雛形のまま・消した場合・古い名前のまま・ハイフンでつないだ名前の場合のビルドと、`ros2 pkg executables`・`ros2 run` の表示を確かめた（`ros2 run` は、`setup.cfg` の名前を古いままにした場合に実行し、実行ファイルが見つからずに終わることを確かめた。消した場合は、`ros2 pkg executables` が何も表示しないことから同じと判断した。2026-10-15）。11節のサービスとアクションの中身は、Jazzyの `rcl_action`（アクションが作る5つの名前と、結果を持つ時間の既定値）・`rclpy`（隠れた名前の決まり、`result_timeout` の既定値、`wait_for_service` などの関数）・`rmw`（要求の識別子の中身、サービスの既定のQoS）・`action_msgs`（ゴールの状態）と、`rmw_fastrtps_shared_cpp` の共有ライブラリに含まれる名前の頭の文字列（`rq`・`rr`・`rt`）で確かめた。トピックで組んだ場合との比較は、これらの仕組みから自分の言葉でまとめたもので、実際にトピックで組んで比べてはいない。要求の識別子で応答を振り分ける処理そのものは、RMWのソースを読んで確かめてはいない（2026-10-15）。12-2節の実行ファイルの中身は、この資料の作成時に、使い捨てのワークスペースで雛形のPythonのパッケージを、`--symlink-install` の有無の両方でビルドして確かめた（ノードは起動していない）。12節の、`ament_cmake_python`・`pybind11_vendor` が入っていること（`pybind11_vendor` がUbuntuの `pybind11-dev` に依存することは、その `package.xml` で確かめた）と、`rclpy` のネイティブのモジュールは、`/opt/ros/jazzy` で確かめた。CythonやNuitkaとnumpyの速さの話は、それらの道具についての一般的な情報から書いたもので、この環境には入れておらず、ROS2のノードで試してはいない。`rclpy` のexecutorとメッセージの変換の負担は、`rclpy` についての一般的な情報から書いたもので、測ってはいない。12-5節の周期の最短の値は、手順書のタイマーとパラメータの `period` の値と、launch・YAMLでの上書きを検索して確かめた（2026-10-16）。13節の `ros2 bag` のサブコマンドと `ros2 topic echo` の `--csv`・`-i` の意味は、手元の `--help` で、`rosbag2_py`・`rosidl_runtime_py` が入っていることは `/opt/ros/jazzy` で確かめた。13-3節のサンプルは自分で書いたもので、入れ子の型（`nav_msgs/msg/Odometry`）の書き出しも、練習用の記録で確かめた（2026-10-16）。
+> **出どころ**: 内容は、`/opt/ros/jazzy` のソース（`rclpy`・`rclcpp`）、`ros2 pkg create` が作る雛形、Ubuntuのパッケージ（`colcon-core`・`setuptools`）を読んで確かめ、自分の言葉で書いた。ソースやドキュメントの転載ではない。4節のDDSの仕組み（ディスカバリ・HEARTBEAT・ACKNACK・既定の送り方）は、DDSとFast DDSの一般的な仕組みから書いたもので、この資料の作成時に通信を観察して確かめてはいない。既定の実装が `rmw_fastrtps_cpp`（Fast DDS 2.14系）であることは、`/opt/ros/jazzy` で確かめた。4-2節の警告の文面は、フェーズ3-2bに載せたもの（コードとROS2の仕様から想定した表示）を引いた。5節は、`/opt/ros/jazzy` の `ros2param`・`ros2run`・`ros2cli` のソース（補完の仕組み）とturtlesimのプログラムを読み、turtlesimを起動して `ros2 param` の表示を確かめた。5-4節の `generate_parameter_library` は、Jazzy向けのaptパッケージがあることだけを確かめ、機能の説明はこのライブラリについての一般的な情報から書いた（この環境には導入しておらず、動かしていない）。6節と7-1節は、フェーズ0の本文から移したもので、ROS2・DDSの公式ページの記載（URLはフェーズ0（[`docs/phase0_overview.md`](phase0_overview.md)）の10節）に基づいて書いた。6節のRMWの導入状況（ROS2と一緒に入るもの、aptにあるパッケージ、依存関係に製品本体が含まれるか）は、この資料の作成時に `/opt/ros/jazzy` とaptのパッケージ情報で確かめた。8節の名前の組み立て方はROS2の名前の規則から書き、8-4節の表示（C++版・Python版のデモのtalkerで、YAMLのノード名3通り）とトピック名の付き方は、この資料の作成時に実際に起動して確かめた。8-2節のプライベート名と、8-3節の `ros2 topic pub` に相対名を渡した場合の送り先は、動かして確かめてはいない。7-2〜7-4節（ROS1のコードの移植）は、ROS2の公式の移植のガイド（GitHubの `ros2_documentation` の `jazzy` ブランチの原稿）と `ros1_bridge` のREADMEを読んで、自分の言葉でまとめた。フィールドの名前の決まりはJazzyの `rosidl_adapter`、`Header` の中身は `ros2 interface show`、rclpyの `Rate` の作りはJazzyのrclpyのソース、`tf` パッケージが無いことは `/opt/ros/jazzy/share`、`rclcpp::Rate` の作りはrclcppのヘッダ、`set_parameter` は `launch_ros` のソース、`ament_python` の雛形に `<buildtool_depend>` が無いことは `ros2pkg` のソースで確かめた。ROS1の `.bag` が `ros2 bag` で直接は再生できないことは、一般的な情報から書いたもので、確かめていない。ROS1のコードを実際に移植して動かしてはいない（2026-10-15）。9節は、数値計算の一般的な内容を自分の言葉で書いたもので、9-3節の数値は、この資料の作成時に、フェーズ5-1の式を写したPythonのスクリプトで計算した（2026-10-12）。10節は、`/opt/ros/jazzy` の `ros2pkg`（雛形と、実行ファイルを探す処理）と、Ubuntuのパッケージの `colcon-core`（0.21.3）のソースを読み、使い捨てのワークスペースで、`setup.cfg` を雛形のまま・消した場合・古い名前のまま・ハイフンでつないだ名前の場合のビルドと、`ros2 pkg executables`・`ros2 run` の表示を確かめた（`ros2 run` は、`setup.cfg` の名前を古いままにした場合に実行し、実行ファイルが見つからずに終わることを確かめた。消した場合は、`ros2 pkg executables` が何も表示しないことから同じと判断した。2026-10-15）。11節のサービスとアクションの中身は、Jazzyの `rcl_action`（アクションが作る5つの名前と、結果を持つ時間の既定値）・`rclpy`（隠れた名前の決まり、`result_timeout` の既定値、`wait_for_service` などの関数）・`rmw`（要求の識別子の中身、サービスの既定のQoS）・`action_msgs`（ゴールの状態）と、`rmw_fastrtps_shared_cpp` の共有ライブラリに含まれる名前の頭の文字列（`rq`・`rr`・`rt`）で確かめた。トピックで組んだ場合との比較は、これらの仕組みから自分の言葉でまとめたもので、実際にトピックで組んで比べてはいない。要求の識別子で応答を振り分ける処理そのものは、RMWのソースを読んで確かめてはいない（2026-10-15）。12-2節の実行ファイルの中身は、この資料の作成時に、使い捨てのワークスペースで雛形のPythonのパッケージを、`--symlink-install` の有無の両方でビルドして確かめた（ノードは起動していない）。12節の、`ament_cmake_python`・`pybind11_vendor` が入っていること（`pybind11_vendor` がUbuntuの `pybind11-dev` に依存することは、その `package.xml` で確かめた）と、`rclpy` のネイティブのモジュールは、`/opt/ros/jazzy` で確かめた。CythonやNuitkaとnumpyの速さの話は、それらの道具についての一般的な情報から書いたもので、この環境には入れておらず、ROS2のノードで試してはいない。`rclpy` のexecutorとメッセージの変換の負担は、`rclpy` についての一般的な情報から書いたもので、測ってはいない。12-5節の周期の最短の値は、手順書のタイマーとパラメータの `period` の値と、launch・YAMLでの上書きを検索して確かめた（2026-10-16）。13節の `ros2 bag` のサブコマンドと `ros2 topic echo` の `--csv`・`-i` の意味は、手元の `--help` で、`rosbag2_py`・`rosidl_runtime_py` が入っていることは `/opt/ros/jazzy` で確かめた。13-3節のサンプルは自分で書いたもので、入れ子の型（`nav_msgs/msg/Odometry`）の書き出しも、練習用の記録で確かめた（2026-10-16）。14節は、強化学習の仮想環境に入っているSB3 2.9.0とsb3-contrib 2.9.0のソース（名前で選べる方策、`net_arch` と `activation_fn` の既定値、criticの数、特徴の抽出器を共有するかの既定値、`RecurrentPPO` の方策の名前）を読み、14-3節のスクリプトと、SACに `"MlpLstmPolicy"` を渡した場合を実行して確かめ、自分の言葉で書いた。SB3の文書とソース（MIT License）の転載ではない（14-5節のエラーの文面だけは、SB3の出力の引用。`LICENSE` の第三者の一覧に記載）。14-3節のサンプルは自分で書いたもの。PPOが一般に多くのやり取りを要することは、強化学習のアルゴリズムについての一般的な情報から書いたもので、フェーズ7の環境で比べてはいない。`RecurrentPPO` と、`load_state_dict` で重みを写す方法は、動かして確かめてはいない（2026-10-17）。
 
 ## 項目の一覧
 
@@ -26,6 +26,7 @@
 | 11 | トピックの組み合わせで、サービス・アクションの代わりになるか | フェーズ3-4（サービス）、フェーズ3-5（アクション） |
 | 12 | Pythonのノードを速くするには（ROS2に専用の仕組みは無い） | フェーズ2（Pythonのパッケージ）、フェーズ7-5（numpyだけで計算するノード）、コンポーネントの間章 |
 | 13 | bagの記録を、トピックごとのCSVに書き出す | フェーズ6-1（`ros2 bag` の記録）、フェーズ6-3（記録の解析） |
+| 14 | SB3の方策に、`MlpPolicy` 以外のNNを使う | フェーズ7-0（SACと `MlpPolicy`）、フェーズ7-1（記憶を持たない方策）、フェーズ7-4（重みの書き出し） |
 
 ## 1. シミュレーション時刻（`use_sim_time`）
 
@@ -873,9 +874,163 @@ time,data
 
 手早く中身を見たいだけなら、方法1で足りる。記録を後で解析するなら、取りこぼしが無く、再生の速さにも左右されない方法2が向く。フェーズ6-3の解析のノード（`metrics`）は、再生した値をノードで受けて計算する作りで、方法1と同じく再生の仕組みに乗っている。方法2の形にすれば、同じ計算を、再生を待たずに、記録のファイルから直接行える。そのときも、時刻は `time` の列でなく、フェーズ6-3の3節と同じく、行の番号 × プラントの周期で数える（PCの時計の飛びの影響を受けないため）。
 
-## 14. 参考資料
+## 14. SB3の方策に、`MlpPolicy` 以外のNNを使う
 
-確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。5〜7つ目は、2026-10-15に、ページの実在をWeb検索で、原稿とREADMEの内容をGitHubで確かめた。
+> **読める時期**: フェーズ7-0（[`docs/phase7_0_rl_intro.md`](phase7_0_rl_intro.md)）の5節（学習したNNの中身を見る）の後。14-6節の、重みを書き出して使う話は、フェーズ7-4（[`docs/phase7_4_gz_nn_policy.md`](phase7_4_gz_nn_policy.md)）の2節・3-1節・4-2節を読んだ後のほうが分かりやすい。
+
+### 14-1. 疑問: `"MlpPolicy"` のほかのNNは使えるのか
+
+フェーズ7-0の4節では、`SAC("MlpPolicy", env)` でエージェントを作った。5節で中身を見ると、方策は、256個の数を持つ層が2つの全結合のNNだった。フェーズ7の残りのページも、すべてこの形で学習させている。では、層の数や大きさを変えたり、別の種類のNNを使ったりはできるのか。
+
+まず言葉を1つ整理する。`SAC("MlpPolicy", env)` の `"MlpPolicy"` は、ファイルを読み込む指定ではない。方策とcriticのNNを、**どの形で新しく作るか**の指定である（学習したものを読み込むのは、`SAC.load` のほう）。形の選び方には、軽いものから順に、次の4つの段階がある。
+
+| 段階 | やり方 | 節 |
+|---|---|---|
+| 名前で選ぶ | `"MlpPolicy"`・`"CnnPolicy"`・`"MultiInputPolicy"` | 14-2節 |
+| 層の数・大きさ・活性化関数を変える | `policy_kwargs=dict(net_arch=..., activation_fn=...)` | 14-3節 |
+| 観測を受け取る部分を、自分で書いたNNにする | `policy_kwargs=dict(features_extractor_class=...)` | 14-4節 |
+| 記憶を持つNN（LSTM）を使う | sb3-contribの `RecurrentPPO`（アルゴリズムがPPOになる） | 14-5節 |
+
+### 14-2. 名前で選べる3種類
+
+SB3のSACが名前で受け付けるのは、次の3つである（SB3 2.9.0のソースの `SAC.policy_aliases` で確かめた）。名前の違いは、観測を受け取る最初の部分（特徴の抽出器）の違いで、その後ろの全結合の層は、どれも同じである。
+
+| 名前 | 観測を受け取る部分 | 向いている観測 |
+|---|---|---|
+| `"MlpPolicy"` | 観測をそのまま1列に並べる（`FlattenExtractor`。フェーズ7-0の5節の表示の `features_extractor`） | 数の並び（フェーズ7のすべての環境） |
+| `"CnnPolicy"` | 畳み込みのNN（`NatureCNN`）で、画像を特徴の数の並びにする | カメラの画像 |
+| `"MultiInputPolicy"` | 観測の項目（辞書）ごとに特徴を作り、つなげる（`CombinedExtractor`） | 画像と数の組み合わせなど |
+
+PPOやTD3など、ほかのアルゴリズムも、同じ3つの名前を持っている。ただし、名前が同じでも、既定の層の大きさと活性化関数は、アルゴリズムごとに違う（PPOは64個の層が2つでtanh、TD3は400個と300個の層でReLU。SB3 2.9.0のソースで確かめた）。名前に無い形のNNを使うには、14-3節・14-4節のように、`policy_kwargs` で指定する。
+
+### 14-3. 層の数・大きさ・活性化関数を変える（`policy_kwargs`）
+
+`policy_kwargs` は、方策のNNを作るときに渡す設定の辞書である。SACの `MlpPolicy` の既定は、`net_arch=[256, 256]`（256個の数を持つ層が2つ）と `activation_fn=nn.ReLU` である（SB3 2.9.0のソースで確かめた）。
+
+- **`net_arch`**: 層ごとの数をリストで並べる。`[64, 64]` なら、64個の層が2つになる。リストで書くと、方策（actor）とcritic（行動の良さの見積もり）の両方に同じ形を使う。`dict(pi=[64, 64], qf=[256, 256])` と書けば、方策（`pi`）とcritic（`qf`）で形を分けられる。
+- **`activation_fn`**: 層の間に挟む関数（活性化関数）を、PyTorchのクラスで渡す。`nn.Tanh` なら、ReLUの代わりにtanhを使う。
+
+形を変えて、学習はせずに、NNの形だけを表示してみる。14-4節の自作の特徴の抽出器も、同じスクリプトで確かめる。
+
+ファイル: `~/rl_practice/policy_shapes.py`
+
+```python
+# SACの方策とcriticのNNを、policy_kwargs で形を変えて作り、形だけを表示する（学習はしない）。
+import gymnasium as gym
+import torch.nn as nn
+from stable_baselines3 import SAC
+from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
+
+
+# 観測を、全結合の層1つで features_dim 個の特徴にする、自作の特徴の抽出器。
+class SmallExtractor(BaseFeaturesExtractor):
+    # 観測の数 → features_dim 個の層を作る。
+    def __init__(self, observation_space, features_dim=16):
+        super().__init__(observation_space, features_dim)
+        self.net = nn.Sequential(nn.Linear(observation_space.shape[0], features_dim), nn.ReLU())
+
+    # 観測の束（1行が1回分）から、特徴の束を返す。
+    def forward(self, observations):
+        return self.net(observations)
+
+
+env = gym.make('Pendulum-v1')
+
+print('[1] 64個×2層、活性化関数はtanh')
+model = SAC('MlpPolicy', env, policy_kwargs=dict(net_arch=[64, 64], activation_fn=nn.Tanh))
+print(model.policy.actor.latent_pi)
+
+print('[2] 方策は64個×2層、criticは256個×2層')
+model = SAC('MlpPolicy', env, policy_kwargs=dict(net_arch=dict(pi=[64, 64], qf=[256, 256])))
+print(model.policy.actor.latent_pi)
+print(model.policy.critic.qf0)
+
+print('[3] 自作の特徴の抽出器')
+model = SAC('MlpPolicy', env, policy_kwargs=dict(features_extractor_class=SmallExtractor))
+print(model.policy.actor.features_extractor)
+print(model.policy.actor.latent_pi[0])
+```
+
+フェーズ7-0の3節と同じく、練習用のフォルダで、仮想環境を有効にしてから実行する。
+
+```bash
+cd ~/rl_practice
+
+source ~/rl_venv/bin/activate
+
+python policy_shapes.py
+```
+
+**期待する結果**:
+
+```text
+[1] 64個×2層、活性化関数はtanh
+Sequential(
+  (0): Linear(in_features=3, out_features=64, bias=True)
+  (1): Tanh()
+  (2): Linear(in_features=64, out_features=64, bias=True)
+  (3): Tanh()
+)
+[2] 方策は64個×2層、criticは256個×2層
+Sequential(
+  (0): Linear(in_features=3, out_features=64, bias=True)
+  (1): ReLU()
+  (2): Linear(in_features=64, out_features=64, bias=True)
+  (3): ReLU()
+)
+Sequential(
+  (0): Linear(in_features=4, out_features=256, bias=True)
+  (1): ReLU()
+  (2): Linear(in_features=256, out_features=256, bias=True)
+  (3): ReLU()
+  (4): Linear(in_features=256, out_features=1, bias=True)
+)
+[3] 自作の特徴の抽出器
+SmallExtractor(
+  (net): Sequential(
+    (0): Linear(in_features=3, out_features=16, bias=True)
+    (1): ReLU()
+  )
+)
+Linear(in_features=16, out_features=256, bias=True)
+```
+
+- [1]は、フェーズ7-0の5節の `latent_pi` と比べると、256が64に、`ReLU()` が `Tanh()` に変わっている。入口の `in_features=3` は観測の数で、SB3が環境から決めるので、`net_arch` には書かない。
+- [2]の1つ目は方策で、64個の層になっている。2つ目はcriticで、256個の層のままである。criticの入口が4なのは、観測3つに行動1つを足したものを受け取り、「その観測でその行動をとったときの良さ」を1つの数（最後の `out_features=1`）で見積もるからである。SACは、criticを2つ持ち（`qf0` と `qf1`）、見積もりの小さいほうを使って、見積もりが甘くなるのを防ぐ。
+- [3]は14-4節で読む。
+
+層を小さくすると、1回の計算は軽くなるが、表せる関数の幅が狭くなる。大きくすると、その逆になる。どちらが良いかは、題材と学習の時間で変わるので、フェーズ7-0の4-2節のスクリプトを写し、保存する名前（`model.save` の引数）を変えてから（そのままでは、フェーズ7-0の5節・6節が読み込む `sac_pendulum.zip` を上書きする）、`SAC(...)` に `policy_kwargs` を足して、報酬の平均（`ep_rew_mean` と評価の結果）を比べてみるとよい。比べるときは、学習の乱数の種（`seed`）を同じにし、できれば種を変えて何回か学習させる（同じ設定でも、種を変えるだけで結果が大きく違うことがあり、1回ずつの比較では、良し悪しを取り違えやすい。フェーズ7-4の6節）。
+
+### 14-4. 観測を受け取る部分を、自分で書いたNNにする
+
+14-3節のスクリプトの `SmallExtractor` は、`BaseFeaturesExtractor` を継承した、PyTorchのNNのクラスである。`policy_kwargs=dict(features_extractor_class=SmallExtractor)` で渡すと、`FlattenExtractor` の代わりに、観測を受け取る最初の部分になる。
+
+- `__init__` では、`super().__init__(observation_space, features_dim)` で、出口の数（`features_dim`）をSB3に知らせ、層を作る。
+- `forward` では、観測の束から特徴の束を計算して返す。束になっているのは、学習のときに、記録した多くの観測をまとめて計算するからである。
+
+[3]の表示のとおり、観測3つが16個の特徴になり、その後ろの全結合の層（`latent_pi`）の入口が16になる（`in_features=16`）。`features_dim` を変えるときは、`policy_kwargs=dict(features_extractor_class=SmallExtractor, features_extractor_kwargs=dict(features_dim=32))` のように渡す。SACの既定では、方策とcriticは、特徴の抽出器を別々に持つ（`share_features_extractor` が `False`）。
+
+この形は、観測に画像や時系列が含まれ、数を並べるだけでは扱いにくいときに使う。フェーズ7の環境の観測は数個の数なので、`MlpPolicy` のままで足りる。全結合の層の部分まで自分で書きたい場合は、SACの方策のクラス（`stable_baselines3.sac.policies.SACPolicy`）を継承したクラスを作り、名前の代わりに `SAC(MyPolicy, env)` のようにクラスを渡す。こちらはSB3の内部の作りに合わせる必要があるので、まずは `policy_kwargs` で済むかを考える。
+
+### 14-5. 記憶を持つNN（LSTM）を使う
+
+フェーズ7-1の2-2節で見たとおり、`MlpPolicy` は、その時点の観測だけから行動を決め、記憶を持たない。そこでフェーズ7-1では、記憶の代わりの手がかりとして、前回のペダルを観測に入れた。NNそのものに記憶を持たせる方法として、LSTM（前の時刻の内部の状態を次の時刻に引き継ぐ層）を使う方策がある。
+
+- SB3の本体には、LSTMの方策は無い。SACに `"MlpLstmPolicy"` を渡すと、`ValueError: Policy MlpLstmPolicy unknown` で止まる（この資料の作成時に確かめた）。
+- 追加の部品集のsb3-contrib（[強化学習のライブラリの環境構築](setup_rl_sb3.md)の4節で導入済み）の `RecurrentPPO` に、`"MlpLstmPolicy"`・`"CnnLstmPolicy"`・`"MultiInputLstmPolicy"` がある（sb3-contrib 2.9.0のソースで確かめた）。
+- アルゴリズムはSACではなくPPOになる。既定の活性化関数もtanhで、LSTMの層は256個の数を持つ（sb3-contrib 2.9.0のソースで確かめた）。PPOは、SACと違い、集めた経験をその場の学習にだけ使って捨てる作りなので、一般に、同じ成績に届くまでに、環境とのやり取りが多く要る。
+- `predict` では、内部の状態を受け取って次の呼び出しに渡す（`model.predict(obs, state=..., episode_start=...)`）。エピソードの切れ目で状態を初めに戻す必要があり、`MlpPolicy` より使い方が少し込み入る。
+
+この資料では、`RecurrentPPO` でフェーズ7の環境を学習させてはいない（フェーズ7-4の5-2節の末尾の、NNの方策を改良する手がかりの1つ）。
+
+### 14-6. 学習済みのNNを読み込む・持ち出すときの注意
+
+- **`SAC.load` が読めるのは、SB3で保存した `.zip` だけ**である。PyTorchで別に作ったNNの重みを使うには、14-3節・14-4節の方法で、SB3の方策の中に同じ形のNNを作り、PyTorchの `load_state_dict` などで重みを写す。他の人から受け取った `.zip` を読み込まない理由（pickleの危険）は、フェーズ7-4の2-2節にある。
+- **形を変えたら、持ち出す側も合わせる**。フェーズ7-4の4-2節の `NpzPolicy` は、層の数と大きさは `.npz` の中身に合わせて変わるが、中間の層の活性化関数をReLUと決め打ちしている（`np.maximum(…, 0.0)`）。`activation_fn=nn.Tanh` で学習させた重みを、そのまま使うと、エラーは出ずに、違う関数として計算してしまう。また、フェーズ7-4の3-1節の `export_policy` は、`latent_pi` と `mu` の層だけを書き出すので、14-4節の自作の特徴の抽出器の重みは書き出されない。アルゴリズムを変えた場合（PPO・`RecurrentPPO` 等）も、`activation_fn` を指定しなくても既定がtanhになり、方策の層の名前も違う（PPOでは `latent_pi` と `mu` の代わりに `mlp_extractor.policy_net` と `action_net`）ので、`export_policy` と `NpzPolicy` はそのままでは使えない。形やアルゴリズムを変えるときは、書き出しと計算のコードも合わせて直し、SB3の `predict` と同じ行動になるかを確かめる。
+
+## 15. 参考資料
+
+確認状況（2026-09-25）: この資料の内容は、WSLに導入済みのROS2 Jazzy（`/opt/ros/jazzy`）のソースと、Ubuntuのパッケージのソースを読んで確かめた。下記のURLは、この資料の作成時に実在をWeb検索で確かめたが、本文は読み直していない（4つ目の記事は、3-1節で引用した警告文の続き（引用では省略した部分）に示されているもの）。5〜7つ目は、2026-10-15に、ページの実在をWeb検索で、原稿とREADMEの内容をGitHubで確かめた。8つ目・9つ目は、2026-10-17に、ページの実在（HTTP 200）だけを確かめた（内容は、手元のSB3とsb3-contribのソースで確かめた）。
 
 - [Using the ros2 param command-line tool — Jazzy](https://docs.ros.org/en/jazzy/How-To-Guides/Using-ros2-param.html)（`use_sim_time` などのパラメータの扱い）
 - [ament_cmake user documentation — Jazzy](https://docs.ros.org/en/jazzy/How-To-Guides/Ament-CMake-Documentation.html)（`ament_target_dependencies` などの `ament_` の関数）
@@ -884,5 +1039,7 @@ time,data
 - [Migrating Packages — Jazzy](https://docs.ros.org/en/jazzy/How-To-Guides/Migrating-from-ROS1/Migrating-Packages.html)（ROS1からの移植のガイドの1ページ目。7-2節）
 - [ros2_documentation の移植のガイドの原稿（GitHub、`jazzy` ブランチ）](https://github.com/ros2/ros2_documentation/tree/jazzy/source/How-To-Guides/Migrating-from-ROS1)（パッケージ・インターフェース・C++・Python・launch・パラメータの各ページ。7-3節・7-4節）
 - [ros2/ros1_bridge（GitHub）](https://github.com/ros2/ros1_bridge)（対応するUbuntuとROSの版の表。7-2節）
+- [Stable-Baselines3 — Custom Policy Network](https://stable-baselines3.readthedocs.io/en/master/guide/custom_policy.html)（`policy_kwargs`・`net_arch`・特徴の抽出器の公式の説明。14-2〜14-4節）
+- [SB3 Contrib — Recurrent PPO](https://sb3-contrib.readthedocs.io/en/master/modules/ppo_recurrent.html)（LSTMの方策。14-5節）
 
-> 出典: 文章は自分の言葉で書いたもので、上記のドキュメントやソースの転載ではない（7-2〜7-4節は、ROS 2の公式ドキュメント（CC BY 4.0）の移植のガイドを元に、要点を自分の言葉でまとめ直したもの）。`CMakeLists.txt` の各行・`setup.cfg` の中身と警告の文面は、ROS2の雛形（Apache 2.0）とsetuptoolsの出力を、説明に必要な範囲で引用した。
+> 出典: 文章は自分の言葉で書いたもので、上記のドキュメントやソースの転載ではない（7-2〜7-4節は、ROS 2の公式ドキュメント（CC BY 4.0）の移植のガイドを元に、要点を自分の言葉でまとめ直したもの）。`CMakeLists.txt` の各行・`setup.cfg` の中身と警告の文面は、ROS2の雛形（Apache 2.0）とsetuptoolsの出力を、説明に必要な範囲で引用した。14-5節のエラーの文面は、Stable-Baselines3（MIT License）の出力を引用した。
