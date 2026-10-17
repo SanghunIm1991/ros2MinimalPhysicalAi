@@ -9,7 +9,7 @@
 
 > **この章の位置づけ**: ROS 2の公式チュートリアルのURDFの章のうち、`urdf_tutorial` を使う4本（見た目を作る・関節を動かす・衝突と物理の性質・xacro。出典は末尾に記載する）の流れに沿った、読み物と小さな体験である。使うファイルは、どれも `urdf_tutorial` に入っているもので、自分では書かない。本文に載せたファイルの中身は、要点だけを抜粋したもので、全体は、各自の環境に導入したファイル（2-2節）か、GitHubの `urdf_tutorial`（末尾の参考資料）で読む。説明は、公式チュートリアルを日本語に訳したものではなく、要点を自分の言葉でまとめ直したものである。
 
-> **期待する結果の出どころ**: `apt list`・`ls`・`cat`・`diff`・`grep`・`sed`・`check_urdf`・`xacro`・`ros2 launch --show-args` の表示は、この章の作成時に実際に実行した表示。4-4節のトピックとTFの表示は、作成時に、`display.launch.py` が起動するノードのうち、RViz2を除く `robot_state_publisher` と `joint_state_publisher` を画面なしで起動して読んだ表示で、時刻（`stamp`・`At time`）は実行ごとに異なる（スライダーのウィンドウを出す `joint_state_publisher_gui` も、ウィンドウを出さない設定で起動し、同じ関節の名前と角度を送ることを確かめた）。3-1節の `display.launch.py` のログは、作成時に各ノードを画面なしで個別に起動したときのログから組み立てたもので（RViz2の2行も、ウィンドウを出さない設定で起動したときに出た行）、行の順番・時刻・pidは実行ごとに変わる。7-3節の表示は、3-1節と4-4節の表示から想定したもので、作成時には、この形で起動していない。RViz2の画面は、作成時には開いて確かめていない。画面の見え方は、公式チュートリアルの説明と画面の例、`urdf_tutorial` のRViz2の設定のファイルから、筆者が想定したもの。
+> **期待する結果の出どころ**: `apt list`・`ls`・`cat`・`diff`・`grep`・`sed`・`check_urdf`・`xacro`・`ros2 launch --show-args` の表示は、この章の作成時に実際に実行した表示。4-4節のトピックとTFの表示は、作成時に、`display.launch.py` が起動するノードのうち、RViz2を除く `robot_state_publisher` と `joint_state_publisher` を画面なしで起動して読んだ表示で、時刻（`stamp`・`At time`）は実行ごとに異なる（スライダーのウィンドウを出す `joint_state_publisher_gui` も、ウィンドウを出さない設定で起動し、同じ関節の名前と角度を送ることを確かめた）。3-1節の `display.launch.py` のログは、作成時に各ノードを画面なしで個別に起動したときのログから組み立てたもので（RViz2の2行も、ウィンドウを出さない設定で起動したときに出た行）、行の順番・時刻・pidは実行ごとに変わる。7-3節の表示は、3-1節と4-4節の表示から想定したもので、作成時には、この形で起動していない。RViz2の画面は、作成時には開いて確かめていない。画面の見え方は、公式チュートリアルの説明と画面の例、`urdf_tutorial` のRViz2の設定のファイルから、筆者が想定したもの。10節のRobotCADの導入と使い方は、作成時には導入して確かめておらず、期待する結果は、RobotCADとFreeCADの公式の説明とソース（2026-10-17）から筆者が想定したもの。
 
 ## 0. この章で得てほしいこと
 
@@ -891,15 +891,127 @@ rviz2 -d $(ros2 pkg prefix --share urdf_tutorial)/rviz/urdf.rviz
 | 一部のリンクだけ、原点に重なって描かれ、RobotModelの「Status」に `No transform from [...]` と出る | そのリンクの先の動く関節の角度が届いていない。`joint_state_publisher_gui`（または `joint_state_publisher`）が動いているか。`ros2 topic echo /joint_states --once` で、その関節の名前が載っているか（4-4節） |
 | スライダーのウィンドウにスライダーが無い | 表示しているファイルの関節が、すべて固定（`fixed`）か。01〜05は固定だけなので、スライダーは無い（3-5節）。06以降を表示する |
 | `check_urdf` が `is not a valid float` で失敗する | xacroのファイルを直接渡している。`xacro` で展開してから渡す（6-2節） |
+| FreeCADのAppImageが起動せず、`libfuse.so.2` が見つからないというエラーが出る | 10-3節の(1)の `libfuse2t64` を入れたか |
+| RobotCADを選んでも、一部の道具が使えない・足りないパッケージが表示される | 10-3節の(6)の「Check and install dependencies」で、足りないパッケージを入れたか |
 | RViz2の画面が真っ黒のまま・すぐに落ちる | WSLgで、OpenGLの描画がうまくいっていないことがある。T1で `export LIBGL_ALWAYS_SOFTWARE=1` を実行してから起動すると、GPUを使わずにソフトウェアで描くので、遅くはなるが表示されることがある |
 
-## 10. 次へ
+## 10. 参考: CADの画面でURDFを作る（RobotCAD）
+
+この章では、用意されたURDFを読んで表示した。自分のロボットを作るときも、小さなうちは、テキストのエディタでURDFやxacroを書けば足りる。ところが、部品が増え、形が複雑になると、関節の原点の座標を数字で合わせるのも、形と質量から慣性を計算するのも、手では大変になる。そこで、CADの画面で部品を組み立て、そこからURDFを書き出す道具が使われる。
+
+ROS 2の公式の文書には、こうした書き出しの道具の一覧（「Exporting an URDF File」。末尾の参考資料）がある。Blender用のPhobos、FreeCAD用のRobotCAD、Fusion 360用・Onshape用・SolidWorks用の道具などが並んでいる。どれもコミュニティが作ったもので、ROS 2の開発者は保守しておらず、品質も保証していない（同じ文書の注意書き）。この節では、その中から、無料のCADのFreeCADで動き、ROS 2のパッケージまで作るRobotCADを紹介する。
+
+> **この節の扱い**: 参考の紹介で、この章の体験には含めない。この節の内容は、2026-10-17の時点のRobotCAD（12.10.3）とFreeCAD（1.1.4）の公式の説明とソースから、筆者がまとめたもので、作成時には導入して確かめていない。期待する結果も、それらから想定したものである。道具の更新は速いので、導入する前に、末尾の参考資料のRobotCADのREADMEで、最新の手順を確かめる。
+
+### 10-1. RobotCADでできること
+
+RobotCADは、FreeCADに足して使う作業の画面（ワークベンチ）である。FreeCADでROS用の記述を作るCROSSから分かれた（フォークした）もので、ROS 2向けの機能が足されている。ライセンスはLGPL-2.1-or-laterである。主にできることは、次のとおり。
+
+- FreeCADで作った部品を選んで、リンクと関節を作り、リンクの親子と、関節の原点を画面で決める。この章の `<link>`・`<joint>`・`<origin>` にあたる。
+- 材料を割り当てて、質量・慣性・重心を自動で計算する。5-2節で、手で書くのが大変だと述べた `<inertial>` を、形から求められる。
+- 部品の外形を囲む箱・球・円柱から、衝突の形（5-1節）を作る。
+- 「Export to URDF」で、ROS 2のパッケージを書き出す（RobotCADのソースの記述から、パッケージの名前は `_description` で終えるものと想定されている）。パッケージには、URDF（xacro）・形のファイル（`meshes/`）・RViz2の設定・Gazeboのワールドと、`launch/display.launch.py`・`launch/gazebo.launch.py` などのlaunchが入る。
+
+書き出したパッケージの表示の仕組みは、この章と同じである。launchが `robot_state_publisher` にURDFを渡し、関節の角度からTFを計算し、RViz2がそれを描く（1節の図）。
+
+### 10-2. 導入する前に確かめること
+
+- **セキュリティ**: 次の点を踏まえて、導入するかどうかを決める。
+  - RobotCADは、コミュニティが作った第三者のプログラムで、FreeCADの中で動く。FreeCADもRobotCADも、自分のユーザーの権限で動き、ホームのフォルダの下のファイルを読み書きできる。
+  - アドオンの管理画面から入れると、その時点の `main` ブランチの最新のコードが入る。版は固定されず、この節が前提にした版（12.10.3）と同じとは限らない。
+  - 初めて使うときに、足りないPythonのパッケージ（`xacro`・`urdf_parser_py`・`mujoco` など）を、PyPIからダウンロードして入れる。入る先は、FreeCADの専用のフォルダ（`~/.local/share/FreeCAD/AdditionalPythonPackages/py311`）で、システムのPythonやROS 2の環境には入らない（RobotCADのソースの記述から）。これらのパッケージも、自分の権限で動く。
+  - 10-3節の(1)は、`sudo` で管理者の権限を使って、Ubuntuのパッケージを入れる操作である。
+- **大きさ**: FreeCADの実行ファイル（AppImage）は、1つで約820 MB（約780 MiB）ある。
+- **画面**: FreeCADは画面のあるアプリなので、WSL2では、WSLgでウィンドウが開く（3-1節のRViz2と同じ）。
+- **CROSSとは同時に使えない**: CROSSを入れている場合は、先に外す（RobotCADのREADMEの注意）。
+- **FreeCADの版**: RobotCADのREADMEは、FreeCADの1.1系のAppImageを勧めているので、この節ではそれを使う。AppImageは、インストールせずに、ファイル1つで動く形式である。1.1系のAppImageの中のPythonは3.11で、ファイル名の `py311` がそれを表す。READMEには「FreeCADの中のPythonは3.12以上」という記述もあるが、アドオンの定義（`package.xml`）の下限は3.11なので、この節では3.11の版を使う。別のPythonの版のAppImageを選ぶと、上の依存の入る先のフォルダの名前（`py311`）も変わる。
+
+### 10-3. 導入の手順
+
+**(1) AppImageを動かすための部品を入れる**。AppImageは、FUSE 2というファイルシステムの仕組みを使う。Ubuntu 24.04では、そのライブラリが `libfuse2t64` という名前になっている。
+
+```bash
+sudo apt update
+
+sudo apt install -y libfuse2t64
+```
+
+**期待する結果**: aptの表示の最後に、エラーが出ずに終わる（すでに入っていれば、`libfuse2t64 is already the newest version` と出る）。
+
+**(2) FreeCADのAppImageと、そのチェックサムを取ってくる**。置き場所は `~/apps` とする。ファイルの名前と版は、FreeCADのGitHubのリリースのページ（末尾の参考資料）で、最新の安定版を確かめてから書き換える。
+
+```bash
+mkdir -p ~/apps
+
+cd ~/apps
+
+wget https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage
+
+wget https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage-SHA256.txt
+
+sha256sum -c FreeCAD_1.1.4-Linux-x86_64-py311.AppImage-SHA256.txt
+```
+
+**期待する結果**（`sha256sum` の分）:
+
+```text
+FreeCAD_1.1.4-Linux-x86_64-py311.AppImage: OK
+```
+
+`OK` と出れば、ダウンロードの途中でファイルが壊れていない。ただし、チェックサムも同じリリースのページから取っているので、配布元でファイルがすり替えられた場合までは見分けられない。`FAILED` と出た場合は、ファイルを消して取り直し、それでも合わなければ使わない。
+
+**(3) 実行できるようにして、起動する**。
+
+```bash
+chmod +x ~/apps/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage
+
+~/apps/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage
+```
+
+**期待する結果**: FreeCADのウィンドウが開く。起動したターミナルは、FreeCADを閉じるまで戻らない。
+
+**(4) RobotCADのリポジトリを、アドオンの管理画面に登録する**。FreeCADのメニューの「Edit」→「Preferences」で設定の画面を開き、「Addon Manager」の設定の「Custom repositories」の欄の「+」を押して、次の2つを書く。
+
+- リポジトリのURL: `https://github.com/drfenixion/freecad.robotcad`
+- ブランチ: `main`
+
+**(5) RobotCADを入れる**。メニューの「Tools」→「Addon Manager」で、アドオンの管理画面を開き、「RobotCAD」を探して「Install」を押す。入ったら、FreeCADを閉じて、(3)の2つ目のコマンドで起動し直す。
+
+**(6) 足りないPythonのパッケージを入れる**。作業の画面の一覧（ツールバーの、ワークベンチを選ぶ欄）で「RobotCAD」を選ぶ。足りないパッケージがあると、そのことが表示される。「About RobotCAD」（RobotCADのメニューかツールバーにある）から「Check and install dependencies」を開き、「Install missing」を押す。この操作で、10-2節のとおり、PyPIからパッケージがダウンロードされる。
+
+**期待する結果**（(4)〜(6)の分）: 画面の操作なので、ターミナルに載せる表示は無い。依存の画面に、パッケージごとに `installed` と出て、最後に「All dependencies are installed.」と出れば、使える状態になっている。メニューの名前は英語の画面のもので、FreeCADを日本語の画面で使っている場合は、日本語の名前になる。
+
+### 10-4. 使い方の流れと、ROS 2での確かめ方
+
+RobotCADのWikiの「Common usage plan」の流れを、この章の言葉でまとめると、次のようになる（画面の操作の詳しい説明は、末尾の参考資料のWikiを見る）。
+
+1. FreeCADの部品の設計の画面（PartDesign）で、部品の形を作る。関節を置く場所には、部品の中に座標系（LCS。Local Coordinate System）を置いておく。ほかのCADで作った形を読み込んでもよい。
+2. RobotCADの画面で、ロボット（Robot）を作り、リンクと関節を作る。リンクには、実際の形（Real）と見た目（Visual）の部品を割り当てる。
+3. 関節ごとに、親と子のリンクを決め、関節の原点を、1.で置いた座標系に合わせる（3-3節の、関節の原点を決めることにあたる）。
+4. 衝突の形を作り（5-1節）、材料を割り当てて、「Calculate mass and inertia」で質量と慣性を計算する（5-2節）。形を変えたら、計算し直す。
+5. Robotのプロパティの「Output Path」（`OutputPath`）に、書き出す先を書く。ワークスペースの `src` からの相対パス（例: `my_robot_description`）で書く（ソースの説明では、ワークスペースの中の絶対パスも受け付け、`src` からの相対パスに直す）。ワークスペースがまだ決まっていないと、ワークスペースのフォルダ（`~/ros2_ws`）を選ぶ画面が出る（ソースの記述から）。Robotを選んで「Export to URDF」を押すと、`~/ros2_ws/src/my_robot_description` にパッケージが書き出される。
+
+書き出したパッケージは、ふだんのパッケージと同じく、ワークスペースでビルドして使う。FreeCADを起動したターミナルとは別のターミナルで行う。`my_robot_description` は、5.で決めたパッケージの名前に読み替える。
+
+```bash
+cd ~/ros2_ws
+
+colcon build --packages-select my_robot_description
+
+source install/setup.bash
+
+ros2 launch my_robot_description display.launch.py --show-args
+```
+
+**期待する結果**: `colcon build` の最後に `Finished <<< my_robot_description` が出て、`--show-args` に、`use_sim_time`・`gui`（既定は `True`）・`model`・`rvizconfig` の4つの引数が出る（2-3節と同じく、引数の名前・説明・既定値が並ぶ。引数は、RobotCADが書き出すlaunchの雛形のソースから想定した）。引数を確かめたら、`--show-args` を外して起動する。RViz2のウィンドウが開き、CADで組み立てたロボットが描かれる。`gui` が `True` のときは `joint_state_publisher_gui` も起動するので、動く関節があれば、3-1節と同じスライダーのウィンドウも開く。
+
+## 11. 次へ
 
 この章は任意の補足なので、本筋はフェーズ6-1（[`docs/phase6_1_record.md`](phase6_1_record.md)）へ進む。
 
-## 11. 公式ドキュメント・参考資料
+## 12. 公式ドキュメント・参考資料
 
-確認状況（2026-10-16）: 公式チュートリアルの4本と、「RViz User Guide」は、原稿（`ros2/ros2_documentation` のjazzyブランチ）で本文を確認した。`urdf_tutorial`（1.1.0）・`urdf_launch`（0.1.2）・`joint_state_publisher`（2.4.3）は、作成時に導入し、入ったファイルがGitHubの同じ版と同じであることを確かめた。`display.launch.py` の構成と引数、`model` の既定値の不具合、`joint_state_publisher` の初期値・送る回数・`continuous` のスライダーの範囲は、ソースを読み、画面なしで起動して確かめた。RViz2の表示の項目の名前（「Description Topic」「Collision Enabled」「Show Names」など）は、導入したRViz2のプラグインに含まれる文字列で確かめたが、画面は開いていない。RViz2の画面の見え方と、スライダーのウィンドウの見た目、7-2節のRobotModelを足した直後の「Description Topic」の値、7-3節の3つのノードを別々に起動する手順、9節のRViz2の描画の不具合の対処は、作成時には確かめていない。
+確認状況（2026-10-16）: 公式チュートリアルの4本と、「RViz User Guide」は、原稿（`ros2/ros2_documentation` のjazzyブランチ）で本文を確認した。`urdf_tutorial`（1.1.0）・`urdf_launch`（0.1.2）・`joint_state_publisher`（2.4.3）は、作成時に導入し、入ったファイルがGitHubの同じ版と同じであることを確かめた。`display.launch.py` の構成と引数、`model` の既定値の不具合、`joint_state_publisher` の初期値・送る回数・`continuous` のスライダーの範囲は、ソースを読み、画面なしで起動して確かめた。RViz2の表示の項目の名前（「Description Topic」「Collision Enabled」「Show Names」など）は、導入したRViz2のプラグインに含まれる文字列で確かめたが、画面は開いていない。RViz2の画面の見え方と、スライダーのウィンドウの見た目、7-2節のRobotModelを足した直後の「Description Topic」の値、7-3節の3つのノードを別々に起動する手順、9節のRViz2の描画の不具合の対処は、作成時には確かめていない。10節のRobotCAD（12.10.3）は、READMEとWiki、アドオンの定義（`package.xml`。必要なPythonは3.11以上、FreeCADは0.21.2以上、CROSSと競合）、依存を入れる処理（入る先）、書き出しの処理とlaunchの雛形のソースを読んで確かめた（2026-10-17）。FreeCAD 1.1.4のAppImageの名前・大きさとチェックサムのファイルの形は、GitHubのリリースで確かめた。書き出しの道具の一覧（「Exporting an URDF File」）は、原稿（jazzyブランチ）で、RobotCADが載っていることと、保守についての注意を確かめた。導入と画面の操作は、作成時には確かめていない。
 
 ### 公式
 
@@ -914,5 +1026,13 @@ rviz2 -d $(ros2 pkg prefix --share urdf_tutorial)/rviz/urdf.rviz
 - [ros/urdf_tutorial（GitHub、1.1.0）](https://github.com/ros/urdf_tutorial/tree/1.1.0)（この章で使ったファイルの全体。例: [`urdf/01-myfirst.urdf`](https://github.com/ros/urdf_tutorial/blob/1.1.0/urdf/01-myfirst.urdf)）
 - [ros/urdf_launch（GitHub、0.1.2）](https://github.com/ros/urdf_launch/tree/0.1.2)（`display.launch.py` が取り込む、表示用のlaunch）
 - [ros/joint_state_publisher（GitHub、ros2ブランチ）](https://github.com/ros/joint_state_publisher/tree/ros2)（`joint_state_publisher` と `joint_state_publisher_gui` のソース）
+- [Exporting an URDF File — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/Exporting-an-URDF-File.html)（10節。CADなどからURDFを書き出す道具の一覧。ROS 2の開発者は保守していない旨の注意がある）
 
-> 出典: この章の説明と表は、上記の公式チュートリアルの流れに沿って、要点を独自にまとめ直したもので、転載ではない（公式チュートリアルはCC BY 4.0）。コマンドは、公式チュートリアルの例と同等。`cat`・`diff`・`grep`・`sed`・`xacro` の表示として載せたURDFとxacroのファイルの中身は、`urdf_tutorial`（David V. Lu!! ほか, BSD 3-Clause License。全文は、このリポジトリの [`LICENSE-BSD-THIRD-PARTY`](../LICENSE-BSD-THIRD-PARTY)）のファイルの一部を抜粋したもの。`--show-args` の表示は `urdf_tutorial` と `urdf_launch`（BSD 3-Clause License）、ノードのログとトピック・TFの表示は、`robot_state_publisher`・`joint_state_publisher`（BSD License）、RViz2・`tf2_ros`・ros2cli（BSD License・Apache License 2.0）、`check_urdf` の表示は urdfdom（BSD License）の出力である。
+### RobotCAD（10節。コミュニティのもので、公式ではない）
+
+- [drfenixion/freecad.robotcad（GitHub）](https://github.com/drfenixion/freecad.robotcad)（READMEに、導入の方法（アドオンの管理画面・Docker・Conda）と、機能の一覧がある。LGPL-2.1-or-later）
+- [RobotCADのWiki](https://github.com/drfenixion/freecad.robotcad/wiki)（「Common usage plan」に、部品の用意から書き出しまでの流れがある）
+- [galou/freecad.cross（GitHub）](https://github.com/galou/freecad.cross)（RobotCADの元になったCROSS）
+- [FreeCAD 1.1.4のリリース（GitHub）](https://github.com/FreeCAD/FreeCAD/releases/tag/1.1.4)（AppImageとチェックサムのファイル。最新の版は、[リリースの一覧](https://github.com/FreeCAD/FreeCAD/releases)で確かめる）
+
+> 出典: この章の説明と表は、上記の公式チュートリアルの流れに沿って、要点を独自にまとめ直したもので、転載ではない（公式チュートリアルはCC BY 4.0）。10節は、RobotCAD（LGPL-2.1-or-later）のREADME・Wiki・ソースと、FreeCADのリリースのページから、事実を自分の言葉でまとめたもので、文章もコードも転載していない（メニューと画面の文字は、操作のために名前だけを書いた）。コマンドは、公式チュートリアルの例と同等。`cat`・`diff`・`grep`・`sed`・`xacro` の表示として載せたURDFとxacroのファイルの中身は、`urdf_tutorial`（David V. Lu!! ほか, BSD 3-Clause License。全文は、このリポジトリの [`LICENSE-BSD-THIRD-PARTY`](../LICENSE-BSD-THIRD-PARTY)）のファイルの一部を抜粋したもの。`--show-args` の表示は `urdf_tutorial` と `urdf_launch`（BSD 3-Clause License）、ノードのログとトピック・TFの表示は、`robot_state_publisher`・`joint_state_publisher`（BSD License）、RViz2・`tf2_ros`・ros2cli（BSD License・Apache License 2.0）、`check_urdf` の表示は urdfdom（BSD License）の出力である。
