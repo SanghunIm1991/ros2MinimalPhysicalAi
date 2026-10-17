@@ -272,7 +272,7 @@ ROS2のコマンドは、**ターミナルごとに**環境を読み込んでか
 | launchファイル | 起動するもの | 作る手順書 |
 |---|---|---|
 | `pubsub.launch.py`（`.xml`・`.yaml` も） | `talker` と `listener` | [フェーズ4](phase4_launch.md) |
-| `param.launch.py`・`turtle.launch.py`・`compose.launch.py` | `param_talker`（YAMLと引数を渡す例）、turtlesimと `turtle_circle`、ほかのlaunchファイルを名前空間を付けて読み込む例 | [フェーズ4](phase4_launch.md) |
+| `param.launch.py`・`turtle.launch.py`・`compose.launch.py` | `param_talker`（YAMLと引数を渡す例）、turtlesimと `turtle_circle`、ほかのlaunchファイルを名前空間を付けて読み込み、remapでトピック名を付け替えたノードを足す例 | [フェーズ4](phase4_launch.md) |
 | `components.launch.py` | コンテナとコンポーネント（任意） | [コンポーネントの間章](interlude_components.md) |
 | `vehicle_sim.launch.py` | 疑似プラント・PI制御・目標・（Gazeboの表示） | [フェーズ5-3](phase5_3_launch.md) |
 | `gazebo_plant.launch.py` | Gazeboの物理で動かす車と、PI制御の一式 | [フェーズ5-4](phase5_4_gazebo_plant.md) |

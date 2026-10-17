@@ -8,9 +8,9 @@
 - 言語: launchファイルはPython・XML・YAMLの3形式を扱う（ノードはPython・C++）
 - OSS: turtlesim（GUIのウィンドウが開く）
 
-> **進め方**: 2節の仕様は「何を作るか」の定義で、launchのAPIの使い方までは書いていない。まず各節冒頭の「主なAPI」表でそのファイルに必要なAPIを把握し、続くサンプルと解説を読んで、1行ずつ何をしているか理解する。読んで分かったら、引数の既定値や起動するノードを変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時に、`ros2 launch --print`（起動せずに内容を表示する）で読み込めることまで確認済み。手順は実機で実行して確認済み（2026-09-27）。出力が細部で違う場合は、実機の表示を優先する。
+> **進め方**: 2節の仕様は「何を作るか」の定義で、launchのAPIの使い方までは書いていない。まず各節冒頭の「主なAPI」表でそのファイルに必要なAPIを把握し、続くサンプルと解説を読んで、1行ずつ何をしているか理解する。読んで分かったら、引数の既定値や起動するノードを変えるなど手を動かして改造してみると定着する。サンプルはこの手順書の作成時に、`ros2 launch --print`（起動せずに内容を表示する）で読み込めることまで確認済み。手順は実機で実行して確認済み（2026-09-27）。ただし、4-6節のremapの部分（`param_listener`。2026-10-17に追加）は、`--print` で読み込めることまでを確かめ、実機では実行していない。出力が細部で違う場合は、実機の表示を優先する。
 
-> **期待する結果の出どころ**: `--show-args` と `--print` の表示は手順書の作成時に使い捨ての環境で実行して確かめたもの、ノードを起動した後の表示はコードとROS2の仕様から筆者が想定したもので、実機で手順を実行して問題が無いことを確かめてある（表示を1つずつ見比べてはいない）。時刻・プロセス番号（pid）などの細部は、実行ごとに異なる。ただし、4-1節の `Ctrl+C` の後の表示は、同じ `main` の書き方をした公式のサンプル（`demo_nodes_py`・`demo_nodes_cpp` の `talker`）とフェーズ5-3のノードを、使い捨ての環境でlaunchから起動して確かめたもの（2026-09-26。端末の `Ctrl+C` を模して、プロセスのグループ全体に割り込みを送る方法で確かめた）。
+> **期待する結果の出どころ**: `--show-args` と `--print` の表示は手順書の作成時に使い捨ての環境で実行して確かめたもの、ノードを起動した後の表示はコードとROS2の仕様から筆者が想定したもので、実機で手順を実行して問題が無いことを確かめてある（表示を1つずつ見比べてはいない）。ただし、4-6節の `param_listener` のログの行と `ros2 topic info /param_chatter` の表示（2026-10-17に追加）は、コードとROS2の仕様から想定したもので、実機では確かめていない。時刻・プロセス番号（pid）などの細部は、実行ごとに異なる。ただし、4-1節の `Ctrl+C` の後の表示は、同じ `main` の書き方をした公式のサンプル（`demo_nodes_py`・`demo_nodes_cpp` の `talker`）とフェーズ5-3のノードを、使い捨ての環境でlaunchから起動して確かめたもの（2026-09-26。端末の `Ctrl+C` を模して、プロセスのグループ全体に割り込みを送る方法で確かめた）。
 
 ## 0. 学習目標と完了条件
 
@@ -54,9 +54,9 @@ flowchart LR
 
 </details>
 
-launchファイルの合成（`IncludeLaunchDescription`）。4-6節で作る、書いたlaunchファイルを部品として組み合わせる例で、図の `IncludeLaunchDescription`（別のlaunchファイルを呼び出す）・`GroupAction`（中の指定をまとめて効かせる）・namespace（ノード名やトピック名の前に `demo` を付けて住み分ける）の使い方は4-6節で扱う。ここでは「launchファイルは組み合わせられる」ことだけ掴めばよい:
+launchファイルの合成（`IncludeLaunchDescription`）。4-6節で作る、書いたlaunchファイルを部品として組み合わせる例で、図の `IncludeLaunchDescription`（別のlaunchファイルを呼び出す）・`GroupAction`（中の指定をまとめて効かせる）・namespace（ノード名やトピック名の前に `demo` を付けて住み分ける）・remap（起動するときにトピック名を付け替える）の使い方は4-6節で扱う。ここでは「launchファイルは組み合わせられる」ことだけ掴めばよい:
 
-![compose.launch.pyが、GroupActionでnamespaceをdemoにしてpubsub.launch.pyをincludeし、param.launch.pyもincludeする](img/phase4_compose.svg)
+![compose.launch.pyが、GroupActionでnamespaceをdemoにしてpubsub.launch.pyをincludeし、param.launch.pyもincludeし、remapでchatterをparam_chatterに付け替えたlistenerを起動する](img/phase4_compose.svg)
 
 <details>
 <summary>同じ図（mermaid版）</summary>
@@ -66,6 +66,7 @@ flowchart LR
     A["compose.launch.py"] --> G["GroupAction<br/>namespace = demo"]
     G --> I["pubsub.launch.py（include）"]
     A --> J["param.launch.py（include）"]
+    A --> N["listener（ノード名 param_listener）<br/>remap: chatter → param_chatter"]
 ```
 
 </details>
@@ -89,7 +90,7 @@ flowchart LR
 | `pubsub.launch.yaml` | 上と同じ内容をYAML形式で書く |
 | `param.launch.py` | `param_talker` を起動。引数 `lang`（既定 `py`）と `period`（既定 `1.0`）。パラメータは `config/param_talker.yaml` を読み、さらに引数 `period` で上書きする |
 | `turtle.launch.py` | `turtlesim_node`（OSS）と `turtle_circle` を起動。引数 `lang`（既定 `py`） |
-| `compose.launch.py` | `pubsub.launch.py`（`talker_lang=cpp`、`listener_lang=py` を固定）を名前空間 `demo` の下で、`param.launch.py` はそのまま、それぞれincludeする |
+| `compose.launch.py` | `pubsub.launch.py`（`talker_lang=cpp`、`listener_lang=py` を固定）を名前空間 `demo` の下で、`param.launch.py` はそのまま、それぞれincludeする。さらに、Python版の `listener` をノード名 `param_listener` で起動し、remapで `chatter` を `param_chatter` に付け替えて、`param_talker` の文字列を受け取る |
 
 ## 3. 準備
 
@@ -624,9 +625,9 @@ ros2 launch learn_bringup turtle.launch.py lang:=cpp   # C++版の turtle_circle
 |---|---|
 | 別のlaunchファイルを呼ぶ | `IncludeLaunchDescription(PythonLaunchDescriptionSource(パス), launch_arguments={...}.items())` |
 | 名前空間をまとめて付ける | `GroupAction([PushRosNamespace('demo'), ...])` |
-| トピック名の付け替え | `Node(remappings=[('chatter', 'renamed_chatter')])` |
+| トピック名の付け替え（remap） | `Node(remappings=[('元の名前', '新しい名前')])` |
 
-名前空間 `demo` の下では、ノード名は `/demo/talker`、トピックは `/demo/chatter` になる。
+名前空間 `demo` の下では、ノード名は `/demo/talker`、トピックは `/demo/chatter` になる。remapを付けたノードは、コードに書いたトピック名（`chatter`）の代わりに、新しい名前（例: `param_chatter`）を使う。
 
 #### サンプルと解説
 
@@ -638,7 +639,7 @@ from launch import LaunchDescription
 from launch.actions import GroupAction, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
-from launch_ros.actions import PushRosNamespace
+from launch_ros.actions import Node, PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -649,7 +650,7 @@ def _launch_file(name):
 
 
 # pubsub.launch.py（talker は C++、listener は Python）を名前空間 demo の下で、
-# param.launch.py はそのまま include する。
+# param.launch.py はそのまま include し、param_chatter を聞く listener を remap で足す。
 def generate_launch_description():
     pubsub = GroupAction([
         PushRosNamespace('demo'),
@@ -658,12 +659,19 @@ def generate_launch_description():
             launch_arguments={'talker_lang': 'cpp', 'listener_lang': 'py'}.items()),
     ])
     param = IncludeLaunchDescription(_launch_file('param.launch.py'))
-    return LaunchDescription([pubsub, param])
+    param_listener = Node(
+        package='learn_py',
+        executable='listener',
+        name='param_listener',
+        remappings=[('chatter', 'param_chatter')],
+        output='screen',
+    )
+    return LaunchDescription([pubsub, param, param_listener])
 ```
 
 **解説: `compose.launch.py`**
 
-役割は「既存のlaunchファイルを部品として呼び出し、名前空間をまとめて付ける」こと。新しいノードを直接は書かず、`pubsub.launch.py` と `param.launch.py` を**組み合わせる**。
+役割は「既存のlaunchファイルを部品として呼び出し、名前空間をまとめて付ける」ことと、「remapで、コードを書き換えずに、トピック名の違うノード同士をつなぐ」こと。`pubsub.launch.py` と `param.launch.py` を**組み合わせ**、さらに `listener` をもう1つ起動して、`param_talker` の送る `param_chatter` を聞かせる。
 
 | 部分 | 何をしているか |
 |---|---|
@@ -671,15 +679,20 @@ def generate_launch_description():
 | `IncludeLaunchDescription(起動元, launch_arguments={...}.items())` | 別のlaunchファイルを、この場所で実行する。`launch_arguments` は、呼び出す側の引数を**まとめて固定する**指定で、辞書の `.items()`（キーと値の組の並び）で渡す。値は文字列。 |
 | `PushRosNamespace('demo')` | 以降のノードに、名前空間 `demo` を付ける。 |
 | `GroupAction([PushRosNamespace('demo'), IncludeLaunchDescription(...)])` | アクションをグループにまとめる。名前空間の指定は**グループの中だけに効く**ので、グループの外の `param` には影響しない。 |
-| `LaunchDescription([pubsub, param])` | 最後に、グループとincludeを並べて返す。 |
+| `Node(..., name='param_listener', remappings=[('chatter', 'param_chatter')])` | フェーズ3-1のPython版の `listener` を、ノード名 `param_listener` で起動する。`remappings` は「元の名前 → 新しい名前」の組のリストで、コードの中の `chatter` を `param_chatter` に付け替える。 |
+| `LaunchDescription([pubsub, param, param_listener])` | 最後に、グループとincludeとノードを並べて返す。 |
 
 実行結果として、`pubsub.launch.py` のノードは `/demo/talker`、`/demo/listener`、トピックは `/demo/chatter` になる。`param.launch.py` は名前空間の外なので、`/param_talker` のまま。`ros2 node list` で、この違いが見える。
+
+**remapの考え方**: `listener` のコードは `chatter` を購読すると決め打ちしていて、`param_talker` は `param_chatter` に送る。名前が違うので、そのままではつながらない。コードを書き換える代わりに、起動するときに「このノードの中の `chatter` を、`param_chatter` と読み替える」と指定するのがremapである。同じ `listener` の実行ファイルが、`/demo/listener` では `/demo/chatter`（`talker` の `hello N`）を、`/param_listener` では `/param_chatter`（`param_talker` の `from yaml`）を受け取る。他人が書いたノードや、OSSのノード（フェーズ1のturtlesimなど）を、名前の決まった相手につなぐときに使う（フェーズ3-2aの `turtle_circle` も、`/turtle1/cmd_vel` を付け替えれば、別のロボットへの速度指令になる）。
 
 補足:
 
 - includeされた側の引数は、`launch_arguments` で渡さなければ、**その既定値**が使われる。`param` の呼び出しは引数を渡していないので、`lang=py`、`period=1.0` になる。`pubsub` は `talker_lang=cpp`、`listener_lang=py` で固定している。
 - 名前空間が効くのは、**相対名**（先頭に `/` が無い名前）のノード名・トピック名。コードの中で `/chatter` のように絶対名で書くと、名前空間を付けても変わらない。`talker` が `chatter` と相対名で書いているので、`/demo/chatter` になる。
-- **remap**（トピック名の付け替え）は、このサンプルには含まない。`Node(remappings=[('chatter', 'renamed_chatter')])` のように「元の名前 → 新しい名前」のペアで指定する。この節の末尾の課題7で試す。片方だけに付けると名前が食い違って、つながらなくなる。
+- `Node` の `remappings` に書いたremapは、**そのノードの中だけ**に効く。`param_listener` は、相手の `param_talker` が元から `param_chatter` に送っているので、受信側の1つに付けるだけでつながる。逆に、つながっている2つのノードのトピック名をそろって変えたい場合は、送信側と受信側の**両方**に同じremapが要る（片方だけに付けると名前が食い違って、つながらなくなる。この節の末尾の課題7で試す）。
+- 新しい名前に `param_chatter` のような相対名を書くと、ノードの名前空間の下の名前になる（このノードは名前空間の外なので `/param_chatter`）。名前空間の中のノードから外のトピックを指すときは、`/param_chatter` のように絶対名で書く。
+- `--print` の表示には、remapの中身は出ない。効いているかは、起動した後に `ros2 topic info` やログで確かめる。
 
 つまずきやすい点:
 
@@ -687,7 +700,7 @@ def generate_launch_description():
 - 名前空間を付けたのに、コードが絶対名を使っていて変わらない、という食い違いに注意する。
 - 同じノード名が2つ起動するとログに警告が出る（名前空間を付ける理由の1つ）。
 
-観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、この下の期待する結果の例（`/demo/talker`、`/demo/listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`Ctrl+C` で全ノードが止まること（この節の末尾の課題8）。
+観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、この下の期待する結果の例（`/demo/talker`、`/demo/listener`、`/param_listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`param_listener` のログに `received: from yaml` が出て、`/param_chatter` の購読数が1になること（remapが効いている）。`Ctrl+C` で全ノードが止まること（この節の末尾の課題8）。
 
 > **実行する前に**: `compose.launch.py` を足したので、4-1節と同じく、`ros2_ws/`（`cd ~/ros2_ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
 
@@ -699,16 +712,21 @@ ros2 launch learn_bringup compose.launch.py
 ros2 node list
 
 ros2 topic list
+
+ros2 topic info /param_chatter
 ```
 
-**期待する結果**: T1（launchのターミナル）には、3つのプロセス（`talker`・`listener`・`param_talker`）のログが混ざって出る。ノード名は名前空間付き（`[demo.talker]` のようにドット区切り）で表示される。
+**期待する結果**: T1（launchのターミナル）には、4つのプロセス（`talker`・`listener`・`param_talker`・`listener`）のログが混ざって出る。ノード名は名前空間付き（`[demo.talker]` のようにドット区切り）で表示される。
 
 ```text
 # T1（launch）
 [talker-1] [INFO] [1790282300.100000000] [demo.talker]: publish: hello 0
 [listener-2] [INFO] [1790282300.101000000] [demo.listener]: received: hello 0
 [param_talker-3] [INFO] [1790282300.100000000] [param_talker]: publish: from yaml
+[listener-4] [INFO] [1790282300.101000000] [param_listener]: received: from yaml
 ```
+
+`[listener-4]` は、remapを付けて起動した2つ目の `listener`。プロセスの印は実行ファイルの名前（`listener`）から付くので、ノード名（`param_listener`）は、その後の `[param_listener]` で見分ける。`received: from yaml` は、`param_talker` の送った文字列が届いたことを示す。
 
 T2での確認（`ros2 topic list` は抜粋）:
 
@@ -717,6 +735,7 @@ T2での確認（`ros2 topic list` は抜粋）:
 $ ros2 node list
 /demo/listener
 /demo/talker
+/param_listener
 /param_talker
 
 $ ros2 topic list
@@ -724,9 +743,14 @@ $ ros2 topic list
 /param_chatter
 /parameter_events
 /rosout
+
+$ ros2 topic info /param_chatter
+Type: std_msgs/msg/String
+Publisher count: 1
+Subscription count: 1
 ```
 
-`demo` の下に入るのは、`GroupAction` の中でincludeした `pubsub.launch.py` の2ノードとそのトピックだけで、`param.launch.py` の側は名前空間なしのまま。`/parameter_events` と `/rosout` は、どのノードも共有する全体のトピックなので、名前空間が付かない。
+`demo` の下に入るのは、`GroupAction` の中でincludeした `pubsub.launch.py` の2ノードとそのトピックだけで、`param.launch.py` の側は名前空間なしのまま。`/parameter_events` と `/rosout` は、どのノードも共有する全体のトピックなので、名前空間が付かない。`ros2 topic list` に `/chatter` が無いのは、どのノードも名前空間の外で `chatter` を使っていないため（`param_listener` の `chatter` は、remapで `param_chatter` になっている）。`/param_chatter` の `Subscription count: 1` は、`param_listener` が購読していることを示す（remapを外すと0になり、代わりに `/chatter` が現れる）。
 
 > 課題7: `pubsub.launch.py` の `Node` に `remappings=[('chatter', 'renamed')]` を足して、トピック名が変わることと、talkerとlistenerの**両方に同じremapを付けないとつながらない**ことを確認する。確認後は元に戻す。
 >
@@ -754,7 +778,7 @@ source install/setup.bash
 |---|---|
 | 4通りの組み合わせ（Py×Py / Py×C++ / C++×Py / C++×C++）の起動結果 | 全通りとも**つながる**（4-1節、フェーズ3-1で確認済みの「言語は関係なくつながる」がlaunchでも成り立つ） |
 | パラメータの優先順位（YAML／引数） | `parameters=[YAML, {...}]`のリストは**後ろが勝つ**（4-4節）。さらに引数側に既定値があると、指定しなくても引数が優先されYAMLの値は使われない（4-4節の課題5補足） |
-| `namespace`と`remap`の効き方 | 名前空間は**相対名**（先頭が`/`でない名前）にだけ効く。絶対名（`/chatter`等）で書かれたノードには効かない（4-6節）。remapは送信側・受信側の**両方**に同じ指定が要る（片方だけだとつながらなくなる） |
+| `namespace`と`remap`の効き方 | 名前空間は**相対名**（先頭が`/`でない名前）にだけ効く。絶対名（`/chatter`等）で書かれたノードには効かない（4-6節）。remapは付けたノードの中だけに効き、コードを変えずに名前の違う相手とつなげる（4-6節の `param_listener`）。つながっている2つのトピック名をそろって変えるなら、送信側・受信側の**両方**に同じ指定が要る（片方だけだとつながらなくなる。4-6節の末尾の課題7） |
 | Python／XML／YAMLの使い分け | 単純な起動の並びはXML/YAMLが短く書ける（`pubsub.launch.*`で7行・19行・25行）。条件分岐・計算・パスの組み立てが要る場合（4-4節・4-6節）はPython形式でないと書けない（4-3節） |
 
 フェーズ3-1〜3-5・フェーズ2の各「Python版とC++版の違いのまとめ」節と合わせて読み返すと、**学習計画の1-7の振り返り**（[学習計画](learning_plan.md)でフェーズ3・4の後に置いた、PythonとC++を比べる振り返り。コード量・型の扱い・ビルド手順・つまずきの傾向）の材料になる。フェーズ5の言語方針（Python中心）は既に決定済みだが、この振り返りは今後C++で書く場合の勘所の再確認として使える。
