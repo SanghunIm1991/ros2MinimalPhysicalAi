@@ -126,6 +126,7 @@ flowchart TB
 
 - 効いてくるROS2の特徴: マイコンとPCをまたぐ通信（XRCE-DDS）、マルチロボット
 - この教材との接点: 3節のmicro-ROSも、マイコンをROS2に参加させるために同じXRCE-DDSの仕組みを使う。PX4の構成は、3節で書いた、マイコンがPCと同じ語彙でROS2に参加できるという話の、実用化された例として読める
+- 派生した教材: PX4とGazeboでドローンを飛ばし、ROS2のノードから指令し、LiDARで障害物を見つけたら経路を計画し直すまでを、この教材から派生した [ros2Px4DroneSim](https://github.com/SanghunIm1991/ros2Px4DroneSim) で扱う（作成中。この教材との対応は、[READMEの「派生した教材」](../README.md#派生した教材)）
 
 ### 4-5. 介護・医療・生活支援: 人のすぐそばで動くロボット
 
@@ -143,9 +144,9 @@ flowchart TB
 | 業界 | 代表的なOSS・取り組み | 効いてくるROS2の特徴 | この教材で近いところ |
 |---|---|---|---|
 | 製造業 | ROS-Industrial、メーカー公式のROS2ドライバ（Universal Robots・FANUC等）、MoveIt2 | ハードウェアの抽象化、動作計画 | フェーズ8（URDF/xacro・ros2_control） |
-| モビリティ | Autoware、Nav2 | 多数のノードへの分割、QoS、tf2 | フェーズ3-2a・3-2b、フェーズ5、フェーズ8（tf2） |
+| モビリティ | Autoware、Nav2 | 多数のノードへの分割、QoS、tf2 | フェーズ3-2a・3-2b、フェーズ5、フェーズ8（tf2）。Nav2は、派生した教材（4-4節）で、地図と経路の計画器を使う |
 | 建設業 | OPERA（土木研究所）、`spot_ros2` | ハードウェアの抽象化、シミュレータ | フェーズ5-0（Gazebo）、フェーズ5（疑似プラント） |
-| ドローン | PX4（uXRCE-DDS）、ArduPilot（`AP_DDS`）、Aerostack2 | マイコンとの通信、マルチロボット | 3節のmicro-ROS。任意の間章（[`docs/interlude_micro_ros.md`](interlude_micro_ros.md)）で、仕組みを読み物として扱う |
+| ドローン | PX4（uXRCE-DDS）、ArduPilot（`AP_DDS`）、Aerostack2 | マイコンとの通信、マルチロボット | 3節のmicro-ROS。任意の間章（[`docs/interlude_micro_ros.md`](interlude_micro_ros.md)）で、仕組みを読み物として扱う。PX4を使ってドローンを飛ばす一式は、派生した教材（4-4節）で扱う |
 | 介護・医療・生活支援 | HSR（研究用の共通機体）、Open-RMF | 相互運用、ライフサイクル、セキュリティ | フェーズ4（namespace） |
 
 業界は違っても、見えてくる構図は同じである。センサ・判断・アクチュエータをノードに分け、トピックでつなぎ、できるだけシミュレーションで試してから実機に移す。このあとのフェーズで身に着けるのは、その共通の部分である。
@@ -314,11 +315,11 @@ flowchart LR
 | シミュレーション | Gazebo（物理エンジン、センサ模擬） | フェーズ5-0（導入と基本。必須）、フェーズ5-1〜5-4（車両の表示と、物理での制御）、フェーズ7-3〜7-5（強化学習の環境と、最終ゴールの一式）、フェーズ8（URDF等と組み合わせた発展） |
 | 強化学習 | エージェント・環境・観測・行動・報酬・方策、Gymnasium・Stable-Baselines3（ROS2のパッケージではない） | フェーズ7（最終ゴールまでの道筋。PIのゲインの調整、PI制御のニューラルネットワークへの置き換えとROS2のノードへの持ち出し。二足歩行への橋渡しのフェーズ7-6は発展） |
 | ライフサイクル管理 | managed node、状態遷移 | この教材では扱わない（用語のみ把握） |
-| ナビゲーション／操作 | Nav2、MoveIt2 | この教材の範囲外（将来の発展課題） |
+| ナビゲーション／操作 | Nav2、MoveIt2 | この教材の範囲外。Nav2は、派生した教材（4-4節）で、地図（コストマップ）と経路の計画器を使う。MoveIt2は将来の発展課題 |
 | セキュリティ | SROS2（認証・暗号化） | この教材では扱わない（用語のみ把握） |
 | 組み込み | micro-ROS | 間章（[`docs/interlude_micro_ros.md`](interlude_micro_ros.md)。任意の読み物で、仕組み・道具・書き方の入門。実機での実習は、将来の実機連携時に検討） |
 
-5節の周辺ツールのうち、この教材の必須の範囲で使うのは、場面1のcolconとament（`rosdep` は使わない）、場面2のrqt系（`rqt_graph`・`rqt_console` はフェーズ1、`rqt_plot` はフェーズ6-1）、場面3の `ros2 bag`（フェーズ6）、場面4のGazebo（フェーズ5-0から。フェーズ7-3〜7-5でも使う）である。URDF/xacroとros2_controlは、任意の間章（[`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md)）の4節・5節で体験する。URDFとRViz2での表示の基本（TFを配る `robot_state_publisher` を含む）は、任意の間章（[`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md)）で体験する。tf2を使うノードの自作と、RViz2を使った発展は、保留中のフェーズ8で扱う予定である。場面5のツールのうち、micro-ROSは、任意の間章（[`docs/interlude_micro_ros.md`](interlude_micro_ros.md)）で、仕組みを読み物として扱う。PlotJugglerとFoxglove Studio、Nav2とMoveIt2、場面5のSROS2とDockerは扱わない。導入時期は [`docs/learning_plan.md`](learning_plan.md) の「OSS活用計画」を参照。
+5節の周辺ツールのうち、この教材の必須の範囲で使うのは、場面1のcolconとament（`rosdep` は使わない）、場面2のrqt系（`rqt_graph`・`rqt_console` はフェーズ1、`rqt_plot` はフェーズ6-1）、場面3の `ros2 bag`（フェーズ6）、場面4のGazebo（フェーズ5-0から。フェーズ7-3〜7-5でも使う）である。URDF/xacroとros2_controlは、任意の間章（[`docs/interlude_gazebo_physics.md`](interlude_gazebo_physics.md)）の4節・5節で体験する。URDFとRViz2での表示の基本（TFを配る `robot_state_publisher` を含む）は、任意の間章（[`docs/interlude_urdf_rviz.md`](interlude_urdf_rviz.md)）で体験する。tf2を使うノードの自作と、RViz2を使った発展は、保留中のフェーズ8で扱う予定である。場面5のツールのうち、micro-ROSは、任意の間章（[`docs/interlude_micro_ros.md`](interlude_micro_ros.md)）で、仕組みを読み物として扱う。PlotJugglerとFoxglove Studio、Nav2とMoveIt2、場面5のSROS2とDockerは扱わない（Nav2は、派生した教材に任せている。4-4節）。導入時期は [`docs/learning_plan.md`](learning_plan.md) の「OSS活用計画」を参照。
 
 ## 9. 次のフェーズへ
 

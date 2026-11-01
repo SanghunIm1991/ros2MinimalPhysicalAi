@@ -166,7 +166,7 @@
 | Stable-Baselines3 / sb3-contrib / Gymnasium（ROS2のパッケージではない） | 強化学習のアルゴリズムと、環境の共通の形 | フェーズ7 | ○（仮想環境にpipで導入） | — |
 
 - 「読む」対象: `ros2/demos`（公式サンプル）、`ros2/common_interfaces`。丸ごと転載せず、リンクと自分の言葉での要約に留める。
-- Nav2等の大規模OSSは本プランの範囲外（必要になった時点で別途検討）。
+- Nav2は、派生した教材の [ros2Px4DroneSim](https://github.com/SanghunIm1991/ros2Px4DroneSim)（PX4・Gazebo・ROS 2のドローンのシミュレーション）に任せる（2026-11-01、ユーザー判断。この教材との対応は [READMEの「派生した教材」](../README.md#派生した教材)）。MoveIt2等のほかの大規模OSSは本プランの範囲外（必要になった時点で別途検討）。
 
 ## 進め方・役割分担
 
