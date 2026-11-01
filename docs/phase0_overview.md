@@ -126,7 +126,7 @@ flowchart TB
 
 - 効いてくるROS2の特徴: マイコンとPCをまたぐ通信（XRCE-DDS）、マルチロボット
 - この教材との接点: 3節のmicro-ROSも、マイコンをROS2に参加させるために同じXRCE-DDSの仕組みを使う。PX4の構成は、3節で書いた、マイコンがPCと同じ語彙でROS2に参加できるという話の、実用化された例として読める
-- 派生した教材: PX4とGazeboでドローンを飛ばし、ROS2のノードから指令し、LiDARで障害物を見つけたら経路を計画し直すまでを、この教材から派生した [ros2Px4DroneSim](https://github.com/SanghunIm1991/ros2Px4DroneSim) で扱う（作成中。この教材との対応は、[READMEの「派生した教材」](../README.md#派生した教材)）
+- 派生した教材: PX4とGazeboでドローンを飛ばし、ROS2のノードから指令し、LiDARで障害物を見つけたら経路を計画し直すまでを、この教材から派生した [ros2Px4DroneSim](https://github.com/SanghunIm1991/ros2Px4DroneSim) で扱う（この教材との対応は、[READMEの「派生した教材」](../README.md#派生した教材)）
 
 ### 4-5. 介護・医療・生活支援: 人のすぐそばで動くロボット
 
