@@ -101,8 +101,8 @@ sequenceDiagram
 
 <!-- file: ros2_ws/src/learn_py/learn_py/param_talker.py -->
 ```python
-import rclpy
 from rcl_interfaces.msg import SetParametersResult
+import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from std_msgs.msg import String

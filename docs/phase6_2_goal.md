@@ -100,8 +100,8 @@ $\leftarrow$ は、「右辺を計算して、左辺の $d$ に入れ直す」�
 ```python
 import math
 
-import rclpy
 from nav_msgs.msg import Odometry
+import rclpy
 from rclpy.clock import Clock, ClockType
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node

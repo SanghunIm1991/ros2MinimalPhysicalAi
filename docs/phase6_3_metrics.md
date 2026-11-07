@@ -261,13 +261,12 @@ PI, tau_brake=1.0
 
 <!-- file: ros2_ws/src/learn_py/learn_py/metrics_node.py -->
 ```python
+from learn_py.metrics import evaluate, format_report
 import rclpy
 from rclpy.clock import Clock, ClockType
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from std_msgs.msg import Float64
-
-from learn_py.metrics import evaluate, format_report
 
 
 # 目標・速度・ペダルを受け取ってためておき、届かなくなったら指標を計算して表示するノード。

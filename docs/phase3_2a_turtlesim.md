@@ -98,8 +98,8 @@ find_package(geometry_msgs REQUIRED)
 
 <!-- file: ros2_ws/src/learn_py/learn_py/turtle_circle.py -->
 ```python
-import rclpy
 from geometry_msgs.msg import Twist
+import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 

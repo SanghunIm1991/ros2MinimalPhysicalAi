@@ -305,13 +305,12 @@ PI (kp=5.0, ki=2.0)        10.04   10.00         4.12    5.00
 
 <!-- file: ros2_ws/src/learn_py/learn_py/pi_node.py -->
 ```python
-import rclpy
+from learn_py.pi_control import PIController
 from rcl_interfaces.msg import SetParametersResult
+import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from std_msgs.msg import Float64
-
-from learn_py.pi_control import PIController
 
 
 # 目標速度と現在速度の差から、PI制御でペダルの指令を計算して plant/pedal へ送るノード。

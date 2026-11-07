@@ -179,8 +179,8 @@ find_package(example_interfaces REQUIRED)
 ```python
 import time
 
-import rclpy
 from example_interfaces.action import Fibonacci
+import rclpy
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
@@ -275,9 +275,9 @@ def main(args=None):
 
 <!-- file: ros2_ws/src/learn_py/learn_py/fibonacci_client.py -->
 ```python
-import rclpy
 from action_msgs.msg import GoalStatus
 from example_interfaces.action import Fibonacci
+import rclpy
 from rclpy.action import ActionClient
 from rclpy.node import Node
 

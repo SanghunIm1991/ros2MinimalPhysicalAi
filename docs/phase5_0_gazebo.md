@@ -566,9 +566,9 @@ Publisherの側もSubscriberの側も、`Node name` はブリッジである（4
 
 <!-- file: ros2_ws/src/learn_py/learn_py/gz_drive.py -->
 ```python
-import rclpy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 

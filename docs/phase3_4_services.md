@@ -168,8 +168,8 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 
 <!-- file: ros2_ws/src/learn_py/learn_py/add_server.py -->
 ```python
-import rclpy
 from example_interfaces.srv import AddTwoInts
+import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
@@ -226,8 +226,8 @@ def main(args=None):
 
 <!-- file: ros2_ws/src/learn_py/learn_py/add_client.py -->
 ```python
-import rclpy
 from example_interfaces.srv import AddTwoInts
+import rclpy
 from rclpy.node import Node
 
 

@@ -295,14 +295,13 @@ class ActuatorModel:
 ```python
 import dataclasses
 
-import rclpy
+from learn_py.actuator_model import ActuatorModel, ActuatorParams
 from nav_msgs.msg import Odometry
 from rcl_interfaces.msg import SetParametersResult
+import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from std_msgs.msg import Float64
-
-from learn_py.actuator_model import ActuatorModel, ActuatorParams
 
 
 # Gazeboの緑の車両を、疑似プラントの代わりにするノード。

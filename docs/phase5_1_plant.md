@@ -314,13 +314,12 @@ python3 ~/ros2_ws/src/learn_py/learn_py/vehicle_model.py
 ```python
 import dataclasses
 
-import rclpy
+from learn_py.vehicle_model import VehicleModel, VehicleParams
 from rcl_interfaces.msg import SetParametersResult
+import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from std_msgs.msg import Float64
-
-from learn_py.vehicle_model import VehicleModel, VehicleParams
 
 
 # VehicleModel をノードで包んだ疑似プラント。plant/pedal の指令で速度を計算し、plant/velocity へ送る。
@@ -423,9 +422,9 @@ def main(args=None):
 
 <!-- file: ros2_ws/src/learn_py/learn_py/gz_display.py -->
 ```python
-import rclpy
 from geometry_msgs.msg import Twist
 from rcl_interfaces.msg import SetParametersResult
+import rclpy
 from rclpy.clock import Clock, ClockType
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node

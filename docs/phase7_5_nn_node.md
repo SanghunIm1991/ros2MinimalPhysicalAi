@@ -89,13 +89,12 @@ cp ~/rl_practice/npz_policy.py ~/ros2_ws/src/learn_py/learn_py/
 ```python
 import os
 
+from learn_py.npz_policy import NpzPolicy
 import numpy as np
 import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from std_msgs.msg import Float64
-
-from learn_py.npz_policy import NpzPolicy
 
 
 # フェーズ7-4で学習させたNNの方策（.npz）で、目標速度と現在速度からペダルの指令を計算して plant/pedal へ送るノード。

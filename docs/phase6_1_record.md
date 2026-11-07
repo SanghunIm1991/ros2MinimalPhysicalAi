@@ -256,8 +256,8 @@ ros2 run rqt_plot rqt_plot /target_velocity/data /plant/velocity/data /plant/ped
 
 <!-- file: ros2_ws/src/learn_py/learn_py/target_node.py -->
 ```python
-import rclpy
 from rcl_interfaces.msg import SetParametersResult
+import rclpy
 from rclpy.clock import Clock, ClockType
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
