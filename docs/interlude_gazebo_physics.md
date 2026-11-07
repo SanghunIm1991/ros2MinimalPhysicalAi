@@ -1,15 +1,15 @@
 # 間章: Gazeboの物理シミュレーションの基本（フェーズ5の補足）
 
-この章は、フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）までを読み終えた人向けの、任意の章である。フェーズ5では、Gazeboに付属する2輪車のワールドを写し、車輪にトルクをかけて走らせた。車両の形や重さ、地面との摩擦は、付属のファイルに書かれたものをそのまま使い、中身にはほとんど触れなかった。けれども、自分のロボットをシミュレーションしたくなったら、ロボットの形・重さ・関節を自分で書き、地面や物との接触がどう計算されるかを知っておく必要がある。この章では、箱を落とす、坂で滑らせる、球を跳ねさせる、ばねでおもりを揺らす、腕を振り下ろす、という小さな体験を通して、ワールドとロボットの書き方と、物理エンジンが何を計算しているかをひととおり見ていく。
+この章は、フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）までを読み終えた人向けの、任意の章である。フェーズ5では、Gazeboに付属する2輪車のワールドを写し、車輪にトルクをかけて走らせた。車両の形や重さ、地面との摩擦は、付属のファイルに書かれたものをそのまま使い、中身にはほとんど触れなかった。けれども、自分のロボットをシミュレーションしたくなったら、ロボットの形・重さ・関節を自分で書き、地面や物との接触がどう計算されるかを知っておく必要がある。この章では、箱を落とす、坂で滑らせる、球を跳ねさせる、ばねでおもりを揺らす、腕を振り下ろす、IMUを付けた箱を落とす、という小さな体験を通して、ワールドとロボットの書き方と、物理エンジンが何を計算しているか、センサがその計算から何を測るかをひととおり見ていく。
 
 - 想定環境: WSL2 + Ubuntu 24.04 + ROS2 Jazzy + Gazebo Harmonic（フェーズ5-0で導入したもの）。5節だけは、ros2_controlのパッケージを追加で導入する（5節の冒頭）
 - 前提: フェーズ5-4（[`docs/phase5_4_gazebo_plant.md`](phase5_4_gazebo_plant.md)）。フェーズ6・7の本文は、この章に依存しない
 - 所要目安: 1〜2コマ
 - 言語: なし（XMLのファイルを書き、コマンドで動かす。PythonやC++のコードは書かない）
 
-> **この章の位置づけ**: 小さな体験つきの読み物である。体験に使うファイルは、どれも数十行のXMLで、パッケージやビルドは要らない。練習のファイルは、ワークスペース（`~/ros2_ws`）とは別のフォルダ `~/gz_practice` に置く。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない（要素の名前と書き方は公式の文書と同等。出典は末尾に記載する）。センサの節は、今後書き足す予定である。
+> **この章の位置づけ**: 小さな体験つきの読み物である。体験に使うファイルは、どれも数十行のXMLで、パッケージやビルドは要らない。練習のファイルは、ワークスペース（`~/ros2_ws`）とは別のフォルダ `~/gz_practice` に置く。サンプルは学習の手がかりとして最小限に書いたもので、公式チュートリアルの転載ではない（要素の名前と書き方は公式の文書と同等。出典は末尾に記載する）。
 
-> **期待する結果の出どころ**: `gz sdf`・`xacro`・`check_urdf` の表示は、この章の作成時に実際に実行した表示。2〜3節の位置の数値（`gz model` の表示）は、作成時にGazeboを画面なしで起動し、一時停止したまま決めた刻みだけ進めて読んだ表示。4-4節の角度（`ros2 topic echo` の表示）とノードのログは、作成時に画面なしのGazeboで同じ手順を実行し、15秒進めた後に読んだ表示で、ログの時刻と `stamp` は実行ごとに異なる。5節のノード・コントローラ・アクションの表示と角度、5-4節の表の角度は、作成時に画面なしのGazeboで同じ手順を実行して読んだ表示（5-3節のT1〜T4の起動のログ・最初の `spawner` のログ・`ros2 topic pub` の表示と、5-4節の有効化の失敗の表示は、ほかの表示と別の回の実行のもの）で、ログの時刻・`stamp`・アクションの `ID` は実行ごとに異なる。5節の冒頭の `dpkg -l` の表示は、作成時の環境で実際に実行した表示。Gazeboの画面での見え方は、その数値から筆者が想定したもの。
+> **期待する結果の出どころ**: `gz sdf`・`xacro`・`check_urdf` の表示は、この章の作成時に実際に実行した表示。2〜3節の位置の数値（`gz model` の表示）は、作成時にGazeboを画面なしで起動し、一時停止したまま決めた刻みだけ進めて読んだ表示。4-4節の角度（`ros2 topic echo` の表示）とノードのログは、作成時に画面なしのGazeboで同じ手順を実行し、15秒進めた後に読んだ表示で、ログの時刻と `stamp` は実行ごとに異なる。5節のノード・コントローラ・アクションの表示と角度、5-4節の表の角度は、作成時に画面なしのGazeboで同じ手順を実行して読んだ表示（5-3節のT1〜T4の起動のログ・最初の `spawner` のログ・`ros2 topic pub` の表示と、5-4節の有効化の失敗の表示は、ほかの表示と別の回の実行のもの）で、ログの時刻・`stamp`・アクションの `ID` は実行ごとに異なる。5節の冒頭の `dpkg -l` の表示は、作成時の環境で実際に実行した表示。6-2節の `gz sdf -k`・ブリッジ・`ros2 topic echo` の表示と、6-2節の末尾の値（5.81秒の揺れ）は、作成時に画面なしのGazeboで同じワールドを動かして読んだ表示で、ブリッジのログの時刻は実行ごとに異なる（T3の加速度の表示と、1回だけ読んだ全部の項目の表示は別の回の実行のもの。一時停止の間に何も届かないことと、▶の後に `0.0` が101回続くことも、別の回で確かめた）。Gazeboの画面での見え方は、その数値から筆者が想定したもの。
 
 ## 0. この章で得てほしいこと
 
@@ -18,8 +18,9 @@
 3. 摩擦係数と反発係数を書き換えて、滑り方と跳ね方が変わることを、手計算の値と比べて確かめられる。関節の軸にばねと減衰を持たせて、ばねとダンパーを表せる。
 4. ロボットの記述（URDF）とSDFの違いを説明でき、xacroで書いた2関節のアームをGazeboに出して、関節の角度をROS2のトピックで読める。
 5. ros2_controlの部品（ハードウェアの部品・インターフェース・コントローラ・コントローラマネージャ）の役目を説明でき、位置と軌道のコントローラでアームを動かせる。
+6. Gazeboのセンサを、リンクの `<sensor>` とワールドのシステムで動かせることを説明でき、IMUの加速度が、止まっているときに上向きの9.8、自由に落ちているときに0を示す理由を説明できる。
 
-完了条件: 2〜4節の体験で、Gazeboが計算した位置・角度が、手計算の値（落下・坂・反発・ばね・関節の制限）とどこまで合い、どこがなぜずれるかを説明できる。5節の体験で、アームが位置のコントローラの目標の角度に止まり、軌道のコントローラの軌道を少し遅れて追うことを確かめ、その理由を説明できる。
+完了条件: 2〜4節の体験で、Gazeboが計算した位置・角度が、手計算の値（落下・坂・反発・ばね・関節の制限）とどこまで合い、どこがなぜずれるかを説明できる。5節の体験で、アームが位置のコントローラの目標の角度に止まり、軌道のコントローラの軌道を少し遅れて追うことを確かめ、その理由を説明できる。6節の体験で、IMUの加速度を、落ちている間・止まった後・着地の瞬間（頻度を上げた場合）について読み、それぞれの値の理由を説明できる。
 
 ## 1. 全体像
 
@@ -740,7 +741,7 @@ Model: [9]
 | 水の浮力 | システム `Buoyancy` | `buoyancy.sdf` |
 | 翼の揚力と抗力 | システム `LiftDrag` | `lift_drag.sdf` |
 | 風 | ワールドの `<wind>` とシステム `WindEffects` | `wind.sdf` |
-| 接触の検出（何と何が触れたか） | 接触センサとシステム `Contact` | `contact_sensor.sdf` |
+| 接触の検出（何と何が触れたか） | 接触センサとシステム `Contact`（6-3節） | `contact_sensor.sdf` |
 
 例のワールドは、`gz sim apply_link_wrench.sdf` のように、ファイル名だけで開ける（Gazeboが付属のフォルダから探す）。中身を読むときは、上のフォルダのファイルを開く。作成時には、この表の例のワールドが付属のフォルダにあることまでを確かめた（表の機能は、関節の制限・減衰・ばねと `ApplyJointForce` のほかは、この教材では動かしていない）。
 
@@ -1359,7 +1360,279 @@ Goal finished with status: SUCCEEDED
 
 止めるときは、T3・T2・T1の順に `Ctrl+C` で止める。
 
-## 6. この章のまとめ
+## 6. センサで測る
+
+ここまでは、物の位置や関節の角度を、Gazeboの側から「答え」として読んできた（`gz model` や `JointStatePublisher`）。実機のロボットには、この答えを直接読む手段は無く、センサが測った値から、自分の状態や周りの様子を推し量る。Gazeboでは、リンクにセンサを付けると、物理エンジンが計算した動きから、センサが出すはずの値を作って送ってくれる。この節では、まずセンサの書き方の仕組みを見て、IMUを付けた箱を落とす体験をし、最後に接触センサと2DのLiDARを紹介する。
+
+### 6-1. センサの書き方の仕組み
+
+Gazeboのセンサは、2か所に書いて動かす。
+
+- **リンクの `<sensor>`**: どのリンクに、どの種類（`type`）のセンサを付けるか。値を出す頻度（`<update_rate>`。1秒あたりの回数）と、送り先のGazeboのトピック（`<topic>`）もここに書く。センサの位置は、付けたリンクに対して決まり、リンクと一緒に動く。
+- **ワールドの `<plugin>`**: その種類のセンサの値を作るシステム。書き忘れると、エラーは出ずに、トピックに何も届かない。
+
+センサの値は、Gazeboのトピックに送られるので、ROS2で使うときは、`parameter_bridge` で型を変換して中継する（4-4節の関節の角度と同じ）。代表的な3つのセンサを、表にまとめる。
+
+| センサ | 測るもの | `<sensor>` の `type` | ワールドに足すシステム | ROS2の型（Gazeboの型） | 付属の例のワールド |
+|---|---|---|---|---|---|
+| IMU（慣性計測装置） | 加速度・角速度・姿勢 | `imu` | `gz-sim-imu-system`（`Imu`） | [`sensor_msgs/msg/Imu`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/Imu.msg)（`gz.msgs.IMU`） | `sensors.sdf` |
+| 接触センサ | 衝突の形が、何と触れているか | `contact` | `gz-sim-contact-system`（`Contact`） | `ros_gz_interfaces/msg/Contacts`（`gz.msgs.Contacts`） | `contact_sensor.sdf` |
+| 2DのLiDAR | 周りの物までの距離（水平の扇形の範囲） | `gpu_lidar` | `gz-sim-sensors-system`（`Sensors`。描画エンジン `ogre2` を指定する） | [`sensor_msgs/msg/LaserScan`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/LaserScan.msg)（`gz.msgs.LaserScan`） | `gpu_lidar_sensor.sdf` |
+
+IMUと接触センサの値は、物理エンジンが計算した動きと接触から作る。LiDARは、描画（レンダリング）の仕組みで、光線が物に当たるまでの距離を求めるので、システム `Sensors` に描画エンジンを指定する。例のワールドは、3-5節と同じく、`gz sim sensors.sdf` のように名前だけで開ける。
+
+### 6-2. 体験: IMUを付けた箱を落とす
+
+2-2節の箱にIMUを付けて、5 mの高さから落とし、IMUの加速度を読む。先に予想しておく。地面に置いて止まっている箱の加速度は0で、落ちている箱の加速度は下向きに9.8 m/s²である。IMUの加速度は、どちらを示すだろうか。
+
+ファイル: `gz_practice/imu_drop.sdf`
+
+<!-- file: gz_practice/imu_drop.sdf -->
+```xml
+<?xml version="1.0" ?>
+<!-- IMUを付けた箱を、地面の上5 mの高さから落とすワールド -->
+<sdf version="1.11">
+  <world name="imu_drop">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="ground">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+          <material><diffuse>0.7 0.7 0.7 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="box">
+      <pose>0 0 5 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>1.0</mass>
+          <inertia>
+            <ixx>0.00667</ixx><iyy>0.00667</iyy><izz>0.00667</izz>
+            <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
+          <material><diffuse>0.2 0.4 0.9 1</diffuse></material>
+        </visual>
+        <sensor name="imu" type="imu">
+          <always_on>true</always_on>
+          <update_rate>100</update_rate>
+          <topic>imu</topic>
+        </sensor>
+      </link>
+    </model>
+  </world>
+</sdf>
+```
+
+2-2節の `drop.sdf` との違いは、次の3つである。
+
+- ワールドの `<plugin>` に、IMUの値を作るシステム `gz-sim-imu-system` を足した。
+- 箱の高さを5 mにした（球は無くした）。箱の底は4.9 mの高さにあるので、地面に着くまでの時間は $\sqrt{2 \times 4.9 / 9.8} = 1.0$ 秒である。
+- 箱のリンクに `<sensor>` を足した。`<always_on>` は、購読する相手がいなくても値を作り続ける指定、`<update_rate>` は1秒に100回、`<topic>` はGazeboのトピック `/imu` に送る指定である。
+
+文法を確かめる。
+
+```bash
+cd ~/gz_practice
+
+gz sdf -k imu_drop.sdf
+```
+
+**期待する結果**:
+
+```text
+Valid.
+```
+
+3つのターミナルを使う。T1でワールドを開き（一時停止の状態で始まる）、T2で `/imu` をROS2へ中継し、T3で加速度の上下の成分（z）だけを表示する。
+
+```bash
+# T1
+cd ~/gz_practice
+
+gz sim imu_drop.sdf
+```
+
+```bash
+# T2
+ros2 run ros_gz_bridge parameter_bridge /imu@sensor_msgs/msg/Imu[gz.msgs.IMU
+```
+
+```bash
+# T3
+ros2 topic echo /imu --field linear_acceleration.z
+```
+
+`--field` は、メッセージの中の1つの項目だけを表示する指定で、`.` で入れ子の項目をたどる。
+
+**期待する結果**（T2の表示。先頭の数字は時刻で、実行ごとに異なる）:
+
+```text
+[INFO] [1794013920.870319304] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/imu (gz.msgs.IMU) -> /imu (sensor_msgs/msg/Imu)] (Lazy 0)
+```
+
+T1では、宙に浮いた青い箱が見え、一時停止しているので、T3にはまだ何も出ない。T1の画面の左下の▶を押すと、箱が落ち、T3に1秒に100行の速さで値が流れる。
+
+**期待する結果**（T3の表示の抜粋。▶を押してから、`0.0` が101回続いた後、着地したところ）:
+
+```text
+0.0
+---
+0.0
+---
+0.0
+---
+9.800000000000004
+---
+9.799999999999999
+---
+9.8
+---
+```
+
+**読み方**:
+
+- 落ちている約1.0秒の間、加速度のzは0.0である。実際の加速度は下向きに9.8 m/s²なのに、IMUは0を示す。
+- 地面に着いて止まると、加速度のzは9.8（小数の端数は計算の誤差）になる。実際の加速度は0なのに、IMUは上向きの9.8を示す。
+- これは、Gazeboの癖ではなく、実物の加速度計も同じである。加速度計は、中のおもりを支える力を測るので、測れるのは「実際の加速度から重力の加速度を引いたもの」になる。止まっていれば、重力に逆らって支えている分（上向きの9.8）が出て、自由に落ちていれば、おもりも一緒に落ちるので0が出る。IMUの値から傾きや動きを推し量るときは、この重力の分を考えに入れる。
+
+止まった後に、全部の項目を1回だけ読む。
+
+```bash
+# T3（Ctrl+C で止めてから）
+ros2 topic echo /imu --once
+```
+
+**期待する結果**（`stamp` はシミュレーションの時刻で、読んだ時刻によって変わる。`e-18` のような小さな値も、実行ごとに少し変わる）:
+
+```text
+header:
+  stamp:
+    sec: 7
+    nanosec: 70000000
+  frame_id: box/link/imu
+orientation:
+  x: -5.291897520421374e-18
+  y: 5.538649190739909e-18
+  z: -1.5115859316313259e-18
+  w: 1.0
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: 1.0741830074448494e-17
+  y: 1.3841913544963014e-17
+  z: -3.542454923664839e-18
+angular_velocity_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+linear_acceleration:
+  x: -1.5140059421025266e-16
+  y: -1.63156750119954e-15
+  z: 9.799999969531882
+linear_acceleration_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+---
+```
+
+**読み方**:
+
+- `frame_id` は、センサの名前を「モデル/リンク/センサ」の形でつないだもの。値は、このセンサの向き（ここでは箱の向き）で表される。
+- `orientation` は姿勢を四元数で表したもので、`w: 1.0` で残りがほぼ0なら、回っていない。`angular_velocity`（角速度）もほぼ0で、箱は回らずにまっすぐ落ちて止まった。
+- `linear_acceleration` は、上の読み方のとおり、止まっているので z が約9.8になる。
+- `_covariance` の9つの0は、値のばらつきの大きさ（共分散）を入れる欄である。この体験では、センサに誤差（`<noise>`）を書いていないので、値はばらつかず、欄も0のままになる。実物のIMUには誤差とずれがあり、`<sensor>` の中の `<imu>` の要素に、誤差の大きさを書いて真似られる（書き方は `gz sdf -d` の仕様の表示や、SDFの仕様のページで確かめる）。
+
+止めるときは、T3・T2・T1の順に `Ctrl+C` で止める。
+
+**センサの頻度と、着地の瞬間**: 箱が地面にぶつかって止まるときには、非常に大きな加速度が働いたはずなのに、上の表示には出てこない。物理エンジンは、1刻み（0.001秒）の間に箱を止めるが、IMUは0.01秒に1回しか値を出さないので、その1刻みが、値を出す時刻の間に挟まって見えなくなる。確かめるには、頻度を1秒に1000回（刻みと同じ）にした写しを作り、表示をファイルに保存して、いちばん大きな値を探す。
+
+```bash
+cd ~/gz_practice
+
+sed 's#<update_rate>100</update_rate>#<update_rate>1000</update_rate>#' imu_drop.sdf > imu_drop_1k.sdf
+```
+
+T1で `gz sim imu_drop_1k.sdf` を開き、T2は上と同じブリッジ、T3は次のコマンドにして、▶を押す。数秒たって箱が止まったら、T3を `Ctrl+C` で止めてから、いちばん大きな値を探す。
+
+```bash
+# T3
+cd ~/gz_practice
+
+ros2 topic echo /imu --field linear_acceleration.z > z_1k.txt
+
+grep -v -- '---' z_1k.txt | sort -g | tail -3
+```
+
+**期待する結果**（`grep` 以降の分。大きいほうから3つが、下から順に並ぶ）:
+
+```text
+9.800000979336053
+9.897971304937611
+9810.701929752562
+```
+
+いちばん大きな値は、約9811 m/s²（重力の加速度の約1000倍）である。秒速9.8 mで落ちてきた箱を、1刻みの0.001秒で止めたので、その間の加速度は $9.8 / 0.001 = 9800$ m/s²で、これに止まっているときの9.8が加わった値になる。実物の衝突は、物の変形で止まるまでに時間がかかるので、ここまで大きくはならない。2-2節で見たように、物理エンジンは接触を刻みごとに扱うので、ぶつかった瞬間の値は、刻み幅と、センサが値を出す頻度で大きく変わる。センサの値で衝突を見つけたいときは、頻度を十分に高くするか、6-3節の接触センサを使う。
+
+作成時の実験では、止まった後の5.81秒の時点で、加速度のzが一度だけ9.791まで下がり、0.2秒ほどかけて9.8に戻った（2回の実行で、同じ時刻に同じ値が出た）。この教材では原因までは確かめていないが、2-2節で見た、接触のめり込みを少しずつ押し戻す計算に関係すると考えられる。100 Hzで眺めているときに、このわずかな揺れに気づいても、不具合ではない。
+
+### 6-3. 接触センサと2DのLiDAR
+
+**接触センサ**: リンクの `<sensor type="contact">` の中の `<contact>` に、見張る衝突の形の名前（`<collision>`）と、送り先のトピック（`<topic>`）を書き、ワールドにシステム `gz-sim-contact-system` を足す。その衝突の形が何かと触れている間、触れた相手の衝突の形の名前と、接触の位置などを送る。IMUの加速度と違い、衝突を「触れたかどうか」として直接受け取れるので、ロボットがぶつかったことの検出に向く。付属の `contact_sensor.sdf` は、球が触れたものを、トピック `/contact_example` に送る例である。ROS2へは、`ros_gz_interfaces/msg/Contacts` の型で中継できる。
+
+**2DのLiDAR**: 光線を水平の扇形に並べて放ち、物に当たるまでの距離を測るセンサで、移動ロボットが周りの壁や障害物を知るのに使う。リンクの `<sensor type="gpu_lidar">` の中の `<lidar>` に、水平の本数（`<samples>`）と角度の範囲（`<min_angle>`・`<max_angle>`。ラジアン）、測れる距離の範囲（`<range>` の `<min>`・`<max>`）を書き、垂直の本数を1にすると2Dになる。ワールドには、システム `gz-sim-sensors-system` を足し、その中に描画エンジン `<render_engine>ogre2</render_engine>` を書く。ROS2へは [`sensor_msgs/msg/LaserScan`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/LaserScan.msg) の型で中継でき、距離は `ranges` の配列に、光線の順に入る。付属の `gpu_lidar_sensor.sdf` は、水平640本・垂直16本（3DのLiDAR）の例で、2Dにするには垂直の本数を1にする。描画を使うので、画面なしで動かすときや、専用のGPUが無いPCでは、ほかのセンサより重くなりやすい。
+
+作成時には、この2つのセンサは動かしていない（付属の例のワールドがあることと、書き方を公式の文書で確かめた）。
+
+## 7. この章のまとめ
 
 - Gazeboのワールドは、SDFで、ワールド → モデル → リンク・関節の入れ子に書く。リンクは、慣性（質量と慣性モーメント）・衝突の形・見た目の3つを持ち、物理の計算に使うのは慣性と衝突の形である。
 - 物理エンジン（既定はDART）は、刻み幅（既定0.001秒）ごとに、まず速度を、次に位置を更新する。落下の位置は、この計算の式と小数第6位まで一致した。接触では、物どうしが数ミリ重なることを許し、少しずつ押し戻す。
@@ -1369,8 +1642,9 @@ Goal finished with status: SUCCEEDED
 - `create` でURDFをワールドに出し、`JointStatePublisher` とブリッジで、関節の角度をROS2の `/joint_states` として読めた。関節の制限は正確に効き、止まった角度には、刻み幅に比例する小さなずれがあった。
 - ros2_controlは、コントローラ（指令を計算する側）とハードウェアの部品（関節を読み書きする側）を、インターフェースでつなぐ。URDFの `<ros2_control>` に関節ごとのインターフェースを書き、Gazeboでは `GazeboSimROS2ControlPlugin` がコントローラマネージャを動かす。コントローラは `spawner` で読み込んで有効にし、1つの指令のインターフェースは1つのコントローラだけが使える。
 - `GazeboSimSystem` の角度の指令は、関節の角速度を直接決めるので、重力に関係なく目標の角度にぴったり止まり、時定数0.1秒（`position_proportional_gain` 0.1、`update_rate` 100 Hz）の遅れで目標を追う。軌道のコントローラは、点の間を補間した指令を書き、腕はそれを0.1秒ほど遅れて追った。
+- センサは、リンクの `<sensor>` に種類・頻度・トピックを書き、ワールドにその種類のシステムを足して動かす。IMUの加速度は「実際の加速度から重力の加速度を引いたもの」なので、止まっている箱では上向きの9.8、自由に落ちている箱では0を示した。着地の瞬間の大きな加速度（約9811 m/s²）は、1刻みの間にしか現れないので、頻度を刻みと同じにしたときだけ見えた。
 
-## 7. つまずきやすい点
+## 8. つまずきやすい点
 
 | 症状 | 確認すること |
 |---|---|
@@ -1386,14 +1660,16 @@ Goal finished with status: SUCCEEDED
 | `spawner` が `Failed to activate controller` で失敗する | ほかのコントローラが、同じ関節の指令のインターフェースを使っていないか（5-4節）。失敗したコントローラは、読み込まれたまま（`Loaded` の後の有効化だけが失敗した状態で）残るので、T1〜T4をすべて止めてやり直し、先に `unspawner` で外してから読み込むのが確実である |
 | T1に `No clock received` の警告が続き、`/joint_states` の `stamp` が0のまま | T3の `/clock` のブリッジが動いているか（5-3節） |
 | 5節で、腕が4-4節のように垂れ下がる | T2で展開しているのが `arm_control.urdf.xacro` か（`arm.urdf.xacro` には `<ros2_control>` が無い） |
+| 6-2節で、T3の `/imu` に何も届かない | T1で▶を押したか（一時停止の間は届かない）。ワールドに `gz-sim-imu-system` の `<plugin>` があるか。T2のブリッジのトピック名（`/imu`）が、`<sensor>` の `<topic>` と同じか |
+| 6-2節で、止まっているのに加速度のzが9.8になる | 正しい表示である。加速度計は、重力に逆らって支える分を測る（6-2節の読み方） |
 
-## 8. 次へ
+## 9. 次へ
 
 この章は任意の補足なので、本筋はフェーズ6-1（[`docs/phase6_1_record.md`](phase6_1_record.md)）へ進む。フェーズ7-3（[`docs/phase7_3_gazebo_env.md`](phase7_3_gazebo_env.md)）では、フェーズ5-4の車両の車輪の関節に、この章の4-3節と同じ考え方の減衰（SDFでは、関節の `<axis>` の `<dynamics>` の中の `<damping>` の要素）を足して使う。
 
-## 9. 公式ドキュメント・参考資料
+## 10. 公式ドキュメント・参考資料
 
-確認状況（2026-10-12）: Gazeboの「SDF worlds」「Building your own robot」「Spawn URDF」「Spawn a Gazebo model from ROS 2」のページは、この章の作成時に本文を確認した。要素の既定値は、導入したSDFormat（14.9.0）の仕様の表示（`gz sdf -d`）で、`create` のオプションは `ros2 run ros_gz_sim create --help` で確認した。URDFとxacroのROS 2のチュートリアルは、原稿（`ros2/ros2_documentation` のjazzyブランチ）が実在することを確かめた。摩擦と反発の係数の組み合わせ方と、3-4節のばねの揺れの減り方と、4-4節の角度のずれは、作成時の実験で確かめたもので、DARTのソースは読んでいない。3-4節のばねの要素（`<spring_stiffness>`・`<spring_reference>`）は、SDFの仕様の表示（`gz sdf -d`）で確かめ、4-3節の、URDFの `<gazebo>` の `springStiffness` がSDFに変換されることは、`gz sdf -p` で確かめた（2026-10-15）。5節のros2_controlの記述と設定は、`gz_ros2_control` のjazzyの版の説明とデモの設定のファイル、ros2_controlの公式の文書（jazzy）を確認し、作成時に導入した版（`gz_ros2_control` 1.2.20、`ros2_controllers` 4.42.1、`controller_manager` 4.48.1）で動かして確かめた。角度の指令の動き（`position_proportional_gain`）と軌道の補間の仕方は、公式の説明と、5-4節の記録が合うことを確かめた。
+確認状況（2026-10-12）: Gazeboの「SDF worlds」「Building your own robot」「Spawn URDF」「Spawn a Gazebo model from ROS 2」のページは、この章の作成時に本文を確認した。要素の既定値は、導入したSDFormat（14.9.0）の仕様の表示（`gz sdf -d`）で、`create` のオプションは `ros2 run ros_gz_sim create --help` で確認した。URDFとxacroのROS 2のチュートリアルは、原稿（`ros2/ros2_documentation` のjazzyブランチ）が実在することを確かめた。摩擦と反発の係数の組み合わせ方と、3-4節のばねの揺れの減り方と、4-4節の角度のずれは、作成時の実験で確かめたもので、DARTのソースは読んでいない。3-4節のばねの要素（`<spring_stiffness>`・`<spring_reference>`）は、SDFの仕様の表示（`gz sdf -d`）で確かめ、4-3節の、URDFの `<gazebo>` の `springStiffness` がSDFに変換されることは、`gz sdf -p` で確かめた（2026-10-15）。5節のros2_controlの記述と設定は、`gz_ros2_control` のjazzyの版の説明とデモの設定のファイル、ros2_controlの公式の文書（jazzy）を確認し、作成時に導入した版（`gz_ros2_control` 1.2.20、`ros2_controllers` 4.42.1、`controller_manager` 4.48.1）で動かして確かめた。角度の指令の動き（`position_proportional_gain`）と軌道の補間の仕方は、公式の説明と、5-4節の記録が合うことを確かめた。6節のセンサの書き方（システムの名前、`<sensor>` の要素、LiDARの描画エンジン）は、Gazebo Harmonicの「Sensors」のページを確認し（2026-11-07）、付属の例のワールドの記述と照らし合わせた。IMUは作成時に動かして確かめ、接触センサとLiDARは動かしていない。
 
 ### 公式
 
@@ -1407,6 +1683,7 @@ Goal finished with status: SUCCEEDED
 - [Building a visual robot model from scratch — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/Building-a-Visual-Robot-Model-with-URDF-from-Scratch.html)（URDFの書き方のチュートリアル）
 - [Using Xacro to clean up your code — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/Using-Xacro-to-Clean-Up-a-URDF-File.html)（xacroのプロパティ・式・マクロ）
 - [ros/xacro（GitHub）](https://github.com/ros/xacro)（xacroのソースと説明）
+- [Sensors — Gazebo Harmonic](https://gazebosim.org/docs/harmonic/sensors/)（IMU・接触センサ・LiDARの付け方と、値の読み方のチュートリアル）
 - [Getting Started — ros2_control: Jazzy](https://control.ros.org/jazzy/doc/getting_started/getting_started.html)（ros2_controlの部品と、コントローラマネージャ・インターフェースの考え方）
 - [gz_ros2_control — ros2_control: Jazzy](https://control.ros.org/jazzy/doc/gz_ros2_control/doc/index.html)（URDFの `<ros2_control>` と `GazeboSimROS2ControlPlugin` の書き方。`hold_joints`・`position_proportional_gain` の説明）
 - [ros-controls/gz_ros2_control（GitHub、jazzyブランチ）](https://github.com/ros-controls/gz_ros2_control/tree/jazzy)（ソースとデモ。デモのURDFと設定のファイルが手本になる）
