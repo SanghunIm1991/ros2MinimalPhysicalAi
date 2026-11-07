@@ -700,7 +700,7 @@ def generate_launch_description():
 - 名前空間を付けたのに、コードが絶対名を使っていて変わらない、という食い違いに注意する。
 - 同じノード名が2つ起動するとログに警告が出る（名前空間を付ける理由の1つ）。
 
-観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、この下の期待する結果の例（`/demo/talker`、`/demo/listener`、`/param_listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`param_listener` のログに `received: from yaml` が出て、`/param_chatter` の購読数が1になること（remapが効いている）。`Ctrl+C` で全ノードが止まること（この節の末尾の課題8）。
+観察ポイント: `ros2 node list` と `ros2 topic list` の結果が、この下の期待する結果（`/demo/talker`、`/demo/listener`、`/param_listener`、`/param_talker`、`/demo/chatter`、`/param_chatter`）になること。`param_listener` のログに `received: from yaml` が出て、`/param_chatter` の購読数が1になること（remapが効いている）。`Ctrl+C` で全ノードが止まること（この節の末尾の課題8）。
 
 > **実行する前に**: `compose.launch.py` を足したので、4-1節と同じく、`ros2_ws/`（`cd ~/ros2_ws`）で `colcon build --symlink-install --packages-select learn_bringup` を実行してビルドし直し、`source install/setup.bash` をしてから実行する。ビルドしないと、`ros2 launch` が新しいファイルを見つけられない（理由は5節）。
 

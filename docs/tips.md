@@ -393,7 +393,7 @@ ROS1で作られたパッケージ（レガシーコード）をROS2で使いた
 7-3節の表の置き換えは、名前を変えるだけでは済まないものがある。ROS1とROS2で動き方が違うために、ビルドが通っても、動かすと違う結果になる点を挙げる。
 
 - **メッセージの型の名前の決まりが厳しい**: ROS2では、フィールドの名前は小文字で始まり、小文字・数字・アンダースコアだけを使い、アンダースコアの連続や末尾のアンダースコアは使えない（Jazzyの `rosidl_adapter` のソースで確かめた）。ROS1で許されていた `targetSpeed` のような名前は、`target_speed` に変えないと型を生成できない。名前を変えると、それを読み書きしているコードもすべて直すことになる。
-- **`Header` に `seq` が無い**: ROS1の `std_msgs/Header` にあった通し番号の `seq` は、ROS2の `std_msgs/msg/Header` には無い（`stamp` と `frame_id` だけ。`ros2 interface show std_msgs/msg/Header` で確かめられる）。`seq` で取りこぼしを調べていたコードは、別の方法に変える。
+- **`Header` に `seq` が無い**: ROS1の `std_msgs/Header` にあった通し番号の `seq` は、ROS2の [`std_msgs/msg/Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg) には無い（`stamp` と `frame_id` だけ。`ros2 interface show std_msgs/msg/Header` で確かめられる）。`seq` で取りこぼしを調べていたコードは、別の方法に変える。
 - **グローバルなパラメータが無い**: ROS1では、`roscore` がパラメータの置き場（パラメータサーバ）を持ち、どのノードからも読み書きできた。ROS2のパラメータはノードごとに持ち、使う前に宣言が要る（フェーズ3-3）。複数のノードで同じ値を共有していたなら、launchファイルから各ノードに同じ値を渡す形に変える。パラメータのYAMLファイルも、ノード名と `ros__parameters` の段が要る形に書き換える（フェーズ3-3の5-4節）。
 - **サービスは非同期で呼ぶ**: ROS1の `ServiceProxy` は、応答が返るまで待つ同期の呼び出しだった。ROS2では、`call_async` で呼んで、後で結果を受け取る。既定の、1つのスレッドでコールバックを順に実行する形のままで、コールバックの中に、応答を待つ処理（`rclpy.spin_until_future_complete` など）を書くと、ノードが応答を受け取れなくなり、止まってしまう（デッドロック）。ROS1のコードで、コールバックの中からサービスを呼んでいた箇所は、作りを見直す。
 - **`Rate` のループをそのまま写さない**: Pythonでは、rclpyにも `Rate` はあるが、その `sleep` は、ノードを回す処理（spin）がタイマーを動かすのを待つ作りになっている（Jazzyのrclpyのソースで確かめた）。ROS1のように、spinせずに `while` と `sleep` だけで回すと、待ったまま戻らない。C++の `rclcpp::Rate` は、決めた時間だけ待つ作りで、この問題は無い（Jazzyのrclcppのヘッダで確かめた）。ただし、ループの間はspinしないので、受信のコールバックが呼ばれない。どちらの言語でも、周期の処理は、タイマーのコールバックに書き換えるのが基本である（フェーズ3-1）。
@@ -651,7 +651,7 @@ SetuptoolsDeprecationWarning: Invalid dash-separated options
 | 届かなかったら | 既定のQoSはサービスと同じ（`reliable`・`volatile`・`keep_last` の10件）。`volatile` は、後から参加した相手に過去の分を渡さない設定（4-3節）なので、相手がつながる前に送った要求は失われる。相手がいることを、自分で確かめてから送る | 既定のQoSはトピックと同じ。サーバが見つかる前の要求も失われうるので、`wait_for_service` で待ってから呼ぶ。`reliable` で送り直せるのは、手元に残している件数の分だけ（4-3節） | サービスの部分は同じ（`wait_for_server` で待ってから送る） |
 | 応答を待つ | 応答の購読のコールバックで受け、待つ仕組みと時間切れを自分で作る | `call_async` が返すFuture（あとで結果が入る入れ物）で待てる | ゴールの受付・結果のそれぞれをFutureで待てる |
 | 型 | 要求と応答のメッセージの型を、別々に決める | 1つの `.srv` に、要求と応答を組で書く | 1つの `.action` に、ゴール・結果・フィードバックを組で書く |
-| 途中経過・中断・状態 | すべて自分で決める（状態の移り変わりも） | 無い | 標準の仕組みがある（状態は `action_msgs/msg/GoalStatus` の7種類で、不明の状態（UNKNOWN）を含む。それを除く6つの移り変わりは、フェーズ3-5の1節の状態遷移図） |
+| 途中経過・中断・状態 | すべて自分で決める（状態の移り変わりも） | 無い | 標準の仕組みがある（状態は [`action_msgs/msg/GoalStatus`](https://github.com/ros2/rcl_interfaces/blob/jazzy/action_msgs/msg/GoalStatus.msg) の7種類で、不明の状態（UNKNOWN）を含む。それを除く6つの移り変わりは、フェーズ3-5の1節の状態遷移図） |
 | 結果を後から受け取る | 自分で取っておく仕組みを作る | 無い（応答は1回だけ） | 終わった後も、サーバが決めた時間だけ結果を持っている（既定はrclpyで900秒、rclcppで10秒） |
 | コマンドの道具 | `ros2 topic pub` と `ros2 topic echo` を別々に使う | `ros2 service call` で、要求と応答を1回で確かめられる | `ros2 action send_goal --feedback` で、途中経過まで確かめられる |
 | ほかのパッケージとの組み合わせ | 自分の決めた形を、相手も知っている必要がある | 標準の型（[`std_srvs/srv/Trigger`](https://github.com/ros2/common_interfaces/blob/jazzy/std_srvs/srv/Trigger.srv) など）で、他人のノードと組み合わせられる | 標準の型（`control_msgs/action/FollowJointTrajectory` など）で、他人のノードと組み合わせられる |

@@ -137,7 +137,7 @@ def main(args=None):
 解説（talker.py）:
 
 - **役割と流れ**: 1秒ごとにタイマーが `on_timer` を呼び、`hello 0`, `hello 1`, ... を `chatter` に送る。全体は「ノードを作る → `spin` でコールバックを待ち続ける → Ctrl+Cで後片付けして終わる」の3段構え。この骨組みは Python版の4ファイルすべてで共通なので、ここで覚えておく。
-- **import**: `rclpy` はPythonのROS2クライアントライブラリ、`Node` はノードの基底クラス、`String` は `std_msgs/msg/String`（フィールド `data` を1つ持つだけのメッセージ）。`ExternalShutdownException` は「外部からシャットダウンされた」ときに `spin` が投げる例外で、後述の `except` で握りつぶすために使う。
+- **import**: `rclpy` はPythonのROS2クライアントライブラリ、`Node` はノードの基底クラス、`String` は `std_msgs/msg/String`（フィールド `data` を1つ持つだけのメッセージ）。`ExternalShutdownException` は「外部からシャットダウンされた」ときに `spin` が投げる例外で、`main` の `except` で握りつぶすために使う。
 - **`__init__` の中身**:
   - `super().__init__('talker')` でノード名を決める。これを呼ばないと以降の `create_*` が使えない。
   - `create_publisher(String, 'chatter', 10)` は「型・トピック名・QoSのdepth」の順。`10` は送信側のキュー（バッファ）の深さで、相手の受信が追いつかないときに最大10件まで溜めておく、という意味（詳しくはフェーズ3-2b）。

@@ -255,7 +255,7 @@ def main(args=None):
 
 役割は「ゴールを受け、1秒ごとに数列を伸ばしながら feedback を返し、最後に result を返す」こと。流れは、(1) ゴールが届くと `on_goal` が受理か拒否かを決める → (2) 受理されたら（ACCEPTED）`execute` が呼ばれて実行に入る（EXECUTING）→ (3) ループの各周回で中断要求を確認し、なければ項を足して feedback を出し、1秒待つ → (4) 終われば `succeed()`（SUCCEEDED）、中断要求があれば `canceled()`（CANCELED）、のどちらかで終わる。1節の状態遷移図のうち、サーバ側が担当するのがこの部分。
 
-- **import とクラス**: `ActionServer`・`GoalResponse`・`CancelResponse` は `rclpy.action` から取る。`ReentrantCallbackGroup` と `MultiThreadedExecutor` は、後述の「中断を受け付ける仕組み」のために使う。
+- **import とクラス**: `ActionServer`・`GoalResponse`・`CancelResponse` は `rclpy.action` から取る。`ReentrantCallbackGroup` と `MultiThreadedExecutor` は、長い処理の最中にも中断の要求を受け付けるために使う（この解説の下の「なぜ `MultiThreadedExecutor` と `ReentrantCallbackGroup` が要るか」）。
 - **`ActionServer(...)` の引数**: 第1〜3引数は「ノード、アクション型、アクション名」。`execute_callback` は受理されたゴールを実際に処理する関数、`goal_callback` は届いたゴールを受けるか決める関数、`cancel_callback` は中断要求を受けるか決める関数。`goal_callback` と `cancel_callback` は省略もでき、省略した場合の既定は「ゴールは受理、中断要求は**拒否**」（中断を受け付けたいなら `cancel_callback` で受理を返す必要がある。実機での確認は未実施）。本手順書では動作を見るために明示している。
 - **`on_goal`**: 引数はゴールの中身（`goal_request.order`）。`GoalResponse.REJECT` を返すと、クライアントには「拒否された」が届き、`execute` は呼ばれない。仕様の「`order < 1` は拒否」はここで実現している。
 - **`on_cancel`**: 中断要求が来たときに呼ばれ、`CancelResponse.ACCEPT` を返すとゴールが CANCELING に入り、`goal_handle.is_cancel_requested` が `True` になる。`REJECT` を返せば、中断できないゴールとして扱える。
