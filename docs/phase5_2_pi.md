@@ -210,11 +210,11 @@ def main():
             print(f'{t:6.1f}  {target:6.1f}  {v:6.2f}  {pedal:+.2f}')
 
     cases = [
-        ('PI (kp=0.5, ki=0.1)', dict(kp=0.5, ki=0.1)),
-        ('P only (kp=0.5)', dict(kp=0.5, ki=0.0)),
-        ('PI, no anti-windup', dict(kp=0.5, ki=0.1, anti_windup=False)),
-        ('PI, tau_brake=1.0', dict(kp=0.5, ki=0.1, params=VehicleParams(tau_brake=1.0))),
-        ('PI (kp=5.0, ki=2.0)', dict(kp=5.0, ki=2.0)),
+        ('PI (kp=0.5, ki=0.1)', {'kp': 0.5, 'ki': 0.1}),
+        ('P only (kp=0.5)', {'kp': 0.5, 'ki': 0.0}),
+        ('PI, no anti-windup', {'kp': 0.5, 'ki': 0.1, 'anti_windup': False}),
+        ('PI, tau_brake=1.0', {'kp': 0.5, 'ki': 0.1, 'params': VehicleParams(tau_brake=1.0)}),
+        ('PI (kp=5.0, ki=2.0)', {'kp': 5.0, 'ki': 2.0}),
     ]
     print()
     print('case                   max(0-40s)  v(40s)  min(40-70s)  v(70s)')

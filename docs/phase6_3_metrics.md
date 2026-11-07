@@ -185,7 +185,7 @@ def main():
     from learn_py.closed_loop_sim import simulate
     from learn_py.vehicle_model import VehicleParams
     for name, kwargs in [('PI (kp=0.5, ki=0.1)', {}),
-                         ('PI, tau_brake=1.0', dict(params=VehicleParams(tau_brake=1.0)))]:
+                         ('PI, tau_brake=1.0', {'params': VehicleParams(tau_brake=1.0)})]:
         # simulate は0秒から目標10で始まるので、その前に目標0のサンプルを1つ足して、0→10の段を作る
         rows = [(-0.01, 0.0, 0.0, 0.0)] + simulate(kp=0.5, ki=0.1, **kwargs)
         times, targets, velocities, pedals = (list(c) for c in zip(*rows))
@@ -210,7 +210,7 @@ if __name__ == '__main__':
 - **`main`**: フェーズ5-2の4-2節の `simulate` の結果に、指標を当てはめる。
   - `simulate` は、`(時刻, 目標, 速度, ペダル)` の組を、時刻の順に並べたリストを返す（フェーズ5-2の4-2節の `rows.append(...)`）。0秒から目標10で始まるので、その前に目標0の組 `(-0.01, 0.0, 0.0, 0.0)`（0.01秒前、目標0、止まっている、ペダル0）を1つ足して、0 → 10の段を作っている。
   - `zip(*rows)` は、組のリストを、項目ごとの並びに入れ替える書き方である（行と列の入れ替え）。`[(t0, r0, v0, p0), (t1, r1, v1, p1), ...]` が、`(t0, t1, ...)`・`(r0, r1, ...)` のような4つの並びになり、それを `times`・`targets`・`velocities`・`pedals` に受け取る。
-  - 2つの条件の違いは、`simulate` に渡す引数だけなので、条件ごとの引数を辞書（`{}` と `dict(params=...)`）で用意し、`**kwargs` で名前付きの引数として展開して渡している（フェーズ5-2の4-2節の `main` の `simulate(**kwargs)` と同じ書き方）。`simulate(kp=0.5, ki=0.1, **{'params': p})` は、`simulate(kp=0.5, ki=0.1, params=p)` と同じ意味になる。`closed_loop_sim.py` と同じく、ビルドして `source` した後に `python3 -m` で動かす（フェーズ5-2の4-2節の解説）。
+  - 2つの条件の違いは、`simulate` に渡す引数だけなので、条件ごとの引数を辞書（`{}` と `{'params': ...}`）で用意し、`**kwargs` で名前付きの引数として展開して渡している（フェーズ5-2の4-2節の `main` の `simulate(**kwargs)` と同じ書き方）。`simulate(kp=0.5, ki=0.1, **{'params': p})` は、`simulate(kp=0.5, ki=0.1, params=p)` と同じ意味になる。`closed_loop_sim.py` と同じく、ビルドして `source` した後に `python3 -m` で動かす（フェーズ5-2の4-2節の解説）。
 
 ```bash
 cd ~/ros2_ws
@@ -316,8 +316,10 @@ class MetricsNode(Node):
         elapsed = (self.steady_clock.now() - self.last_received).nanoseconds * 1e-9
         if elapsed < self.idle_timeout:
             return
-        self.get_logger().info(f'{len(self.times)} samples ({len(self.times) * self.sample_period:.2f} s)')
-        for line in format_report(*evaluate(self.times, self.targets, self.velocities, self.pedals)):
+        self.get_logger().info(
+            f'{len(self.times)} samples ({len(self.times) * self.sample_period:.2f} s)')
+        for line in format_report(
+                *evaluate(self.times, self.targets, self.velocities, self.pedals)):
             self.get_logger().info(line)
         rclpy.shutdown()
 

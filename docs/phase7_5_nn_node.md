@@ -152,7 +152,8 @@ class NNControllerNode(Node):
         msg.data = self.pedal
         self.pub.publish(msg)
         self.get_logger().info(
-            f'target: {self.target:5.2f}, velocity: {self.velocity:5.2f} m/s, pedal: {self.pedal:+.2f}',
+            f'target: {self.target:5.2f}, velocity: {self.velocity:5.2f} m/s, '
+            f'pedal: {self.pedal:+.2f}',
             throttle_duration_sec=1.0)
 
 
@@ -354,7 +355,8 @@ def generate_launch_description():
             'controller', default_value='nn',
             description='制御器（pi または nn）'),
         DeclareLaunchArgument(
-            'weights', default_value=[EnvironmentVariable('HOME'), '/rl_practice/gz_pedal_w20.npz'],
+            'weights',
+            default_value=[EnvironmentVariable('HOME'), '/rl_practice/gz_pedal_w20.npz'],
             description='nn のときに読み込む重みのファイル（フェーズ7-4の .npz）'),
         DeclareLaunchArgument(
             'gz_args', default_value=['-r ', world],
